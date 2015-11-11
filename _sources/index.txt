@@ -3,15 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to MASSACRE's documentation!
-====================================
+MASSACRE - Multi-Agent System Solutions And Creativity
+======================================================
 
-Contents:
+MASSACRE project is created as a tool for researching creative multi-agent
+systems. 
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
 
-   includeme
+   install
+   api
 
 
 Indices and tables

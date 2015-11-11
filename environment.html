@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Environment &mdash; MASSACRE 0.0.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="MASSACRE 0.0.1a documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="api.html" />
+    <link rel="next" title="Simulation" href="simulation.html" />
+    <link rel="prev" title="Agent" href="agent.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-environment">
+<span id="environment"></span><h1>Environment<a class="headerlink" href="#module-environment" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-environment"></span><p>Environments for agents.</p>
+<dl class="class">
+<dt id="environment.Environment">
+<em class="property">class </em><code class="descclassname">environment.</code><code class="descname">Environment</code><span class="sig-paren">(</span><em>addr</em>, <em>clock=None</em>, <em>extra_serializers=None</em>, <em>loggers=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic environment for agents.</p>
+<p>Environment contains <code class="docutils literal"><span class="pre">aiomas.Container</span></code> as a communication route between 
+agents and has <code class="docutils literal"><span class="pre">artifacts</span></code> variable that holds all the artifacts agents 
+have published.</p>
+<dl class="method">
+<dt id="environment.Environment.add_artifact">
+<code class="descname">add_artifact</code><span class="sig-paren">(</span><em>agent</em>, <em>artifact</em>, <em>framing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add artifact with give framing to environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="environment.Environment.create_initial_connections">
+<code class="descname">create_initial_connections</code><span class="sig-paren">(</span><em>n=5</em>, <em>type='random'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.create_initial_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.create_initial_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random initial connections for all agents.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="environment.Environment.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy the environment.</p>
+<p>Destroying the environment calls all its agents shutdown method, and 
+then shuts down the agent container. If <code class="docutils literal"><span class="pre">folder</span></code> is given, saves 
+information of the run to that folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="environment.Environment.get_domain_artifacts">
+<code class="descname">get_domain_artifacts</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.get_domain_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.get_domain_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get domain artifacts published by certain agent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="environment.Environment.get_random_agent">
+<code class="descname">get_random_agent</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.get_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.get_random_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return random agent that is not the same as agent given as parameter.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MASSACRE</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="agent.html">Agent</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="api.html">API Documentation</a><ul>
+      <li>Previous: <a href="agent.html" title="previous chapter">Agent</a></li>
+      <li>Next: <a href="simulation.html" title="next chapter">Simulation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Simo Linkola.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/environment.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

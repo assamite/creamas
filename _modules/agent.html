@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>agent &mdash; MASSACRE 0.0.1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="MASSACRE 0.0.1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for agent</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. py:module:: agent</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    </span>
+<span class="sd">Agent implementations for creative tasks. Mainly module holds ``CreativeAgent``</span>
+<span class="sd">implementation, a subclass of ``aiomas.Agent``, which holds basic functionality </span>
+<span class="sd">needed for creative agents.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">aiomas</span>
+
+<div class="viewcode-block" id="CreativeAgent"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent">[docs]</a><span class="k">class</span> <span class="nc">CreativeAgent</span><span class="p">(</span><span class="n">aiomas</span><span class="o">.</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for all creative agents.</span>
+<span class="sd">    </span>
+<span class="sd">    All agents share certain common attributes:</span>
+<span class="sd">    </span>
+<span class="sd">    :ivar env: The environment where the agent lives.</span>
+<span class="sd">    :ivar int max_R: Agent&#39;s resources per step, 0 if agent has unlimited resources.</span>
+<span class="sd">    :ivar int cur_R: current resources.</span>
+<span class="sd">    :ivar list F: features agent uses to evaluate artifacts</span>
+<span class="sd">    :ivar list W: weights for different features. Weights should be in [-1, 1].</span>
+<span class="sd">    :ivar list A: artifacts the agent has created so far</span>
+<span class="sd">    :ivar dict D: domain knowledge, other agents&#39; artifacts seen by this agent </span>
+<span class="sd">    :ivar list connections: other agents this agent knows</span>
+<span class="sd">    :ivar list friendliness: attitude towards each agent in connections, in [-1,1]</span>
+<span class="sd">    &#39;&#39;&#39;</span> 
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">feats</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">weights</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">loggers</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+        <span class="c">#: Environment where agent lives.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_R</span> <span class="o">=</span> <span class="n">resources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_R</span>  <span class="o">=</span> <span class="n">resources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="n">feats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">friendliness</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span> <span class="o">=</span> <span class="n">loggers</span>
+    
+<div class="viewcode-block" id="CreativeAgent.random_connection"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.random_connection">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">random_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Connect to random agent from current ``connections``.&#39;&#39;&#39;</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">)</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">r_agent</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">remote_agent</span>
+    </div>
+<div class="viewcode-block" id="CreativeAgent.publish"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">,</span> <span class="n">framing</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Publish artifact to agent&#39;s environment with given framing.&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">,</span> <span class="n">framing</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Published {} to domain because of {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">,</span> <span class="n">framing</span><span class="p">))</span>
+    </div>
+<div class="viewcode-block" id="CreativeAgent.refill_resources"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.refill_resources">[docs]</a>    <span class="k">def</span> <span class="nf">refill_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Refill agent&#39;s resources to maximum.&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_R</span>
+        </div>
+<div class="viewcode-block" id="CreativeAgent.attach_logger"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.attach_logger">[docs]</a>    <span class="k">def</span> <span class="nf">attach_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add new logger to agent.&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        </div>
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+            
+            
+<div class="viewcode-block" id="CreativeAgent.close"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform any book keeping needed before closing the agent.</span>
+<span class="sd">        </span>
+<span class="sd">        Called from ``Environment.destroy()``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&#39;Closing.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>  
+        
+    </div></div>
+<span class="k">class</span> <span class="nc">NumberAgent</span><span class="p">(</span><span class="n">CreativeAgent</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">loggers</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">loggers</span> <span class="o">=</span> <span class="n">loggers</span><span class="p">)</span>
+        <span class="n">rand</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">rand</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">rand</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rand</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&#39;Created: {} with feat={}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rand</span><span class="p">))</span>
+        
+        
+    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        
+        
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+        
+          
+    <span class="k">def</span> <span class="nf">invent_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Invent new number from given interval.&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;{} inventing number from ({}, {})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">))</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">:</span>
+                <span class="n">numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;{} could not invent new number!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="k">return</span> <span class="mi">1</span>
+             
+        <span class="n">best_eval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">best_number</span> <span class="o">=</span> <span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="n">best_eval</span><span class="p">:</span>
+                <span class="n">best_eval</span> <span class="o">=</span> <span class="n">e</span>
+                <span class="n">best_number</span> <span class="o">=</span> <span class="n">n</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;{} invented number {}, with e = {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_number</span><span class="p">,</span> <span class="n">best_eval</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">best_eval</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_number</span><span class="p">)</span>   
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;{} appended {} to features.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_number</span><span class="p">))</span>     
+            
+        <span class="k">return</span> <span class="n">best_number</span><span class="p">,</span> <span class="n">best_eval</span>       
+        
+    
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">invent_number</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">evaluations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="n">ev</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ask_opinion</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="n">evaluations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+        
+        <span class="n">evaluations</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">be</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">evaluations</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">be</span> <span class="o">&gt;</span> <span class="mf">0.25</span> <span class="ow">and</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">be</span><span class="p">))</span>
+  
+        
+    <span class="nd">@aiomas.expose</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">+</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+    
+    
+    <span class="nd">@aiomas.expose</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="n">evaluation</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+                <span class="n">evaluation</span> <span class="o">+=</span> <span class="mi">1</span>
+                
+        <span class="k">return</span> <span class="n">evaluation</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)</span>
+
+        
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">MASSACRE</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Simo Linkola.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

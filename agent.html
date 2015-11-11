@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Agent &mdash; MASSACRE 0.0.1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="MASSACRE 0.0.1a documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="api.html" />
+    <link rel="next" title="Environment" href="environment.html" />
+    <link rel="prev" title="API Documentation" href="api.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-agent">
+<span id="agent"></span><h1>Agent<a class="headerlink" href="#module-agent" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-agent"></span><p>Agent implementations for creative tasks. Mainly module holds <code class="docutils literal"><span class="pre">CreativeAgent</span></code>
+implementation, a subclass of <code class="docutils literal"><span class="pre">aiomas.Agent</span></code>, which holds basic functionality 
+needed for creative agents.</p>
+<dl class="class">
+<dt id="agent.CreativeAgent">
+<em class="property">class </em><code class="descclassname">agent.</code><code class="descname">CreativeAgent</code><span class="sig-paren">(</span><em>environment</em>, <em>resources=0</em>, <em>feats=[]</em>, <em>weights=[]</em>, <em>loggers=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all creative agents.</p>
+<p>All agents share certain common attributes:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>env</strong> &#8211; The environment where the agent lives.</li>
+<li><strong>max_R</strong> (<em>int</em>) &#8211; Agent&#8217;s resources per step, 0 if agent has unlimited resources.</li>
+<li><strong>cur_R</strong> (<em>int</em>) &#8211; current resources.</li>
+<li><strong>F</strong> (<em>list</em>) &#8211; features agent uses to evaluate artifacts</li>
+<li><strong>W</strong> (<em>list</em>) &#8211; weights for different features. Weights should be in [-1, 1].</li>
+<li><strong>A</strong> (<em>list</em>) &#8211; artifacts the agent has created so far</li>
+<li><strong>D</strong> (<em>dict</em>) &#8211; domain knowledge, other agents&#8217; artifacts seen by this agent</li>
+<li><strong>connections</strong> (<em>list</em>) &#8211; other agents this agent knows</li>
+<li><strong>friendliness</strong> (<em>list</em>) &#8211; attitude towards each agent in connections, in [-1,1]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="agent.CreativeAgent.attach_logger">
+<code class="descname">attach_logger</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.attach_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.attach_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new logger to agent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="agent.CreativeAgent.close">
+<code class="descname">close</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform any book keeping needed before closing the agent.</p>
+<p>Called from <code class="docutils literal"><span class="pre">Environment.destroy()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="agent.CreativeAgent.publish">
+<code class="descname">publish</code><span class="sig-paren">(</span><em>artifact</em>, <em>framing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish artifact to agent&#8217;s environment with given framing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="agent.CreativeAgent.random_connection">
+<code class="descname">random_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.random_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.random_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to random agent from current <code class="docutils literal"><span class="pre">connections</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="agent.CreativeAgent.refill_resources">
+<code class="descname">refill_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.refill_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.refill_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refill agent&#8217;s resources to maximum.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MASSACRE</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment.html">Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulation</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="api.html">API Documentation</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API Documentation</a></li>
+      <li>Next: <a href="environment.html" title="next chapter">Environment</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Simo Linkola.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/agent.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
