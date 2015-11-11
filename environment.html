@@ -47,19 +47,49 @@
 <dt id="environment.Environment">
 <em class="property">class </em><code class="descclassname">environment.</code><code class="descname">Environment</code><span class="sig-paren">(</span><em>addr</em>, <em>clock=None</em>, <em>extra_serializers=None</em>, <em>loggers=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic environment for agents.</p>
-<p>Environment contains <code class="docutils literal"><span class="pre">aiomas.Container</span></code> as a communication route between 
-agents and has <code class="docutils literal"><span class="pre">artifacts</span></code> variable that holds all the artifacts agents 
-have published.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>container</strong> (<code class="docutils literal"><span class="pre">aiomas.Container</span></code>) &#8211; communication route between agents.</li>
+<li><strong>artifacts</strong> (<em>dict</em>) &#8211; published artifacts for all agents.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="environment.Environment.add_artifact">
 <code class="descname">add_artifact</code><span class="sig-paren">(</span><em>agent</em>, <em>artifact</em>, <em>framing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add artifact with give framing to environment.</p>
+<dd><p>Add artifact with given framing to the environment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>agent</strong> (subclass of <code class="docutils literal"><span class="pre">CreativeAgent</span></code>) &#8211; Agent that produced the artifact</li>
+<li><strong>artifact</strong> (<em>object</em>) &#8211; Artifact to be added.</li>
+<li><strong>framing</strong> (<em>object</em>) &#8211; Framing for the artifact.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="environment.Environment.create_initial_connections">
-<code class="descname">create_initial_connections</code><span class="sig-paren">(</span><em>n=5</em>, <em>type='random'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.create_initial_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.create_initial_connections" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_initial_connections</code><span class="sig-paren">(</span><em>n=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.create_initial_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.create_initial_connections" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create random initial connections for all agents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; number of connections for each agent</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -72,15 +102,23 @@ information of the run to that folder.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="environment.Environment.get_domain_artifacts">
-<code class="descname">get_domain_artifacts</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.get_domain_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.get_domain_artifacts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get domain artifacts published by certain agent.</p>
+<dt id="environment.Environment.get_artifacts">
+<code class="descname">get_artifacts</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.get_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get artifacts published by certain agent.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="environment.Environment.get_random_agent">
 <code class="descname">get_random_agent</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/environment.html#Environment.get_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#environment.Environment.get_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return random agent that is not the same as agent given as parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>agent</strong> (subclass of <code class="docutils literal"><span class="pre">CreativeAgent</span></code>) &#8211; Agent that produced the artifact</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
