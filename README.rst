@@ -1,5 +1,5 @@
-MASSACRE
-========
+MASSACRE - Multi-Agent System Solutions And Creativity Research
+===============================================================
 
 Creative Multi-Agent Systems research code. Very early in development.
 
