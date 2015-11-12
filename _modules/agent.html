@@ -150,11 +150,18 @@
 <span class="sd">    :ivar int max_R: Agent&#39;s resources per step, 0 if agent has unlimited resources.</span>
 <span class="sd">    :ivar int cur_R: current resources.</span>
 <span class="sd">    :ivar list F: features agent uses to evaluate artifacts</span>
-<span class="sd">    :ivar list W: weight for each feature in ``F`, in [-1, 1].</span>
+<span class="sd">    :ivar list W: weight for each feature in **F**, in [-1,1].</span>
 <span class="sd">    :ivar list A: artifacts the agent has created so far</span>
 <span class="sd">    :ivar dict D: domain knowledge, other agents&#39; artifacts seen by this agent </span>
 <span class="sd">    :ivar list connections: other agents this agent knows</span>
-<span class="sd">    :ivar list attitudes: attitude towards each agent in ``connections``, in [-1,1]</span>
+<span class="sd">    :ivar list attitudes: attitude towards each agent in **connections**, in [-1,1]</span>
+<span class="sd">    </span>
+<span class="sd">    In this basic implementation each feature in **F** is expected to be a callable</span>
+<span class="sd">    with single parameter, the artifact to be evaluated. Callable should return </span>
+<span class="sd">    a float in [-1,1], where 1 means that feature is very prominent in the artifact, </span>
+<span class="sd">    and 0 that there is none of that feature in the artifact, and -1 means that </span>
+<span class="sd">    the artifact shows traits opposite to the feature. Actual evaluation formula </span>
+<span class="sd">    is documented in ``evaluate``.</span>
 <span class="sd">    &#39;&#39;&#39;</span> 
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">resources</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">feats</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">weights</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">loggers</span> <span class="o">=</span> <span class="p">[]):</span>
@@ -174,8 +181,12 @@
 <div class="viewcode-block" id="CreativeAgent.random_connection"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.random_connection">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">random_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Connect to random agent from current ``connections``.</span>
 <span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            </span>
+<span class="sd">            This is an async method that should be awaited.</span>
+<span class="sd">        </span>
 <span class="sd">        :returns: connected remote agent</span>
-<span class="sd">        :rtype: instance of ``CreativityAgent`` subclass</span>
+<span class="sd">        :rtype: instance of ``CreativityAgent``, or its subclass</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">)</span>
         <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">r_agent</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
@@ -197,6 +208,52 @@
 <div class="viewcode-block" id="CreativeAgent.attach_logger"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.attach_logger">[docs]</a>    <span class="k">def</span> <span class="nf">attach_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add new logger to agent.&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        </div>
+    <span class="nd">@aiomas.expose</span>
+<div class="viewcode-block" id="CreativeAgent.evaluate"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>  
+        <span class="sd">r&#39;&#39;&#39;Evaluate artifact with agent&#39;s current features and weights.</span>
+<span class="sd">        </span>
+<span class="sd">        TODO: return framing also</span>
+<span class="sd">        </span>
+<span class="sd">        :param object artifact: artifact to be evaluated</span>
+<span class="sd">        :returns: agent&#39;s evaluation of the artifact, in [-1,1]</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        </span>
+<span class="sd">        Actual evaluation formula is: </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">        </span>
+<span class="sd">            e(A) = \frac{\sum_{i=1}^{n} f_{i}(A)w_i}{\sum_{i=1}^{n} \lvert w_i \rvert},</span>
+<span class="sd">        </span>
+<span class="sd">        where :math:`f_{i}(A)` is the :math:`i` th feature&#39;s evaluation on artifact :math:`A`.   </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)):</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            
+        <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w</span> 
+        
+        </div>
+<div class="viewcode-block" id="CreativeAgent.ask_opinion"><a class="viewcode-back" href="../agent.html#agent.CreativeAgent.ask_opinion">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Ask agent&#39;s opinion about artifact.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            </span>
+<span class="sd">            This is an async method that should be awaited.</span>
+<span class="sd">        </span>
+<span class="sd">        :param agent: agent which opinion is asked</span>
+<span class="sd">        :type agent: instance of ``CreativeAgent``, or its subclass</span>
+<span class="sd">        :param object artifact: artifact to be evaluated</span>
+<span class="sd">        :returns: agent&#39;s evaluation of the artifact</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+        
+        
         </div>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>

@@ -155,16 +155,50 @@ needed for creative agents.</p>
 <li><strong>max_R</strong> (<em>int</em>) &#8211; Agent&#8217;s resources per step, 0 if agent has unlimited resources.</li>
 <li><strong>cur_R</strong> (<em>int</em>) &#8211; current resources.</li>
 <li><strong>F</strong> (<em>list</em>) &#8211; features agent uses to evaluate artifacts</li>
-<li><strong>W</strong> (<em>list</em>) &#8211; weight for each feature in <a href="#id1"><span class="problematic" id="id2">``</span></a>F`, in [-1, 1].</li>
+<li><strong>W</strong> (<em>list</em>) &#8211; weight for each feature in <strong>F</strong>, in [-1,1].</li>
 <li><strong>A</strong> (<em>list</em>) &#8211; artifacts the agent has created so far</li>
 <li><strong>D</strong> (<em>dict</em>) &#8211; domain knowledge, other agents&#8217; artifacts seen by this agent</li>
 <li><strong>connections</strong> (<em>list</em>) &#8211; other agents this agent knows</li>
-<li><strong>attitudes</strong> (<em>list</em>) &#8211; attitude towards each agent in <code class="docutils literal"><span class="pre">connections</span></code>, in [-1,1]</li>
+<li><strong>attitudes</strong> (<em>list</em>) &#8211; attitude towards each agent in <strong>connections</strong>, in [-1,1]</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>In this basic implementation each feature in <strong>F</strong> is expected to be a callable
+with single parameter, the artifact to be evaluated. Callable should return 
+a float in [-1,1], where 1 means that feature is very prominent in the artifact, 
+and 0 that there is none of that feature in the artifact, and -1 means that 
+the artifact shows traits opposite to the feature. Actual evaluation formula 
+is documented in <code class="docutils literal"><span class="pre">evaluate</span></code>.</p>
+<dl class="method">
+<dt id="agent.CreativeAgent.ask_opinion">
+<code class="descname">ask_opinion</code><span class="sig-paren">(</span><em>agent</em>, <em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.ask_opinion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.ask_opinion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask agent&#8217;s opinion about artifact.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>agent</strong> (instance of <code class="docutils literal"><span class="pre">CreativeAgent</span></code>, or its subclass) &#8211; agent which opinion is asked</li>
+<li><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be evaluated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">agent&#8217;s evaluation of the artifact</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="agent.CreativeAgent.attach_logger">
 <code class="descname">attach_logger</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.attach_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.attach_logger" title="Permalink to this definition">¶</a></dt>
@@ -176,6 +210,29 @@ needed for creative agents.</p>
 <code class="descname">close</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform any book keeping needed before closing the agent.</p>
 <p>Called from <code class="docutils literal"><span class="pre">Environment.destroy()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="agent.CreativeAgent.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate artifact with agent&#8217;s current features and weights.</p>
+<p>TODO: return framing also</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be evaluated</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">agent&#8217;s evaluation of the artifact, in [-1,1]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<p>Actual evaluation formula is:</p>
+<div class="math">
+\[e(A) = \frac{\sum_{i=1}^{n} f_{i}(A)w_i}{\sum_{i=1}^{n} \lvert w_i \rvert},\]</div>
+<p>where <span class="math">\(f_{i}(A)\)</span> is the <span class="math">\(i\)</span> th feature&#8217;s evaluation on artifact <span class="math">\(A\)</span>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -200,13 +257,17 @@ needed for creative agents.</p>
 <dt id="agent.CreativeAgent.random_connection">
 <code class="descname">random_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/agent.html#CreativeAgent.random_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#agent.CreativeAgent.random_connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to random agent from current <code class="docutils literal"><span class="pre">connections</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">connected remote agent</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">instance of <code class="docutils literal"><span class="pre">CreativityAgent</span></code> subclass</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">instance of <code class="docutils literal"><span class="pre">CreativityAgent</span></code>, or its subclass</td>
 </tr>
 </tbody>
 </table>
