@@ -1,5 +1,7 @@
 '''
+.. py:module:: simulation
 
+Basic simulation implementation for research purposes.
 '''
 from random import choice, randint, shuffle
 import logging
@@ -11,6 +13,7 @@ from agent import NumberAgent
 from environment import Environment
 
 class Simulation():
+    '''Base class for simulations.'''
     
     def __init__(self, host = 'localhost', port = 5555, n_agents = 10, 
                  agent_cls = NumberAgent, log = True, log_folder = None,
@@ -69,14 +72,19 @@ class Simulation():
         self.age = 0
 
 
-    def run(self, steps = 10, order = 'random'):
+    def run_steps(self, steps = 10, order = 'random'):
         '''Progress simulation with given amount of steps.'''
         for i in range(steps):
-            self.age += 1
-            self._log(logging.INFO, "\t***** Step {} (Simulation age: {}) *****". format(i+1, self.age))
-            if order == 'random': shuffle(self.agents)
-            for a in self.agents:
-                aiomas.run(until=a.act())
+            self.run(order = order)
+                
+                
+    def run(self, order = 'random'):
+        '''Run simulation for single step.'''
+        self.age += 1
+        self._log(logging.INFO, "\t***** Step {} *****". format(self.age))
+        if order == 'random': shuffle(self.agents)
+        for a in self.agents:
+            aiomas.run(until=a.act())
                 
      
     def _log(self, level, msg):
@@ -90,8 +98,8 @@ class Simulation():
             
             
 if __name__ == "__main__":        
-    sim = Simulation(log = True, log_folder = "/Users/pihatontt/git/mas/logs/")
-    sim.run(steps = 10, order = 'random')
+    sim = Simulation(log = True, log_folder = "/Users/pihatonttu/git/mas/logs/")
+    sim.run_steps(steps = 10, order = 'random')
     sim.end()
 
             

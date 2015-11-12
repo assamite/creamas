@@ -1,5 +1,5 @@
 '''
-.. py:module:: agent.py
+.. py:module:: agent
     :platform: Unix
     
 Agent implementations for creative tasks. Mainly module holds ``CreativeAgent``
@@ -15,24 +15,21 @@ class CreativeAgent(aiomas.Agent):
     '''Base class for all creative agents.
     
     All agents share certain common attributes:
-    * ``env`` - the environment where the agent lives, serves as connecting 
-    medium between agents. Can also hold other information.
-    * ``max_R`` - maximum amount of resources the agent can have per 
-    turn/simulation step. If an agent has unlimited resources set 0.
-    * ``cur_R`` - current resources.
-    * ``F`` - iterable, features agent uses to evaluate artifacts
-    * ``W`` - iterable, weights for different features. ``len(F) == len(W)`` 
-    must hold at all times. Each weight must be in [-1, 1].
-    * ``A`` - iterable, artifacts the agent has created so far.
-    * ``D`` - dict, domain knowledge agent has accumulated so far, i.e. artifacts
-    other agents have created, and have been seen by this agent.
-    * ``connections`` - iterable, other agents the this agent knows.
-    * ``friendliness`` - attitude towards each agent in connections, in [-1,1] 
-    (-1 = hate, 0 = indifferent, 1 = extreme friendship).
     
+    :ivar env: The environment where the agent lives.
+    :ivar int max_R: Agent's resources per step, 0 if agent has unlimited resources.
+    :ivar int cur_R: current resources.
+    :ivar list F: features agent uses to evaluate artifacts
+    :ivar list W: weights for different features. Weights should be in [-1, 1].
+    :ivar list A: artifacts the agent has created so far
+    :ivar dict D: domain knowledge, other agents' artifacts seen by this agent 
+    :ivar list connections: other agents this agent knows
+    :ivar list friendliness: attitude towards each agent in connections, in [-1,1]
     ''' 
+    
     def __init__(self, environment, resources = 0, feats = [], weights = [], loggers = []):
         super().__init__(environment.container)
+        #: Environment where agent lives.
         self.env = environment
         self.max_R = resources
         self.cur_R  = resources
@@ -41,14 +38,8 @@ class CreativeAgent(aiomas.Agent):
         self.A = []
         self.D = {}
         self.connections = []
+        self.friendliness = []
         self.loggers = loggers
-          
-    async def connect_random_agent(self):
-        '''Connect to random agent in environment. Can return an agent outside 
-        current ``connections``.'''
-        r_agent = self.env.get_random_agent(self)
-        remote_agent = await self.container.connect(r_agent.addr)
-        return remote_agent
     
     async def random_connection(self):
         '''Connect to random agent from current ``connections``.'''
@@ -57,14 +48,16 @@ class CreativeAgent(aiomas.Agent):
         return remote_agent
     
     def publish(self, artifact, framing):
-        '''Publish artifact to environment with given framing.'''
+        '''Publish artifact to agent's environment with given framing.'''
         self.env.add_artifact(self, artifact, framing)
         self._log(logging.DEBUG, "Published {} to domain because of {}".format(self, artifact, framing))
     
     def refill_resources(self):
+        '''Refill agent's resources to maximum.'''
         self.cur_R = self.max_R
         
     def attach_logger(self, logger):
+        '''Add new logger to agent.'''
         self.loggers.append(logger)
         
     def _log(self, level, msg):

@@ -1,4 +1,7 @@
 '''
+.. py:module:: environment
+
+Environments for agents.
 '''
 from random import choice
 import logging
@@ -8,9 +11,9 @@ import aiomas
 class Environment():
     '''Basic environment for agents.
     
-    Environment contains ``aiomas.Container`` as a communication route between 
-    agents and has ``artifacts`` variable that holds all the artifacts agents 
-    have published.
+    :ivar container: communication route between agents.
+    :vartype container: ``aiomas.Container`` 
+    :ivar dict artifacts: published artifacts for all agents.
     '''
     def __init__(self, addr, clock = None, extra_serializers = None, loggers = []):
         self.container = aiomas.Container.create(addr, clock = clock, extra_serializers = extra_serializers)
@@ -18,15 +21,22 @@ class Environment():
         self.loggers = loggers
         
         
-    def create_initial_connections(self, n = 5, type = 'random'):
+    def create_initial_connections(self, n = 5):
+        '''Create random initial connections for all agents.
+        
+        :param int n: number of connections for each agent
+        '''
         for a in list(self.container.agents.dict.values()):
             for i in range(n):
-                if type == 'random':
-                    a.add_connection(self.get_random_agent(a))
+                a.add_connection(self.get_random_agent(a))
      
      
     def get_random_agent(self, agent):
-        '''Return random agent that is not the same as agent given as parameter.'''
+        '''Return random agent that is not the same as agent given as parameter.
+        
+        :param agent: Agent that produced the artifact
+        :type agent: subclass of ``CreativeAgent``
+        '''
         r_agent = choice(list(self.container.agents.dict.values()))
         while r_agent.addr == agent.addr: 
             r_agent = choice(list(self.container.agents.dict.values()))        
@@ -34,7 +44,14 @@ class Environment():
     
     
     def add_artifact(self, agent, artifact, framing):
-        '''Add artifact with give framing to environment.'''
+        '''Add artifact with given framing to the environment.
+        
+        :param agent: Agent that produced the artifact
+        :type agent: subclass of ``CreativeAgent``
+        :param object artifact: Artifact to be added.
+        :param framing: Framing for the artifact.
+        :type framing: object
+        '''
         if agent.addr not in self.artifacts:
             self.artifacts[agent.addr] = [] 
         self.artifacts[agent.addr].append((artifact, framing))
@@ -42,8 +59,8 @@ class Environment():
         
         
     
-    def get_domain_artifacts(self, agent):
-        '''Get domain artifacts published by certain agent.'''
+    def get_artifacts(self, agent):
+        '''Get artifacts published by certain agent.'''
         return self.domain[agent.addr]
     
 
