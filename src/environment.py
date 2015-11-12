@@ -35,7 +35,9 @@ class Environment():
         '''Return random agent that is not the same as agent given as parameter.
         
         :param agent: Agent that produced the artifact
-        :type agent: subclass of ``CreativeAgent``
+        :type agent: instance of ``CreativeAgent`` subclass
+        :returns: random, non-connected, agent from the environment
+        :rtype: instance of ``CreativeAgent`` subclass
         '''
         r_agent = choice(list(self.container.agents.dict.values()))
         while r_agent.addr == agent.addr: 
@@ -60,7 +62,11 @@ class Environment():
         
     
     def get_artifacts(self, agent):
-        '''Get artifacts published by certain agent.'''
+        '''Get artifacts published by certain agent.
+        
+        :returns: All artifacts published by the agent.
+        :rtype: list
+        '''
         return self.domain[agent.addr]
     
 
