@@ -10,5 +10,6 @@ cleanest way to start working with it is to create
 	$>pyvenv env # create virtualenv, make sure python 3.5 is used for env
 	$>source env/bin/activate # start virtualenv
 	$>pip install requirements.txt
+	$>pip install c_reqs.txt # packages using C are in different file for readthedocs
 
 That's it! Now you are ready to use MASSACRE.
