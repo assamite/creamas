@@ -7,8 +7,10 @@ methods:
 
 .. automethod:: creamas.core.agent.CreativeAgent.act
 
+Simulation calls **act** for each agent in each simulation step.
 
-Creating Simulation
+
+Simple Simulations
 -----------------------------
 
 Creating simple iterative simulation is made easy with 
@@ -19,13 +21,13 @@ Creating simple iterative simulation is made easy with
 	from mymodule import MyAgent
 	from creamas.core.simulation import Simulation
 	
-	# Create initial simulation with default parameters
+	# Create initial simulation with default parameters using MyAgents
 	sim = Simulation.create(agent_cls = MyAgent)
 	
 	# Advance simulation by single step
 	sim.step()
 
-**create** offers some few basic arguments to initialize simple simulations:
+**create** offers few arguments to modify simulation initialization:
 
 
 

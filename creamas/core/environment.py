@@ -71,7 +71,10 @@ class Environment():
         assert n > 0
         for a in self.agents:
             for i in range(n):
-                a.add_connection(self.get_random_agent(a))
+                r_agent = self.get_random_agent(a)
+                while r_agent in a.connections:
+                    r_agent = self.get_random_agent(a)
+                a.add_connection(r_agent)
 
     def get_random_agent(self, agent):
         '''Return random agent that is not the same as agent given as

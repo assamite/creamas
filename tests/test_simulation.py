@@ -17,7 +17,7 @@ class TestSimulation(unittest.TestCase):
         '''Test Simulation.create.'''
         sim = Simulation.create(env_cls=Environment, env_kwargs={},
                                 agent_cls=CreativeAgent, n_agents=10,
-                                agent_kwargs={}, conns=3, logger=None)
+                                agent_kwargs={}, conns=3, log_folder=None)
 
         env = sim.env
         self.assertEqual(env.__class__, Environment,

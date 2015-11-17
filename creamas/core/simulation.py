@@ -47,7 +47,7 @@ class Simulation():
             environment class for simulation
 
         :type env_cls:
-            :py:class:`~creamas.core.environment.Environment` 
+            :py:class:`~creamas.core.environment.Environment`
 
         :param dict env_kwargs:
             keyword arguments passed to environment at creation time
