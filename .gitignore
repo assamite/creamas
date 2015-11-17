@@ -64,3 +64,6 @@ target/
 .settings
 .project
 .pydevproject
+
+#all logs
+logs/

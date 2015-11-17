@@ -2,9 +2,7 @@ API Documentation
 =================
 
 .. toctree::
-	:maxdepth: 2
+	:maxdepth: 3
 	
-	agent
-	environment
-	simulation
-	
+	core
+	util

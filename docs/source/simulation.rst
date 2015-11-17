@@ -1,5 +1,5 @@
 Simulation
 ==========
 
-.. automodule:: simulation
+.. automodule:: creamas.core.simulation
 	:members:

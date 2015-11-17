@@ -1,5 +1,5 @@
 Environment
 ===========
 
-.. automodule:: environment
+.. automodule:: creamas.core.environment
 	:members:

@@ -1,4 +1,4 @@
-MASSACRE - Multi-Agent System Solutions And Creativity Research
+Creamas - Creative Multi-Agent Systems
 ===============================================================
 
 Creative Multi-Agent Systems research code. Very early in development.

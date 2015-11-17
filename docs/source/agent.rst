@@ -1,5 +1,5 @@
 Agent
 =====
 
-.. automodule:: agent
+.. automodule:: creamas.core.agent
 	:members:
