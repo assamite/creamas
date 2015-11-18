@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>creamas.core.environment &mdash; Creamas 0.0.1a documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Creamas 0.0.1a documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1a
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>creamas.core.environment</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for creamas.core.environment</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. py:module:: environment</span>
+
+<span class="sd">Environments for agents.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
+
+<span class="kn">import</span> <span class="nn">aiomas</span>
+
+<span class="kn">from</span> <span class="nn">creamas.core.logger</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Environment&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Environment"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment">[docs]</a><span class="k">class</span> <span class="nc">Environment</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Basic environment for agents.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">clock</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">extra_ser</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">Container</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">clock</span><span class="o">=</span><span class="n">clock</span><span class="p">,</span>
+                                                  <span class="n">extra_serializers</span><span class="o">=</span><span class="n">extra_ser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_artifacts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="s">&#39;env&#39;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                       <span class="n">init</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Name of the environment.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">container</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;``aiomas.Container``, serves as a communication route between</span>
+<span class="sd">        agents.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">agents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Agents in environment.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Published artifacts for all agents.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_artifacts</span>
+
+<div class="viewcode-block" id="Environment.get_agent"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.get_agent">[docs]</a>    <span class="k">def</span> <span class="nf">get_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get agent by its name.&#39;&#39;&#39;</span>
+        <span class="n">agent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">agent</span> <span class="o">=</span> <span class="n">a</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">agent</span>
+</div>
+<div class="viewcode-block" id="Environment.create_initial_connections"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.create_initial_connections">[docs]</a>    <span class="k">def</span> <span class="nf">create_initial_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create random initial connections for all agents.</span>
+
+<span class="sd">        :param int n: number of connections for each agent</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span>
+        <span class="k">assert</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">r_agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_random_agent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">r_agent</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+                    <span class="n">r_agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_random_agent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">r_agent</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Environment.get_random_agent"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.get_random_agent">[docs]</a>    <span class="k">def</span> <span class="nf">get_random_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return random agent that is not the same as agent given as</span>
+<span class="sd">        parameter.</span>
+
+<span class="sd">        :param agent: Agent that produced the artifact</span>
+<span class="sd">        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`</span>
+<span class="sd">        :returns: random, non-connected, agent from the environment</span>
+<span class="sd">        :rtype: instance of ``CreativeAgent`` subclass</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">addr</span> <span class="o">==</span> <span class="n">agent</span><span class="o">.</span><span class="n">addr</span><span class="p">:</span>
+            <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r_agent</span>
+</div>
+<div class="viewcode-block" id="Environment.add_artifact"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.add_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add artifact with given framing to the environment.</span>
+
+<span class="sd">        :param agent: Agent that produced the artifact</span>
+<span class="sd">        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`</span>
+<span class="sd">        :param object artifact: Artifact to be added.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Added &#39;{}&#39; to environment artifacts.&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Environment.get_artifacts"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.get_artifacts">[docs]</a>    <span class="k">def</span> <span class="nf">get_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get artifacts published by certain agent.</span>
+
+<span class="sd">        :returns: All artifacts published by the agent.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Environment.save_info"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.save_info">[docs]</a>    <span class="k">def</span> <span class="nf">save_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save information accumulated during the environments lifetime.</span>
+
+<span class="sd">        Called from :py:meth:`~creamas.core.Environment.destroy`. Override in</span>
+<span class="sd">        subclass.</span>
+
+<span class="sd">        :param str folder: root folder to save information</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Environment.destroy"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Destroy the environment.</span>
+
+<span class="sd">        Does the following:</span>
+
+<span class="sd">        1. calls :py:meth:`~creamas.core.Environment.save_info`</span>
+<span class="sd">        2. for each agent: calls :py:meth:`close`</span>
+<span class="sd">        3. calls shutdown for its **container**.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_info</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1a',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

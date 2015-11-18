@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Agent &mdash; Creamas 0.0.1a documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/>
+        <link rel="up" title="Core" href="core.html"/>
+        <link rel="next" title="Feature" href="feature.html"/>
+        <link rel="prev" title="Core" href="core.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1a
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="">Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
+<li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Util</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+      
+          <li><a href="core.html">Core</a> &raquo;</li>
+      
+    <li>Agent</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/agent.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.core.agent">
+<span id="agent"></span><h1>Agent<a class="headerlink" href="#module-creamas.core.agent" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-agent"></span><p>Agent implementations for creative tasks. Mainly module holds <strong>CreativeAgent</strong>
+implementation, a subclass of <code class="docutils literal"><span class="pre">aiomas.Agent</span></code>, which holds basic functionality
+thought to be shared by all creative agents.</p>
+<dl class="class">
+<dt id="creamas.core.agent.CreativeAgent">
+<em class="property">class </em><code class="descclassname">creamas.core.agent.</code><code class="descname">CreativeAgent</code><span class="sig-paren">(</span><em>environment</em>, <em>resources=0</em>, <em>name=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all creative agents.</p>
+<p>All agents share certain common attributes:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.env" title="creamas.core.agent.CreativeAgent.env"><strong>env</strong></a> &#8211; The environment where the agent lives.</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.max_res" title="creamas.core.agent.CreativeAgent.max_res"><strong>max_res</strong></a> (<em>int</em>) &#8211; Agent&#8217;s resources per step, 0 if agent has unlimited resources.</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.cur_res" title="creamas.core.agent.CreativeAgent.cur_res"><strong>cur_res</strong></a> (<em>int</em>) &#8211; Agent&#8217;s current resources.</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.F" title="creamas.core.agent.CreativeAgent.F"><strong>F</strong></a> (<em>list</em>) &#8211; features agent uses to evaluate artifacts</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.W" title="creamas.core.agent.CreativeAgent.W"><strong>W</strong></a> (<em>list</em>) &#8211; Weight for each feature in <strong>F</strong>, in [-1,1].</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.A" title="creamas.core.agent.CreativeAgent.A"><strong>A</strong></a> (<em>list</em>) &#8211; Artifacts the agent has created so far</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.D" title="creamas.core.agent.CreativeAgent.D"><strong>D</strong></a> (<em>dict</em>) &#8211; Domain knowledge, other agents&#8217; artifacts seen by this agent</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.connections" title="creamas.core.agent.CreativeAgent.connections"><strong>connections</strong></a> (<em>list</em>) &#8211; Other agents this agent knows</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.attitudes" title="creamas.core.agent.CreativeAgent.attitudes"><strong>attitudes</strong></a> (<em>list</em>) &#8211; Attitude towards each agent in <strong>connections</strong>, in [-1,1]</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.name" title="creamas.core.agent.CreativeAgent.name"><strong>name</strong></a> (<em>str</em>) &#8211; Name of the agent. defaults to A&lt;n&gt;, where n is the agent&#8217;s number in
+environment.</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.age" title="creamas.core.agent.CreativeAgent.age"><strong>age</strong></a> &#8211; Age of the agent</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.A">
+<code class="descname">A</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artifacts created so far by the agent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.D">
+<code class="descname">D</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Domain knowledge accumulated by this agent.</p>
+<p>Dictionary of agents and their artifacts.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.F">
+<code class="descname">F</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Features agent uses to evaluate artifacts. Each feature in <strong>F</strong> is
+expected to be a callable with single parameter, the artifact to be
+evaluated. Callable should return a float in [-1,1], where 1 means that
+feature is very prominent in the artifact, and 0 that there is none of
+that feature in the artifact, and -1 means that the artifact shows
+traits opposite to the feature.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If used other way than what is stated above, override
+<a class="reference internal" href="#creamas.core.agent.CreativeAgent.evaluate" title="creamas.core.agent.CreativeAgent.evaluate"><code class="xref py py-meth docutils literal"><span class="pre">evaluate()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.W">
+<code class="descname">W</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights for features. Each weight should be in [-1,1].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.act">
+<code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger agent to act. <strong>Dummy implementation, override in
+subclass.</strong></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.add_artifact">
+<code class="descname">add_artifact</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_artifact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add artifact to <strong>A</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.add_connection">
+<code class="descname">add_connection</code><span class="sig-paren">(</span><em>agent</em>, <em>attitude=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Added agent to current <strong>connections</strong> with given initial attitude.</p>
+<p>Does nothing if agent is already in <strong>connections</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>agent</strong> (<a class="reference internal" href="#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; agent to be added</li>
+<li><strong>attitude</strong> (<em>float</em>) &#8211; initial attitude towards agent, in [-1, 1]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.add_feature">
+<code class="descname">add_feature</code><span class="sig-paren">(</span><em>feature</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add feature to <strong>F</strong> with initial weight. Does nothing, if feature
+is already in <strong>F</strong>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.age">
+<code class="descname">age</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Age of the agent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.ask_opinion">
+<code class="descname">ask_opinion</code><span class="sig-paren">(</span><em>agent</em>, <em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.ask_opinion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.ask_opinion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask agent&#8217;s opinion about artifact.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>agent</strong> (<a class="reference internal" href="#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; agent which opinion is asked</li>
+<li><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be evaluated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">agent&#8217;s evaluation of the artifact</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.attitudes">
+<code class="descname">attitudes</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.attitudes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attitudes towards agents in <strong>connections</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.close">
+<code class="descname">close</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform any bookkeeping needed before closing the agent.</p>
+<p><strong>Dummy implementation, override in subclass if needed.</strong></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.connections">
+<code class="descname">connections</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Other agents in the <strong>env</strong> agent knows of.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.cur_res">
+<code class="descname">cur_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.cur_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Agent&#8217;s current resources.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.env">
+<code class="descname">env</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>The environment where the agent lives. Must be a subclass of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate artifact with agent&#8217;s current features and weights.</p>
+<p>TODO: return framing also</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be evaluated</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">agent&#8217;s evaluation of the artifact, in [-1,1]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<p>Actual evaluation formula is:</p>
+<div class="math">
+\[e(A) = \frac{\sum_{i=1}^{n} f_{i}(A)w_i}
+{\sum_{i=1}^{n} \lvert w_i \rvert},\]</div>
+<p>where <span class="math">\(f_{i}(A)\)</span> is the <span class="math">\(i\)</span> th feature&#8217;s evaluation on
+artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> is the weight for feature
+<span class="math">\(f_i\)</span>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.get_attitude">
+<code class="descname">get_attitude</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_attitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_attitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get attitude towards agent in <strong>connections</strong>. If agent is not in
+<strong>connections</strong>, returns None.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.get_older">
+<code class="descname">get_older</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_older" title="Permalink to this definition">¶</a></dt>
+<dd><p>Age agent by one simulation step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.get_weight">
+<code class="descname">get_weight</code><span class="sig-paren">(</span><em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get weight for feature. If feature is not in <strong>F</strong>, returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.max_res">
+<code class="descname">max_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.max_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum resources for the agent per act. If 0, agent has unlimited
+resources.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.name">
+<code class="descname">name</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human readable name of the agent. Must be unique in agent&#8217;s
+environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.publish">
+<code class="descname">publish</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish artifact to agent&#8217;s environment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be published</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.random_connection">
+<code class="descname">random_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.random_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.random_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to random agent from current <strong>connections</strong>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">connected remote agent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.refill">
+<code class="descname">refill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.refill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.refill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refill agent&#8217;s resources to maximum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.remove_connection">
+<code class="descname">remove_connection</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.remove_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.remove_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove agent from current connections.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.remove_feature">
+<code class="descname">remove_feature</code><span class="sig-paren">(</span><em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.remove_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.remove_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove feature from <strong>F</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.set_attitude">
+<code class="descname">set_attitude</code><span class="sig-paren">(</span><em>agent</em>, <em>attitude</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.set_attitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.set_attitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attitude towards agent. If agent is not in <strong>connections</strong>, adds
+it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.set_weight">
+<code class="descname">set_weight</code><span class="sig-paren">(</span><em>feature</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.set_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set weight for feature in <strong>F</strong>, if feature is not in <strong>F</strong>, adds
+it.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="feature.html" class="btn btn-neutral float-right" title="Feature" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="core.html" class="btn btn-neutral" title="Core" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1a',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

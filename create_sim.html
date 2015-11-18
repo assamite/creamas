@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Using Simulation &mdash; Creamas 0.0.1a documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/>
+        <link rel="next" title="API Documentation" href="api.html"/>
+        <link rel="prev" title="Implementing Agent Classes" href="create_agent.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1a
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Using Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-simulations">Simple Simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-complex-simulation">More Complex Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advancing-simulation">Advancing Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-simulation">Logging Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Using Simulation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/create_sim.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="using-simulation">
+<h1>Using Simulation<a class="headerlink" href="#using-simulation" title="Permalink to this headline">¶</a></h1>
+<p><em>creamas</em> contains easy to use iterative simulation for test and research
+purposes. Each agent wishing to use simulation has to implement couple of
+methods:</p>
+<dl class="method">
+<dt>
+<code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Trigger agent to act. <strong>Dummy implementation, override in
+subclass.</strong></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an async method that should be awaited.</p>
+</div>
+</dd></dl>
+
+<p>Simulation calls <strong>act</strong> for each agent in each simulation step.</p>
+<div class="section" id="simple-simulations">
+<h2>Simple Simulations<a class="headerlink" href="#simple-simulations" title="Permalink to this headline">¶</a></h2>
+<p>Creating simple iterative simulation is made easy with
+<a class="reference internal" href="simulation.html#creamas.core.simulation.Simulation.create" title="creamas.core.simulation.Simulation.create"><code class="xref py py-class docutils literal"><span class="pre">create</span></code></a>. Observe.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">MyAgent</span>
+<span class="kn">from</span> <span class="nn">creamas.core.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+
+<span class="n">agent_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="s">&#39;bar&#39;</span><span class="p">,</span> <span class="s">&#39;Cthulhu&#39;</span><span class="p">:</span> <span class="s">&#39;rises&#39;</span><span class="p">}</span>
+
+<span class="c"># Create initial simulation with default parameters using MyAgents-class</span>
+<span class="c"># and passing agent_kwargs to each agent at initialization time.</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span> <span class="o">=</span> <span class="n">MyAgent</span><span class="p">,</span> <span class="n">agent_kwargs</span><span class="o">=</span><span class="n">agent_kwargs</span><span class="p">)</span>
+
+<span class="c"># Advance simulation by single step</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="c"># End simulation and destroy it&#39;s environment.</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>create</strong> offers few arguments to modify simulation initialization:</p>
+<ol class="arabic simple">
+<li>You can create simulation with multiple agent classes each with its own
+keyword arguments and number of agents.</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">MyAgent</span><span class="p">,</span> <span class="n">CthulhuAgent</span>
+<span class="n">from</span><span class="o">.</span><span class="n">creamas</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">simulation</span> <span class="kn">import</span> <span class="nn">Simulation</span>
+
+<span class="n">myagent_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="s">&#39;bar&#39;</span><span class="p">,</span> <span class="s">&#39;Cthulhu&#39;</span><span class="p">:</span> <span class="s">&#39;rises&#39;</span><span class="p">}</span>
+<span class="n">cthulhu_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;R&#39;lyeh&quot;</span><span class="p">:</span> <span class="s">&#39;sunken&#39;</span><span class="p">}</span>
+<span class="n">agent_kwargs</span><span class="o">=</span><span class="p">[</span><span class="n">myagent_kwargs</span><span class="p">,</span><span class="n">cthulhu_kwargs</span><span class="p">]</span>
+<span class="n">agent_cls</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyAgent</span><span class="p">,</span> <span class="n">CthulhuAgent</span><span class="p">]</span>
+<span class="n">n_agents</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">,</span> <span class="n">n_agents</span><span class="o">=</span><span class="n">n_agents</span><span class="p">,</span><span class="n">agent_kwargs</span><span class="o">=</span><span class="n">agent_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>You can create simulation with your own environment.</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">StarSpawnAgent</span>
+<span class="kn">from</span> <span class="nn">myenv</span> <span class="kn">import</span> <span class="n">InnsmouthEnvironment</span>
+<span class="kn">from</span> <span class="nn">creamas.core.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+
+<span class="n">env_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;weather&#39;</span><span class="p">:</span> <span class="s">&#39;drizzle, slight wind&#39;</span><span class="p">,</span> <span class="s">&#39;atmosphere&#39;</span><span class="p">:</span> <span class="s">&#39;gloomy&#39;</span><span class="p">}</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span><span class="o">=</span><span class="n">StarSpawnAgent</span><span class="p">,</span><span class="n">env_cls</span><span class="o">=</span><span class="n">InnsmouthEnvironment</span><span class="p">,</span><span class="n">env_kwargs</span><span class="o">=</span><span class="n">env_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Created environment is automatically passed down to agents at their
+initialization time.</p>
+</div>
+</div>
+<div class="section" id="more-complex-simulation">
+<h2>More Complex Simulation<a class="headerlink" href="#more-complex-simulation" title="Permalink to this headline">¶</a></h2>
+<p>If you need more control on adjusting the agents parameters, you can
+create your environment directly and then create your agents. After you have
+fully initialized the environment, you can then pass it to the
+<code class="xref py py-class docutils literal"><span class="pre">Simulation</span></code> at initialization time.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">StarSpawnAgent</span>
+<span class="kn">from</span> <span class="nn">creamas.core.enviroment</span> <span class="kn">import</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">creamas.core.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+
+        <span class="c"># do some complex calculation</span>
+        <span class="c"># ...</span>
+
+        <span class="n">Starspawn</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">cause_havoc</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">non_euclidian_angle</span><span class="o">=</span><span class="n">mystery</span><span class="p">)</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advancing-simulation">
+<h2>Advancing Simulation<a class="headerlink" href="#advancing-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Simulation holds few different ways to advance it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Advance simulation by single step (executing all agents once)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="c"># Advance simulation by executing single agent.</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+<span class="c"># Advance simulation to the end of the current step.</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">finish_step</span><span class="p">()</span>
+
+<span class="c"># Advance simulation by 10 steps</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">steps</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logging-simulation">
+<h2>Logging Simulation<a class="headerlink" href="#logging-simulation" title="Permalink to this headline">¶</a></h2>
+<p>TODO: Log the logging of logger.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="create_agent.html" class="btn btn-neutral" title="Implementing Agent Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1a',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
