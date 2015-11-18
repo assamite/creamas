@@ -83,7 +83,7 @@ class Environment():
         :param agent: Agent that produced the artifact
         :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
         :returns: random, non-connected, agent from the environment
-        :rtype: instance of ``CreativeAgent`` subclass
+        :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
         r_agent = choice(self.agents)
         while r_agent.addr == agent.addr:
