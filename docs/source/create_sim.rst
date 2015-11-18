@@ -1,15 +1,15 @@
 Using Simulation
 ==========================
 
-*creamas* contains easy to use iterative simulation for test and research
-purposes. Each agent wishing to use simulation has to implement couple of 
-methods:
+*creamas* contains easy to use iterative simulation to perform experiments on 
+single computer set up. Each agent wishing to use simulation has to implement 
+**act**:
 
 .. automethod:: creamas.core.agent.CreativeAgent.act
 	:noindex:
 
-Simulation calls **act** for each agent in each simulation step.
-
+Simulation calls **act** for each agent in each simulation step. What agents 
+do in their turn is up to you!
 
 Simple Simulations
 -----------------------------
@@ -26,7 +26,7 @@ Creating simple iterative simulation is made easy with
 	
 	# Create initial simulation with default parameters using MyAgents-class
 	# and passing agent_kwargs to each agent at initialization time.
-	sim = Simulation.create(agent_cls = MyAgent, agent_kwargs=agent_kwargs)
+	sim = Simulation.create(agent_cls = MyAgent, agent_kwargs=agent_kwargs, n_agents=20)
 	
 	# Advance simulation by single step
 	sim.step()
@@ -52,7 +52,8 @@ Creating simple iterative simulation is made easy with
 	
 	sim = Simulation.create(agent_cls=agent_cls, n_agents=n_agents,agent_kwargs=agent_kwargs)
 
-2. You can create simulation with your own environment.
+2. You can create simulation with your own environment, which is automatically
+   passed down to the agents at their initialization time.
 
 .. code-block:: python
 
@@ -64,16 +65,10 @@ Creating simple iterative simulation is made easy with
 	
 	sim = Simulation.create(agent_cls=StarSpawnAgent,env_cls=InnsmouthEnvironment,env_kwargs=env_kwargs)
 
-.. note::
+Complex Simulation Setups
+-------------------------
 
-	Created environment is automatically passed down to agents at their
-	initialization time.
-
-
-More Complex Simulation
------------------------
-
-If you need more control on adjusting the agents parameters, you can 
+If you need more control on creating the environment and agents, you can 
 create your environment directly and then create your agents. After you have
 fully initialized the environment, you can then pass it to the 
 :py:class:`Simulation` at initialization time.

@@ -21,21 +21,17 @@ class TestSimulation(unittest.TestCase):
 
         env = sim.env
         self.assertEqual(env.__class__, Environment,
-                         'env class is not expected {}, got {}'
-                         .format(Environment, env.__class__))
+                         'env class is not expected')
         agents = sim.env.agents
         a = agents[0]
         self.assertEqual(a.__class__, CreativeAgent,
-                         'agent class is not expected {}, got {}'
-                         .format(CreativeAgent, a.__class__))
+                         'Agent class is not expected')
         self.assertEqual(len(agents), 10,
-                         'Simulation did not create correct amount of agents '
-                         '({}), got {}'.format(10, len(agents)))
+                         'Simulation did not create correct amount of agents')
 
         for a in agents:
             self.assertEqual(len(a.connections), 3,
-                             'Simulation did not create initial connections '
-                             '({}), got {}'.format(3, len(a.connections)))
+                             'Simulation did not correct initial connections')
 
 
 if __name__ == '__main__':
