@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Using Simulation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simple-simulations">Simple Simulations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#more-complex-simulation">More Complex Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#complex-simulation-setups">Complex Simulation Setups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advancing-simulation">Advancing Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging-simulation">Logging Simulation</a></li>
 </ul>
@@ -138,9 +138,9 @@
             
   <div class="section" id="using-simulation">
 <h1>Using Simulation<a class="headerlink" href="#using-simulation" title="Permalink to this headline">¶</a></h1>
-<p><em>creamas</em> contains easy to use iterative simulation for test and research
-purposes. Each agent wishing to use simulation has to implement couple of
-methods:</p>
+<p><em>creamas</em> contains easy to use iterative simulation to perform experiments on
+single computer set up. Each agent wishing to use simulation has to implement
+<strong>act</strong>:</p>
 <dl class="method">
 <dt>
 <code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
@@ -152,7 +152,8 @@ subclass.</strong></p>
 </div>
 </dd></dl>
 
-<p>Simulation calls <strong>act</strong> for each agent in each simulation step.</p>
+<p>Simulation calls <strong>act</strong> for each agent in each simulation step. What agents
+do in their turn is up to you!</p>
 <div class="section" id="simple-simulations">
 <h2>Simple Simulations<a class="headerlink" href="#simple-simulations" title="Permalink to this headline">¶</a></h2>
 <p>Creating simple iterative simulation is made easy with
@@ -164,7 +165,7 @@ subclass.</strong></p>
 
 <span class="c"># Create initial simulation with default parameters using MyAgents-class</span>
 <span class="c"># and passing agent_kwargs to each agent at initialization time.</span>
-<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span> <span class="o">=</span> <span class="n">MyAgent</span><span class="p">,</span> <span class="n">agent_kwargs</span><span class="o">=</span><span class="n">agent_kwargs</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span> <span class="o">=</span> <span class="n">MyAgent</span><span class="p">,</span> <span class="n">agent_kwargs</span><span class="o">=</span><span class="n">agent_kwargs</span><span class="p">,</span> <span class="n">n_agents</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
 <span class="c"># Advance simulation by single step</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -191,7 +192,8 @@ keyword arguments and number of agents.</li>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li>You can create simulation with your own environment.</li>
+<li>You can create simulation with your own environment, which is automatically
+passed down to the agents at their initialization time.</li>
 </ol>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">StarSpawnAgent</span>
 <span class="kn">from</span> <span class="nn">myenv</span> <span class="kn">import</span> <span class="n">InnsmouthEnvironment</span>
@@ -202,15 +204,10 @@ keyword arguments and number of agents.</li>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">agent_cls</span><span class="o">=</span><span class="n">StarSpawnAgent</span><span class="p">,</span><span class="n">env_cls</span><span class="o">=</span><span class="n">InnsmouthEnvironment</span><span class="p">,</span><span class="n">env_kwargs</span><span class="o">=</span><span class="n">env_kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Created environment is automatically passed down to agents at their
-initialization time.</p>
 </div>
-</div>
-<div class="section" id="more-complex-simulation">
-<h2>More Complex Simulation<a class="headerlink" href="#more-complex-simulation" title="Permalink to this headline">¶</a></h2>
-<p>If you need more control on adjusting the agents parameters, you can
+<div class="section" id="complex-simulation-setups">
+<h2>Complex Simulation Setups<a class="headerlink" href="#complex-simulation-setups" title="Permalink to this headline">¶</a></h2>
+<p>If you need more control on creating the environment and agents, you can
 create your environment directly and then create your agents. After you have
 fully initialized the environment, you can then pass it to the
 <code class="xref py py-class docutils literal"><span class="pre">Simulation</span></code> at initialization time.</p>
