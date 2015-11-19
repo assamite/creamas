@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.core.feature &mdash; Creamas 0.0.1a documentation</title>
+  <title>creamas.core.feature &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="../../../index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -136,46 +136,71 @@
 
 <span class="sd">Feature module holds base implementation for features</span>
 <span class="sd">(:py:class:`~creamas.core.feature.Feature`) that creative agents have in their</span>
-<span class="sd">feature vector (:py:attr:`~creamas.core.agent.CreativeAgent.F`).</span>
+<span class="sd">rulesets.</span>
 <span class="sd">&#39;&#39;&#39;</span>
-
 <span class="n">_all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Feature&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Feature"><a class="viewcode-back" href="../../../feature.html#creamas.core.feature.Feature">[docs]</a><span class="k">class</span> <span class="nc">Feature</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;Feature class implements :py:meth:`__call__` that first c</span>
+    <span class="sd">&#39;&#39;&#39;Base feature class that is callable after initialization.</span>
+
+<span class="sd">    Each feature value takes as an input a artifact, and returns feature&#39;s</span>
+<span class="sd">    value for that artifact. If artifact type is not supported, feature&#39;s</span>
+<span class="sd">    evaluation should return None.</span>
+
+<span class="sd">    Returned feature values can be of any type, but rules</span>
+<span class="sd">    (:py:class:`~creamas.core.rule.Rule`) should have appropriate mappers to</span>
+<span class="sd">    map possible feature&#39;s values to the interval [-1, 1].</span>
+
+<span class="sd">    Usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from myfeat import MyFeature</span>
+<span class="sd">        from myartifact import MyArtifact</span>
+<span class="sd">        myart = MyArtifact(*myparams)</span>
+<span class="sd">        myart.type == &#39;mytype&#39; # True</span>
+<span class="sd">        f = MyFeature()</span>
+<span class="sd">        f.</span>
+<span class="sd">        ret = f(myart)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">artifact_types</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Base feature.</span>
 
 <span class="sd">        :param str name:</span>
 <span class="sd">            feature&#39;s name</span>
 
-<span class="sd">        :param list artifact_types:</span>
+<span class="sd">        :param list types:</span>
 <span class="sd">            all artifact types (:py:attr:`~creamas.core.artifact.type`) that</span>
 <span class="sd">            can be evaluated with the feature.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_artifact_types</span> <span class="o">=</span> <span class="n">artifact_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_types</span> <span class="o">=</span> <span class="n">types</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Call doc string.&#39;&#39;&#39;</span>
-
         <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_types</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.0</span>
-
+            <span class="k">return</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">artifact_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_artifact_types</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Name of the feature.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_types</span>
 
 <div class="viewcode-block" id="Feature.evaluate"><a class="viewcode-back" href="../../../feature.html#creamas.core.feature.Feature.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Evaluate artifact.</span>
+        <span class="sd">&#39;&#39;&#39;Evaluate artifact. **Dummy implementation, override in subclass.**</span>
 
-<span class="sd">        **Override in subclass.**</span>
+<span class="sd">        :raises NotImplementedError: if not overridden in subclass</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="mf">0.0</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
            </div>
@@ -209,7 +234,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

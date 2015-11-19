@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Logging &mdash; Creamas 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
+        <link rel="up" title="API Documentation" href="api.html"/>
+        <link rel="prev" title="Features" href="features.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Logging</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+      
+    <li>Logging</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/logging.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.logging">
+<span id="logging"></span><h1>Logging<a class="headerlink" href="#module-creamas.logging" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-creamas.logging"></span><p>Logging module holds utilities that help with logging and analyzing the
+creative system&#8217;s behavior.</p>
+<dl class="function">
+<dt id="creamas.logging.log_before">
+<code class="descclassname">creamas.logging.</code><code class="descname">log_before</code><span class="sig-paren">(</span><em>attr</em>, <em>level=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#log_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.log_before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to log attribute&#8217;s value(s) before function call.</p>
+<p>Implementation allows usage only for methods belonging to class. The class
+instance needs to have <strong>logger</strong> attribute that is subclass of
+<a class="reference internal" href="#creamas.logging.ObjectLogger" title="creamas.logging.ObjectLogger"><code class="xref py py-class docutils literal"><span class="pre">ObjectLogger</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
+<li><strong>attr</strong> (<em>str</em>) &#8211; name of the class instance&#8217;s parameter to be logged</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.logging.log_after">
+<code class="descclassname">creamas.logging.</code><code class="descname">log_after</code><span class="sig-paren">(</span><em>attr</em>, <em>level=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#log_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.log_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to log attribute&#8217;s value(s) after function call.</p>
+<p>Implementation allows usage only for methods belonging to class. The class
+instance needs to have <strong>logger</strong> variable set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
+<li><strong>attr</strong> (<em>str</em>) &#8211; name of the class instance&#8217;s parameter to be logged</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.logging.ObjectLogger">
+<em class="property">class </em><code class="descclassname">creamas.logging.</code><code class="descname">ObjectLogger</code><span class="sig-paren">(</span><em>obj</em>, <em>folder</em>, <em>add_name=False</em>, <em>init=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base logger for objects.</p>
+<p>Generates one file for each attribute to be logged.</p>
+<dl class="attribute">
+<dt id="creamas.logging.ObjectLogger.folder">
+<code class="descname">folder</code><a class="headerlink" href="#creamas.logging.ObjectLogger.folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root logging folder for this logger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.get_file">
+<code class="descname">get_file</code><span class="sig-paren">(</span><em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return absolute path to logging file for obj&#8217;s attribute.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.log_attr">
+<code class="descname">log_attr</code><span class="sig-paren">(</span><em>level</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.log_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.log_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log attribute to file and pass the message to underlying logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.logging.ObjectLogger.obj">
+<code class="descname">obj</code><a class="headerlink" href="#creamas.logging.ObjectLogger.obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object this logger belongs to. Object has to have <strong>name</strong>
+attribute.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>attr_name</em>, <em>prefix='age'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write attribute&#8217;s value to file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
+<li><strong>prefix</strong> (<em>str</em>) &#8211; attribute&#8217;s name that is prefixed to logging message, defaults to
+<em>age</em>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">message written to file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="features.html" class="btn btn-neutral" title="Features" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

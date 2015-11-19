@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.core.artifact &mdash; Creamas 0.0.1a documentation</title>
+  <title>creamas.core.artifact &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="../../../index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -144,8 +144,8 @@
 
     <span class="nb">type</span> <span class="o">=</span> <span class="s">&#39;artifact&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fr</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_creator</span> <span class="o">=</span> <span class="n">creator</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">fr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creator</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evals</span> <span class="o">=</span> <span class="p">{</span><span class="n">creator</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">e</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span> <span class="o">=</span> <span class="p">{</span><span class="n">creator</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">fr</span><span class="p">}</span>
@@ -172,7 +172,7 @@
         <span class="sd">&#39;&#39;&#39;*dict* - framings given for the evaluations.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span>
 
-<div class="viewcode-block" id="Artifact.add_eval"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact.add_eval">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fr</span><span class="p">):</span>
+<div class="viewcode-block" id="Artifact.add_eval"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact.add_eval">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add or change agent&#39;s evaluation of the artifact with given framing</span>
 <span class="sd">        information.</span>
 
@@ -219,7 +219,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

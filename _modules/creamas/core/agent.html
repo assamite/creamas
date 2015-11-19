@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.core.agent &mdash; Creamas 0.0.1a documentation</title>
+  <title>creamas.core.agent &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="../../../index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -131,20 +131,20 @@
             
   <h1>Source code for creamas.core.agent</h1><div class="highlight"><pre>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">.. py:module:: agent</span>
+<span class="sd">.. py:module:: creamas.coreagent</span>
 <span class="sd">    :platform: Unix</span>
 
-<span class="sd">Agent implementations for creative tasks. Mainly module holds **CreativeAgent**</span>
-<span class="sd">implementation, a subclass of ``aiomas.Agent``, which holds basic functionality</span>
-<span class="sd">thought to be shared by all creative agents.</span>
+<span class="sd">Agent module holds **CreativeAgent** implementation, a subclass of</span>
+<span class="sd">``aiomas.Agent``, which holds basic functionality thought to be shared by all</span>
+<span class="sd">creative agents.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
 
 <span class="kn">import</span> <span class="nn">aiomas</span>
 
-<span class="kn">from</span> <span class="nn">creamas.core.logger</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
-
+<span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CreativeAgent&#39;</span><span class="p">]</span>
 
@@ -163,10 +163,10 @@
 <span class="sd">    :ivar int cur_res:</span>
 <span class="sd">        Agent&#39;s current resources.</span>
 
-<span class="sd">    :ivar list F:</span>
+<span class="sd">    :ivar list ~creamas.core.agent.CreativeAgent.F:</span>
 <span class="sd">        features agent uses to evaluate artifacts</span>
 
-<span class="sd">    :ivar list W:</span>
+<span class="sd">    :ivar list ~creamas.core.agent.CreativeAgent.W:</span>
 <span class="sd">        Weight for each feature in **F**, in [-1,1].</span>
 
 <span class="sd">    :ivar list A:</span>
@@ -183,7 +183,7 @@
 
 <span class="sd">    :ivar str ~creamas.core.agent.CreativeAgent.name:</span>
 <span class="sd">        Name of the agent. defaults to A&lt;n&gt;, where n is the agent&#39;s number in</span>
-<span class="sd">        environment.</span>
+<span class="sd">        environment. Agent&#39;s name must be unique within its environment.</span>
 
 <span class="sd">    :ivar ~creamas.core.agent.CreativeAgent.age:</span>
 <span class="sd">        Age of the agent</span>
@@ -201,11 +201,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_agent</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Agent names should be unique within the &#39;</span>
+                                 <span class="s">&#39;environment. Agent &quot;{}&quot; already found.&#39;</span>
+                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="s">&#39;A{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="s">&quot;A{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">n</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -225,12 +230,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Human readable name of the agent. Must be unique in agent&#39;s</span>
-<span class="sd">        environment.&#39;&#39;&#39;</span>
+<span class="sd">        environment. Agent cannot change its name during its lifetime.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
-
-    <span class="nd">@name.setter</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -294,7 +295,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Other agents in the **env** agent knows of.&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Connections to the other agents in the **env**.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span>
 
     <span class="nd">@property</span>
@@ -405,22 +406,42 @@
 <span class="sd">        :param object artifact: artifact to be published</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Published {} to domain because of {}&quot;</span>
-                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Published {} to domain because of {}&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.refill"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.refill">[docs]</a>    <span class="k">def</span> <span class="nf">refill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Refill agent&#39;s resources to maximum.&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span>
 </div>
     <span class="nd">@aiomas.expose</span>
+<div class="viewcode-block" id="CreativeAgent.evaluate_other"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.evaluate_other">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkl</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Evaluate function that first unpickles artifact, then calls</span>
+<span class="sd">        **evaluate** and then pickles the evaluation results to be send over</span>
+<span class="sd">        tcp.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            This function is exposed to other agents by default.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">artifact</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pkl</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+</div>
 <div class="viewcode-block" id="CreativeAgent.evaluate"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="sd">r&#39;&#39;&#39;Evaluate artifact with agent&#39;s current features and weights.</span>
 
-<span class="sd">        TODO: return framing also</span>
+<span class="sd">        :param artifact:</span>
+<span class="sd">            artifact to be evaluated</span>
 
-<span class="sd">        :param object artifact: artifact to be evaluated</span>
-<span class="sd">        :returns: agent&#39;s evaluation of the artifact, in [-1,1]</span>
-<span class="sd">        :rtype: float</span>
+<span class="sd">        :type artifact:</span>
+<span class="sd">            :py:class:`~creamas.core.artifact.Artifact`</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            agent&#39;s evaluation of the artifact, in [-1,1], and framing. In this</span>
+<span class="sd">             basic implementation framing is always *None*.</span>
+
+<span class="sd">        :rtype:</span>
+<span class="sd">            tuple</span>
 
 <span class="sd">        Actual evaluation formula is:</span>
 
@@ -434,14 +455,16 @@
 <span class="sd">        :math:`f_i`.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">None</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">)):</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">w</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.0</span>
-        <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w</span><span class="p">,</span> <span class="bp">None</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.ask_opinion"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.ask_opinion">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Ask agent&#39;s opinion about artifact.</span>
@@ -457,18 +480,21 @@
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span>
+        <span class="n">pkl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate_other</span><span class="p">(</span><span class="n">pkl</span><span class="p">)</span>
+        <span class="n">ev</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ev</span>
 </div>
-<div class="viewcode-block" id="CreativeAgent.act"><a class="viewcode-back" href="../../../create_sim.html#creamas.core.agent.CreativeAgent.act">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Trigger agent to act. **Dummy implementation, override in</span>
-<span class="sd">        subclass.**</span>
+<div class="viewcode-block" id="CreativeAgent.act"><a class="viewcode-back" href="../../../create_sim.html#creamas.core.agent.CreativeAgent.act">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger agent to act. **Dummy method, override in subclass.**</span>
+
+<span class="sd">        :raises NotImplementedError: if not overridden in subclass</span>
 
 <span class="sd">        .. note::</span>
 
 <span class="sd">            This is an async method that should be awaited.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.get_older"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_older">[docs]</a>    <span class="k">def</span> <span class="nf">get_older</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Age agent by one simulation step.&#39;&#39;&#39;</span>
@@ -524,7 +550,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

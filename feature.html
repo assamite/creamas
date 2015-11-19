@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Feature &mdash; Creamas 0.0.1a documentation</title>
+  <title>Feature &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,10 +30,10 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Artifact" href="artifact.html"/>
-        <link rel="prev" title="Agent" href="agent.html"/> 
+        <link rel="next" title="Rule" href="rule.html"/>
+        <link rel="prev" title="Artifact" href="artifact.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -89,13 +89,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="util.html">Util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -150,16 +153,46 @@
 <span id="feature"></span><h1>Feature<a class="headerlink" href="#module-creamas.core.feature" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-feature"></span><p>Feature module holds base implementation for features
 (<a class="reference internal" href="#creamas.core.feature.Feature" title="creamas.core.feature.Feature"><code class="xref py py-class docutils literal"><span class="pre">Feature</span></code></a>) that creative agents have in their
-feature vector (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.F" title="creamas.core.agent.CreativeAgent.F"><code class="xref py py-attr docutils literal"><span class="pre">F</span></code></a>).</p>
+rulesets.</p>
 <dl class="class">
 <dt id="creamas.core.feature.Feature">
-<em class="property">class </em><code class="descclassname">creamas.core.feature.</code><code class="descname">Feature</code><span class="sig-paren">(</span><em>name</em>, <em>artifact_types</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/feature.html#Feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.feature.Feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Feature class implements <code class="xref py py-meth docutils literal"><span class="pre">__call__()</span></code> that first c</p>
+<em class="property">class </em><code class="descclassname">creamas.core.feature.</code><code class="descname">Feature</code><span class="sig-paren">(</span><em>name</em>, <em>types</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/feature.html#Feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.feature.Feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base feature class that is callable after initialization.</p>
+<p>Each feature value takes as an input a artifact, and returns feature&#8217;s
+value for that artifact. If artifact type is not supported, feature&#8217;s
+evaluation should return None.</p>
+<p>Returned feature values can be of any type, but rules
+(<a class="reference internal" href="rule.html#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>) should have appropriate mappers to
+map possible feature&#8217;s values to the interval [-1, 1].</p>
+<p>Usage example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myfeat</span> <span class="kn">import</span> <span class="n">MyFeature</span>
+<span class="kn">from</span> <span class="nn">myartifact</span> <span class="kn">import</span> <span class="n">MyArtifact</span>
+<span class="n">myart</span> <span class="o">=</span> <span class="n">MyArtifact</span><span class="p">(</span><span class="o">*</span><span class="n">myparams</span><span class="p">)</span>
+<span class="n">myart</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s">&#39;mytype&#39;</span> <span class="c"># True</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">MyFeature</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">myart</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="creamas.core.feature.Feature.evaluate">
 <code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/feature.html#Feature.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.feature.Feature.evaluate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate artifact.</p>
-<p><strong>Override in subclass.</strong></p>
+<dd><p>Evaluate artifact. <strong>Dummy implementation, override in subclass.</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Raises NotImplementedError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">if not overridden in subclass</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.feature.Feature.name">
+<code class="descname">name</code><a class="headerlink" href="#creamas.core.feature.Feature.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the feature.</p>
 </dd></dl>
 
 </dd></dl>
@@ -173,10 +206,10 @@ feature vector (<a class="reference internal" href="agent.html#creamas.core.agen
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="artifact.html" class="btn btn-neutral float-right" title="Artifact" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="rule.html" class="btn btn-neutral float-right" title="Rule" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="agent.html" class="btn btn-neutral" title="Agent" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="artifact.html" class="btn btn-neutral" title="Artifact" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -207,7 +240,7 @@ feature vector (<a class="reference internal" href="agent.html#creamas.core.agen
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Artifact &mdash; Creamas 0.1.0 documentation</title>
+  <title>Rule &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Feature" href="feature.html"/>
-        <link rel="prev" title="Agent" href="agent.html"/> 
+        <link rel="next" title="Environment" href="environment.html"/>
+        <link rel="prev" title="Feature" href="feature.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -89,9 +89,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Artifact</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
@@ -135,11 +135,11 @@
       
           <li><a href="core.html">Core</a> &raquo;</li>
       
-    <li>Artifact</li>
+    <li>Rule</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/artifact.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/rule.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -149,57 +149,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-creamas.core.artifact">
-<span id="artifact"></span><h1>Artifact<a class="headerlink" href="#module-creamas.core.artifact" title="Permalink to this headline">¶</a></h1>
-<p>Artifact module holds <strong>Artifact</strong>, a base class for artifacts created by
-creative agents.</p>
+  <div class="section" id="module-creamas.core.rule">
+<span id="rule"></span><h1>Rule<a class="headerlink" href="#module-creamas.core.rule" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-creamas.core.rule"></span><p>Rule module holds <a class="reference internal" href="#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>.</p>
 <dl class="class">
-<dt id="creamas.core.artifact.Artifact">
-<em class="property">class </em><code class="descclassname">creamas.core.artifact.</code><code class="descname">Artifact</code><span class="sig-paren">(</span><em>creator</em>, <em>obj</em>, <em>e=0.0</em>, <em>fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for artifacts.</p>
+<dt id="creamas.core.rule.Rule">
+<em class="property">class </em><code class="descclassname">creamas.core.rule.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>feats</em>, <em>weights</em>, <em>types</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule has a collection of features (<strong>F</strong>), a mapping of features to the
+values in interval [-1, 1] (<strong>mappers</strong>) and weight for each feature
+(<strong>W</strong>).</p>
+<p>Like features, rules can be directly evaluated for artifacts by calling
+them with artifact as the only argument.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myrules</span> <span class="kn">import</span> <span class="n">MyRule</span>
+<span class="n">feats</span> <span class="o">=</span> <span class="p">[</span><span class="n">myfeat1</span><span class="p">,</span> <span class="n">myfeat2</span><span class="p">]</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
+<span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">mytype</span><span class="p">]</span>
+<span class="n">mr</span> <span class="o">=</span> <span class="n">MyRule</span><span class="p">(</span><span class="n">feats</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span>
+<span class="n">mr</span><span class="o">.</span><span class="n">mappers</span><span class="p">([</span><span class="n">feat1_mapper</span><span class="p">,</span> <span class="n">feat2_mapper</span><span class="p">])</span>
+<span class="n">rule_result</span> <span class="o">=</span> <span class="n">mr</span><span class="p">(</span><span class="n">myartifact</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="creamas.core.rule.Rule.F">
+<code class="descname">F</code><a class="headerlink" href="#creamas.core.rule.Rule.F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Features in this rule.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.rule.Rule.W">
+<code class="descname">W</code><a class="headerlink" href="#creamas.core.rule.Rule.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights for features in this rule.</p>
+</dd></dl>
+
 <dl class="method">
-<dt id="creamas.core.artifact.Artifact.add_eval">
-<code class="descname">add_eval</code><span class="sig-paren">(</span><em>agent</em>, <em>e</em>, <em>fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact.add_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact.add_eval" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add or change agent&#8217;s evaluation of the artifact with given framing
-information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; agent which did the evaluation</li>
-<li><strong>e</strong> (<em>float</em>) &#8211; evaluation for the artifact</li>
-<li><strong>fr</strong> (<em>object</em>) &#8211; framing information for the evaluation</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dt id="creamas.core.rule.Rule.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate artifact with this rule. Implicitly called when called the
+instantiated object.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="creamas.core.artifact.Artifact.creator">
-<code class="descname">creator</code><a class="headerlink" href="#creamas.core.artifact.Artifact.creator" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a> who created the
-artifact.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.artifact.Artifact.evals">
-<code class="descname">evals</code><a class="headerlink" href="#creamas.core.artifact.Artifact.evals" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> - evaluations of the artifact.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.artifact.Artifact.framings">
-<code class="descname">framings</code><a class="headerlink" href="#creamas.core.artifact.Artifact.framings" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> - framings given for the evaluations.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.artifact.Artifact.obj">
-<code class="descname">obj</code><a class="headerlink" href="#creamas.core.artifact.Artifact.obj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Artifact itself.</p>
+<dt id="creamas.core.rule.Rule.mappers">
+<code class="descname">mappers</code><a class="headerlink" href="#creamas.core.rule.Rule.mappers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mappers to map values of each feature into interval [-1, 1].</p>
 </dd></dl>
 
 </dd></dl>
@@ -213,10 +205,10 @@ artifact.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="feature.html" class="btn btn-neutral float-right" title="Feature" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="environment.html" class="btn btn-neutral float-right" title="Environment" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="agent.html" class="btn btn-neutral" title="Agent" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="feature.html" class="btn btn-neutral" title="Feature" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

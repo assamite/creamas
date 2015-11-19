@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using Simulation &mdash; Creamas 0.0.1a documentation</title>
+  <title>Using Simulation &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="Implementing Agent Classes" href="create_agent.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -143,9 +143,17 @@ single computer set up. Each agent wishing to use simulation has to implement
 <strong>act</strong>:</p>
 <dl class="method">
 <dt>
-<code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Trigger agent to act. <strong>Dummy implementation, override in
-subclass.</strong></p>
+<code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Trigger agent to act. <strong>Dummy method, override in subclass.</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Raises NotImplementedError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">if not overridden in subclass</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This is an async method that should be awaited.</p>
@@ -291,7 +299,7 @@ fully initialized the environment, you can then pass it to the
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

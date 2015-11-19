@@ -5,4 +5,6 @@ API Documentation
 	:maxdepth: 3
 	
 	core
-	util
+	agents
+	features
+	logging

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Creamas 0.0.1a documentation</title>
+  <title>Index &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/> 
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -137,6 +137,7 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -144,7 +145,6 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
- | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -181,6 +181,8 @@
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.add_feature">add_feature() (creamas.core.agent.CreativeAgent method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.age">age (creamas.core.agent.CreativeAgent attribute)</a>
   </dt>
@@ -191,12 +193,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="agent.html#module-agent">agent (module)</a>
-  </dt>
-
       
   <dt><a href="environment.html#creamas.core.environment.Environment.agents">agents (creamas.core.environment.Environment attribute)</a>
   </dt>
@@ -240,6 +236,10 @@
   </dt>
 
       
+  <dt><a href="agents.html#module-creamas.agents">creamas.agents (module)</a>, <a href="agents.html#module-creamas.agents">[1]</a>
+  </dt>
+
+      
   <dt><a href="agent.html#module-creamas.core.agent">creamas.core.agent (module)</a>
   </dt>
 
@@ -255,6 +255,10 @@
   <dt><a href="feature.html#module-creamas.core.feature">creamas.core.feature (module)</a>
   </dt>
 
+      
+  <dt><a href="rule.html#module-creamas.core.rule">creamas.core.rule (module)</a>, <a href="rule.html#module-creamas.core.rule">[1]</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -262,7 +266,15 @@
   </dt>
 
       
-  <dt><a href="util.html#module-creamas.util">creamas.util (module)</a>
+  <dt><a href="agent.html#module-creamas.coreagent">creamas.coreagent (module)</a>
+  </dt>
+
+      
+  <dt><a href="features.html#module-creamas.features">creamas.features (module)</a>
+  </dt>
+
+      
+  <dt><a href="logging.html#module-creamas.logging">creamas.logging (module)</a>, <a href="logging.html#module-creamas.logging">[1]</a>
   </dt>
 
       
@@ -325,12 +337,12 @@
   <dt><a href="environment.html#creamas.core.environment.Environment">Environment (class in creamas.core.environment)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="environment.html#module-environment">environment (module)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="artifact.html#creamas.core.artifact.Artifact.evals">evals (creamas.core.artifact.Artifact attribute)</a>
   </dt>
@@ -344,7 +356,15 @@
   <dt><a href="feature.html#creamas.core.feature.Feature.evaluate">(creamas.core.feature.Feature method)</a>
   </dt>
 
+        
+  <dt><a href="rule.html#creamas.core.rule.Rule.evaluate">(creamas.core.rule.Rule method)</a>
+  </dt>
+
       </dl></dd>
+      
+  <dt><a href="agent.html#creamas.core.agent.CreativeAgent.evaluate_other">evaluate_other() (creamas.core.agent.CreativeAgent method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -355,6 +375,12 @@
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.F">F (creamas.core.agent.CreativeAgent attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="rule.html#creamas.core.rule.Rule.F">(creamas.core.rule.Rule attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="feature.html#creamas.core.feature.Feature">Feature (class in creamas.core.feature)</a>
   </dt>
@@ -363,10 +389,18 @@
   <dt><a href="feature.html#module-feature">feature (module)</a>
   </dt>
 
+      
+  <dt><a href="features.html#module-features">features (module)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="simulation.html#creamas.core.simulation.Simulation.finish_step">finish_step() (creamas.core.simulation.Simulation method)</a>
+  </dt>
+
+      
+  <dt><a href="logging.html#creamas.logging.ObjectLogger.folder">folder (creamas.logging.ObjectLogger attribute)</a>
   </dt>
 
       
@@ -391,6 +425,10 @@
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.get_attitude">get_attitude() (creamas.core.agent.CreativeAgent method)</a>
   </dt>
 
+      
+  <dt><a href="logging.html#creamas.logging.ObjectLogger.get_file">get_file() (creamas.logging.ObjectLogger method)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -408,17 +446,31 @@
   </dl></td>
 </tr></table>
 
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="agents.html#creamas.agents.NumberAgent.invent_number">invent_number() (creamas.agents.NumberAgent method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="util.html#creamas.util.log_after">log_after() (in module creamas.util)</a>
+  <dt><a href="logging.html#creamas.logging.log_after">log_after() (in module creamas.logging)</a>
+  </dt>
+
+      
+  <dt><a href="logging.html#creamas.logging.ObjectLogger.log_attr">log_attr() (creamas.logging.ObjectLogger method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="util.html#creamas.util.log_before">log_before() (in module creamas.util)</a>
+  <dt><a href="logging.html#creamas.logging.log_before">log_before() (in module creamas.logging)</a>
   </dt>
 
   </dl></td>
@@ -426,6 +478,12 @@
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="rule.html#creamas.core.rule.Rule.mappers">mappers (creamas.core.rule.Rule attribute)</a>
+  </dt>
+
+  </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.max_res">max_res (creamas.core.agent.CreativeAgent attribute)</a>
@@ -447,14 +505,22 @@
   </dt>
 
         
+  <dt><a href="feature.html#creamas.core.feature.Feature.name">(creamas.core.feature.Feature attribute)</a>
+  </dt>
+
+        
   <dt><a href="simulation.html#creamas.core.simulation.Simulation.name">(creamas.core.simulation.Simulation attribute)</a>
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="simulation.html#creamas.core.simulation.Simulation.next">next() (creamas.core.simulation.Simulation method)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="simulation.html#creamas.core.simulation.Simulation.next">next() (creamas.core.simulation.Simulation method)</a>
+  <dt><a href="agents.html#creamas.agents.NumberAgent">NumberAgent (class in creamas.agents)</a>
   </dt>
 
   </dl></td>
@@ -465,6 +531,16 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="artifact.html#creamas.core.artifact.Artifact.obj">obj (creamas.core.artifact.Artifact attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="logging.html#creamas.logging.ObjectLogger.obj">(creamas.logging.ObjectLogger attribute)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="logging.html#creamas.logging.ObjectLogger">ObjectLogger (class in creamas.logging)</a>
   </dt>
 
   </dl></td>
@@ -497,14 +573,18 @@
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.refill">refill() (creamas.core.agent.CreativeAgent method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.remove_connection">remove_connection() (creamas.core.agent.CreativeAgent method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.remove_feature">remove_feature() (creamas.core.agent.CreativeAgent method)</a>
+  </dt>
+
+      
+  <dt><a href="rule.html#creamas.core.rule.Rule">Rule (class in creamas.core.rule)</a>
   </dt>
 
   </dl></td>
@@ -546,21 +626,23 @@
   </dl></td>
 </tr></table>
 
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="util.html#module-util">util (module)</a>
-  </dt>
-
-  </dl></td>
-</tr></table>
-
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="agent.html#creamas.core.agent.CreativeAgent.W">W (creamas.core.agent.CreativeAgent attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="rule.html#creamas.core.rule.Rule.W">(creamas.core.rule.Rule attribute)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="logging.html#creamas.logging.ObjectLogger.write">write() (creamas.logging.ObjectLogger method)</a>
   </dt>
 
   </dl></td>
@@ -599,7 +681,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

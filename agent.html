@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Agent &mdash; Creamas 0.0.1a documentation</title>
+  <title>Agent &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="Creamas 0.0.1a documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Feature" href="feature.html"/>
+        <link rel="next" title="Artifact" href="artifact.html"/>
         <link rel="prev" title="Core" href="core.html"/> 
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.0.1a
+                0.1.0
               </div>
             
           
@@ -89,13 +89,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="">Agent</a></li>
-<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="util.html">Util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -148,9 +151,9 @@
             
   <div class="section" id="module-creamas.core.agent">
 <span id="agent"></span><h1>Agent<a class="headerlink" href="#module-creamas.core.agent" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-agent"></span><p>Agent implementations for creative tasks. Mainly module holds <strong>CreativeAgent</strong>
-implementation, a subclass of <code class="docutils literal"><span class="pre">aiomas.Agent</span></code>, which holds basic functionality
-thought to be shared by all creative agents.</p>
+<span class="target" id="module-creamas.coreagent"></span><p>Agent module holds <strong>CreativeAgent</strong> implementation, a subclass of
+<code class="docutils literal"><span class="pre">aiomas.Agent</span></code>, which holds basic functionality thought to be shared by all
+creative agents.</p>
 <dl class="class">
 <dt id="creamas.core.agent.CreativeAgent">
 <em class="property">class </em><code class="descclassname">creamas.core.agent.</code><code class="descname">CreativeAgent</code><span class="sig-paren">(</span><em>environment</em>, <em>resources=0</em>, <em>name=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent" title="Permalink to this definition">¶</a></dt>
@@ -171,7 +174,7 @@ thought to be shared by all creative agents.</p>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.connections" title="creamas.core.agent.CreativeAgent.connections"><strong>connections</strong></a> (<em>list</em>) &#8211; Other agents this agent knows</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.attitudes" title="creamas.core.agent.CreativeAgent.attitudes"><strong>attitudes</strong></a> (<em>list</em>) &#8211; Attitude towards each agent in <strong>connections</strong>, in [-1,1]</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.name" title="creamas.core.agent.CreativeAgent.name"><strong>name</strong></a> (<em>str</em>) &#8211; Name of the agent. defaults to A&lt;n&gt;, where n is the agent&#8217;s number in
-environment.</li>
+environment. Agent&#8217;s name must be unique within its environment.</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.age" title="creamas.core.agent.CreativeAgent.age"><strong>age</strong></a> &#8211; Age of the agent</li>
 </ul>
 </td>
@@ -215,9 +218,17 @@ traits opposite to the feature.</p>
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.act">
-<code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trigger agent to act. <strong>Dummy implementation, override in
-subclass.</strong></p>
+<code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger agent to act. <strong>Dummy method, override in subclass.</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Raises NotImplementedError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">if not overridden in subclass</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This is an async method that should be awaited.</p>
@@ -306,7 +317,7 @@ is already in <strong>F</strong>.</p>
 <dl class="attribute">
 <dt id="creamas.core.agent.CreativeAgent.connections">
 <code class="descname">connections</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Other agents in the <strong>env</strong> agent knows of.</p>
+<dd><p>Connections to the other agents in the <strong>env</strong>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -326,16 +337,19 @@ is already in <strong>F</strong>.</p>
 <dt id="creamas.core.agent.CreativeAgent.evaluate">
 <code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate artifact with agent&#8217;s current features and weights.</p>
-<p>TODO: return framing also</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be evaluated</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a>) &#8211; artifact to be evaluated</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">agent&#8217;s evaluation of the artifact, in [-1,1]</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>agent&#8217;s evaluation of the artifact, in [-1,1], and framing. In this</dt>
+<dd>basic implementation framing is always <em>None</em>.</dd>
+</dl>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
 </tr>
 </tbody>
 </table>
@@ -346,6 +360,18 @@ is already in <strong>F</strong>.</p>
 <p>where <span class="math">\(f_{i}(A)\)</span> is the <span class="math">\(i\)</span> th feature&#8217;s evaluation on
 artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> is the weight for feature
 <span class="math">\(f_i\)</span>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.agent.CreativeAgent.evaluate_other">
+<code class="descname">evaluate_other</code><span class="sig-paren">(</span><em>pkl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.evaluate_other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.evaluate_other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate function that first unpickles artifact, then calls
+<strong>evaluate</strong> and then pickles the evaluation results to be send over
+tcp.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is exposed to other agents by default.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -378,7 +404,7 @@ resources.</p>
 <dt id="creamas.core.agent.CreativeAgent.name">
 <code class="descname">name</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Human readable name of the agent. Must be unique in agent&#8217;s
-environment.</p>
+environment. Agent cannot change its name during its lifetime.</p>
 </dd></dl>
 
 <dl class="method">
@@ -458,7 +484,7 @@ it.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="feature.html" class="btn btn-neutral float-right" title="Feature" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="artifact.html" class="btn btn-neutral float-right" title="Artifact" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="core.html" class="btn btn-neutral" title="Core" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -492,7 +518,7 @@ it.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1a',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

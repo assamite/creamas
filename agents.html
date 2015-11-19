@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; Creamas 0.1.0 documentation</title>
+  <title>Agents &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Core" href="core.html"/>
-        <link rel="prev" title="Using Simulation" href="create_sim.html"/> 
+        <link rel="up" title="API Documentation" href="api.html"/>
+        <link rel="next" title="Features" href="features.html"/>
+        <link rel="prev" title="Simulation" href="simulation.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -85,9 +86,9 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">API Documentation</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,11 +123,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>API Documentation</li>
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+      
+    <li>Agents</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/api.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/agents.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -136,16 +139,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="api-documentation">
-<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
-<li class="toctree-l1"><a class="reference internal" href="agents.html">Agents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-</ul>
-</div>
+  <div class="section" id="module-creamas.agents">
+<span id="agents"></span><h1>Agents<a class="headerlink" href="#module-creamas.agents" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-creamas.agents"></span><p>Agents module holds various agent implementations inheriting from
+<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>.</p>
+<dl class="class">
+<dt id="creamas.agents.NumberAgent">
+<em class="property">class </em><code class="descclassname">creamas.agents.</code><code class="descname">NumberAgent</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/agents.html#NumberAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.agents.NumberAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number agent created for early testing purposes of basic functionality.</p>
+<p>Searchs &#8220;new&#8221; integers and evaluates them based on how many features in F
+(also integers) result in mod == 0.</p>
+<dl class="method">
+<dt id="creamas.agents.NumberAgent.invent_number">
+<code class="descname">invent_number</code><span class="sig-paren">(</span><em>low</em>, <em>high</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/agents.html#NumberAgent.invent_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.agents.NumberAgent.invent_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invent new number from given interval.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -155,10 +166,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="core.html" class="btn btn-neutral float-right" title="Core" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="create_sim.html" class="btn btn-neutral" title="Using Simulation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="simulation.html" class="btn btn-neutral" title="Simulation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
