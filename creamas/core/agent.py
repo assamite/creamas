@@ -12,6 +12,8 @@ from random import choice
 
 import aiomas
 
+from creamas.core.artifact import Artifact
+from creamas.core.feature import Feature
 from creamas.logging import ObjectLogger
 
 __all__ = ['CreativeAgent']
@@ -144,21 +146,30 @@ class CreativeAgent(aiomas.Agent):
     @property
     def max_res(self):
         '''Maximum resources for the agent per act. If 0, agent has unlimited
-        resources.'''
+        resources. If maximum resources are set below current resources,
+        current resources are capped to new maximum resources.
+        '''
         return self._max_res
 
     @max_res.setter
     def max_res(self, value):
+        if value < 0:
+            value = 0
         self._max_res = value
+        if self._cur_res > self._max_res:
+            self._cur_res = self._max_res
 
     @property
     def cur_res(self):
-        '''Agent's current resources.'''
+        '''Agent's current resources. Capped to maximum resources.'''
         return self._cur_res
 
     @cur_res.setter
     def cur_res(self, value):
-        assert value <= self.max_res
+        if value > self._max_res:
+            value = self._max_res
+        if value < 0:
+            value = 0
         self._cur_res = value
 
     @property
@@ -196,6 +207,9 @@ class CreativeAgent(aiomas.Agent):
         '''Set weight for feature in **F**, if feature is not in **F**, adds
         it.
         '''
+        if not issubclass(feature.__class__, Feature):
+            raise TypeError("{}: Feature to set weight ({}) is not subclass "
+                            "of {}.".format(self, feature, Feature))
         assert (weight >= -1.0 and weight <= 1.0)
         try:
             ind = self._F.index(feature)
@@ -205,6 +219,9 @@ class CreativeAgent(aiomas.Agent):
 
     def get_weight(self, feature):
         '''Get weight for feature. If feature is not in **F**, returns None.'''
+        if not issubclass(feature.__class__, Feature):
+            raise TypeError("{}: Feature to get weight ({}) is not subclass "
+                            "of {}.".format(self, feature, Feature))
         try:
             ind = self._F.index(feature)
             return self._W[ind]
@@ -213,23 +230,48 @@ class CreativeAgent(aiomas.Agent):
 
     def add_artifact(self, artifact):
         '''Add artifact to **A**.'''
+        if not issubclass(artifact.__class__, Artifact):
+            raise TypeError("{}: Artifact to add ({}) is not {}."
+                            .format(self, artifact, Artifact))
         self._A.append(artifact)
 
     def add_feature(self, feature, weight):
-        '''Add feature to **F** with initial weight. Does nothing, if feature
-        is already in **F**.'''
+        '''Add feature to **F** with initial weight.
+
+        :param feature: feature to be added
+        :type feature: `~creamas.core.feature.Feature`
+        :param float weight: initial weight for the feature
+        :raises TypeError: if feature is not subclass of :py:class:`Feature`
+        :returns: true if feature was successfully added, otherwise false
+        :rtype bool:
+        '''
+        if not issubclass(feature.__class__, Feature):
+            raise TypeError("{}: Feature to add ({}) is not subclass of {}."
+                            .format(self, feature, Feature))
         if feature not in self._F:
             self._F.append(feature)
             self._W.append(weight)
+            return True
 
     def remove_feature(self, feature):
-        '''Remove feature from **F**.'''
+        '''Remove feature from **F** and its corresponding weight from **W**.
+
+        :param feature: feature to remove
+        :type feature: `~creamas.core.feature.Feature`
+        :raises TypeError: if feature is not subclass of :py:class:`Feature`
+        :returns: true if feature was successfully removed, otherwise false
+        :rtype bool:
+        '''
+        if not issubclass(feature.__class__, Feature):
+            raise TypeError("{}: Feature to remove ({}) is not subclass of {}."
+                            .format(self, feature, Feature))
         try:
             ind = self._F.index(feature)
             del self._F[ind]
             del self._W[ind]
+            return True
         except:
-            pass
+            return False
 
     def add_connection(self, agent, attitude=0.0):
         '''Added agent to current **connections** with given initial attitude.
@@ -241,18 +283,29 @@ class CreativeAgent(aiomas.Agent):
         :param attitude: initial attitude towards agent, in [-1, 1]
         :type attitude: float
         '''
+        if not issubclass(agent.__class__, CreativeAgent):
+            raise TypeError("{}: Agent to add in connections ({}), was not "
+                            "subclass of {}"
+                            .format(self, agent, CreativeAgent))
         if agent not in self._connections:
             self.connections.append(agent)
             self.attitudes.append(attitude)
+            return True
+        return False
 
     def remove_connection(self, agent):
         '''Remove agent from current connections.'''
+        if not issubclass(agent.__class__, CreativeAgent):
+            raise TypeError("{}: Agent to remove from connections ({}), was "
+                            "not subclass of {}"
+                            .format(self, agent, CreativeAgent))
         try:
             ind = self._connections.index(agent)
             del self._connections[ind]
             del self._attitudes[ind]
+            return True
         except:
-            pass
+            return False
 
     async def random_connection(self):
         '''Connect to random agent from current **connections**.
@@ -271,7 +324,8 @@ class CreativeAgent(aiomas.Agent):
     def publish(self, artifact):
         '''Publish artifact to agent's environment.
 
-        :param object artifact: artifact to be published
+        :param artifact: artifact to be published
+        :type artifact: `~creamas.core.artifact.Artifact`
         '''
         self.env.add_artifact(self, artifact)
         self._log(logging.DEBUG, "Published {} to domain because of {}"
@@ -286,6 +340,10 @@ class CreativeAgent(aiomas.Agent):
         '''Evaluate function that first unpickles artifact, then calls
         **evaluate** and then pickles the evaluation results to be send over
         tcp.
+
+        :param pickle pkl: pickled artifact to evaluate
+        :returns: pickled evaluation of the artifact
+        :rtype: pickle
 
         .. note::
 

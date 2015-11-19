@@ -8,6 +8,8 @@ import unittest
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
+from creamas.core.feature import Feature
+from creamas.core.artifact import Artifact
 
 
 class TestAgent(unittest.TestCase):
@@ -50,10 +52,26 @@ class TestAgent(unittest.TestCase):
             self.assertEqual(len(a.attitudes), 0)
             self.assertEqual(type(a.attitudes), list)
 
+        a1.get_older()
+        self.assertEqual(a1.age, 1)
+        a1.age = 100
+        self.assertEqual(a1.age, 100)
+        a1.max_res = 10
+        a1.cur_res = 100
+        self.assertEqual(a1.max_res, a1.cur_res)
+        a1.max_res = 5
+        self.assertEqual(a1.max_res, a1.cur_res)
+        a1.cur_res = -1
+        self.assertEqual(a1.cur_res, 0)
+        a1.refill()
+        self.assertEqual(a1.cur_res, a1.max_res)
+        a1.max_res = -1
+        self.assertEqual(a1.max_res, 0)
+
         # adding connections works
-        a1.add_connection(a_agents[0])
-        a1.add_connection(a_agents[1], 0.5)
-        a1.add_connection(a_agents[2], -0.5)
+        self.assertTrue(a1.add_connection(a_agents[0]))
+        self.assertTrue(a1.add_connection(a_agents[1], 0.5))
+        self.assertTrue(a1.add_connection(a_agents[2], -0.5))
         self.assertEqual(len(a1.connections), 3)
         self.assertEqual(len(a1.attitudes), 3)
         self.assertEqual(a1.get_attitude(a_agents[0]), 0.0)
@@ -66,3 +84,70 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(len(a1.attitudes), 2)
         self.assertEqual(a1.get_attitude(a_agents[0]), 0.0)
         self.assertEqual(a1.get_attitude(a_agents[2]), -0.5)
+        self.assertIsNone(a1.get_attitude(a_agents[1]))
+
+        # Set attitude works, and attitude cannot be set outside -1,1.
+        a1.set_attitude(a_agents[0], 0.5)
+        self.assertEqual(a1.get_attitude(a_agents[0]), 0.5)
+
+        with self.assertRaises(AssertionError):
+            a1.set_attitude(a_agents[0], -1.1)
+
+        with self.assertRaises(AssertionError):
+            a1.set_attitude(a_agents[0], -1.1)
+
+        # Removing unexisting connection returns false
+        self.assertFalse(a1.remove_connection(a_agents[1]))
+
+        a1.set_attitude(a_agents[1], -0.5)
+        self.assertIn(a_agents[1], a1.connections)
+        self.assertEqual(a1.get_attitude(a_agents[1]), -0.5)
+
+        # Cannot try to remove other than CreativeAgents
+        with self.assertRaises(TypeError):
+            a1.remove_connection('b')
+
+        # connection must be subclass of CreativeAgent
+        with self.assertRaises(TypeError):
+            a1.add_connection('a', 0.5)
+
+        # FEATURES
+        # feature must be subclass of Feature
+        with self.assertRaises(TypeError):
+            a1.add_feature({}, 1.0)
+
+        f = Feature('test_feat', ['int'])
+        f2 = Feature('test_feat2', ['int'])
+        self.assertTrue(a1.add_feature(f, 1.0))
+        a1.set_weight(f, 0.0)
+        self.assertEqual(a1.get_weight(f), 0.0)
+        self.assertIsNone(a1.get_weight(f2))
+        a1.set_weight(f2, 1.0)
+        self.assertIn(f2, a1.F)
+        self.assertEqual(a1.get_weight(f2), 1.0)
+
+        with self.assertRaises(TypeError):
+            a1.get_weight(1)
+
+        with self.assertRaises(TypeError):
+            a1.set_weight(1, 0.0)
+
+        with self.assertRaises(TypeError):
+            a1.remove_feature(1)
+
+        self.assertTrue(a1.remove_feature(f))
+        self.assertNotIn(f, a1.F)
+        self.assertEqual(1, len(a1.F))
+        self.assertEqual(1, len(a1.W))
+        self.assertEqual(a1.get_weight(f2), 1.0)
+        self.assertFalse(a1.remove_feature(f))
+
+        # ARTIFACTS
+        art = Artifact(a1, 1, 0.0, 'foo')
+        a1.add_artifact(art)
+        self.assertIn(art, a1.A)
+        a1.publish(art)
+        self.assertIn(art, env.artifacts[a1.name])
+
+        with self.assertRaises(TypeError):
+            a1.add_artifact(1)

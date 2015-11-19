@@ -10,6 +10,7 @@ from random import choice
 import aiomas
 
 from creamas.core.agent import CreativeAgent
+from creamas.core.artifact import Artifact
 from creamas.core.environment import Environment
 
 
@@ -51,6 +52,15 @@ class TestEnvironment(unittest.TestCase):
             self.assertEqual(len(a_conns), len(set(a_conns)))
             # agent cannot have itself in connections
             self.assertNotIn(a, a_conns)
+
+        arts = []
+        for i in range(5):
+            ar = Artifact(a, i, 0.0, 'foo')
+            arts.append(ar)
+            env.add_artifact(agents[0], ar)
+
+        for a in arts:
+            self.assertIn(a, env.get_artifacts(agents[0]))
 
         env.destroy()
         # destroy should shutdown aiomas.Container -> no _tcp_server anymore
