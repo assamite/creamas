@@ -9,7 +9,7 @@ Creamas - Creative Multi-Agent Systems
 .. image:: _static/python-powered-w-70x28.png
 
 Creamas project is created as a tool for researching creative multi-agent
-systems. Project's main repository is in `github <https://github.com/assamite/mas>`_.
+systems. Project's main repository is in `github <https://github.com/assamite/creamas>`_.
 
 .. toctree::
    :hidden:

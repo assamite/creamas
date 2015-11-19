@@ -6,7 +6,7 @@ setup(
     version='0.1.0',
     author='Simo Linkola',
     author_email='simo.linkola at cs.helsinki.fi',
-    description=('A library for creative multi-agent systems, based on aiomas.'),
+    description=('library for creative multi-agent systems'),
     long_description=(open('README.rst', encoding='utf-8').read()),
     url='',
     install_requires=[
