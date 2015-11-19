@@ -1,13 +1,57 @@
 '''
-.. py:module:: logger
+.. py:module:: creamas.logging
     :platform: Unix
 
+Logging module holds utilities that help with logging and analyzing the
+creative system's behavior.
 '''
+from functools import wraps
 import logging
 import os
 
+__all__ = ['log_before', 'log_after', 'ObjectLogger']
 
-__all__ = ['ObjectLogger']
+
+def log_before(attr, level=logging.DEBUG):
+    '''Decorator to log attribute's value(s) before function call.
+
+    Implementation allows usage only for methods belonging to class. The class
+    instance needs to have **logger** attribute that is subclass of
+    :py:class:`~creamas.logging.ObjectLogger`.
+
+    :param int level: logging level
+    :param str attr: name of the class instance's parameter to be logged
+    '''
+    def deco(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            logger = getattr(args[0], 'logger', None)
+            if logger is not None:
+                logger.log_attr(level, attr)
+            return func(*args, **kwargs)
+        return wrapper
+    return deco
+
+
+def log_after(attr, level=logging.DEBUG):
+    '''Decorator to log attribute's value(s) after function call.
+
+    Implementation allows usage only for methods belonging to class. The class
+    instance needs to have **logger** variable set.
+
+    :param int level: logging level
+    :param str attr: name of the class instance's parameter to be logged
+    '''
+    def deco(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            ret = await func(*args, **kwargs)
+            logger = getattr(args[0], 'logger', None)
+            if logger is not None:
+                logger.log_attr(level, attr)
+            return ret
+        return wrapper
+    return deco
 
 
 class ObjectLogger():
@@ -17,7 +61,8 @@ class ObjectLogger():
     '''
     def __init__(self, obj, folder, add_name=False, init=True):
         '''Create new logger instance for *obj* in *folder*. If *add_name*
-        is true, then creates subfolder carrying ``obj.name`` to *folder*.
+        is true, then creates subfolder carrying :py:attr:`obj.name` to
+        *folder*.
         '''
         self._obj = obj
         self._folder = folder

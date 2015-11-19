@@ -1,18 +1,18 @@
 '''
-.. py:module:: agent
+.. py:module:: creamas.coreagent
     :platform: Unix
 
-Agent implementations for creative tasks. Mainly module holds **CreativeAgent**
-implementation, a subclass of ``aiomas.Agent``, which holds basic functionality
-thought to be shared by all creative agents.
+Agent module holds **CreativeAgent** implementation, a subclass of
+``aiomas.Agent``, which holds basic functionality thought to be shared by all
+creative agents.
 '''
 import logging
+import pickle
 from random import choice
 
 import aiomas
 
-from creamas.core.logger import ObjectLogger
-
+from creamas.logging import ObjectLogger
 
 __all__ = ['CreativeAgent']
 
@@ -31,10 +31,10 @@ class CreativeAgent(aiomas.Agent):
     :ivar int cur_res:
         Agent's current resources.
 
-    :ivar list F:
+    :ivar list ~creamas.core.agent.CreativeAgent.F:
         features agent uses to evaluate artifacts
 
-    :ivar list W:
+    :ivar list ~creamas.core.agent.CreativeAgent.W:
         Weight for each feature in **F**, in [-1,1].
 
     :ivar list A:
@@ -51,7 +51,7 @@ class CreativeAgent(aiomas.Agent):
 
     :ivar str ~creamas.core.agent.CreativeAgent.name:
         Name of the agent. defaults to A<n>, where n is the agent's number in
-        environment.
+        environment. Agent's name must be unique within its environment.
 
     :ivar ~creamas.core.agent.CreativeAgent.age:
         Age of the agent
@@ -69,11 +69,16 @@ class CreativeAgent(aiomas.Agent):
         self._connections = []
         self._attitudes = []
 
-        if type(name) is str:
+        if type(name) is str and len(name) > 0:
+            self.__name = None
+            if self.env.get_agent(name) is not None:
+                raise ValueError('Agent names should be unique within the '
+                                 'environment. Agent "{}" already found.'
+                                 .format(name))
             self.__name = name
         else:
-            n = self.addr.rsplit("/", 1)[1]
-            self.__name = 'A{}'.format(n)
+            n = "A{}".format(self.addr.rsplit("/", 1)[1])
+            self.__name = n
 
         if type(log_folder) is str:
             self.logger = ObjectLogger(self, log_folder, add_name=True,
@@ -93,12 +98,8 @@ class CreativeAgent(aiomas.Agent):
     @property
     def name(self):
         '''Human readable name of the agent. Must be unique in agent's
-        environment.'''
+        environment. Agent cannot change its name during its lifetime.'''
         return self.__name
-
-    @name.setter
-    def name(self, value):
-        self.__name = value
 
     @property
     def env(self):
@@ -162,7 +163,7 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def connections(self):
-        '''Other agents in the **env** agent knows of.'''
+        '''Connections to the other agents in the **env**.'''
         return self._connections
 
     @property
@@ -273,22 +274,42 @@ class CreativeAgent(aiomas.Agent):
         :param object artifact: artifact to be published
         '''
         self.env.add_artifact(self, artifact)
-        self.logger.log(logging.DEBUG, "Published {} to domain because of {}"
-                        .format(self, artifact))
+        self._log(logging.DEBUG, "Published {} to domain because of {}"
+                  .format(self, artifact))
 
     def refill(self):
         '''Refill agent's resources to maximum.'''
         self._cur_res = self._max_res
 
     @aiomas.expose
+    def evaluate_other(self, pkl):
+        '''Evaluate function that first unpickles artifact, then calls
+        **evaluate** and then pickles the evaluation results to be send over
+        tcp.
+
+        .. note::
+
+            This function is exposed to other agents by default.
+        '''
+        artifact = pickle.loads(pkl)
+        ret = self.evaluate(artifact)
+        return pickle.dumps(ret)
+
     def evaluate(self, artifact):
         r'''Evaluate artifact with agent's current features and weights.
 
-        TODO: return framing also
+        :param artifact:
+            artifact to be evaluated
 
-        :param object artifact: artifact to be evaluated
-        :returns: agent's evaluation of the artifact, in [-1,1]
-        :rtype: float
+        :type artifact:
+            :py:class:`~creamas.core.artifact.Artifact`
+
+        :returns:
+            agent's evaluation of the artifact, in [-1,1], and framing. In this
+             basic implementation framing is always *None*.
+
+        :rtype:
+            tuple
 
         Actual evaluation formula is:
 
@@ -302,14 +323,16 @@ class CreativeAgent(aiomas.Agent):
         :math:`f_i`.
         '''
         s = 0
-        w = 0
+        w = 0.0
+        if len(self.F) == 0:
+            return 0.0, None
         for i in range(len(self.F)):
             s += self.F[i](artifact) * self.W[i]
             w += abs(self.W[i])
 
-        if w == 0:
-            return 0.0
-        return s / w
+        if w == 0.0:
+            return 0.0, None
+        return s / w, None
 
     async def ask_opinion(self, agent, artifact):
         '''Ask agent's opinion about artifact.
@@ -325,18 +348,21 @@ class CreativeAgent(aiomas.Agent):
         :rtype: float
         '''
         remote_agent = await self.container.connect(agent.addr)
-        ret = await remote_agent.evaluate(artifact)
-        return ret
+        pkl = pickle.dumps(artifact)
+        ret = await remote_agent.evaluate_other(pkl)
+        ev = pickle.loads(ret)
+        return ev
 
-    async def act(self, *args, **kwargs):
-        '''Trigger agent to act. **Dummy implementation, override in
-        subclass.**
+    async def act(self):
+        '''Trigger agent to act. **Dummy method, override in subclass.**
+
+        :raises NotImplementedError: if not overridden in subclass
 
         .. note::
 
             This is an async method that should be awaited.
         '''
-        pass
+        raise NotImplementedError
 
     def get_older(self):
         '''Age agent by one simulation step.'''

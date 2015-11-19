@@ -4,43 +4,68 @@
 
 Feature module holds base implementation for features
 (:py:class:`~creamas.core.feature.Feature`) that creative agents have in their
-feature vector (:py:attr:`~creamas.core.agent.CreativeAgent.F`).
+rulesets.
 '''
-
 _all__ = ['Feature']
 
 
 class Feature():
-    '''Feature class implements :py:meth:`__call__` that first c
+    '''Base feature class that is callable after initialization.
+
+    Each feature value takes as an input a artifact, and returns feature's
+    value for that artifact. If artifact type is not supported, feature's
+    evaluation should return None.
+
+    Returned feature values can be of any type, but rules
+    (:py:class:`~creamas.core.rule.Rule`) should have appropriate mappers to
+    map possible feature's values to the interval [-1, 1].
+
+    Usage example:
+
+    .. code-block:: python
+
+        from myfeat import MyFeature
+        from myartifact import MyArtifact
+        myart = MyArtifact(*myparams)
+        myart.type == 'mytype' # True
+        f = MyFeature()
+        f.
+        ret = f(myart)
     '''
-    def __init__(self, name, artifact_types):
+
+    def __init__(self, name, types):
         '''Base feature.
 
         :param str name:
             feature's name
 
-        :param list artifact_types:
+        :param list types:
             all artifact types (:py:attr:`~creamas.core.artifact.type`) that
             can be evaluated with the feature.
         '''
-        self._artifact_types = artifact_types
+        self._types = types
         self._name = name
 
     def __call__(self, artifact):
-        '''Call doc string.'''
-
         if artifact.type not in self._types:
-            return 0.0
-
+            return None
         return self.evaluate(artifact)
 
+    def __str__(self):
+        return self._name
+
     @property
-    def artifact_types(self):
-        return self._artifact_types
+    def name(self):
+        '''Name of the feature.'''
+        return self._name
+
+    @property
+    def types(self):
+        return self._types
 
     def evaluate(self, artifact):
-        '''Evaluate artifact.
+        '''Evaluate artifact. **Dummy implementation, override in subclass.**
 
-        **Override in subclass.**
+        :raises NotImplementedError: if not overridden in subclass
         '''
-        return 0.0
+        raise NotImplementedError

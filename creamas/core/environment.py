@@ -8,7 +8,7 @@ from random import choice
 
 import aiomas
 
-from creamas.core.logger import ObjectLogger
+from creamas.logging import ObjectLogger
 
 
 __all__ = ['Environment']
@@ -20,7 +20,8 @@ class Environment():
     '''
     def __init__(self, addr=('localhost', 5555), name=None, clock=None,
                  extra_ser=None, log_folder=None):
-        self._container = aiomas.Container.create(addr, clock=clock,
+        self._container = aiomas.Container.create(addr, codec=aiomas.MsgPack,
+                                                  clock=clock,
                                                   extra_serializers=extra_ser)
         self._artifacts = {}
         self._name = name if type(name) is str else 'env'

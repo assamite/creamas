@@ -12,8 +12,8 @@ class Artifact():
 
     type = 'artifact'
 
-    def __init__(self, creator, obj, e, fr):
-        self._creator = creator
+    def __init__(self, creator, obj, e=0.0, fr=None):
+        self._creator = creator.name
         self._obj = obj
         self._evals = {creator.name: e}
         self._framings = {creator.name: fr}
@@ -40,7 +40,7 @@ class Artifact():
         '''*dict* - framings given for the evaluations.'''
         return self._framings
 
-    def add_eval(self, agent, e, fr):
+    def add_eval(self, agent, e, fr=None):
         '''Add or change agent's evaluation of the artifact with given framing
         information.
 

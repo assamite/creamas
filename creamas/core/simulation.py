@@ -10,7 +10,7 @@ import aiomas
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.core.logger import ObjectLogger
+from creamas.logging import ObjectLogger
 
 __all__ = ['Simulation']
 

@@ -11,7 +11,9 @@ from random import choice, randint
 import aiomas
 
 from creamas.core.agent import CreativeAgent
-from creamas.util import log_after
+from creamas.core.artifact import Artifact
+from creamas.logging import log_after
+from creamas.features import ModuloFeature
 
 
 class NumberAgent(CreativeAgent):
@@ -23,68 +25,88 @@ class NumberAgent(CreativeAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         rand = randint(2, 100)
-        self.add_feature(rand, 0.0)
+        self.add_feature(ModuloFeature(rand), 1.0)
         self._log(logging.DEBUG, 'Created with feat={}'.format(self.F))
 
     def invent_number(self, low, high):
         '''Invent new number from given interval.'''
         self._log(logging.DEBUG, "Inventing number from ({}, {})"
                   .format(low, high))
-        numbers = []
+        ars = []
         steps = 0
-        while len(numbers) < 10 and steps < 1000:
+        while len(ars) < 10 and steps < 1000:
             steps += 1
             r = randint(low, high)
-            if r not in self.A:
-                numbers.append(r)
+            ar = Artifact(self, r)
+            ar.type = 'int'
+            if ar not in self.A:
+                ars.append(ar)
 
-        if len(numbers) == 0:
+        if len(ars) == 0:
             self._log(logging.INFO,
                       "Could not invent new number!".format(self))
-            return 1
+            return 1, 0.0
 
-        best_eval = self.evaluate(numbers[0])
-        best_number = numbers[0]
-        for n in numbers[1:]:
-            e = self.evaluate(n)
+        best_eval, fr = self.evaluate(ars[0])
+        ars[0].add_eval(self, best_eval, fr)
+        best_number = ars[0].obj
+        best_ar = ars[0]
+        for ar in ars[1:]:
+            e, fr = self.evaluate(ar)
+            ar.add_eval(self, e, fr)
             if e > best_eval:
                 best_eval = e
-                best_number = n
+                best_number = ar.obj
+                best_ar = ar
 
-        print("{} invented number {}, with e = {}."
-              .format(self, best_number, best_eval))
+        self._log(logging.DEBUG, "Invented number {}, with e = {}."
+              .format(best_number, best_eval))
         if best_eval > 0.5:
-            self.add_feature(best_number, 0.0)
+            self.add_feature(ModuloFeature(best_number), 1.0)
             self._log(logging.INFO,
                       "Appended {} to features.".format(best_number))
 
-        return best_number, best_eval
+        return best_ar
 
     @log_after(attr='F')
     @log_after(attr='W')
     async def act(self, *args, **kwargs):
-        m = max(self.F)
-        n, e = self.invent_number(2, m + 100)
-        self.add_artifact({'artifact': n, 'eval': e})
+        m = 0
+        for f in self.F:
+            if f.n > m:
+                m = f.n
+        ar = self.invent_number(2, m + 100)
+        if ar == 1:
+            return
+        self.add_artifact(ar)
         evaluations = []
         for a in self.connections:
-            ev = await self.ask_opinion(a, n)
+            ev, fr = await self.ask_opinion(a, ar)
+            ar.add_eval(a, ev, fr)
             evaluations.append(ev)
 
         evaluations.sort(reverse=True)
         be = sum(evaluations[:3]) / 3
-        if be > 0.25 and e > 0.5:
-            self.publish(n, (e, be))
+        se = ar.evals[self.name]
+        if be > 0.25 and se > 0.5:
+            self.publish(ar)
 
     @aiomas.expose
     def add(self, value):
         return value + choice(self.F)
 
+'''
     @aiomas.expose
-    def evaluate(self, number):
+    def evaluate(self, artifact):
+        number = artifact.obj
         evaluation = 0.0
+        framing = []
+        if len(self.F) == 0:
+            return evaluation, framing
         for n in self.F:
             if number % n == 0:
+                framing.append(n)
                 evaluation += 1
 
-        return evaluation / len(self.F)
+        return evaluation / len(self.F), framing
+'''

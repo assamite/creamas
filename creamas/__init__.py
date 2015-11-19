@@ -3,7 +3,8 @@ from creamas.core.artifact import Artifact
 from creamas.core.environment import Environment
 from creamas.core.feature import Feature
 from creamas.core.simulation import Simulation
-from creamas.util import log_after, log_before
+from creamas.core.rule import Rule
+from creamas.logging import log_after, log_before, ObjectLogger
 
 
 __all__ = [
@@ -12,7 +13,8 @@ __all__ = [
     'Simulation',
     'Feature',
     'Artifact',
-    'log_after', 'log_before'
+    'Rule',
+    'log_after', 'log_before', 'ObjectLogger'
 ]
 
-__version__ = '0.0.1a'
+__version__ = '0.1.0'
