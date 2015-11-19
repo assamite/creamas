@@ -5,7 +5,7 @@ Creamas is developed with `Python 3.5 <https://docs.python.org/3.5/>`_ and the
 cleanest way to start working with it is to create 
 `virtualenv <https://virtualenv.readthedocs.org/en/latest/>`_ dedicated for it::
 
-	$>git clone https://github.com/assamite/mas.git creamas
+	$>git clone https://github.com/assamite/creamas.git creamas
 	$>cd creamas
 	$>virtualenv -p `which python3.5` env # create venv for python 3.5
 	$>source env/bin/activate # start virtualenv
