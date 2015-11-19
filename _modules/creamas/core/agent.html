@@ -144,6 +144,8 @@
 
 <span class="kn">import</span> <span class="nn">aiomas</span>
 
+<span class="kn">from</span> <span class="nn">creamas.core.artifact</span> <span class="kn">import</span> <span class="n">Artifact</span>
+<span class="kn">from</span> <span class="nn">creamas.core.feature</span> <span class="kn">import</span> <span class="n">Feature</span>
 <span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CreativeAgent&#39;</span><span class="p">]</span>
@@ -276,21 +278,30 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">max_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Maximum resources for the agent per act. If 0, agent has unlimited</span>
-<span class="sd">        resources.&#39;&#39;&#39;</span>
+<span class="sd">        resources. If maximum resources are set below current resources,</span>
+<span class="sd">        current resources are capped to new maximum resources.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span>
 
     <span class="nd">@max_res.setter</span>
     <span class="k">def</span> <span class="nf">max_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cur_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Agent&#39;s current resources.&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Agent&#39;s current resources. Capped to maximum resources.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span>
 
     <span class="nd">@cur_res.setter</span>
     <span class="k">def</span> <span class="nf">cur_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_res</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -328,6 +339,9 @@
         <span class="sd">&#39;&#39;&#39;Set weight for feature in **F**, if feature is not in **F**, adds</span>
 <span class="sd">        it.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Feature</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Feature to set weight ({}) is not subclass &quot;</span>
+                            <span class="s">&quot;of {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">Feature</span><span class="p">))</span>
         <span class="k">assert</span> <span class="p">(</span><span class="n">weight</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">and</span> <span class="n">weight</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
@@ -337,6 +351,9 @@
 </div>
 <div class="viewcode-block" id="CreativeAgent.get_weight"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get weight for feature. If feature is not in **F**, returns None.&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Feature</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Feature to get weight ({}) is not subclass &quot;</span>
+                            <span class="s">&quot;of {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">Feature</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
@@ -345,23 +362,48 @@
 </div>
 <div class="viewcode-block" id="CreativeAgent.add_artifact"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add artifact to **A**.&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Artifact to add ({}) is not {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.add_feature"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Add feature to **F** with initial weight. Does nothing, if feature</span>
-<span class="sd">        is already in **F**.&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Add feature to **F** with initial weight.</span>
+
+<span class="sd">        :param feature: feature to be added</span>
+<span class="sd">        :type feature: `~creamas.core.feature.Feature`</span>
+<span class="sd">        :param float weight: initial weight for the feature</span>
+<span class="sd">        :raises TypeError: if feature is not subclass of :py:class:`Feature`</span>
+<span class="sd">        :returns: true if feature was successfully added, otherwise false</span>
+<span class="sd">        :rtype bool:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Feature</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Feature to add ({}) is not subclass of {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">Feature</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.remove_feature"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_feature">[docs]</a>    <span class="k">def</span> <span class="nf">remove_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Remove feature from **F**.&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Remove feature from **F** and its corresponding weight from **W**.</span>
+
+<span class="sd">        :param feature: feature to remove</span>
+<span class="sd">        :type feature: `~creamas.core.feature.Feature`</span>
+<span class="sd">        :raises TypeError: if feature is not subclass of :py:class:`Feature`</span>
+<span class="sd">        :returns: true if feature was successfully removed, otherwise false</span>
+<span class="sd">        :rtype bool:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Feature</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Feature to remove ({}) is not subclass of {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">Feature</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">True</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="k">return</span> <span class="bp">False</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.add_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">attitude</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Added agent to current **connections** with given initial attitude.</span>
@@ -373,18 +415,29 @@
 <span class="sd">        :param attitude: initial attitude towards agent, in [-1, 1]</span>
 <span class="sd">        :type attitude: float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Agent to add in connections ({}), was not &quot;</span>
+                            <span class="s">&quot;subclass of {}&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">agent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attitudes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attitude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.remove_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Remove agent from current connections.&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Agent to remove from connections ({}), was &quot;</span>
+                            <span class="s">&quot;not subclass of {}&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">True</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="k">return</span> <span class="bp">False</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.random_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.random_connection">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">random_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Connect to random agent from current **connections**.</span>
@@ -403,7 +456,8 @@
 <div class="viewcode-block" id="CreativeAgent.publish"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Publish artifact to agent&#39;s environment.</span>
 
-<span class="sd">        :param object artifact: artifact to be published</span>
+<span class="sd">        :param artifact: artifact to be published</span>
+<span class="sd">        :type artifact: `~creamas.core.artifact.Artifact`</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Published {} to domain because of {}&quot;</span>
@@ -418,6 +472,10 @@
         <span class="sd">&#39;&#39;&#39;Evaluate function that first unpickles artifact, then calls</span>
 <span class="sd">        **evaluate** and then pickles the evaluation results to be send over</span>
 <span class="sd">        tcp.</span>
+
+<span class="sd">        :param pickle pkl: pickled artifact to evaluate</span>
+<span class="sd">        :returns: pickled evaluation of the artifact</span>
+<span class="sd">        :rtype: pickle</span>
 
 <span class="sd">        .. note::</span>
 

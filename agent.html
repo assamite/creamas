@@ -263,8 +263,28 @@ traits opposite to the feature.</p>
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.add_feature">
 <code class="descname">add_feature</code><span class="sig-paren">(</span><em>feature</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add feature to <strong>F</strong> with initial weight. Does nothing, if feature
-is already in <strong>F</strong>.</p>
+<dd><p>Add feature to <strong>F</strong> with initial weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>feature</strong> (<cite>~creamas.core.feature.Feature</cite>) &#8211; feature to be added</li>
+<li><strong>weight</strong> (<em>float</em>) &#8211; initial weight for the feature</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises TypeError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">if feature is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Feature</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">true if feature was successfully added, otherwise false</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Rtype bool:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -323,7 +343,7 @@ is already in <strong>F</strong>.</p>
 <dl class="attribute">
 <dt id="creamas.core.agent.CreativeAgent.cur_res">
 <code class="descname">cur_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.cur_res" title="Permalink to this definition">¶</a></dt>
-<dd><p>Agent&#8217;s current resources.</p>
+<dd><p>Agent&#8217;s current resources. Capped to maximum resources.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -368,6 +388,18 @@ artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> 
 <dd><p>Evaluate function that first unpickles artifact, then calls
 <strong>evaluate</strong> and then pickles the evaluation results to be send over
 tcp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pkl</strong> (<em>pickle</em>) &#8211; pickled artifact to evaluate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pickled evaluation of the artifact</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pickle</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This function is exposed to other agents by default.</p>
@@ -397,7 +429,8 @@ tcp.</p>
 <dt id="creamas.core.agent.CreativeAgent.max_res">
 <code class="descname">max_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.max_res" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maximum resources for the agent per act. If 0, agent has unlimited
-resources.</p>
+resources. If maximum resources are set below current resources,
+current resources are capped to new maximum resources.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -415,7 +448,7 @@ environment. Agent cannot change its name during its lifetime.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; artifact to be published</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<cite>~creamas.core.artifact.Artifact</cite>) &#8211; artifact to be published</td>
 </tr>
 </tbody>
 </table>
@@ -456,7 +489,22 @@ environment. Agent cannot change its name during its lifetime.</p>
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.remove_feature">
 <code class="descname">remove_feature</code><span class="sig-paren">(</span><em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.remove_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.remove_feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove feature from <strong>F</strong>.</p>
+<dd><p>Remove feature from <strong>F</strong> and its corresponding weight from <strong>W</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feature</strong> (<cite>~creamas.core.feature.Feature</cite>) &#8211; feature to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises TypeError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">if feature is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Feature</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">true if feature was successfully removed, otherwise false</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Rtype bool:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
