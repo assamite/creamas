@@ -60,7 +60,7 @@ class NumberAgent(CreativeAgent):
                 best_ar = ar
 
         self._log(logging.DEBUG, "Invented number {}, with e = {}."
-              .format(best_number, best_eval))
+                  .format(best_number, best_eval))
         if best_eval > 0.5:
             self.add_feature(ModuloFeature(best_number), 1.0)
             self._log(logging.INFO,
