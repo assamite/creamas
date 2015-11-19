@@ -1,10 +1,14 @@
 language: python
 python: 3.5
+install:
+  - pip install tox
+  - pip install coveralls
+script:
+  - tox
 env:
   - TOX_ENV=py35
   - TOX_ENV=docs
   - TOX_ENV=flake8
-script:
-  - tox -e $TOX_ENV
+
 after_success:
   - coveralls
