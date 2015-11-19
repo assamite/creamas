@@ -11,6 +11,7 @@ setup(
     url='',
     install_requires=[
         'aiomas>=0.6.0',
+        'msgpack-python==0.4.6',
     ],
     extras_require={
     },
@@ -32,6 +33,5 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Scientific/Engineering',
-        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
