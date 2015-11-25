@@ -1,12 +1,12 @@
 Creamas - Creative Multi-Agent Systems
 ===============================================================
 
-.. image:: https://travis-ci.org/assamite/mas.svg?branch=master
-    :target: https://travis-ci.org/assamite/mas
+.. image:: https://travis-ci.org/assamite/creamas.svg?branch=master
+    :target: https://travis-ci.org/assamite/creamas
     :align: right
 
-.. image:: https://coveralls.io/repos/assamite/mas/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/assamite/mas?branch=master
+.. image:: https://coveralls.io/repos/assamite/creamas/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/assamite/creamas?branch=master
     :align: right
 
 .. image:: https://codeclimate.com/github/assamite/mas/badges/gpa.svg
