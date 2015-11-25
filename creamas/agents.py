@@ -1,5 +1,5 @@
 '''
-.. py:module:: creamas.agents
+.. py:module:: agents
     :platform: Unix
 
 Agents module holds various agent implementations inheriting from
@@ -25,7 +25,7 @@ class NumberAgent(CreativeAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         rand = randint(2, 100)
-        self.add_feature(ModuloFeature(rand), 1.0)
+        self.add_rule(ModuloFeature(rand), 1.0)
         self._log(logging.DEBUG, 'Created with feat={}'.format(self.F))
 
     def invent_number(self, low, high):
@@ -38,7 +38,7 @@ class NumberAgent(CreativeAgent):
             steps += 1
             r = randint(low, high)
             ar = Artifact(self, r)
-            ar.type = 'int'
+            ar.domain = 'int'
             if ar not in self.A:
                 ars.append(ar)
 
@@ -47,12 +47,12 @@ class NumberAgent(CreativeAgent):
                       "Could not invent new number!".format(self))
             return 1, 0.0
 
-        best_eval, fr = self.evaluate(ars[0])
+        best_eval, fr = self.extract(ars[0])
         ars[0].add_eval(self, best_eval, fr)
         best_number = ars[0].obj
         best_ar = ars[0]
         for ar in ars[1:]:
-            e, fr = self.evaluate(ar)
+            e, fr = self.extract(ar)
             ar.add_eval(self, e, fr)
             if e > best_eval:
                 best_eval = e
@@ -62,19 +62,19 @@ class NumberAgent(CreativeAgent):
         self._log(logging.DEBUG, "Invented number {}, with e = {}."
                   .format(best_number, best_eval))
         if best_eval > 0.5:
-            self.add_feature(ModuloFeature(best_number), 1.0)
+            self.add_rule(ModuloFeature(best_number), 1.0)
             self._log(logging.INFO,
                       "Appended {} to features.".format(best_number))
 
         return best_ar
 
-    @log_after(attr='F')
+    @log_after(attr='R')
     @log_after(attr='W')
     async def act(self, *args, **kwargs):
         m = 0
-        for f in self.F:
-            if f.n > m:
-                m = f.n
+        for r in self.R:
+            if r.n > m:
+                m = r.n
         ar = self.invent_number(2, m + 100)
         if ar == 1:
             return
@@ -97,7 +97,7 @@ class NumberAgent(CreativeAgent):
 
 '''
     @aiomas.expose
-    def evaluate(self, artifact):
+    def extract(self, artifact):
         number = artifact.obj
         evaluation = 0.0
         framing = []

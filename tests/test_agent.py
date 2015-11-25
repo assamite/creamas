@@ -12,7 +12,7 @@ from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
 
 
-class TestAgent(unittest.TestCase):
+class AgentTestCase(unittest.TestCase):
 
     def setUp(self):
         self.env = Environment(('localhost', 5555), name='test_env')
@@ -39,8 +39,8 @@ class TestAgent(unittest.TestCase):
             self.assertEqual(a.age, 0)
             self.assertEqual(a.max_res, 0)
             self.assertEqual(a.cur_res, 0)
-            self.assertEqual(len(a.F), 0)
-            self.assertEqual(type(a.F), list)
+            self.assertEqual(len(a.R), 0)
+            self.assertEqual(type(a.R), list)
             self.assertEqual(len(a.W), 0)
             self.assertEqual(type(a.W), list)
             self.assertEqual(len(a.A), 0)
@@ -96,7 +96,7 @@ class TestAgent(unittest.TestCase):
         with self.assertRaises(AssertionError):
             a1.set_attitude(a_agents[0], -1.1)
 
-        # Removing unexisting connection returns false
+        # Removing non-existing connection returns false
         self.assertFalse(a1.remove_connection(a_agents[1]))
 
         a1.set_attitude(a_agents[1], -0.5)
@@ -114,11 +114,11 @@ class TestAgent(unittest.TestCase):
         # FEATURES
         # feature must be subclass of Feature
         with self.assertRaises(TypeError):
-            a1.add_feature({}, 1.0)
+            a1.add_rule({}, 1.0)
 
-        f = Feature('test_feat', ['int'])
-        f2 = Feature('test_feat2', ['int'])
-        self.assertTrue(a1.add_feature(f, 1.0))
+        f = Feature('test_feat', {'int'})
+        f2 = Feature('test_feat2', {'int'})
+        self.assertTrue(a1.add_rule(f, 1.0))
         a1.set_weight(f, 0.0)
         self.assertEqual(a1.get_weight(f), 0.0)
         self.assertIsNone(a1.get_weight(f2))

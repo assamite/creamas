@@ -1,5 +1,5 @@
 '''
-.. py:module:: creamas.logging
+.. py:module:: logging
     :platform: Unix
 
 Logging module holds utilities that help with logging and analyzing the

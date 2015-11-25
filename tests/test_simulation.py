@@ -12,7 +12,7 @@ from creamas.core.environment import Environment
 from creamas.core.simulation import Simulation
 
 
-class TestSimulation(unittest.TestCase):
+class SimulationTestCase(unittest.TestCase):
 
     def test_create(self):
         '''Test Simulation.create.'''

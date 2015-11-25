@@ -11,10 +11,13 @@ Creamas - Creative Multi-Agent Systems
 Creamas project is created as a tool for researching creative multi-agent
 systems. Project's main repository is in `github <https://github.com/assamite/creamas>`_.
 
+
+
 .. toctree::
    :hidden:
    :maxdepth: 2
 
+   overview
    install
    create_agent
    create_sim

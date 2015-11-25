@@ -13,7 +13,7 @@ from random import choice
 import aiomas
 
 from creamas.core.artifact import Artifact
-from creamas.core.feature import Feature
+from creamas.core.rule import Rule
 from creamas.logging import ObjectLogger
 
 __all__ = ['CreativeAgent']
@@ -33,8 +33,8 @@ class CreativeAgent(aiomas.Agent):
     :ivar int cur_res:
         Agent's current resources.
 
-    :ivar list ~creamas.core.agent.CreativeAgent.F:
-        features agent uses to evaluate artifacts
+    :ivar list ~creamas.core.agent.CreativeAgent.R:
+        rules agent uses to evaluate artifacts
 
     :ivar list ~creamas.core.agent.CreativeAgent.W:
         Weight for each feature in **F**, in [-1,1].
@@ -64,7 +64,7 @@ class CreativeAgent(aiomas.Agent):
         self._env = environment
         self._max_res = resources
         self._cur_res = resources
-        self._F = []
+        self._R = []
         self._W = []
         self._A = []
         self._D = {}
@@ -110,20 +110,20 @@ class CreativeAgent(aiomas.Agent):
         return self._env
 
     @property
-    def F(self):
-        '''Features agent uses to evaluate artifacts. Each feature in **F** is
+    def R(self):
+        '''Rules agent uses to evaluate artifacts. Each rule in **R** is
         expected to be a callable with single parameter, the artifact to be
         evaluated. Callable should return a float in [-1,1], where 1 means that
-        feature is very prominent in the artifact, and 0 that there is none of
-        that feature in the artifact, and -1 means that the artifact shows
-        traits opposite to the feature.
+        rule is very prominent in the artifact, and 0 that there is none of
+        that rule in the artifact, and -1 means that the artifact shows
+        traits opposite to the rule.
 
         .. note::
 
             If used other way than what is stated above, override
-            :py:meth:`~creamas.core.agent.CreativeAgent.evaluate`.
+            :py:meth:`~creamas.core.agent.CreativeAgent.extract`.
         '''
-        return self._F
+        return self._R
 
     @property
     def W(self):
@@ -203,27 +203,27 @@ class CreativeAgent(aiomas.Agent):
         except:
             self.add_connection(agent, attitude)
 
-    def set_weight(self, feature, weight):
-        '''Set weight for feature in **F**, if feature is not in **F**, adds
+    def set_weight(self, rule, weight):
+        '''Set weight for rule in **R**, if rule is not in **R**, adds
         it.
         '''
-        if not issubclass(feature.__class__, Feature):
-            raise TypeError("{}: Feature to set weight ({}) is not subclass "
-                            "of {}.".format(self, feature, Feature))
+        if not issubclass(rule.__class__, Rule):
+            raise TypeError("{}: Rule to set weight ({}) is not subclass "
+                            "of {}.".format(self, rule, Rule))
         assert (weight >= -1.0 and weight <= 1.0)
         try:
-            ind = self._F.index(feature)
+            ind = self._R.index(rule)
             self._W[ind] = weight
         except:
-            self.add_feature(feature, weight)
+            self.add_rule(rule, weight)
 
-    def get_weight(self, feature):
-        '''Get weight for feature. If feature is not in **F**, returns None.'''
-        if not issubclass(feature.__class__, Feature):
-            raise TypeError("{}: Feature to get weight ({}) is not subclass "
-                            "of {}.".format(self, feature, Feature))
+    def get_weight(self, rule):
+        '''Get weight for rule. If rule is not in **R**, returns None.'''
+        if not issubclass(rule.__class__, Rule):
+            raise TypeError("{}: Rule to get weight ({}) is not subclass "
+                            "of {}.".format(self, rule, Rule))
         try:
-            ind = self._F.index(feature)
+            ind = self._R.index(rule)
             return self._W[ind]
         except:
             return None
@@ -235,39 +235,40 @@ class CreativeAgent(aiomas.Agent):
                             .format(self, artifact, Artifact))
         self._A.append(artifact)
 
-    def add_feature(self, feature, weight):
-        '''Add feature to **F** with initial weight.
+    def add_rule(self, rule, weight):
+        '''Add rule to **R** with initial weight.
 
-        :param feature: feature to be added
-        :type feature: `~creamas.core.feature.Feature`
-        :param float weight: initial weight for the feature
-        :raises TypeError: if feature is not subclass of :py:class:`Feature`
-        :returns: true if feature was successfully added, otherwise false
+        :param rule: rule to be added
+        :type rule: `~creamas.core.rule.Rule`
+        :param float weight: initial weight for the rule
+        :raises TypeError: if rule is not subclass of :py:class:`Rule`
+        :returns: true if rule was successfully added, otherwise false
         :rtype bool:
         '''
-        if not issubclass(feature.__class__, Feature):
-            raise TypeError("{}: Feature to add ({}) is not subclass of {}."
-                            .format(self, feature, Feature))
-        if feature not in self._F:
-            self._F.append(feature)
+        if not issubclass(rule.__class__, Rule):
+            raise TypeError("{}: Rule to add ({}) is not subclass of {}."
+                            .format(self, rule, Rule))
+        if rule not in self._R:
+            self._R.append(rule)
             self._W.append(weight)
             return True
+        return False
 
-    def remove_feature(self, feature):
-        '''Remove feature from **F** and its corresponding weight from **W**.
+    def remove_rule(self, rule):
+        '''Remove rule from **R** and its corresponding weight from **W**.
 
-        :param feature: feature to remove
-        :type feature: `~creamas.core.feature.Feature`
-        :raises TypeError: if feature is not subclass of :py:class:`Feature`
-        :returns: true if feature was successfully removed, otherwise false
+        :param rule: rule to remove
+        :type rule: `~creamas.core.rule.Rule`
+        :raises TypeError: if rule is not subclass of :py:class:`Rule`
+        :returns: true if rule was successfully removed, otherwise false
         :rtype bool:
         '''
-        if not issubclass(feature.__class__, Feature):
-            raise TypeError("{}: Feature to remove ({}) is not subclass of {}."
-                            .format(self, feature, Feature))
+        if not issubclass(rule.__class__, Rule):
+            raise TypeError("{}: Rule to remove ({}) is not subclass of {}."
+                            .format(self, rule, Rule))
         try:
-            ind = self._F.index(feature)
-            del self._F[ind]
+            ind = self._R.index(rule)
+            del self._R[ind]
             del self._W[ind]
             return True
         except:
@@ -328,8 +329,7 @@ class CreativeAgent(aiomas.Agent):
         :type artifact: `~creamas.core.artifact.Artifact`
         '''
         self.env.add_artifact(self, artifact)
-        self._log(logging.DEBUG, "Published {} to domain because of {}"
-                  .format(self, artifact))
+        self._log(logging.DEBUG, "Published {} to domain.".format(artifact))
 
     def refill(self):
         '''Refill agent's resources to maximum.'''
@@ -341,7 +341,7 @@ class CreativeAgent(aiomas.Agent):
         **evaluate** and then pickles the evaluation results to be send over
         tcp.
 
-        :param pickle pkl: pickled artifact to evaluate
+        :param pickle pkl: pickled artifact to extract
         :returns: pickled evaluation of the artifact
         :rtype: pickle
 
@@ -354,7 +354,7 @@ class CreativeAgent(aiomas.Agent):
         return pickle.dumps(ret)
 
     def evaluate(self, artifact):
-        r'''Evaluate artifact with agent's current features and weights.
+        r'''Evaluate artifact with agent's current rules and weights.
 
         :param artifact:
             artifact to be evaluated
@@ -364,7 +364,7 @@ class CreativeAgent(aiomas.Agent):
 
         :returns:
             agent's evaluation of the artifact, in [-1,1], and framing. In this
-             basic implementation framing is always *None*.
+            basic implementation framing is always *None*.
 
         :rtype:
             tuple
@@ -373,19 +373,19 @@ class CreativeAgent(aiomas.Agent):
 
         .. math::
 
-            e(A) = \frac{\sum_{i=1}^{n} f_{i}(A)w_i}
+            e(A) = \frac{\sum_{i=1}^{n} r_{i}(A)w_i}
             {\sum_{i=1}^{n} \lvert w_i \rvert},
 
-        where :math:`f_{i}(A)` is the :math:`i` th feature's evaluation on
-        artifact :math:`A`, and :math:`w_i` is the weight for feature
-        :math:`f_i`.
+        where :math:`r_{i}(A)` is the :math:`i` th rule's evaluation on
+        artifact :math:`A`, and :math:`w_i` is the weight for rule
+        :math:`r_i`.
         '''
         s = 0
         w = 0.0
-        if len(self.F) == 0:
+        if len(self.R) == 0:
             return 0.0, None
-        for i in range(len(self.F)):
-            s += self.F[i](artifact) * self.W[i]
+        for i in range(len(self.R)):
+            s += self.R[i](artifact) * self.W[i]
             w += abs(self.W[i])
 
         if w == 0.0:
@@ -420,7 +420,7 @@ class CreativeAgent(aiomas.Agent):
 
             This is an async method that should be awaited.
         '''
-        raise NotImplementedError
+        raise NotImplementedError('Override in subclass.')
 
     def get_older(self):
         '''Age agent by one simulation step.'''

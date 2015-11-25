@@ -29,27 +29,24 @@ class Feature():
         myart = MyArtifact(*myparams)
         myart.type == 'mytype' # True
         f = MyFeature()
-        f.
         ret = f(myart)
     '''
-
-    def __init__(self, name, types):
-        '''Base feature.
-
+    def __init__(self, name, domains):
+        '''
         :param str name:
             feature's name
 
-        :param list types:
-            all artifact types (:py:attr:`~creamas.core.artifact.type`) that
+        :param list domains:
+            all artifact domains (:py:attr:`~creamas.core.artifact.type`) that
             can be evaluated with the feature.
         '''
-        self._types = types
+        self.__domains = domains
         self._name = name
 
     def __call__(self, artifact):
-        if artifact.type not in self._types:
+        if artifact.domain not in self.__domains:
             return None
-        return self.evaluate(artifact)
+        return self.extract(artifact)
 
     def __str__(self):
         return self._name
@@ -60,12 +57,16 @@ class Feature():
         return self._name
 
     @property
-    def types(self):
-        return self._types
+    def domains(self):
+        '''Set of acceptable artifact domains for this feature. Other types of
+        artifacts will return *None* when tried to extract with this feature.
+        '''
+        return self.__domains
 
-    def evaluate(self, artifact):
-        '''Evaluate artifact. **Dummy implementation, override in subclass.**
+    def extract(self, artifact):
+        '''Extract feature from artifact. **Dummy implementation, override in
+        subclass.**
 
         :raises NotImplementedError: if not overridden in subclass
         '''
-        raise NotImplementedError
+        raise NotImplementedError('Override in subclass')

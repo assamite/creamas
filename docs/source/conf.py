@@ -16,7 +16,16 @@
 import os
 import shlex
 import sys
+from unittest.mock import MagicMock
 
+# Mock C dependent libraries for readthedocs.
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['numpy', 'scipy']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -28,6 +37,9 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
+autoclass_content = 'both'
+
+autodoc_member_order = 'groupwise'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

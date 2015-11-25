@@ -1,9 +1,13 @@
 '''
-.. py:module:: creamas.core.rule
+.. py:module:: rule
     :platform: Unix
 
-Rule module holds :py:class:`~creamas.core.rule.Rule`.
+Rule module holds base implementation of rule
+(:py:class:`~creamas.core.rule.Rule`). Rules combine features and mappers to
+functional body, where each feature also has weight attached to it.
 '''
+from creamas.core.feature import Feature
+
 __all__ = ['Rule']
 
 
@@ -25,16 +29,20 @@ class Rule():
         mr.mappers([feat1_mapper, feat2_mapper])
         rule_result = mr(myartifact)
     '''
-    def __init__(self, feats, weights, types):
-        self._types = types
-        self._F = feats
+    def __init__(self, feats, weights):
+        for f in feats:
+            if not issubclass(f.__class__, Feature):
+                raise TypeError("Feature ({}) in rule is not subclass of {}."
+                                .format(self, f, Feature))
+        self._domains = set.intersection(*[f.domains for f in feats])
+        self._R = feats
         self._W = weights
         self._mappers = []
 
     @property
     def F(self):
         '''Features in this rule.'''
-        return self._F
+        return self._R
 
     @property
     def W(self):
@@ -48,16 +56,26 @@ class Rule():
 
     @mappers.setter
     def mappers(self, value):
+        if len(value) != len(self._R):
+            raise ValueError('mappers should have same length as F (), now it '
+                             'was {}.'.format(len(self._R), len(value)))
         self._mappers = value
 
+    @property
+    def domains(self):
+        '''Rule's acceptable artifact domains is the intersection of all its
+        features acceptable domains.
+        '''
+        return self._domains
+
     def __call__(self, artifact):
-        if artifact.type not in self._types:
+        if artifact.domain not in self._domains:
             return None
-        return self.evaluate(artifact)
+        return self.extract(artifact)
 
     def evaluate(self, artifact):
-        '''Evaluate artifact with this rule. Implicitly called when called the
-        instantiated object.
+        '''Evaluate artifact with this rule. Called when the instantiated
+        object is called.
         '''
         e = 0
         w = 0

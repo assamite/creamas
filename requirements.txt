@@ -16,6 +16,7 @@ Jinja2==2.8
 MarkupSafe==0.23
 mccabe==0.3.1
 msgpack-python==0.4.6
+numpy==1.10.1
 path.py==8.1.2
 pep8==1.5.7
 pexpect==4.0.1

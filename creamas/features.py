@@ -11,8 +11,8 @@ class ModuloFeature(Feature):
 
     def __init__(self, n):
         name = "mod-{}".format(n)
-        types = ['int', 'float']
-        super().__init__(name, types)
+        domains = {'int', 'float'}
+        super().__init__(name, domains)
         self.n = n
 
     def __eq__(self, other):
@@ -26,7 +26,7 @@ class ModuloFeature(Feature):
             return ret
         return not ret
 
-    def evaluate(self, artifact):
+    def extract(self, artifact):
         if artifact.obj % self.n == 0:
             return 1.0
         return 0.0

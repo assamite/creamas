@@ -7,4 +7,5 @@ API Documentation
 	core
 	agents
 	features
+	mappers
 	logging

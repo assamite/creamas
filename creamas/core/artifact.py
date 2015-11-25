@@ -5,12 +5,13 @@
 Artifact module holds **Artifact**, a base class for artifacts created by
 creative agents.
 '''
+__all__ = ['Artifact']
 
 
 class Artifact():
     '''Base class for artifacts.'''
 
-    type = 'artifact'
+    domain = 'artifact'
 
     def __init__(self, creator, obj, e=0.0, fr=None):
         self._creator = creator.name
@@ -45,7 +46,7 @@ class Artifact():
         information.
 
         :param agent: agent which did the evaluation
-        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
+        :domain agent: :py:class:`~creamas.core.agent.CreativeAgent`
         :param float e: evaluation for the artifact
         :param object fr: framing information for the evaluation
         '''
