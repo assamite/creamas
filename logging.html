@@ -32,7 +32,7 @@
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="prev" title="Features" href="features.html"/> 
+        <link rel="prev" title="Mappers" href="mappers.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,6 +82,7 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
@@ -89,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Logging</a></li>
 </ul>
 </li>
@@ -140,8 +142,80 @@
             
   <div class="section" id="module-creamas.logging">
 <span id="logging"></span><h1>Logging<a class="headerlink" href="#module-creamas.logging" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-creamas.logging"></span><p>Logging module holds utilities that help with logging and analyzing the
+<span class="target" id="module-logging"></span><p>Logging module holds utilities that help with logging and analyzing the
 creative system&#8217;s behavior.</p>
+<dl class="class">
+<dt id="creamas.logging.ObjectLogger">
+<em class="property">class </em><code class="descclassname">creamas.logging.</code><code class="descname">ObjectLogger</code><span class="sig-paren">(</span><em>obj</em>, <em>folder</em>, <em>add_name=False</em>, <em>init=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base logger for objects.</p>
+<p>Generates one file for each attribute to be logged.</p>
+<p>Create new logger instance for <em>obj</em> in <em>folder</em>. If <em>add_name</em>
+is true, then creates subfolder carrying <code class="xref py py-attr docutils literal"><span class="pre">obj.name</span></code> to
+<em>folder</em>.</p>
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.get_file">
+<code class="descname">get_file</code><span class="sig-paren">(</span><em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return absolute path to logging file for obj&#8217;s attribute.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.log_attr">
+<code class="descname">log_attr</code><span class="sig-paren">(</span><em>level</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.log_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.log_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log attribute to file and pass the message to underlying logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>attr_name</em>, <em>prefix='age'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write attribute&#8217;s value to file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
+<li><strong>prefix</strong> (<em>str</em>) &#8211; attribute&#8217;s name that is prefixed to logging message, defaults to
+<em>age</em>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">message written to file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.logging.ObjectLogger.folder">
+<code class="descname">folder</code><a class="headerlink" href="#creamas.logging.ObjectLogger.folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root logging folder for this logger.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.logging.ObjectLogger.obj">
+<code class="descname">obj</code><a class="headerlink" href="#creamas.logging.ObjectLogger.obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object this logger belongs to. Object has to have <strong>name</strong>
+attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="creamas.logging.log_before">
 <code class="descclassname">creamas.logging.</code><code class="descname">log_before</code><span class="sig-paren">(</span><em>attr</em>, <em>level=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#log_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.log_before" title="Permalink to this definition">¶</a></dt>
@@ -183,75 +257,6 @@ instance needs to have <strong>logger</strong> variable set.</p>
 </table>
 </dd></dl>
 
-<dl class="class">
-<dt id="creamas.logging.ObjectLogger">
-<em class="property">class </em><code class="descclassname">creamas.logging.</code><code class="descname">ObjectLogger</code><span class="sig-paren">(</span><em>obj</em>, <em>folder</em>, <em>add_name=False</em>, <em>init=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base logger for objects.</p>
-<p>Generates one file for each attribute to be logged.</p>
-<dl class="attribute">
-<dt id="creamas.logging.ObjectLogger.folder">
-<code class="descname">folder</code><a class="headerlink" href="#creamas.logging.ObjectLogger.folder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root logging folder for this logger.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.logging.ObjectLogger.get_file">
-<code class="descname">get_file</code><span class="sig-paren">(</span><em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.get_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return absolute path to logging file for obj&#8217;s attribute.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.logging.ObjectLogger.log_attr">
-<code class="descname">log_attr</code><span class="sig-paren">(</span><em>level</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.log_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.log_attr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log attribute to file and pass the message to underlying logger.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.logging.ObjectLogger.obj">
-<code class="descname">obj</code><a class="headerlink" href="#creamas.logging.ObjectLogger.obj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Object this logger belongs to. Object has to have <strong>name</strong>
-attribute.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.logging.ObjectLogger.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>attr_name</em>, <em>prefix='age'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write attribute&#8217;s value to file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; attribute&#8217;s name to be logged</li>
-<li><strong>prefix</strong> (<em>str</em>) &#8211; attribute&#8217;s name that is prefixed to logging message, defaults to
-<em>age</em>.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">message written to file</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -262,7 +267,7 @@ attribute.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="features.html" class="btn btn-neutral" title="Features" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mappers.html" class="btn btn-neutral" title="Mappers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

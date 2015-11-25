@@ -33,7 +33,7 @@
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Simulation" href="simulation.html"/>
-        <link rel="prev" title="Rule" href="rule.html"/> 
+        <link rel="prev" title="Mapper" href="mapper.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,6 +83,7 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
@@ -92,12 +93,14 @@
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -174,25 +177,6 @@
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.environment.Environment.agents">
-<code class="descname">agents</code><a class="headerlink" href="#creamas.core.environment.Environment.agents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Agents in environment.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.environment.Environment.artifacts">
-<code class="descname">artifacts</code><a class="headerlink" href="#creamas.core.environment.Environment.artifacts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Published artifacts for all agents.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.environment.Environment.container">
-<code class="descname">container</code><a class="headerlink" href="#creamas.core.environment.Environment.container" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="docutils literal"><span class="pre">aiomas.Container</span></code>, serves as a communication route between
-agents.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.environment.Environment.create_initial_connections">
 <code class="descname">create_initial_connections</code><span class="sig-paren">(</span><em>n=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.create_initial_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.create_initial_connections" title="Permalink to this definition">¶</a></dt>
@@ -260,12 +244,6 @@ parameter.</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.environment.Environment.name">
-<code class="descname">name</code><a class="headerlink" href="#creamas.core.environment.Environment.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the environment.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.environment.Environment.save_info">
 <code class="descname">save_info</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.save_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.save_info" title="Permalink to this definition">¶</a></dt>
@@ -282,6 +260,31 @@ subclass.</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.agents">
+<code class="descname">agents</code><a class="headerlink" href="#creamas.core.environment.Environment.agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Agents in environment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.artifacts">
+<code class="descname">artifacts</code><a class="headerlink" href="#creamas.core.environment.Environment.artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published artifacts for all agents.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.container">
+<code class="descname">container</code><a class="headerlink" href="#creamas.core.environment.Environment.container" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">aiomas.Container</span></code>, serves as a communication route between
+agents.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.name">
+<code class="descname">name</code><a class="headerlink" href="#creamas.core.environment.Environment.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the environment.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -296,7 +299,7 @@ subclass.</p>
         <a href="simulation.html" class="btn btn-neutral float-right" title="Simulation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="rule.html" class="btn btn-neutral" title="Rule" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mapper.html" class="btn btn-neutral" title="Mapper" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -32,7 +32,7 @@
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Environment" href="environment.html"/>
+        <link rel="next" title="Mapper" href="mapper.html"/>
         <link rel="prev" title="Feature" href="feature.html"/> 
 
   
@@ -83,6 +83,7 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
@@ -92,12 +93,14 @@
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -151,10 +154,12 @@
             
   <div class="section" id="module-creamas.core.rule">
 <span id="rule"></span><h1>Rule<a class="headerlink" href="#module-creamas.core.rule" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-creamas.core.rule"></span><p>Rule module holds <a class="reference internal" href="#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>.</p>
+<span class="target" id="module-rule"></span><p>Rule module holds base implementation of rule
+(<a class="reference internal" href="#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>). Rules combine features and mappers to
+functional body, where each feature also has weight attached to it.</p>
 <dl class="class">
 <dt id="creamas.core.rule.Rule">
-<em class="property">class </em><code class="descclassname">creamas.core.rule.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>feats</em>, <em>weights</em>, <em>types</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">creamas.core.rule.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>feats</em>, <em>weights</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rule has a collection of features (<strong>F</strong>), a mapping of features to the
 values in interval [-1, 1] (<strong>mappers</strong>) and weight for each feature
 (<strong>W</strong>).</p>
@@ -169,29 +174,38 @@ them with artifact as the only argument.</p>
 <span class="n">rule_result</span> <span class="o">=</span> <span class="n">mr</span><span class="p">(</span><span class="n">myartifact</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="method">
+<dt id="creamas.core.rule.Rule.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate artifact with this rule. Called when the instantiated
+object is called.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="creamas.core.rule.Rule.F">
 <code class="descname">F</code><a class="headerlink" href="#creamas.core.rule.Rule.F" title="Permalink to this definition">¶</a></dt>
-<dd><p>Features in this rule.</p>
+<dd><p>list - features in this rule.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="creamas.core.rule.Rule.W">
 <code class="descname">W</code><a class="headerlink" href="#creamas.core.rule.Rule.W" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weights for features in this rule.</p>
+<dd><p>list - weights for features in this rule.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="creamas.core.rule.Rule.evaluate">
-<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule.evaluate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate artifact with this rule. Implicitly called when called the
-instantiated object.</p>
+<dl class="attribute">
+<dt id="creamas.core.rule.Rule.domains">
+<code class="descname">domains</code><a class="headerlink" href="#creamas.core.rule.Rule.domains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule&#8217;s acceptable artifact domains is the union of all its
+features acceptable domains. Each artifact is evaluated only with
+features that do not return <em>None</em> when the feature is extracted from
+it.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="creamas.core.rule.Rule.mappers">
 <code class="descname">mappers</code><a class="headerlink" href="#creamas.core.rule.Rule.mappers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mappers to map values of each feature into interval [-1, 1].</p>
+<dd><p>list - mappers for features in this rule.</p>
 </dd></dl>
 
 </dd></dl>
@@ -205,7 +219,7 @@ instantiated object.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="environment.html" class="btn btn-neutral float-right" title="Environment" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapper.html" class="btn btn-neutral float-right" title="Mapper" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="feature.html" class="btn btn-neutral" title="Feature" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

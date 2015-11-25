@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core &mdash; Creamas 0.1.0 documentation</title>
+  <title>Mapper &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="next" title="Agent" href="agent.html"/>
-        <link rel="prev" title="API Documentation" href="api.html"/> 
+        <link rel="up" title="Core" href="core.html"/>
+        <link rel="next" title="Environment" href="environment.html"/>
+        <link rel="prev" title="Rule" href="rule.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -88,12 +88,12 @@
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Core</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
@@ -136,11 +136,13 @@
       
           <li><a href="api.html">API Documentation</a> &raquo;</li>
       
-    <li>Core</li>
+          <li><a href="core.html">Core</a> &raquo;</li>
+      
+    <li>Mapper</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/core.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/mapper.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -150,21 +152,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="core">
-<h1>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-<p>Core package holds base implementations for agents, environments, simulations,
-features and artifacts.</p>
-<ul class="simple">
-<li><a class="reference internal" href="agent.html"><em>core.agent</em></a> - base agent implementation</li>
-<li><a class="reference internal" href="artifact.html"><em>core.artifact</em></a> - base artifact implementation</li>
-<li><a class="reference internal" href="feature.html"><em>core.feature</em></a> - base feature implementation</li>
-<li><a class="reference internal" href="rule.html"><em>core.rule</em></a> - base feature implementation</li>
-<li><a class="reference internal" href="rule.html"><em>core.mapper</em></a> - base mapper implementation</li>
-<li><a class="reference internal" href="environment.html"><em>core.environment</em></a> - base environment, each agent lives in an environment</li>
-<li><a class="reference internal" href="simulation.html"><em>core.simulation</em></a> - base simulation to run environment&#8217;s agents in iterations</li>
-</ul>
+  <div class="section" id="module-creamas.core.mapper">
+<span id="mapper"></span><h1>Mapper<a class="headerlink" href="#module-creamas.core.mapper" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mapper"></span><p>Mapper module hold base implementation for mappers. Mappers are functions, that
+map each feature&#8217;s possible values to the interval [-1, 1]. While features are
+though to belong to artifacts of certain types, mappers usually belong to
+single agent making it possible for each agent to have their own appreciation
+standards for the feautre.</p>
+<dl class="class">
+<dt id="creamas.core.mapper.Mapper">
+<em class="property">class </em><code class="descclassname">creamas.core.mapper.</code><code class="descname">Mapper</code><a class="reference internal" href="_modules/creamas/core/mapper.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.mapper.Mapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base implementation of mapper, serves as identity function.</p>
+<p>Mappers, as rules and features, are callable after initialization.</p>
+<dl class="method">
+<dt id="creamas.core.mapper.Mapper.map">
+<code class="descname">map</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/mapper.html#Mapper.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.mapper.Mapper.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map given value to the interval [-1, 1].</p>
+<p>This base implementation maps each value to itself, capping to [-1, 1].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; value to map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">value mapped to the interval [-1, 1]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Rtype float:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -174,10 +194,10 @@ features and artifacts.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agent.html" class="btn btn-neutral float-right" title="Agent" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="environment.html" class="btn btn-neutral float-right" title="Environment" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="api.html" class="btn btn-neutral" title="API Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="rule.html" class="btn btn-neutral" title="Rule" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

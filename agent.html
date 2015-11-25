@@ -83,6 +83,7 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
@@ -92,12 +93,14 @@
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -167,7 +170,7 @@ creative agents.</p>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.env" title="creamas.core.agent.CreativeAgent.env"><strong>env</strong></a> &#8211; The environment where the agent lives.</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.max_res" title="creamas.core.agent.CreativeAgent.max_res"><strong>max_res</strong></a> (<em>int</em>) &#8211; Agent&#8217;s resources per step, 0 if agent has unlimited resources.</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.cur_res" title="creamas.core.agent.CreativeAgent.cur_res"><strong>cur_res</strong></a> (<em>int</em>) &#8211; Agent&#8217;s current resources.</li>
-<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.F" title="creamas.core.agent.CreativeAgent.F"><strong>F</strong></a> (<em>list</em>) &#8211; features agent uses to evaluate artifacts</li>
+<li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.R" title="creamas.core.agent.CreativeAgent.R"><strong>R</strong></a> (<em>list</em>) &#8211; rules agent uses to evaluate artifacts</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.W" title="creamas.core.agent.CreativeAgent.W"><strong>W</strong></a> (<em>list</em>) &#8211; Weight for each feature in <strong>F</strong>, in [-1,1].</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.A" title="creamas.core.agent.CreativeAgent.A"><strong>A</strong></a> (<em>list</em>) &#8211; Artifacts the agent has created so far</li>
 <li><a class="reference internal" href="#creamas.core.agent.CreativeAgent.D" title="creamas.core.agent.CreativeAgent.D"><strong>D</strong></a> (<em>dict</em>) &#8211; Domain knowledge, other agents&#8217; artifacts seen by this agent</li>
@@ -181,41 +184,6 @@ environment. Agent&#8217;s name must be unique within its environment.</li>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.A">
-<code class="descname">A</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.A" title="Permalink to this definition">¶</a></dt>
-<dd><p>Artifacts created so far by the agent.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.D">
-<code class="descname">D</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Domain knowledge accumulated by this agent.</p>
-<p>Dictionary of agents and their artifacts.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.F">
-<code class="descname">F</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.F" title="Permalink to this definition">¶</a></dt>
-<dd><p>Features agent uses to evaluate artifacts. Each feature in <strong>F</strong> is
-expected to be a callable with single parameter, the artifact to be
-evaluated. Callable should return a float in [-1,1], where 1 means that
-feature is very prominent in the artifact, and 0 that there is none of
-that feature in the artifact, and -1 means that the artifact shows
-traits opposite to the feature.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If used other way than what is stated above, override
-<a class="reference internal" href="#creamas.core.agent.CreativeAgent.evaluate" title="creamas.core.agent.CreativeAgent.evaluate"><code class="xref py py-meth docutils literal"><span class="pre">evaluate()</span></code></a>.</p>
-</div>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.W">
-<code class="descname">W</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.W" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weights for features. Each weight should be in [-1,1].</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.act">
 <code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
@@ -261,36 +229,30 @@ traits opposite to the feature.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.agent.CreativeAgent.add_feature">
-<code class="descname">add_feature</code><span class="sig-paren">(</span><em>feature</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add feature to <strong>F</strong> with initial weight.</p>
+<dt id="creamas.core.agent.CreativeAgent.add_rule">
+<code class="descname">add_rule</code><span class="sig-paren">(</span><em>rule</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.add_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.add_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add rule to <strong>R</strong> with initial weight.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>feature</strong> (<cite>~creamas.core.feature.Feature</cite>) &#8211; feature to be added</li>
-<li><strong>weight</strong> (<em>float</em>) &#8211; initial weight for the feature</li>
+<li><strong>rule</strong> (<cite>~creamas.core.rule.Rule</cite>) &#8211; rule to be added</li>
+<li><strong>weight</strong> (<em>float</em>) &#8211; initial weight for the rule</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Raises TypeError:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">if feature is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Feature</span></code></p>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">if rule is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">true if feature was successfully added, otherwise false</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">true if rule was successfully added, otherwise false</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Rtype bool:</th><td class="field-body"></td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.age">
-<code class="descname">age</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.age" title="Permalink to this definition">¶</a></dt>
-<dd><p>Age of the agent.</p>
 </dd></dl>
 
 <dl class="method">
@@ -321,12 +283,6 @@ traits opposite to the feature.</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.attitudes">
-<code class="descname">attitudes</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.attitudes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attitudes towards agents in <strong>connections</strong>.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.close">
 <code class="descname">close</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.close" title="Permalink to this definition">¶</a></dt>
@@ -334,40 +290,18 @@ traits opposite to the feature.</p>
 <p><strong>Dummy implementation, override in subclass if needed.</strong></p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.connections">
-<code class="descname">connections</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connections to the other agents in the <strong>env</strong>.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.cur_res">
-<code class="descname">cur_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.cur_res" title="Permalink to this definition">¶</a></dt>
-<dd><p>Agent&#8217;s current resources. Capped to maximum resources.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.env">
-<code class="descname">env</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.env" title="Permalink to this definition">¶</a></dt>
-<dd><p>The environment where the agent lives. Must be a subclass of
-<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.evaluate">
 <code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.evaluate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate artifact with agent&#8217;s current features and weights.</p>
+<dd><p>Evaluate artifact with agent&#8217;s current rules and weights.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a>) &#8211; artifact to be evaluated</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
-<dt>agent&#8217;s evaluation of the artifact, in [-1,1], and framing. In this</dt>
-<dd>basic implementation framing is always <em>None</em>.</dd>
-</dl>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">agent&#8217;s evaluation of the artifact, in [-1,1], and framing. In this
+basic implementation framing is always <em>None</em>.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
 </tr>
@@ -375,11 +309,11 @@ traits opposite to the feature.</p>
 </table>
 <p>Actual evaluation formula is:</p>
 <div class="math">
-\[e(A) = \frac{\sum_{i=1}^{n} f_{i}(A)w_i}
+\[e(A) = \frac{\sum_{i=1}^{n} r_{i}(A)w_i}
 {\sum_{i=1}^{n} \lvert w_i \rvert},\]</div>
-<p>where <span class="math">\(f_{i}(A)\)</span> is the <span class="math">\(i\)</span> th feature&#8217;s evaluation on
-artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> is the weight for feature
-<span class="math">\(f_i\)</span>.</p>
+<p>where <span class="math">\(r_{i}(A)\)</span> is the <span class="math">\(i\)</span> th rule&#8217;s evaluation on
+artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> is the weight for rule
+<span class="math">\(r_i\)</span>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -392,7 +326,7 @@ tcp.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pkl</strong> (<em>pickle</em>) &#8211; pickled artifact to evaluate</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pkl</strong> (<em>pickle</em>) &#8211; pickled artifact to extract</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pickled evaluation of the artifact</td>
 </tr>
@@ -421,23 +355,8 @@ tcp.</p>
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.get_weight">
-<code class="descname">get_weight</code><span class="sig-paren">(</span><em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_weight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get weight for feature. If feature is not in <strong>F</strong>, returns None.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.max_res">
-<code class="descname">max_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.max_res" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maximum resources for the agent per act. If 0, agent has unlimited
-resources. If maximum resources are set below current resources,
-current resources are capped to new maximum resources.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.agent.CreativeAgent.name">
-<code class="descname">name</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Human readable name of the agent. Must be unique in agent&#8217;s
-environment. Agent cannot change its name during its lifetime.</p>
+<code class="descname">get_weight</code><span class="sig-paren">(</span><em>rule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get weight for rule. If rule is not in <strong>R</strong>, returns None.</p>
 </dd></dl>
 
 <dl class="method">
@@ -487,19 +406,19 @@ environment. Agent cannot change its name during its lifetime.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.agent.CreativeAgent.remove_feature">
-<code class="descname">remove_feature</code><span class="sig-paren">(</span><em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.remove_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.remove_feature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove feature from <strong>F</strong> and its corresponding weight from <strong>W</strong>.</p>
+<dt id="creamas.core.agent.CreativeAgent.remove_rule">
+<code class="descname">remove_rule</code><span class="sig-paren">(</span><em>rule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.remove_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.remove_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove rule from <strong>R</strong> and its corresponding weight from <strong>W</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feature</strong> (<cite>~creamas.core.feature.Feature</cite>) &#8211; feature to remove</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rule</strong> (<cite>~creamas.core.rule.Rule</cite>) &#8211; rule to remove</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Raises TypeError:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">if feature is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Feature</span></code></td>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">if rule is not subclass of <code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">true if feature was successfully removed, otherwise false</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">true if rule was successfully removed, otherwise false</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Rtype bool:</th><td class="field-body"></td>
 </tr>
@@ -516,9 +435,90 @@ it.</p>
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.set_weight">
-<code class="descname">set_weight</code><span class="sig-paren">(</span><em>feature</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.set_weight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set weight for feature in <strong>F</strong>, if feature is not in <strong>F</strong>, adds
+<code class="descname">set_weight</code><span class="sig-paren">(</span><em>rule</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.set_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set weight for rule in <strong>R</strong>, if rule is not in <strong>R</strong>, adds
 it.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.A">
+<code class="descname">A</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artifacts created so far by the agent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.D">
+<code class="descname">D</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Domain knowledge accumulated by this agent.</p>
+<p>Dictionary of agents and their artifacts.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.R">
+<code class="descname">R</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rules agent uses to evaluate artifacts. Each rule in <strong>R</strong> is
+expected to be a callable with single parameter, the artifact to be
+evaluated. Callable should return a float in [-1,1], where 1 means that
+rule is very prominent in the artifact, and 0 that there is none of
+that rule in the artifact, and -1 means that the artifact shows
+traits opposite to the rule.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If used other way than what is stated above, override
+<code class="xref py py-meth docutils literal"><span class="pre">extract()</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.W">
+<code class="descname">W</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights for features. Each weight should be in [-1,1].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.age">
+<code class="descname">age</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Age of the agent.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.attitudes">
+<code class="descname">attitudes</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.attitudes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attitudes towards agents in <strong>connections</strong>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.connections">
+<code class="descname">connections</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connections to the other agents in the <strong>env</strong>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.cur_res">
+<code class="descname">cur_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.cur_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Agent&#8217;s current resources. Capped to maximum resources.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.env">
+<code class="descname">env</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>The environment where the agent lives. Must be a subclass of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.max_res">
+<code class="descname">max_res</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.max_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum resources for the agent per act. If 0, agent has unlimited
+resources. If maximum resources are set below current resources,
+current resources are capped to new maximum resources.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.agent.CreativeAgent.name">
+<code class="descname">name</code><a class="headerlink" href="#creamas.core.agent.CreativeAgent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human readable name of the agent. Must be unique in agent&#8217;s
+environment. Agent cannot change its name during its lifetime.</p>
 </dd></dl>
 
 </dd></dl>

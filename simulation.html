@@ -83,6 +83,7 @@
             
             
                 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
@@ -92,12 +93,14 @@
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -159,20 +162,23 @@
 <p>In each simulation step calls
 <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-meth docutils literal"><span class="pre">act()</span></code></a> for each agent in
 simulation environment.</p>
-<dl class="attribute">
-<dt id="creamas.core.simulation.Simulation.age">
-<code class="descname">age</code><a class="headerlink" href="#creamas.core.simulation.Simulation.age" title="Permalink to this definition">¶</a></dt>
-<dd><p>Age of the simulation.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.simulation.Simulation.callback">
-<code class="descname">callback</code><a class="headerlink" href="#creamas.core.simulation.Simulation.callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callable to be called after each simulation step for any extra
-bookkeeping, etc.. Should accept one parameter: <em>age</em> that is current
-simulation age.</p>
-</dd></dl>
-
+<p>Create simulation for previously set up environment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>env</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>) &#8211; fully initialized environment with agents already set</li>
+<li><strong>callback</strong> (<em>callable</em>) &#8211; function to call after each simulation step</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Parat str log_folder:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">folder to log simulation information</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="classmethod">
 <dt id="creamas.core.simulation.Simulation.create">
 <em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>n_agents=10</em>, <em>agent_kwargs={}</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>env_kwargs={}</em>, <em>callback=None</em>, <em>conns=0</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.create" title="Permalink to this definition">¶</a></dt>
@@ -210,23 +216,10 @@ argument from <strong>agent_kwargs</strong> and <strong>env_kwargs</strong>.</li
 <dd><p>End simulation and destroy the current simulation environment.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.simulation.Simulation.env">
-<code class="descname">env</code><a class="headerlink" href="#creamas.core.simulation.Simulation.env" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment for the simulation. Must be a subclass of
-<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.finish_step">
 <code class="descname">finish_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.finish_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.finish_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Progress simulation to the end of the current step.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.simulation.Simulation.name">
-<code class="descname">name</code><a class="headerlink" href="#creamas.core.simulation.Simulation.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the simulation.</p>
 </dd></dl>
 
 <dl class="method">
@@ -234,19 +227,6 @@ argument from <strong>agent_kwargs</strong> and <strong>env_kwargs</strong>.</li
 <code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger next agent to <code class="xref py py-meth docutils literal"><span class="pre">act()</span></code> in
 the current step.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.simulation.Simulation.order">
-<code class="descname">order</code><a class="headerlink" href="#creamas.core.simulation.Simulation.order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Order in which agents are run.</p>
-<p>Possible values:</p>
-<ul class="simple">
-<li>alphabetical: agents are sorted by name</li>
-<li>random: agents are shuffled</li>
-</ul>
-<p>Changing the order while iteration is in the middle of run will take
-place in the next iteration.</p>
 </dd></dl>
 
 <dl class="method">
@@ -271,6 +251,46 @@ current step.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.simulation.Simulation.age">
+<code class="descname">age</code><a class="headerlink" href="#creamas.core.simulation.Simulation.age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Age of the simulation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.simulation.Simulation.callback">
+<code class="descname">callback</code><a class="headerlink" href="#creamas.core.simulation.Simulation.callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable to be called after each simulation step for any extra
+bookkeeping, etc.. Should accept one parameter: <em>age</em> that is current
+simulation age.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.simulation.Simulation.env">
+<code class="descname">env</code><a class="headerlink" href="#creamas.core.simulation.Simulation.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment for the simulation. Must be a subclass of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.simulation.Simulation.name">
+<code class="descname">name</code><a class="headerlink" href="#creamas.core.simulation.Simulation.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the simulation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.simulation.Simulation.order">
+<code class="descname">order</code><a class="headerlink" href="#creamas.core.simulation.Simulation.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order in which agents are run.</p>
+<p>Possible values:</p>
+<ul class="simple">
+<li>alphabetical: agents are sorted by name</li>
+<li>random: agents are shuffled</li>
+</ul>
+<p>Changing the order while iteration is in the middle of run will take
+place in the next iteration.</p>
 </dd></dl>
 
 </dd></dl>
