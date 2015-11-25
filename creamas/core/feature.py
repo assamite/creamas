@@ -31,7 +31,7 @@ class Feature():
         f = MyFeature()
         ret = f(myart)
     '''
-    def __init__(self, name, domains):
+    def __init__(self, name, domains, value_type):
         '''
         :param str name:
             feature's name
@@ -41,6 +41,7 @@ class Feature():
             can be evaluated with the feature.
         '''
         self.__domains = domains
+        self.__value_type = value_type
         self._name = name
 
     def __call__(self, artifact):
@@ -63,10 +64,17 @@ class Feature():
         '''
         return self.__domains
 
+    @property
+    def value_type(self):
+        '''Value type of this feature.'''
+        return self.__value_type
+
     def extract(self, artifact):
         '''Extract feature from artifact. **Dummy implementation, override in
         subclass.**
 
+        :returns: feature value extracted from the artifact
+        :rtype: value_type
         :raises NotImplementedError: if not overridden in subclass
         '''
         raise NotImplementedError('Override in subclass')

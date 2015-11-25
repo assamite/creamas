@@ -14,6 +14,8 @@ from creamas.core.agent import CreativeAgent
 from creamas.core.artifact import Artifact
 from creamas.logging import log_after
 from creamas.features import ModuloFeature
+from creamas.core.rule import Rule
+from creamas.mappers import BooleanMapper
 
 
 class NumberAgent(CreativeAgent):
@@ -25,8 +27,10 @@ class NumberAgent(CreativeAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         rand = randint(2, 100)
-        self.add_rule(ModuloFeature(rand), 1.0)
-        self._log(logging.DEBUG, 'Created with feat={}'.format(self.F))
+        rule = Rule([ModuloFeature(rand)], [1.0])
+        rule.mappers = [BooleanMapper()]
+        self.add_rule(rule, 1.0)
+        self._log(logging.DEBUG, 'Created with rule={}'.format(rule))
 
     def invent_number(self, low, high):
         '''Invent new number from given interval.'''
@@ -38,7 +42,7 @@ class NumberAgent(CreativeAgent):
             steps += 1
             r = randint(low, high)
             ar = Artifact(self, r)
-            ar.domain = 'int'
+            ar.domain = int
             if ar not in self.A:
                 ars.append(ar)
 
@@ -47,12 +51,12 @@ class NumberAgent(CreativeAgent):
                       "Could not invent new number!".format(self))
             return 1, 0.0
 
-        best_eval, fr = self.extract(ars[0])
+        best_eval, fr = self.evaluate(ars[0])
         ars[0].add_eval(self, best_eval, fr)
         best_number = ars[0].obj
         best_ar = ars[0]
         for ar in ars[1:]:
-            e, fr = self.extract(ar)
+            e, fr = self.evaluate(ar)
             ar.add_eval(self, e, fr)
             if e > best_eval:
                 best_eval = e
@@ -62,7 +66,9 @@ class NumberAgent(CreativeAgent):
         self._log(logging.DEBUG, "Invented number {}, with e = {}."
                   .format(best_number, best_eval))
         if best_eval > 0.5:
-            self.add_rule(ModuloFeature(best_number), 1.0)
+            rule = Rule([ModuloFeature(best_number)], [1.0])
+            rule.mappers = [BooleanMapper()]
+            self.add_rule(rule, 1.0)
             self._log(logging.INFO,
                       "Appended {} to features.".format(best_number))
 
@@ -73,8 +79,9 @@ class NumberAgent(CreativeAgent):
     async def act(self, *args, **kwargs):
         m = 0
         for r in self.R:
-            if r.n > m:
-                m = r.n
+            for f in r.F:
+                if f.n > m:
+                    m = f.n
         ar = self.invent_number(2, m + 100)
         if ar == 1:
             return

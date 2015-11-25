@@ -7,9 +7,14 @@ Tests for simulation module.
 import unittest
 
 from creamas.core.agent import CreativeAgent
-from creamas.agents import NumberAgent
 from creamas.core.environment import Environment
 from creamas.core.simulation import Simulation
+
+
+class DummyAgent(CreativeAgent):
+
+    async def act(self):
+        pass
 
 
 class SimulationTestCase(unittest.TestCase):
@@ -38,24 +43,24 @@ class SimulationTestCase(unittest.TestCase):
         sim.end()
         self.assertIsNone(sim.env.container._tcp_server)
 
-        a_classes = [CreativeAgent, NumberAgent]
+        a_classes = [CreativeAgent, DummyAgent]
         a_nums = [10, 5]
         sim = Simulation.create(agent_cls=a_classes, n_agents=a_nums,
                                 agent_kwargs=[{}, {}])
 
         # Both agents get created right amount
         n_ca = 0
-        n_na = 0
+        n_da = 0
         for a in sim.env.agents:
             if a.__class__ == CreativeAgent:
                 n_ca += 1
-            if a.__class__ == NumberAgent:
-                n_na += 1
+            if a.__class__ == DummyAgent:
+                n_da += 1
         self.assertEqual(n_ca, 10)
-        self.assertEqual(n_na, 5)
+        self.assertEqual(n_da, 5)
         sim.end()
 
-        sim = Simulation.create(agent_cls=NumberAgent, conns=3)
+        sim = Simulation.create(agent_cls=DummyAgent, conns=3)
         self.assertEqual(sim.age, 0)
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.step()

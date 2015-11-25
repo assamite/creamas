@@ -8,7 +8,7 @@ import unittest
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.core.feature import Feature
+# from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
 
 
@@ -116,6 +116,7 @@ class AgentTestCase(unittest.TestCase):
         with self.assertRaises(TypeError):
             a1.add_rule({}, 1.0)
 
+        '''
         f = Feature('test_feat', {'int'})
         f2 = Feature('test_feat2', {'int'})
         self.assertTrue(a1.add_rule(f, 1.0))
@@ -141,6 +142,7 @@ class AgentTestCase(unittest.TestCase):
         self.assertEqual(1, len(a1.W))
         self.assertEqual(a1.get_weight(f2), 1.0)
         self.assertFalse(a1.remove_feature(f))
+        '''
 
         # ARTIFACTS
         art = Artifact(a1, 1, 0.0, 'foo')

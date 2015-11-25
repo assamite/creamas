@@ -34,44 +34,52 @@ class Rule():
             if not issubclass(f.__class__, Feature):
                 raise TypeError("Feature ({}) in rule is not subclass of {}."
                                 .format(self, f, Feature))
-        self._domains = set.intersection(*[f.domains for f in feats])
-        self._R = feats
+        self._domains = set.union(*[f.domains for f in feats])
+        self._F = feats
         self._W = weights
         self._mappers = []
 
     @property
     def F(self):
-        '''Features in this rule.'''
-        return self._R
+        '''list - features in this rule.'''
+        return self._F
 
     @property
     def W(self):
-        '''Weights for features in this rule.'''
+        '''list - weights for features in this rule.'''
         return self._W
 
     @property
     def mappers(self):
-        '''Mappers to map values of each feature into interval [-1, 1].'''
+        '''list - mappers for features in this rule.'''
         return self._mappers
 
     @mappers.setter
     def mappers(self, value):
-        if len(value) != len(self._R):
-            raise ValueError('mappers should have same length as F (), now it '
-                             'was {}.'.format(len(self._R), len(value)))
+        if len(value) != len(self._F):
+            raise ValueError('mappers should have same length as F ({}), now '
+                             'it was {}.'.format(len(self._F), len(value)))
         self._mappers = value
 
     @property
     def domains(self):
-        '''Rule's acceptable artifact domains is the intersection of all its
-        features acceptable domains.
+        '''Rule's acceptable artifact domains is the union of all its
+        features acceptable domains. Each artifact is evaluated only with
+        features that do not return *None* when the feature is extracted from
+        it.
         '''
         return self._domains
 
     def __call__(self, artifact):
         if artifact.domain not in self._domains:
             return None
-        return self.extract(artifact)
+        return self.evaluate(artifact)
+
+    def __str__(self):
+        s = ""
+        for i in range(len(self._F)):
+            s += "{}:{}({})|".format(self._W[i], self._F[i], self._mappers[i])
+        return s
 
     def evaluate(self, artifact):
         '''Evaluate artifact with this rule. Called when the instantiated
@@ -79,7 +87,7 @@ class Rule():
         '''
         e = 0
         w = 0
-        for i in len(self.F):
+        for i in range(len(self.F)):
             r = self.F[i](artifact)
             if r is not None:
                 e += self.mappers[i](r) * self.W[i]
