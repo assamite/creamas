@@ -7,7 +7,8 @@ Unit tests for mappers.
 import unittest
 
 from creamas.core.mapper import Mapper
-from creamas.mappers import *
+from creamas.mappers import BooleanMapper, LinearMapper
+from creamas.mappers import DoubleLinearMapper, GaussianMapper
 
 
 class MapperTestCase(unittest.TestCase):
@@ -24,6 +25,7 @@ class MapperTestCase(unittest.TestCase):
         self.assertEqual(m(1.0), 1.0)
         self.assertEqual(m(10.0), 1.0)
         self.assertEqual(m(-10.0), -1.0)
+
 
 class MappersTestCase(unittest.TestCase):
 

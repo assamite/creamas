@@ -129,7 +129,7 @@ if on_rtd:
         def __getattr__(cls, name):
                 return Mock()
 
-    MOCK_MODULES = ['numpy', 'gnureadline']
+    MOCK_MODULES = ['numpy', 'scipy', 'gnureadline']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 if not on_rtd:  # only import and set the theme if we're building docs locally

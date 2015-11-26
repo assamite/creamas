@@ -8,6 +8,11 @@ from creamas.core.feature import Feature
 
 
 class ModuloFeature(Feature):
+    '''Feature that returns true if artifact's object's remainder is zero when
+    divided by *n*.
+
+    Accepts ints and floats as artifact domains
+    '''
 
     def __init__(self, n):
         name = "mod-{}".format(n)

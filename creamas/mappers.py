@@ -4,7 +4,7 @@
 
 Various mapper implementations. Mappers are functions that map possible feature
 value's to the interval [-1, 1]. In Creamas, they are used by individual
-agent's to represent certain preferences over features values.
+agent's to represent agent's preferences over features values.
 '''
 from scipy.stats import norm
 
