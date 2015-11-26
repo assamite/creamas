@@ -5,13 +5,14 @@ sudo: false
 notifications:
   email: false
 
-addons:
-  apt:
-    packages:
-    - python-numpy
-    - python-scipy
+#addons:
+#  apt:
+#    packages:
+#    - python-numpy
+#    - python-scipy
 
 install:
+  - pip install --user -r requirements.txt
   - pip install tox
   - pip install coveralls
 
