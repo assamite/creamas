@@ -4,25 +4,23 @@ python: 3.5
 notifications:
   email: false
 
-#addons:
-#  apt:
-#    packages:
-#    - python-numpy
-#    - python-scipy
+addons:
+  apt:
+    packages:
+    - python-numpy
+    - python-scipy
 
 install:
-  - sudo apt-get install liblapack3gf libblas3gf libopenblas-base libatlas-base-dev
   - pip install -r requirements.txt
-  - pip install tox
-  - pip install coveralls
+  - pip install pytest
+  - pip install pytest-cov
+  - pip install testfixtures
 
 script:
-  - tox
-
-env:
-  - TOXENV=py35
-  - TOXENV=docs
-  - TOXENV=flake8
+  - python setup.py develop
+  - py.test --cov=creamas tests/
+  - py.test --doctest-glob="*.rst" docs/
+  - flake8 creamas tests
 
 after_success:
   - coveralls
