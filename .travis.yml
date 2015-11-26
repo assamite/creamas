@@ -10,7 +10,7 @@ notifications:
 #    - python-numpy
 #    - python-scipy
 
-install
+install:
   - sudo apt-get install liblapack3gf libblas3gf
   - pip install -r requirements.txt
   - pip install tox
