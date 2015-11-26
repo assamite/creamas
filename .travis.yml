@@ -5,22 +5,13 @@ sudo: false
 notifications:
   email: false
 
-# Setup anaconda
-before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda/bin:$PATH
-  - conda update --yes conda
-  - conda create --yes -n condaenv python=$TRAVIS_PYTHON_VERSION
-  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
+addons:
+  apt:
+    packages:
+      python-numpy
+      python-scipy
 
 install:
-  - conda install --yes -n condaenv numpy scipy
-  - conda install --yes -n condaenv pip
-  - source activate condaenv
   - pip install tox
   - pip install coveralls
   - python setup.py install
