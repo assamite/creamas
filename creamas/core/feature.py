@@ -33,7 +33,7 @@ class Feature():
     '''
     def __init__(self, name, domains, value_type):
         '''
-        :param str name:
+        :param std name:
             feature's name
 
         :param list domains:
