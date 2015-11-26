@@ -145,7 +145,7 @@
 <span id="mappers"></span><h1>Mappers<a class="headerlink" href="#module-creamas.mappers" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-mappers"></span><p>Various mapper implementations. Mappers are functions that map possible feature
 value&#8217;s to the interval [-1, 1]. In Creamas, they are used by individual
-agent&#8217;s to represent certain preferences over features values.</p>
+agent&#8217;s to represent agent&#8217;s preferences over features values.</p>
 <dl class="class">
 <dt id="creamas.mappers.BooleanMapper">
 <em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">BooleanMapper</code><span class="sig-paren">(</span><em>mode='10'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#BooleanMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.BooleanMapper" title="Permalink to this definition">¶</a></dt>
@@ -196,7 +196,7 @@ agent&#8217;s to represent certain preferences over features values.</p>
 <dt id="creamas.mappers.LinearMapper">
 <em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">LinearMapper</code><span class="sig-paren">(</span><em>lo</em>, <em>hi</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#LinearMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.LinearMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapper that maps values in given interval linearly.</p>
-<p>Accepts ints and floats.</p>
+<p>Can be used for features that return either &#8216;int&#8217; or &#8216;float&#8217; values.</p>
 <p>Based on its mode, maps <em>lo</em> and <em>hi</em> to different end points and values
 between them to a straight line. Depending on the mode, <em>lo</em> and <em>hi</em> have
 following end points:</p>
@@ -239,12 +239,20 @@ following end points:</p>
 <dd><p>Mode of the mapper.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="creamas.mappers.LinearMapper.value_set">
+<code class="descname">value_set</code><a class="headerlink" href="#creamas.mappers.LinearMapper.value_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepted value types, i.e. this mapper can be used for the features
+that return these types of values.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="creamas.mappers.DoubleLinearMapper">
 <em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">DoubleLinearMapper</code><span class="sig-paren">(</span><em>lo</em>, <em>mid</em>, <em>hi</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#DoubleLinearMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.DoubleLinearMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapper that concatenates two linear mappers.</p>
+<p>Can be used for features that return either &#8216;int&#8217; or &#8216;float&#8217; values.</p>
 <p>First line is created from <em>lo</em> to <em>mid</em> and second line from <em>mid</em> to
 <em>hi</em>. Depending on the mode, <em>lo</em>, <em>mid</em> and <em>hi</em> are mapped to following
 end points.</p>
@@ -290,6 +298,56 @@ end points.</p>
 <dl class="attribute">
 <dt id="creamas.mappers.DoubleLinearMapper.mode">
 <code class="descname">mode</code><a class="headerlink" href="#creamas.mappers.DoubleLinearMapper.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode of the mapper.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.mappers.DoubleLinearMapper.value_set">
+<code class="descname">value_set</code><a class="headerlink" href="#creamas.mappers.DoubleLinearMapper.value_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepted value types, i.e. this mapper can be used for the features
+that return these types of values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.mappers.GaussianMapper">
+<em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">GaussianMapper</code><span class="sig-paren">(</span><em>loc</em>, <em>scale</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#GaussianMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.GaussianMapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gaussian distribution mapper.</p>
+<p>The mapped value is relative to given Gaussian distribution&#8217;s
+maximum point (<em>pmax</em>, evaluated at point <em>loc</em>) and the probability
+density function&#8217;s value at given evaluation point (<em>pval</em>).</p>
+<p>The actual value calculation changes with the mode of the mapper:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">mode</th>
+<th class="head">mapped value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#8216;10&#8217;</td>
+<td><span class="math">\(1.0 - (pval / pmax)\)</span></td>
+</tr>
+<tr class="row-odd"><td>&#8216;01&#8217;</td>
+<td><span class="math">\(pval / pmax\)</span></td>
+</tr>
+<tr class="row-even"><td>&#8216;1-1&#8217;</td>
+<td><span class="math">\(1.0 - 2(pval / pmax)\)</span></td>
+</tr>
+<tr class="row-odd"><td>&#8216;-11&#8217;</td>
+<td><span class="math">\(-1.0 + 2(pval / pmax)\)</span></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="attribute">
+<dt id="creamas.mappers.GaussianMapper.mode">
+<code class="descname">mode</code><a class="headerlink" href="#creamas.mappers.GaussianMapper.mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode of the mapper.</p>
 </dd></dl>
 
