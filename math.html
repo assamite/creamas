@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Agents &mdash; Creamas 0.1.0 documentation</title>
+  <title>Math &mdash; Creamas 0.1.0 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="next" title="Features" href="features.html"/>
-        <link rel="prev" title="Simulation" href="simulation.html"/> 
+        <link rel="next" title="Logging" href="logging.html"/>
+        <link rel="prev" title="Mappers" href="mappers.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -89,10 +89,10 @@
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -128,11 +128,11 @@
       
           <li><a href="api.html">API Documentation</a> &raquo;</li>
       
-    <li>Agents</li>
+    <li>Math</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/agents.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/math.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -142,22 +142,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-creamas.agents">
-<span id="agents"></span><h1>Agents<a class="headerlink" href="#module-creamas.agents" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-agents"></span><p>Agents module holds various agent implementations inheriting from
-<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>.</p>
-<dl class="class">
-<dt id="creamas.agents.NumberAgent">
-<em class="property">class </em><code class="descclassname">creamas.agents.</code><code class="descname">NumberAgent</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/agents.html#NumberAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.agents.NumberAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number agent created for early testing purposes of basic functionality.</p>
-<p>Searchs &#8220;new&#8221; integers and evaluates them based on how many features in F
-(also integers) result in mod == 0.</p>
-<dl class="method">
-<dt id="creamas.agents.NumberAgent.invent_number">
-<code class="descname">invent_number</code><span class="sig-paren">(</span><em>low</em>, <em>high</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/agents.html#NumberAgent.invent_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.agents.NumberAgent.invent_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invent new number from given interval.</p>
+  <div class="section" id="module-creamas.math">
+<span id="math"></span><h1>Math<a class="headerlink" href="#module-creamas.math" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-math"></span><p>Various mathematical utility functions.</p>
+<dl class="function">
+<dt id="creamas.math.gaus_pdf">
+<code class="descclassname">creamas.math.</code><code class="descname">gaus_pdf</code><span class="sig-paren">(</span><em>x</em>, <em>mean</em>, <em>std</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/math.html#gaus_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.math.gaus_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gaussian distribution&#8217;s probability density function.</p>
+<p>See, e.g. <a class="reference external" href="https://en.wikipedia.org/wiki/Normal_distribution">wikipedia</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float or numpy.ndarray</em>) &#8211; point in x-axis</li>
+<li><strong>mean</strong> (<em>float</em>) &#8211; mean or expectation</li>
+<li><strong>str</strong> (<em>float</em>) &#8211; standard deviation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">pdf(s) in point <strong>x</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float or numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
+<dl class="function">
+<dt id="creamas.math.logistic">
+<code class="descclassname">creamas.math.</code><code class="descname">logistic</code><span class="sig-paren">(</span><em>x</em>, <em>x0</em>, <em>k</em>, <em>L</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/math.html#logistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.math.logistic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logistic function.</p>
+<p>See, e.g <a class="reference external" href="https://en.wikipedia.org/wiki/Logistic_function">wikipedia</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float or numpy.ndarray</em>) &#8211; point in x-axis</li>
+<li><strong>x0</strong> (<em>float</em>) &#8211; sigmoid&#8217;s midpoint</li>
+<li><strong>k</strong> (<em>float</em>) &#8211; steepness of the curve</li>
+<li><strong>L</strong> (<em>float</em>) &#8211; maximum value of the curve</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">function&#8217;s value(s) in point <strong>x</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float or numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -169,10 +207,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="logging.html" class="btn btn-neutral float-right" title="Logging" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="simulation.html" class="btn btn-neutral" title="Simulation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mappers.html" class="btn btn-neutral" title="Mappers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

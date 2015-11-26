@@ -32,7 +32,7 @@
   
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="next" title="Logging" href="logging.html"/>
+        <link rel="next" title="Math" href="math.html"/>
         <link rel="prev" title="Features" href="features.html"/> 
 
   
@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
@@ -312,7 +313,7 @@ that return these types of values.</p>
 
 <dl class="class">
 <dt id="creamas.mappers.GaussianMapper">
-<em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">GaussianMapper</code><span class="sig-paren">(</span><em>loc</em>, <em>scale</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#GaussianMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.GaussianMapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">GaussianMapper</code><span class="sig-paren">(</span><em>mean</em>, <em>std</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#GaussianMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.GaussianMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gaussian distribution mapper.</p>
 <p>The mapped value is relative to given Gaussian distribution&#8217;s
 maximum point (<em>pmax</em>, evaluated at point <em>loc</em>) and the probability
@@ -345,9 +346,50 @@ density function&#8217;s value at given evaluation point (<em>pval</em>).</p>
 </tbody>
 </table>
 </div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mean</strong> (<em>float</em>) &#8211; mean of the mapping distribution</li>
+<li><strong>std</strong> (<em>float</em>) &#8211; standard deviation of the mapping distribution</li>
+<li><strong>mode</strong> &#8211; mode of the mapper: &#8216;10&#8217;, &#8216;01&#8217;, &#8216;1-1&#8217; or &#8216;-11&#8217;.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="creamas.mappers.GaussianMapper.mode">
 <code class="descname">mode</code><a class="headerlink" href="#creamas.mappers.GaussianMapper.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode of the mapper.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.mappers.LogisticMapper">
+<em class="property">class </em><code class="descclassname">creamas.mappers.</code><code class="descname">LogisticMapper</code><span class="sig-paren">(</span><em>x0</em>, <em>k</em>, <em>mode='01'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mappers.html#LogisticMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mappers.LogisticMapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logistic function mapper.</p>
+<p>The mapped value is relative to the logistic function&#8217;s value in the
+mapping point. Depending on the mode, some transformations (mirroring,
+shifting), might be applied to the mapped value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x0</strong> (<em>float</em>) &#8211; sigmoid&#8217;s midpoint</li>
+<li><strong>k</strong> (<em>float</em>) &#8211; steepness of the curve</li>
+<li><strong>mode</strong> &#8211; mode of the mapper: &#8216;10&#8217;, &#8216;01&#8217;, &#8216;1-1&#8217; or &#8216;-11&#8217;.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="creamas.mappers.LogisticMapper.mode">
+<code class="descname">mode</code><a class="headerlink" href="#creamas.mappers.LogisticMapper.mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode of the mapper.</p>
 </dd></dl>
 
@@ -362,7 +404,7 @@ density function&#8217;s value at given evaluation point (<em>pval</em>).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="logging.html" class="btn btn-neutral float-right" title="Logging" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="math.html" class="btn btn-neutral float-right" title="Math" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="features.html" class="btn btn-neutral" title="Features" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

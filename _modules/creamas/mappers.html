@@ -139,12 +139,11 @@
 <span class="sd">value&#39;s to the interval [-1, 1]. In Creamas, they are used by individual</span>
 <span class="sd">agent&#39;s to represent agent&#39;s preferences over features values.</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
-
+<span class="kn">from</span> <span class="nn">creamas.math</span> <span class="kn">import</span> <span class="n">gaus_pdf</span><span class="p">,</span> <span class="n">logistic</span>
 <span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">Mapper</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;BooleanMapper&#39;</span><span class="p">,</span> <span class="s">&#39;LinearMapper&#39;</span><span class="p">,</span> <span class="s">&#39;DoubleLinearMapper&#39;</span><span class="p">,</span>
-           <span class="s">&#39;GaussianMapper&#39;</span><span class="p">]</span>
+           <span class="s">&#39;GaussianMapper&#39;</span><span class="p">,</span> <span class="s">&#39;LogisticMapper&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="BooleanMapper"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.BooleanMapper">[docs]</a><span class="k">class</span> <span class="nc">BooleanMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
@@ -378,18 +377,23 @@
     <span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">}</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param float mean: mean of the mapping distribution</span>
+<span class="sd">        :param float std: standard deviation of the mapping distribution</span>
+<span class="sd">        :param mode: mode of the mapper: &#39;10&#39;, &#39;01&#39;, &#39;1-1&#39; or &#39;-11&#39;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
             <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Mode ({}) is not an accepted mode type.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loc</span> <span class="o">=</span> <span class="n">loc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std</span> <span class="o">=</span> <span class="n">std</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
                            <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loc</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -403,27 +407,86 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_loc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">lmax</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">lmax</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
         <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">pdf</span> <span class="o">/</span> <span class="n">lmax</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_map01</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">lmax</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_map01</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">lmax</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pdf</span> <span class="o">/</span> <span class="n">lmax</span>
 
-    <span class="k">def</span> <span class="nf">_map1_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">lmax</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_map1_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">lmax</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
         <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">pdf</span> <span class="o">/</span> <span class="n">lmax</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_map_11</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">lmax</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">pdf</span> <span class="o">/</span> <span class="n">lmax</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_map_11</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">lmax</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">pdf</span> <span class="o">/</span> <span class="n">lmax</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LogisticMapper"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.LogisticMapper">[docs]</a><span class="k">class</span> <span class="nc">LogisticMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Logistic function mapper.</span>
+
+<span class="sd">    The mapped value is relative to the logistic function&#39;s value in the</span>
+<span class="sd">    mapping point. Depending on the mode, some transformations (mirroring,</span>
+<span class="sd">    shifting), might be applied to the mapped value.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">}</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param float x0: sigmoid&#39;s midpoint</span>
+<span class="sd">        :param float k: steepness of the curve</span>
+<span class="sd">        :param mode: mode of the mapper: &#39;10&#39;, &#39;01&#39;, &#39;1-1&#39; or &#39;-11&#39;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
+            <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Mode ({}) is not an accepted mode type.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span> <span class="o">=</span> <span class="n">x0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Mode of the mapper.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+
+    <span class="nd">@mode.setter</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">x0</span>
+        <span class="n">mir_value</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">diff</span>
+        <span class="k">return</span> <span class="n">logistic</span><span class="p">(</span><span class="n">mir_value</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_map01</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">logistic</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_map1_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">x0</span>
+        <span class="n">mir_value</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">diff</span>
+        <span class="k">return</span> <span class="n">logistic</span><span class="p">(</span><span class="n">mir_value</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span> <span class="nf">_map_11</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">logistic</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span></div>
 </pre></div>
 
            </div>

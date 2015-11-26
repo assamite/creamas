@@ -8,4 +8,5 @@ API Documentation
 	agents
 	features
 	mappers
+	math
 	logging
