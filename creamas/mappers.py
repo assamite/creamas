@@ -31,7 +31,7 @@ class BooleanMapper(Mapper):
 
     def __init__(self, mode='10'):
         self._value_set = {bool}
-        self._mode = mode
+        self.mode = mode
         self._mode_maps = {'10': self._map10, '01': self._map01,
                            '1-1': self._map1_1, '-11': self._map_11}
 
@@ -250,11 +250,9 @@ class GaussianMapper(Mapper):
         :param float std: standard deviation of the mapping distribution
         :param mode: mode of the mapper: '10', '01', '1-1' or '-11'.
         '''
-        if mode not in self.modes:
-            TypeError('Mode ({}) is not an accepted mode type.'.format(mode))
         self._mean = mean
         self._std = std
-        self._mode = mode
+        self.mode = mode
         self._mode_maps = {'10': self._map10, '01': self._map01,
                            '1-1': self._map1_1, '-11': self._map_11}
 
@@ -313,11 +311,9 @@ class LogisticMapper(Mapper):
         :param float k: steepness of the curve
         :param mode: mode of the mapper: '10', '01', '1-1' or '-11'.
         '''
-        if mode not in self.modes:
-            TypeError('Mode ({}) is not an accepted mode type.'.format(mode))
         self._x0 = x0
         self._k = k
-        self._mode = mode
+        self.mode = mode
         self._mode_maps = {'10': self._map10, '01': self._map01,
                            '1-1': self._map1_1, '-11': self._map_11}
 

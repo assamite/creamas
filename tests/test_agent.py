@@ -8,8 +8,10 @@ import unittest
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-# from creamas.core.feature import Feature
+from creamas.core.rule import Rule
+from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
+from creamas.core.mapper import Mapper
 
 
 class AgentTestCase(unittest.TestCase):
@@ -116,16 +118,20 @@ class AgentTestCase(unittest.TestCase):
         with self.assertRaises(TypeError):
             a1.add_rule({}, 1.0)
 
-        '''
-        f = Feature('test_feat', {'int'})
-        f2 = Feature('test_feat2', {'int'})
-        self.assertTrue(a1.add_rule(f, 1.0))
-        a1.set_weight(f, 0.0)
-        self.assertEqual(a1.get_weight(f), 0.0)
-        self.assertIsNone(a1.get_weight(f2))
-        a1.set_weight(f2, 1.0)
-        self.assertIn(f2, a1.F)
-        self.assertEqual(a1.get_weight(f2), 1.0)
+        f = Feature('test_feat', {float}, float)
+        f2 = Feature('test_feat2', {float}, float)
+        rule = Rule([f], [0.7])
+        rule2 = Rule([f2], [0.8])
+        rule.mappers = [Mapper()]
+        rule2.mappers = [Mapper()]
+        self.assertTrue(a1.add_rule(rule, 1.0))
+        self.assertIn(rule, a1.R)
+        a1.set_weight(rule, 0.0)
+        self.assertEqual(a1.get_weight(rule), 0.0)
+        self.assertIsNone(a1.get_weight(rule2))
+        a1.set_weight(rule2, 1.0)
+        self.assertIn(rule2, a1.R)
+        self.assertEqual(a1.get_weight(rule2), 1.0)
 
         with self.assertRaises(TypeError):
             a1.get_weight(1)
@@ -134,15 +140,14 @@ class AgentTestCase(unittest.TestCase):
             a1.set_weight(1, 0.0)
 
         with self.assertRaises(TypeError):
-            a1.remove_feature(1)
+            a1.remove_rule(1)
 
-        self.assertTrue(a1.remove_feature(f))
-        self.assertNotIn(f, a1.F)
-        self.assertEqual(1, len(a1.F))
+        self.assertTrue(a1.remove_rule(rule))
+        self.assertNotIn(rule, a1.R)
+        self.assertEqual(1, len(a1.R))
         self.assertEqual(1, len(a1.W))
-        self.assertEqual(a1.get_weight(f2), 1.0)
-        self.assertFalse(a1.remove_feature(f))
-        '''
+        self.assertEqual(a1.get_weight(rule2), 1.0)
+        self.assertFalse(a1.remove_rule(rule))
 
         # ARTIFACTS
         art = Artifact(a1, 1, 0.0, 'foo')

@@ -33,7 +33,7 @@ class Rule():
         for f in feats:
             if not issubclass(f.__class__, Feature):
                 raise TypeError("Feature ({}) in rule is not subclass of {}."
-                                .format(self, f, Feature))
+                                .format(f, Feature))
         self._domains = set.union(*[f.domains for f in feats])
         self._F = feats
         self._W = weights

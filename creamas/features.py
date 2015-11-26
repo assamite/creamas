@@ -11,14 +11,14 @@ class ModuloFeature(Feature):
     '''Feature that returns true if artifact's object's remainder is zero when
     divided by *n*.
 
-    Accepts ints and floats as artifact domains
+    Accepts ints and floats as artifact domains.
     '''
 
     def __init__(self, n):
         name = "mod-{}".format(n)
         domains = {int, float}
-        value_type = float
-        super().__init__(name, domains, value_type)
+        rtype = float
+        super().__init__(name, domains, rtype)
         self.n = n
 
     def __eq__(self, other):

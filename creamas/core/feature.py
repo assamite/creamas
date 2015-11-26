@@ -27,21 +27,24 @@ class Feature():
         from myfeat import MyFeature
         from myartifact import MyArtifact
         myart = MyArtifact(*myparams)
-        myart.type == 'mytype' # True
+        myart.rtype == mytype # True
         f = MyFeature()
         ret = f(myart)
+        type(ret) == mytype # True
     '''
-    def __init__(self, name, domains, value_type):
+    def __init__(self, name, domains, rtype):
         '''
-        :param std name:
+        :param str name:
             feature's name
 
         :param list domains:
             all artifact domains (:py:attr:`~creamas.core.artifact.type`) that
             can be evaluated with the feature.
+
+        :param rtype: value type returned by this feature
         '''
         self.__domains = domains
-        self.__value_type = value_type
+        self.__rtype = rtype
         self._name = name
 
     def __call__(self, artifact):
@@ -65,16 +68,16 @@ class Feature():
         return self.__domains
 
     @property
-    def value_type(self):
-        '''Value type of this feature.'''
-        return self.__value_type
+    def rtype(self):
+        '''Value type returned by this feature.'''
+        return self.__rtype
 
     def extract(self, artifact):
         '''Extract feature from artifact. **Dummy implementation, override in
         subclass.**
 
         :returns: feature value extracted from the artifact
-        :rtype: value_type
+        :rtype: rtype
         :raises NotImplementedError: if not overridden in subclass
         '''
         raise NotImplementedError('Override in subclass')
