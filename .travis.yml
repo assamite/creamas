@@ -1,6 +1,5 @@
 language: python
 python: 3.5
-sudo: false
 
 notifications:
   email: false
@@ -11,14 +10,9 @@ notifications:
 #    - python-numpy
 #    - python-scipy
 
-addons:
-  apt:
-    packages:
-    - liblapack3gf
-    - libblas3gf
-
-install:
-  - travis_wait pip install -r requirements.txt
+install
+  - sudo apt-get install liblapack3gf libblas3gf
+  - pip install -r requirements.txt
   - pip install tox
   - pip install coveralls
 
