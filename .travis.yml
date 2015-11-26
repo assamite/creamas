@@ -1,15 +1,22 @@
 language: python
 python: 3.5
 sudo: required
+dist: trusty
 
 virtualenv:
-  –system-site-packages
+  system_site_packages: true
 
 notifications:
   email: false
 
+#addons:
+#  apt:
+#    packages:
+#    - python-numpy
+#    - python-scipy
+
 before_install:
- - sudo apt-get install -qq python-numpy python-scipy
+  - sudo apt-get install -qq python-numpy python-scipy
 
 install:
   - pip install -r requirements.txt
