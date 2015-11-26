@@ -11,8 +11,14 @@ notifications:
 #    - python-numpy
 #    - python-scipy
 
+addons:
+  apt:
+    packages:
+    - liblapack3gf
+    - libblas3gf
+
 install:
-  - pip install -r requirements.txt
+  - travis_wait pip install -r requirements.txt
   - pip install tox
   - pip install coveralls
 
