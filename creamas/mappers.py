@@ -6,12 +6,17 @@ Various mapper implementations. Mappers are functions that map possible feature
 value's to the interval [-1, 1]. In Creamas, they are used by individual
 agent's to represent agent's preferences over features values.
 '''
-from scipy.stats import norm
+from math import exp, sqrt, pi
 
 from creamas.core import Mapper
 
 __all__ = ['BooleanMapper', 'LinearMapper', 'DoubleLinearMapper',
            'GaussianMapper']
+
+
+# Gaussian distribution's probability density function.
+def normpdf(x, loc, scale):
+    return exp(-((x - loc) / scale)**2/2)/sqrt(2*pi) / scale
 
 
 class BooleanMapper(Mapper):
@@ -273,21 +278,21 @@ class GaussianMapper(Mapper):
         return self._mode_maps[self._mode](self._loc, self._scale, value)
 
     def _map10(self, loc, scale, value):
-        lmax = norm.pdf(loc, loc, scale)
-        pdf = norm.pdf(value, loc, scale)
+        lmax = normpdf(loc, loc, scale)
+        pdf = normpdf(value, loc, scale)
         return 1.0 - (pdf / lmax)
 
     def _map01(self, loc, scale, value):
-        lmax = norm.pdf(loc, loc, scale)
-        pdf = norm.pdf(value, loc, scale)
+        lmax = normpdf(loc, loc, scale)
+        pdf = normpdf(value, loc, scale)
         return pdf / lmax
 
     def _map1_1(self, loc, scale, value):
-        lmax = norm.pdf(loc, loc, scale)
-        pdf = norm.pdf(value, loc, scale)
+        lmax = normpdf(loc, loc, scale)
+        pdf = normpdf(value, loc, scale)
         return 1.0 - 2*(pdf / lmax)
 
     def _map_11(self, loc, scale, value):
-        lmax = norm.pdf(loc, loc, scale)
-        pdf = norm.pdf(value, loc, scale)
+        lmax = normpdf(loc, loc, scale)
+        pdf = normpdf(value, loc, scale)
         return -1.0 + 2*(pdf / lmax)

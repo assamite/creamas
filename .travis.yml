@@ -1,34 +1,21 @@
 language: python
 python: 3.5
-sudo: required
-dist: trusty
-
-virtualenv:
-  system_site_packages: true
+sudo: false
 
 notifications:
   email: false
 
-#addons:
-#  apt:
-#    packages:
-#    - python-numpy
-#    - python-scipy
-
-before_install:
-  - sudo apt-get install -qq python-numpy python-scipy
-
 install:
-  - pip install -r requirements.txt
-  - pip install pytest
-  - pip install pytest-cov
-  - pip install testfixtures
+  - pip install tox
+  - pip install coveralls
 
 script:
-  - python setup.py develop
-  - py.test --cov=creamas tests/
-  - py.test --doctest-glob="*.rst" docs/
-  - flake8 creamas tests
+  - tox
+
+env:
+  - TOXENV=py35
+  - TOXENV=docs
+  - TOXEND=flake8
 
 after_success:
   - coveralls
