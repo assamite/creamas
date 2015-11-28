@@ -8,6 +8,7 @@ notifications:
 install:
   - pip install tox
   - pip install coveralls
+  - pip install aiomas
 
 script:
   - tox -e $TOXENV
