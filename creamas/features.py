@@ -15,15 +15,18 @@ class ModuloFeature(Feature):
     '''
 
     def __init__(self, n):
-        name = "mod-{}".format(n)
+        if type(n) not in {int, float}:
+            raise TypeError("Divisor must be either int or float, got '{}'."
+                            .format(type(n)))
+        name = "mod({})".format(n)
         domains = {int, float}
-        rtype = float
+        rtype = bool
         super().__init__(name, domains, rtype)
-        self.n = n
+        self.__n = n
 
     def __eq__(self, other):
         if isinstance(other, ModuloFeature):
-            return self.n == other.n
+            return self.__n == other.n
         return NotImplemented
 
     def __ne__(self, other):
@@ -32,7 +35,12 @@ class ModuloFeature(Feature):
             return ret
         return not ret
 
+    @property
+    def n(self):
+        '''Feature's divisor.'''
+        return self.__n
+
     def extract(self, artifact):
-        if artifact.obj % self.n == 0:
+        if artifact.obj % self.__n == 0:
             return True
         return False

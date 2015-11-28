@@ -13,5 +13,5 @@ __all__ = [
     'Feature',
     'Artifact',
     'Rule',
-    'Mapper'
+    'Mapper',
 ]
