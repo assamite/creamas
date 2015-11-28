@@ -3,11 +3,18 @@ Creamas - Creative Multi-Agent Systems
 
 .. image:: https://travis-ci.org/assamite/creamas.svg?branch=master
     :target: https://travis-ci.org/assamite/creamas
-    :align: right
+    :alt: Build Status
+    :scale: 100%
 
 .. image:: https://coveralls.io/repos/assamite/creamas/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/assamite/creamas?branch=master
-    :align: right
+    :alt: Coverage
+    :scale: 100%
+
+.. image:: https://readthedocs.org/projects/creamas/badge/?version=latest
+    :alt: Documentation Status
+    :scale: 100%
+    :target: https://creamas.readthedocs.org/en/latest/?badge=latest
 
 Creative Multi-Agent Systems research code. Very early in development.
 
