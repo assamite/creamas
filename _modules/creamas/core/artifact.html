@@ -144,13 +144,12 @@
 <div class="viewcode-block" id="Artifact"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact">[docs]</a><span class="k">class</span> <span class="nc">Artifact</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Base class for artifacts.&#39;&#39;&#39;</span>
 
-    <span class="n">domain</span> <span class="o">=</span> <span class="s">&#39;artifact&#39;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">fr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_creator</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_evals</span> <span class="o">=</span> <span class="p">{</span><span class="n">creator</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">e</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span> <span class="o">=</span> <span class="p">{</span><span class="n">creator</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">fr</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span> <span class="o">=</span> <span class="n">domain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_evals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">creator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -164,6 +163,12 @@
         <span class="sd">&#39;&#39;&#39;Artifact itself.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
 
+<div class="viewcode-block" id="Artifact.domain"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact.domain">[docs]</a>    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Domain of the artifact. Domain must match feature&#39;s possible domains</span>
+<span class="sd">        at evaluation time, or None is returned.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span>
+</div>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">evals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;*dict* - evaluations of the artifact.&#39;&#39;&#39;</span>

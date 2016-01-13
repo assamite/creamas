@@ -159,7 +159,7 @@
 creative agents.</p>
 <dl class="class">
 <dt id="creamas.core.artifact.Artifact">
-<em class="property">class </em><code class="descclassname">creamas.core.artifact.</code><code class="descname">Artifact</code><span class="sig-paren">(</span><em>creator</em>, <em>obj</em>, <em>e=0.0</em>, <em>fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">creamas.core.artifact.</code><code class="descname">Artifact</code><span class="sig-paren">(</span><em>creator</em>, <em>obj</em>, <em>domain=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for artifacts.</p>
 <dl class="method">
 <dt id="creamas.core.artifact.Artifact.add_eval">
@@ -182,6 +182,13 @@ information.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.artifact.Artifact.domain">
+<code class="descname">domain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact.domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact.domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Domain of the artifact. Domain must match feature&#8217;s possible domains
+at evaluation time, or None is returned.</p>
 </dd></dl>
 
 <dl class="attribute">

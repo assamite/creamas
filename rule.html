@@ -158,55 +158,87 @@
 <span class="target" id="module-rule"></span><p>Rule module holds base implementation of rule
 (<a class="reference internal" href="#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>). Rules combine features and mappers to
 functional body, where each feature also has weight attached to it.</p>
+<p>TODO: write rule to accept other rules in F also.</p>
 <dl class="class">
 <dt id="creamas.core.rule.Rule">
-<em class="property">class </em><code class="descclassname">creamas.core.rule.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>feats</em>, <em>weights</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rule has a collection of features (<strong>F</strong>), a mapping of features to the
-values in interval [-1, 1] (<strong>mappers</strong>) and weight for each feature
-(<strong>W</strong>).</p>
-<p>Like features, rules can be directly evaluated for artifacts by calling
-them with artifact as the only argument.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myrules</span> <span class="kn">import</span> <span class="n">MyRule</span>
-<span class="n">feats</span> <span class="o">=</span> <span class="p">[</span><span class="n">myfeat1</span><span class="p">,</span> <span class="n">myfeat2</span><span class="p">]</span>
-<span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
-<span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">mytype</span><span class="p">]</span>
-<span class="n">mr</span> <span class="o">=</span> <span class="n">MyRule</span><span class="p">(</span><span class="n">feats</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span>
-<span class="n">mr</span><span class="o">.</span><span class="n">mappers</span><span class="p">([</span><span class="n">feat1_mapper</span><span class="p">,</span> <span class="n">feat2_mapper</span><span class="p">])</span>
-<span class="n">rule_result</span> <span class="o">=</span> <span class="n">mr</span><span class="p">(</span><span class="n">myartifact</span><span class="p">)</span>
+<em class="property">class </em><code class="descclassname">creamas.core.rule.</code><code class="descname">Rule</code><span class="sig-paren">(</span><em>rules</em>, <em>weights</em>, <em>evaluation='ave'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule is a treelike data structure consisting of other Rules and RuleLeaf
+instances. Rules are used by agents to evaluate artifacts.</p>
+<p>Like features, rules offer a simple interface where
+artifact can be evaluated by calling a rule instance with artifact as the
+only argument. Rules should return a float in [-1, 1] when evaluated.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+<span class="n">rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="p">([</span><span class="n">myleaf</span><span class="p">,</span> <span class="n">myleaf2</span><span class="p">,</span> <span class="n">myrule</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span><span class="n">myartifact</span><span class="p">)</span>
 </pre></div>
 </div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rules</strong> (<em>list</em>) &#8211; Subrules for this rule. Subrule can be either an iterable of length
+2, the (Feature, Mapper)-pair, or another Rule instance.</li>
+<li><strong>weights</strong> (<em>list</em>) &#8211; Weights for the subrules.</li>
+<li><strong>evaluation</strong> &#8211; <p>How rule&#8217;s internal evaluation is done. Either one of the
+predefined functions, or user defined callable which takes two
+arguments: rule and artifact (in that order). Predefined functions
+and their keywords are:</p>
+<ul>
+<li>&#8216;ave&#8217;: <code class="xref py py-func docutils literal"><span class="pre">weighted_average()</span></code></li>
+<li>&#8216;min&#8217;: <code class="xref py py-func docutils literal"><span class="pre">minimum()</span></code></li>
+<li>&#8216;max&#8217;: <code class="xref py py-func docutils literal"><span class="pre">maximum()</span></code></li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
-<dt id="creamas.core.rule.Rule.evaluate">
-<code class="descname">evaluate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule.evaluate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate artifact with this rule. Called when the instantiated
-object is called.</p>
+<dt id="creamas.core.rule.Rule.add_subrule">
+<code class="descname">add_subrule</code><span class="sig-paren">(</span><em>subrule</em>, <em>weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/rule.html#Rule.add_subrule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.rule.Rule.add_subrule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add subrule to the rule.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subrule</strong> &#8211; Subrule to add to this rule. Subrule can be either an iterable of
+length 2, the (Feature, Mapper)-pair, or another Rule instance.</li>
+<li><strong>weight</strong> (<em>float</em>) &#8211; weight of the subrule</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">false if subrule already in rule, true otherwise</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="creamas.core.rule.Rule.F">
-<code class="descname">F</code><a class="headerlink" href="#creamas.core.rule.Rule.F" title="Permalink to this definition">¶</a></dt>
-<dd><p>list - features in this rule.</p>
+<dt id="creamas.core.rule.Rule.R">
+<code class="descname">R</code><a class="headerlink" href="#creamas.core.rule.Rule.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>list - subrules in this rule.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="creamas.core.rule.Rule.W">
 <code class="descname">W</code><a class="headerlink" href="#creamas.core.rule.Rule.W" title="Permalink to this definition">¶</a></dt>
-<dd><p>list - weights for features in this rule.</p>
+<dd><p>list - weights for subrules in this rule.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="creamas.core.rule.Rule.domains">
 <code class="descname">domains</code><a class="headerlink" href="#creamas.core.rule.Rule.domains" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rule&#8217;s acceptable artifact domains is the union of all its
-features acceptable domains. Each artifact is evaluated only with
-features that do not return <em>None</em> when the feature is extracted from
+subrules acceptable domains. Each artifact is evaluated only with
+subrules that do not return <em>None</em> when the feature is evaluated with
 it.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="creamas.core.rule.Rule.mappers">
-<code class="descname">mappers</code><a class="headerlink" href="#creamas.core.rule.Rule.mappers" title="Permalink to this definition">¶</a></dt>
-<dd><p>list - mappers for features in this rule.</p>
 </dd></dl>
 
 </dd></dl>

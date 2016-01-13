@@ -164,7 +164,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;10&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">bool</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
                            <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
@@ -383,11 +383,9 @@
 <span class="sd">        :param float std: standard deviation of the mapping distribution</span>
 <span class="sd">        :param mode: mode of the mapper: &#39;10&#39;, &#39;01&#39;, &#39;1-1&#39; or &#39;-11&#39;.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Mode ({}) is not an accepted mode type.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span> <span class="o">=</span> <span class="n">mean</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_std</span> <span class="o">=</span> <span class="n">std</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
                            <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
@@ -446,11 +444,9 @@
 <span class="sd">        :param float k: steepness of the curve</span>
 <span class="sd">        :param mode: mode of the mapper: &#39;10&#39;, &#39;01&#39;, &#39;1-1&#39; or &#39;-11&#39;.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Mode ({}) is not an accepted mode type.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span> <span class="o">=</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">=</span> <span class="n">k</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
                            <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 

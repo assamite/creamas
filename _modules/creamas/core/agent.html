@@ -146,7 +146,7 @@
 <span class="kn">import</span> <span class="nn">aiomas</span>
 
 <span class="kn">from</span> <span class="nn">creamas.core.artifact</span> <span class="kn">import</span> <span class="n">Artifact</span>
-<span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+<span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="kn">import</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span>
 <span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CreativeAgent&#39;</span><span class="p">]</span>
@@ -170,7 +170,7 @@
 <span class="sd">        rules agent uses to evaluate artifacts</span>
 
 <span class="sd">    :ivar list ~creamas.core.agent.CreativeAgent.W:</span>
-<span class="sd">        Weight for each feature in **F**, in [-1,1].</span>
+<span class="sd">        Weight for each rule in **R**, in [-1,1].</span>
 
 <span class="sd">    :ivar list A:</span>
 <span class="sd">        Artifacts the agent has created so far</span>
@@ -340,9 +340,10 @@
         <span class="sd">&#39;&#39;&#39;Set weight for rule in **R**, if rule is not in **R**, adds</span>
 <span class="sd">        it.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Rule to set weight ({}) is not subclass &quot;</span>
-                            <span class="s">&quot;of {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Rule to set weight ({}) is not subclass &quot;</span>
+                            <span class="s">&quot;of {} or {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
         <span class="k">assert</span> <span class="p">(</span><span class="n">weight</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">and</span> <span class="n">weight</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
@@ -352,9 +353,10 @@
 </div>
 <div class="viewcode-block" id="CreativeAgent.get_weight"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get weight for rule. If rule is not in **R**, returns None.&#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Rule to get weight ({}) is not subclass &quot;</span>
-                            <span class="s">&quot;of {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Rule to get weight ({}) is not subclass &quot;</span>
+                            <span class="s">&quot;of {} or {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
@@ -364,8 +366,8 @@
 <div class="viewcode-block" id="CreativeAgent.add_artifact"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add artifact to **A**.&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Artifact to add ({}) is not {}.&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Artifact to add ({}) is not {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="CreativeAgent.add_rule"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_rule">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
@@ -378,9 +380,10 @@
 <span class="sd">        :returns: true if rule was successfully added, otherwise false</span>
 <span class="sd">        :rtype bool:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Rule to add ({}) is not subclass of {}.&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Rule to add ({}) is not subclass of {} or {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">rule</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
@@ -396,9 +399,10 @@
 <span class="sd">        :returns: true if rule was successfully removed, otherwise false</span>
 <span class="sd">        :rtype bool:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Rule to remove ({}) is not subclass of {}.&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Rule to remove ({}) is not subclass of {} or {}.&quot;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
@@ -418,9 +422,9 @@
 <span class="sd">        :type attitude: float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Agent to add in connections ({}), was not &quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Agent to add in connections ({}), was not &quot;</span>
                             <span class="s">&quot;subclass of {}&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">agent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attitudes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attitude</span><span class="p">)</span>
@@ -430,9 +434,9 @@
 <div class="viewcode-block" id="CreativeAgent.remove_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Remove agent from current connections.&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;{}: Agent to remove from connections ({}), was &quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Agent to remove from connections ({}), was &quot;</span>
                             <span class="s">&quot;not subclass of {}&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
