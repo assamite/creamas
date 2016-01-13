@@ -1,10 +1,8 @@
 from setuptools import setup, find_packages
 
-from creamas import __version__
-
 setup(
     name='creamas',
-    version=__version__,
+    version='0.1.0',
     author='Simo Linkola',
     author_email='simo.linkola at cs.helsinki.fi',
     description=('library for creative multi-agent systems'),
