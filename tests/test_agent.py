@@ -8,7 +8,7 @@ import unittest
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.core.rule import Rule, RuleLeaf
+from creamas.core.rule import RuleLeaf
 from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
 from creamas.core.mapper import Mapper

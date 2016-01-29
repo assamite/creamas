@@ -3,7 +3,7 @@
     :platform: Unix
 
 Agent that creates spirographs and evaluates them by their novelty, similar to
-Saunders etal. work.
+work done by Saunders and Gero.
 '''
 import os
 import time

@@ -83,5 +83,3 @@ class Feature():
         :raises NotImplementedError: if not overridden in subclass
         '''
         raise NotImplementedError('Override in subclass')
-
-    

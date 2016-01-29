@@ -11,9 +11,6 @@ TODO: write rule to accept other rules in F also.
 import copy
 from functools import partial
 
-from creamas.core.feature import Feature
-from creamas.core.mapper import Mapper
-
 __all__ = ['Rule']
 
 
@@ -73,8 +70,8 @@ class RuleLeaf():
 
 class Rule():
     '''Rule is a treelike data structure consisting of other Rules and RuleLeaf
-    instances. Rules are used by agents to evaluate artifacts. 
-    
+    instances. Rules are used by agents to evaluate artifacts.
+
     Like features, rules offer a simple interface where
     artifact can be evaluated by calling a rule instance with artifact as the
     only argument. Rules should return a float in [-1, 1] when evaluated.
@@ -157,7 +154,7 @@ class Rule():
         :rtype: bool
         '''
         if not (issubclass(subrule.__class__, Rule) or
-        issubclass(subrule.__class__, RuleLeaf)):
+                issubclass(subrule.__class__, RuleLeaf)):
             raise TypeError("Rule's class must be (subclass of) {} or {}, got "
                             "{}.".format(Rule, RuleLeaf, subrule.__class__))
         self.__domains = set.union(self.__domains, subrule.domains)
