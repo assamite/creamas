@@ -81,6 +81,11 @@ class ObjectLogger():
             ch.setLevel(logging.DEBUG)
             self.logger.addHandler(ch)
 
+        self.DEBUG = logging.DEBUG
+        self.INFO = logging.INFO
+        self.ERROR = logging.ERROR
+        self.CRITICAL = logging.CRITICAL
+
     @property
     def obj(self):
         '''Object this logger belongs to. Object has to have **name**

@@ -4,7 +4,7 @@
 Environments for agents.
 '''
 import logging
-from random import choice
+from random import choice, shuffle
 
 import aiomas
 
@@ -71,10 +71,10 @@ class Environment():
         assert type(n) == int
         assert n > 0
         for a in self.agents:
-            for i in range(n):
-                r_agent = self.get_random_agent(a)
-                while r_agent in a.connections:
-                    r_agent = self.get_random_agent(a)
+            others = self.agents[:]
+            others.remove(a)
+            shuffle(others)
+            for r_agent in others[:n]:
                 a.add_connection(r_agent)
 
     def get_random_agent(self, agent):

@@ -13,7 +13,7 @@ from random import choice
 import aiomas
 
 from creamas.core.artifact import Artifact
-from creamas.core.rule import Rule
+from creamas.core.rule import Rule, RuleLeaf
 from creamas.logging import ObjectLogger
 
 __all__ = ['CreativeAgent']
@@ -37,7 +37,7 @@ class CreativeAgent(aiomas.Agent):
         rules agent uses to evaluate artifacts
 
     :ivar list ~creamas.core.agent.CreativeAgent.W:
-        Weight for each feature in **F**, in [-1,1].
+        Weight for each rule in **R**, in [-1,1].
 
     :ivar list A:
         Artifacts the agent has created so far
@@ -207,9 +207,10 @@ class CreativeAgent(aiomas.Agent):
         '''Set weight for rule in **R**, if rule is not in **R**, adds
         it.
         '''
-        if not issubclass(rule.__class__, Rule):
-            raise TypeError("{}: Rule to set weight ({}) is not subclass "
-                            "of {}.".format(self, rule, Rule))
+        if not (issubclass(rule.__class__, Rule) or
+                issubclass(rule.__class__, RuleLeaf)):
+            raise TypeError("Rule to set weight ({}) is not subclass "
+                            "of {} or {}.".format(rule, Rule, RuleLeaf))
         assert (weight >= -1.0 and weight <= 1.0)
         try:
             ind = self._R.index(rule)
@@ -219,9 +220,10 @@ class CreativeAgent(aiomas.Agent):
 
     def get_weight(self, rule):
         '''Get weight for rule. If rule is not in **R**, returns None.'''
-        if not issubclass(rule.__class__, Rule):
-            raise TypeError("{}: Rule to get weight ({}) is not subclass "
-                            "of {}.".format(self, rule, Rule))
+        if not (issubclass(rule.__class__, Rule) or
+                issubclass(rule.__class__, RuleLeaf)):
+            raise TypeError("Rule to get weight ({}) is not subclass "
+                            "of {} or {}.".format(rule, Rule, RuleLeaf))
         try:
             ind = self._R.index(rule)
             return self._W[ind]
@@ -231,8 +233,8 @@ class CreativeAgent(aiomas.Agent):
     def add_artifact(self, artifact):
         '''Add artifact to **A**.'''
         if not issubclass(artifact.__class__, Artifact):
-            raise TypeError("{}: Artifact to add ({}) is not {}."
-                            .format(self, artifact, Artifact))
+            raise TypeError("Artifact to add ({}) is not {}."
+                            .format(artifact, Artifact))
         self._A.append(artifact)
 
     def add_rule(self, rule, weight):
@@ -245,9 +247,10 @@ class CreativeAgent(aiomas.Agent):
         :returns: true if rule was successfully added, otherwise false
         :rtype bool:
         '''
-        if not issubclass(rule.__class__, Rule):
-            raise TypeError("{}: Rule to add ({}) is not subclass of {}."
-                            .format(self, rule, Rule))
+        if not (issubclass(rule.__class__, Rule) or
+                issubclass(rule.__class__, RuleLeaf)):
+            raise TypeError("Rule to add ({}) is not subclass of {} or {}."
+                            .format(rule.__class__, Rule, RuleLeaf))
         if rule not in self._R:
             self._R.append(rule)
             self._W.append(weight)
@@ -263,9 +266,10 @@ class CreativeAgent(aiomas.Agent):
         :returns: true if rule was successfully removed, otherwise false
         :rtype bool:
         '''
-        if not issubclass(rule.__class__, Rule):
-            raise TypeError("{}: Rule to remove ({}) is not subclass of {}."
-                            .format(self, rule, Rule))
+        if not (issubclass(rule.__class__, Rule) or
+                issubclass(rule.__class__, RuleLeaf)):
+            raise TypeError("Rule to remove ({}) is not subclass of {} or {}."
+                            .format(rule.__class__, Rule, RuleLeaf))
         try:
             ind = self._R.index(rule)
             del self._R[ind]
@@ -285,9 +289,9 @@ class CreativeAgent(aiomas.Agent):
         :type attitude: float
         '''
         if not issubclass(agent.__class__, CreativeAgent):
-            raise TypeError("{}: Agent to add in connections ({}), was not "
+            raise TypeError("Agent to add in connections ({}), was not "
                             "subclass of {}"
-                            .format(self, agent, CreativeAgent))
+                            .format(agent, CreativeAgent))
         if agent not in self._connections:
             self.connections.append(agent)
             self.attitudes.append(attitude)
@@ -297,9 +301,9 @@ class CreativeAgent(aiomas.Agent):
     def remove_connection(self, agent):
         '''Remove agent from current connections.'''
         if not issubclass(agent.__class__, CreativeAgent):
-            raise TypeError("{}: Agent to remove from connections ({}), was "
+            raise TypeError("Agent to remove from connections ({}), was "
                             "not subclass of {}"
-                            .format(self, agent, CreativeAgent))
+                            .format(agent, CreativeAgent))
         try:
             ind = self._connections.index(agent)
             del self._connections[ind]

@@ -45,20 +45,22 @@ class Feature():
         '''
         self.__domains = domains
         self.__rtype = rtype
-        self._name = name
+        self.__name = name
 
-    def __call__(self, artifact):
+    def __call__(self, artifact, mapper=None):
         if artifact.domain not in self.__domains:
             return None
-        return self.extract(artifact)
+        if mapper is None:
+            return self.extract(artifact)
+        return mapper(self.extract(artifact))
 
     def __str__(self):
-        return self._name
+        return self.__name
 
     @property
     def name(self):
         '''Name of the feature.'''
-        return self._name
+        return self.__name
 
     @property
     def domains(self):
@@ -81,3 +83,5 @@ class Feature():
         :raises NotImplementedError: if not overridden in subclass
         '''
         raise NotImplementedError('Override in subclass')
+
+    

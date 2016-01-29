@@ -55,7 +55,7 @@ class Simulation():
         :param callable callback:
             optional callable to call after each simulation step
 
-        :param int conns:
+        :param conns:
             Create **conns** amount of initial (random) connections for agents
             in the simulation environment.
 
@@ -168,7 +168,7 @@ class Simulation():
     def _init_step(self):
         '''Initialize next step of simulation to be run.'''
         self._age += 1
-        self._log(logging.INFO, "\t***** Step {} *****". format(self.age))
+        self._log(logging.INFO, "\t***** Step {} *****\n\n". format(self.age))
         self._agents_to_act = self._get_order_agents()
 
     def _finalize_step(self):

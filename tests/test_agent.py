@@ -8,7 +8,7 @@ import unittest
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.core.rule import Rule
+from creamas.core.rule import Rule, RuleLeaf
 from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
 from creamas.core.mapper import Mapper
@@ -120,10 +120,8 @@ class AgentTestCase(unittest.TestCase):
 
         f = Feature('test_feat', {float}, float)
         f2 = Feature('test_feat2', {float}, float)
-        rule = Rule([f], [0.7])
-        rule2 = Rule([f2], [0.8])
-        rule.mappers = [Mapper()]
-        rule2.mappers = [Mapper()]
+        rule = RuleLeaf(f, Mapper())
+        rule2 = RuleLeaf(f2, Mapper())
         self.assertTrue(a1.add_rule(rule, 1.0))
         self.assertIn(rule, a1.R)
         a1.set_weight(rule, 0.0)
@@ -150,7 +148,7 @@ class AgentTestCase(unittest.TestCase):
         self.assertFalse(a1.remove_rule(rule))
 
         # ARTIFACTS
-        art = Artifact(a1, 1, 0.0, 'foo')
+        art = Artifact(a1, 1)
         a1.add_artifact(art)
         self.assertIn(art, a1.A)
         a1.publish(art)

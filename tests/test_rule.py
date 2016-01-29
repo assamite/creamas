@@ -6,9 +6,10 @@ Tests for rule module.
 import unittest
 
 from creamas.core.artifact import Artifact
-from creamas.core.rule import Rule
+from creamas.core.rule import Rule, RuleLeaf
 from creamas.core.feature import Feature
 from creamas.mappers import BooleanMapper
+from creamas.features import ModuloFeature
 
 
 class DummyFeature(Feature):
@@ -29,15 +30,18 @@ class RuleTestCase(unittest.TestCase):
     def test_rule(self):
         f = DummyFeature('test1', {bool, int}, bool)
         f2 = DummyFeature('test2', {bool}, bool)
-        r = Rule([f, f2], [1.0, 1.0])
         m1 = BooleanMapper(mode='10')
         m2 = BooleanMapper(mode='10')
-        r.mappers = [m1, m2]
+        rl1 = RuleLeaf(f, m1)
+        rl2 = RuleLeaf(f2, m2)
+        self.assertEqual(rl1.feat, f)
+        self.assertEqual(rl1.mapper, m1)
+        self.assertEqual(rl2.feat, f2)
+        self.assertEqual(rl2.mapper, m2)
+        r = Rule([rl1, rl2], [1.0, 1.0])
         self.assertSetEqual({bool, int}, r.domains)
-        self.assertIn(f, r.F)
-        self.assertIn(f2, r.F)
-        self.assertIn(m1, r.mappers)
-        self.assertIn(m2, r.mappers)
+        self.assertIn(rl1, r.R)
+        self.assertIn(rl2, r.R)
 
         d = DummyAgent()
         ar = Artifact(d, True)
@@ -48,8 +52,28 @@ class RuleTestCase(unittest.TestCase):
         self.assertEqual(ret, 1.0)
 
         with self.assertRaises(TypeError):
-            r = Rule([1, f], [0.1, 1.0])
+            r = Rule([f, rl1], [0.1, 1.0])
 
-        r = Rule([f, f2], [1.0, 1.0])
-        with self.assertRaises(ValueError):
-            r.mappers = [m1]
+        mf = ModuloFeature(5)
+        mf2 = ModuloFeature(10)
+        mf3 = ModuloFeature(9)
+        m3 = BooleanMapper(mode='10')
+        rl1 = RuleLeaf(mf, m1)
+        rl2 = RuleLeaf(mf2, m2)
+        rl3 = RuleLeaf(mf3, m3)
+        rule = Rule([rl1, rl2, rl3], [1.0, 1.0, 1.0])
+        ar = Artifact(d, 20)
+        ar.domain = int
+        self.assertAlmostEqual(rule(ar), 0.6666666666666666)
+        rule = Rule([rl1, rl2, rl3], [-1.0, 1.0, 1.0])
+        self.assertAlmostEqual(rule(ar), 0.0)
+        rule = Rule([rl1, rl2, rl3], [1.0, 1.0, -1.0])
+        self.assertAlmostEqual(rule(ar), 0.6666666666666666)
+        rule = Rule([rl1, rl2, rl3], [1.0, 1.0, 0.0])
+        self.assertAlmostEqual(rule(ar), 1.0)
+        rule = Rule([rl1, rl2, rl3], [0.0, 1.0, 1.0])
+        self.assertAlmostEqual(rule(ar), 0.5)
+        m4 = BooleanMapper(mode='1-1')
+        rl4 = RuleLeaf(mf3, m4)
+        rule = Rule([rl1, rl2, rl4], [1.0, 1.0, -1.0])
+        self.assertAlmostEqual(rule(ar), 1.0)

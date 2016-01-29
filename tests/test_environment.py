@@ -55,7 +55,7 @@ class TestEnvironment(unittest.TestCase):
 
         arts = []
         for i in range(5):
-            ar = Artifact(a, i, 0.0, 'foo')
+            ar = Artifact(a, i)
             arts.append(ar)
             env.add_artifact(agents[0], ar)
 

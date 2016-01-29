@@ -11,13 +11,12 @@ __all__ = ['Artifact']
 class Artifact():
     '''Base class for artifacts.'''
 
-    domain = 'artifact'
-
-    def __init__(self, creator, obj, e=0.0, fr=None):
+    def __init__(self, creator, obj, domain=int):
         self._creator = creator.name
         self._obj = obj
-        self._evals = {creator.name: e}
-        self._framings = {creator.name: fr}
+        self._domain = domain
+        self._evals = {}
+        self._framings = {}
 
     @property
     def creator(self):
@@ -30,6 +29,12 @@ class Artifact():
     def obj(self):
         '''Artifact itself.'''
         return self._obj
+
+    def domain(self):
+        '''Domain of the artifact. Domain must match feature's possible domains
+        at evaluation time, or None is returned.
+        '''
+        return self._domain
 
     @property
     def evals(self):
