@@ -152,7 +152,7 @@ class AgentTestCase(unittest.TestCase):
         a1.add_artifact(art)
         self.assertIn(art, a1.A)
         a1.publish(art)
-        self.assertIn(art, env.artifacts[a1.name])
+        self.assertIn(art, env.get_artifacts(a1))
 
         with self.assertRaises(TypeError):
             a1.add_artifact(1)

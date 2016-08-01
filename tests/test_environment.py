@@ -53,11 +53,12 @@ class TestEnvironment(unittest.TestCase):
             # agent cannot have itself in connections
             self.assertNotIn(a, a_conns)
 
+        a = agents[0]
         arts = []
         for i in range(5):
             ar = Artifact(a, i)
             arts.append(ar)
-            env.add_artifact(agents[0], ar)
+            env.add_artifact(ar)
 
         for a in arts:
             self.assertIn(a, env.get_artifacts(agents[0]))

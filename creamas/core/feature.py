@@ -12,7 +12,7 @@ _all__ = ['Feature']
 class Feature():
     '''Base feature class that is callable after initialization.
 
-    Each feature value takes as an input a artifact, and returns feature's
+    Each feature value takes as an input an artifact, and returns feature's
     value for that artifact. If artifact type is not supported, feature's
     evaluation should return None.
 

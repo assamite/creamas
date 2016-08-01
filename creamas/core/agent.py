@@ -7,6 +7,7 @@ Agent module holds **CreativeAgent** implementation, a subclass of
 creative agents.
 '''
 import logging
+import operator
 import pickle
 from random import choice
 
@@ -58,7 +59,8 @@ class CreativeAgent(aiomas.Agent):
     :ivar ~creamas.core.agent.CreativeAgent.age:
         Age of the agent
     '''
-    def __init__(self, environment, resources=0, name=None, log_folder=None):
+    def __init__(self, environment, resources=0, name=None, log_folder=None,
+                 log_level=logging.DEBUG):
         super().__init__(environment.container)
         self._age = 0
         self._env = environment
@@ -84,7 +86,7 @@ class CreativeAgent(aiomas.Agent):
 
         if type(log_folder) is str:
             self.logger = ObjectLogger(self, log_folder, add_name=True,
-                                       init=True)
+                                       init=True, log_level=log_level)
         else:
             self.logger = None
 
@@ -100,8 +102,12 @@ class CreativeAgent(aiomas.Agent):
     @property
     def name(self):
         '''Human readable name of the agent. Must be unique in agent's
-        environment. Agent cannot change its name during its lifetime.'''
+        environment. Agent should not change its name during its lifetime.'''
         return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.__name = name
 
     @property
     def env(self):
@@ -332,7 +338,7 @@ class CreativeAgent(aiomas.Agent):
         :param artifact: artifact to be published
         :type artifact: `~creamas.core.artifact.Artifact`
         '''
-        self.env.add_artifact(self, artifact)
+        self.env.add_artifact(artifact)
         self._log(logging.DEBUG, "Published {} to domain.".format(artifact))
 
     def refill(self):
@@ -340,7 +346,7 @@ class CreativeAgent(aiomas.Agent):
         self._cur_res = self._max_res
 
     @aiomas.expose
-    def evaluate_other(self, pkl):
+    def evaluate_pickle(self, pkl):
         '''Evaluate function that first unpickles artifact, then calls
         **evaluate** and then pickles the evaluation results to be send over
         tcp.
@@ -411,7 +417,7 @@ class CreativeAgent(aiomas.Agent):
         '''
         remote_agent = await self.container.connect(agent.addr)
         pkl = pickle.dumps(artifact)
-        ret = await remote_agent.evaluate_other(pkl)
+        ret = await remote_agent.evaluate_pickle(pkl)
         ev = pickle.loads(ret)
         return ev
 
@@ -425,6 +431,29 @@ class CreativeAgent(aiomas.Agent):
             This is an async method that should be awaited.
         '''
         raise NotImplementedError('Override in subclass.')
+
+    def validate_candidates(self, candidates):
+        return candidates
+
+    def vote(self, candidates):
+        '''Rank artifact candidates based on agent's evaluation.
+
+        :param candidates:
+            list of :py:class:`~creamas.core.artifact.Artifact` objects to be
+            ranked
+
+        :returns:
+            ordered list of (candidate, evaluation)-tuples
+        '''
+        ranks = [(c, self.evaluate(c)) for c in candidates]
+        ranks.sort(key=operator.itemgetter(1), reverse=True)
+        return ranks
+
+    @aiomas.expose
+    async def vote_pickle(self, pkl):
+        candidates = pickle.loads(pkl)
+        ret = self.vote(candidates)
+        return pickle.dumps(ret)
 
     def get_older(self):
         '''Age agent by one simulation step.'''

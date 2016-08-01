@@ -1,8 +1,10 @@
 '''
 .. py:module:: simulation
 
-Basic simulation implementation for research purposes.
+Basic simulation implementation where agents in the same environment can be
+run in an iterative manner.
 '''
+import time
 import logging
 from random import shuffle
 
@@ -104,6 +106,11 @@ class Simulation():
         self._age = 0
         self._order = 'alphabetical'
         self._name = 'sim'
+        self._start_time = time.clock()
+        self._step_start_time = None
+        self._step_processing_time = 0.0
+        self._processing_time = 0.0
+        self._end_time = None
 
         # List of agents that have not been triggered for current step.
         self._agents_to_act = []
@@ -148,8 +155,8 @@ class Simulation():
         * alphabetical: agents are sorted by name
         * random: agents are shuffled
 
-        Changing the order while iteration is in the middle of run will take
-        place in the next iteration.
+        Changing the order while iteration is unfinished will take place in the
+        next iteration.
         '''
         return self._order
 
@@ -168,15 +175,28 @@ class Simulation():
     def _init_step(self):
         '''Initialize next step of simulation to be run.'''
         self._age += 1
-        self._log(logging.INFO, "\t***** Step {} *****\n\n". format(self.age))
+        self.env.age = self._age
+        self._log(logging.INFO, "")
+        self._log(logging.INFO, "\t***** Step {:0>4} *****". format(self.age))
+        self._log(logging.INFO, "")
         self._agents_to_act = self._get_order_agents()
+        self._step_processing_time = 0.0
+        self._step_start_time = time.clock()
 
     def _finalize_step(self):
         '''Finalize simulation step after all agents have acted for the current
         step.
         '''
+        t = time.clock()
         if self._callback is not None:
             self._callback(self.age)
+        t2 = time.clock()
+        self._step_processing_time += t2 - t
+        self._log(logging.INFO, "Step {} run in: {:.3f}s ({:.3f}s of "
+                  "actual processing time used)"
+                  .format(self.age, self._step_processing_time,
+                          t2 - self._step_start_time))
+        self._processing_time += self._step_processing_time
 
     def steps(self, n):
         '''Progress simulation with given amount of steps.
@@ -206,14 +226,17 @@ class Simulation():
         the current step.
         '''
         # all agents acted, init next step
+        t = time.clock()
         if len(self._agents_to_act) == 0:
             self._init_step()
 
         agent = self._agents_to_act.pop(0)
         agent.get_older()
         aiomas.run(until=agent.act())
+        t2 = time.clock()
+        self._step_processing_time += t2 - t
 
-        # all agents acted, finalize cur step
+        # all agents acted, finalize current step
         if len(self._agents_to_act) == 0:
             self._finalize_step()
 
@@ -228,4 +251,10 @@ class Simulation():
 
     def end(self, folder=None):
         '''End simulation and destroy the current simulation environment.'''
-        self.env.destroy(folder=folder)
+        ret = self.env.destroy(folder=folder)
+        self._end_time = time.clock()
+        self._log(logging.INFO, "Simulation run with {} steps took {:.3f}s to "
+                  "complete, while actual processing time was {:.3f}s."
+                  .format(self.age, self._end_time - self._start_time,
+                          self._processing_time))
+        return ret

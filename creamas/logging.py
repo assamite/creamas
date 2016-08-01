@@ -59,7 +59,8 @@ class ObjectLogger():
 
     Generates one file for each attribute to be logged.
     '''
-    def __init__(self, obj, folder, add_name=False, init=True):
+    def __init__(self, obj, folder, add_name=False, init=True,
+                 log_level=logging.DEBUG):
         '''Create new logger instance for *obj* in *folder*. If *add_name*
         is true, then creates subfolder carrying :py:attr:`obj.name` to
         *folder*.
@@ -74,17 +75,19 @@ class ObjectLogger():
             self._folder = obj_folder
 
         self.logger = logging.getLogger("creamas.{}".format(self.obj.name))
-        self.logger.addHandler(logging.NullHandler())
-        if init:
-            self.logger.setLevel(logging.DEBUG)
-            ch = logging.StreamHandler()
-            ch.setLevel(logging.DEBUG)
-            self.logger.addHandler(ch)
+        if len(self.logger.handlers) == 0:
+            self.logger.addHandler(logging.NullHandler())
+            if init:
+                self.logger.setLevel(log_level)
+                ch = logging.StreamHandler()
+                ch.setLevel(log_level)
+                self.logger.addHandler(ch)
 
         self.DEBUG = logging.DEBUG
         self.INFO = logging.INFO
         self.ERROR = logging.ERROR
         self.CRITICAL = logging.CRITICAL
+        self.WARNING = logging.WARNING
 
     @property
     def obj(self):
@@ -112,7 +115,7 @@ class ObjectLogger():
         self.log(level, msg)
 
     def log(self, level, msg):
-        self.logger.log(level, "{}:{}".format(self.obj.name, msg))
+        self.logger.log(level, "{}: {}".format(self.obj.name, msg))
 
     def write(self, attr_name, prefix='age'):
         '''Write attribute's value to file.
