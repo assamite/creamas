@@ -318,6 +318,12 @@ class CreativeAgent(aiomas.Agent):
         except:
             return False
 
+    async def connect(self, addr):
+        '''Connect to agent in addr.
+        '''
+        remote_agent = await self.container.connect(addr)
+        return remote_agent
+
     async def random_connection(self):
         '''Connect to random agent from current **connections**.
 

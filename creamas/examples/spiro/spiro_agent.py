@@ -18,7 +18,7 @@ from scipy import ndimage, misc
 from creamas.core import CreativeAgent, Artifact, Environment
 from creamas.math import gaus_pdf
 
-from spiro import give_dots
+from horn import Horn, Genotype, express
 
 class SpiroAgent(CreativeAgent):
     '''Agent that creates spirographs and evaluates them with short term memory
