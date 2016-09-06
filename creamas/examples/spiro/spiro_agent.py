@@ -18,7 +18,7 @@ from scipy import ndimage, misc
 from creamas.core import CreativeAgent, Artifact, Environment
 from creamas.math import gaus_pdf
 
-from horn import Horn, Genotype, express
+from spiro import give_dots, give_dots_yield, spiro_image
 
 class SpiroAgent(CreativeAgent):
     '''Agent that creates spirographs and evaluates them with short term memory
@@ -713,7 +713,7 @@ class STMemory():
 if __name__ == "__main__":
     from creamas.core import Simulation
     from matplotlib import pyplot as plt
-    log_folder = None
+    log_folder = 'logs'
     env = SpiroEnvironment(log_folder=log_folder)
     for e in range(1, 5):
         a = SpiroAgent(env, desired_novelty=-1, search_width=10, log_folder=log_folder,
