@@ -1,4 +1,4 @@
-aiomas==0.6.1
+aiomas==1.0.3
 alabaster==0.7.6
 appnope==0.1.0
 arrow==0.7.0
