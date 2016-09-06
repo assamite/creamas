@@ -287,12 +287,12 @@ class GaussianMapper(Mapper):
     def _map1_1(self, mean, std, value):
         lmax = gaus_pdf(mean, mean, std)
         pdf = gaus_pdf(value, mean, std)
-        return 1.0 - 2*(pdf / lmax)
+        return 1.0 - 2 * (pdf / lmax)
 
     def _map_11(self, mean, std, value):
         lmax = gaus_pdf(mean, mean, std)
         pdf = gaus_pdf(value, mean, std)
-        return -1.0 + 2*(pdf / lmax)
+        return -1.0 + 2 * (pdf / lmax)
 
 
 class LogisticMapper(Mapper):
