@@ -146,7 +146,7 @@ class LinearMapper(Mapper):
             return -1.0
         diff = hi - lo
         val_diff = value - lo
-        return 1.0 - (2*(float(val_diff) / diff))
+        return 1.0 - (2 * (float(val_diff) / diff))
 
     def _map_11(self, lo, hi, value):
         if value < lo:
@@ -155,7 +155,7 @@ class LinearMapper(Mapper):
             return 1.0
         diff = hi - lo
         val_diff = value - lo
-        return -1.0 + (2*(float(val_diff) / diff))
+        return -1.0 + (2 * (float(val_diff) / diff))
 
 
 class DoubleLinearMapper(LinearMapper):
