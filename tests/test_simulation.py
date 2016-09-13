@@ -29,14 +29,14 @@ class SimulationTestCase(unittest.TestCase):
         self.assertEqual(sim.name, 'sim')
         self.assertEqual(env.__class__, Environment,
                          'env class is not expected')
-        agents = sim.env.agents
-        a = agents[0]
+        get_agents = sim.env.get_agents
+        a = get_agents[0]
         self.assertEqual(a.__class__, CreativeAgent,
                          'Agent class is not expected')
-        self.assertEqual(len(agents), 10,
-                         'Simulation did not create correct amount of agents')
+        self.assertEqual(len(get_agents), 10,
+                         'Simulation did not create correct amount of get_agents')
 
-        for a in agents:
+        for a in get_agents:
             self.assertEqual(len(a.connections), 3,
                              'Simulation did not correct initial connections')
 
@@ -48,10 +48,10 @@ class SimulationTestCase(unittest.TestCase):
         sim = Simulation.create(agent_cls=a_classes, n_agents=a_nums,
                                 agent_kwargs=[{}, {}])
 
-        # Both agents get created right amount
+        # Both get_agents get created right amount
         n_ca = 0
         n_da = 0
-        for a in sim.env.agents:
+        for a in sim.env.get_agents:
             if a.__class__ == CreativeAgent:
                 n_ca += 1
             if a.__class__ == DummyAgent:

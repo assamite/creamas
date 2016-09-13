@@ -61,7 +61,7 @@ class CreativeAgent(aiomas.Agent):
     '''
     def __init__(self, environment, resources=0, name=None, log_folder=None,
                  log_level=logging.DEBUG):
-        super().__init__(environment.container)
+        super().__init__(environment)
         self._age = 0
         self._env = environment
         self._max_res = resources
@@ -81,7 +81,9 @@ class CreativeAgent(aiomas.Agent):
                                  .format(name))
             self.__name = name
         else:
-            n = "A{}".format(self.addr.rsplit("/", 1)[1])
+            import re
+            a = re.split("[:/]", self.addr)
+            n = "_".join([i for i in a if len(i) > 0])
             self.__name = n
 
         if type(log_folder) is str:
@@ -187,6 +189,11 @@ class CreativeAgent(aiomas.Agent):
     def attitudes(self):
         '''Attitudes towards agents in **connections**.'''
         return self._attitudes
+
+    def qualname(self):
+        '''Get qualified name of this class.
+        '''
+        return "{}:{}".format(self.__module__, self.__class__.__name__)
 
     def get_attitude(self, agent):
         '''Get attitude towards agent in **connections**. If agent is not in
@@ -319,9 +326,9 @@ class CreativeAgent(aiomas.Agent):
             return False
 
     async def connect(self, addr):
-        '''Connect to agent in addr.
+        '''Connect to agent in given address.
         '''
-        remote_agent = await self.container.connect(addr)
+        remote_agent = await self.env.connect(addr)
         return remote_agent
 
     async def random_connection(self):
@@ -335,7 +342,7 @@ class CreativeAgent(aiomas.Agent):
         :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
         r_agent = choice(self._connections)
-        remote_agent = await self.container.connect(r_agent.addr)
+        remote_agent = await self.env.connect(r_agent.addr)
         return remote_agent
 
     def publish(self, artifact):
@@ -427,6 +434,7 @@ class CreativeAgent(aiomas.Agent):
         ev = pickle.loads(ret)
         return ev
 
+    @aiomas.expose
     async def act(self):
         '''Trigger agent to act. **Dummy method, override in subclass.**
 
@@ -442,7 +450,7 @@ class CreativeAgent(aiomas.Agent):
         return candidates
 
     def vote(self, candidates):
-        '''Rank artifact candidates based on agent's evaluation.
+        '''Rank artifact candidates based on agent's own *evaluate*-method.
 
         :param candidates:
             list of :py:class:`~creamas.core.artifact.Artifact` objects to be
@@ -469,6 +477,7 @@ class CreativeAgent(aiomas.Agent):
         if self.logger is not None:
             self.logger.log(level, msg)
 
+    @aiomas.expose
     def close(self, folder=None):
         '''Perform any bookkeeping needed before closing the agent.
 
@@ -477,8 +486,7 @@ class CreativeAgent(aiomas.Agent):
         pass
 
     def __str__(self):
-        return self.__name
+        return self.__repr__()
 
     def __repr__(self):
-        return "{}:{}({})".format(self.__name, self.__class__.__name__,
-                                  self.addr)
+        return "{}({})".format(self.__class__.__name__, self.name)

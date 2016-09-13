@@ -8,6 +8,7 @@ import time
 import logging
 from random import shuffle
 
+import asyncio
 import aiomas
 
 from creamas.core.agent import CreativeAgent
@@ -28,7 +29,7 @@ class Simulation():
     def create(self, agent_cls, n_agents=10, agent_kwargs={},
                env_cls=Environment, env_kwargs={}, callback=None, conns=0,
                log_folder=None):
-        '''Convenience function to create simulation environment.
+        '''Convenience function to create simple simulations.
 
         Method first creates environment, then instantiates agents into it
         with give arguments, and finally creates simulation for the
@@ -106,7 +107,7 @@ class Simulation():
         self._age = 0
         self._order = 'alphabetical'
         self._name = 'sim'
-        self._start_time = time.clock()
+        self._start_time = time.time()
         self._step_start_time = None
         self._step_processing_time = 0.0
         self._processing_time = 0.0
@@ -166,9 +167,9 @@ class Simulation():
         self._order = order
 
     def _get_order_agents(self):
-        agents = self.env.agents
+        agents = self.env.get_agents()
         if self.order == 'alphabetical':
-            return sorted(agents, key=lambda x: x.name)
+            return sorted(agents)
         shuffle(agents)
         return agents
 
@@ -181,22 +182,42 @@ class Simulation():
         self._log(logging.INFO, "")
         self._agents_to_act = self._get_order_agents()
         self._step_processing_time = 0.0
-        self._step_start_time = time.clock()
+        self._step_start_time = time.time()
 
     def _finalize_step(self):
         '''Finalize simulation step after all agents have acted for the current
         step.
         '''
-        t = time.clock()
+        t = time.time()
         if self._callback is not None:
             self._callback(self.age)
-        t2 = time.clock()
+        t2 = time.time()
         self._step_processing_time += t2 - t
         self._log(logging.INFO, "Step {} run in: {:.3f}s ({:.3f}s of "
                   "actual processing time used)"
                   .format(self.age, self._step_processing_time,
                           t2 - self._step_start_time))
         self._processing_time += self._step_processing_time
+
+    def async_steps(self, n):
+        assert len(self._agents_to_act) == 0
+        for _ in range(n):
+            self.async_step()
+
+    def async_step(self):
+        '''Progress simulation by running all agents once asynchronously.
+        '''
+        assert len(self._agents_to_act) == 0
+        self._init_step()
+        t = time.time()
+        tasks = [asyncio.ensure_future(self.env.trigger_act(addr)) for
+                 addr in self._agents_to_act]
+        #for a in self._agents_to_act:
+        #    a.get_older()
+        aiomas.run(until=asyncio.gather(*tasks))
+        self._agents_to_act = []
+        self._step_processing_time = time.time() - t
+        self._finalize_step()
 
     def steps(self, n):
         '''Progress simulation with given amount of steps.
@@ -207,7 +228,7 @@ class Simulation():
         :param int n: amount of steps to run
         '''
         assert len(self._agents_to_act) == 0
-        for i in range(n):
+        for _ in range(n):
             self.step()
 
     def step(self):
@@ -226,14 +247,14 @@ class Simulation():
         the current step.
         '''
         # all agents acted, init next step
-        t = time.clock()
+        t = time.time()
         if len(self._agents_to_act) == 0:
             self._init_step()
 
         agent = self._agents_to_act.pop(0)
-        agent.get_older()
-        aiomas.run(until=agent.act())
-        t2 = time.clock()
+        #agent.get_older()
+        aiomas.run(until=self.env.trigger_act(agent))
+        t2 = time.time()
         self._step_processing_time += t2 - t
 
         # all agents acted, finalize current step
@@ -252,7 +273,7 @@ class Simulation():
     def end(self, folder=None):
         '''End simulation and destroy the current simulation environment.'''
         ret = self.env.destroy(folder=folder)
-        self._end_time = time.clock()
+        self._end_time = time.time()
         self._log(logging.INFO, "Simulation run with {} steps took {:.3f}s to "
                   "complete, while actual processing time was {:.3f}s."
                   .format(self.age, self._end_time - self._start_time,

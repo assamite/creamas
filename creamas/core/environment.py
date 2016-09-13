@@ -16,45 +16,30 @@ import logging
 import operator
 from collections import Counter
 from random import choice, shuffle
+import multiprocessing
 
 import aiomas
 
 from creamas.logging import ObjectLogger
 
 
-__all__ = ['Environment']
+__all__ = ['Environment', 'MultiEnvironment']
 
-
-class Environment():
+class Environment(aiomas.Container):
     '''Core environment class.'''
-
-    def __init__(self, addr=('localhost', 5555), name=None, clock=None,
-                 extra_ser=None, log_folder=None):
-        self._container = aiomas.Container.create(addr, codec=aiomas.MsgPack,
-                                                  clock=clock,
-                                                  extra_serializers=extra_ser)
+    def __init__(self, base_url, clock, connect_kwargs):
+        super().__init__(base_url, clock, connect_kwargs)
         self._age = 0
+        self._logger = None
+        self._log_folder = None
         self._artifacts = []
         self._candidates = []
-        self._name = name if type(name) is str else 'env'
-
-        if type(log_folder) is str:
-            self.logger = ObjectLogger(self, log_folder, add_name=True,
-                                       init=True)
-        else:
-            self.logger = None
+        self._name = 'env@{}'.format(base_url)
 
     @property
     def name(self):
         '''Name of the environment.'''
         return self._name
-
-    @property
-    def container(self):
-        '''``aiomas.Container``, serves as a communication route between
-        agents.
-        '''
-        return self._container
 
     @property
     def age(self):
@@ -64,11 +49,6 @@ class Environment():
     @age.setter
     def age(self, _age):
         self._age = _age
-
-    @property
-    def agents(self):
-        '''Agents in environment.'''
-        return list(self._container.agents.dict.values())
 
     @property
     def artifacts(self):
@@ -82,6 +62,45 @@ class Environment():
         '''
         return self._candidates
 
+    @property
+    def logger(self):
+        '''Logger for the environment.
+        '''
+        return self._logger
+
+    @property
+    def log_folder(self):
+        '''Logging folder for the environment. If set, will create
+        py:class::`creamas.logging.ObjectLogger` for that folder.
+        '''
+        return self._log_folder
+
+    @log_folder.setter
+    def log_folder(self, _log_folder):
+        assert(type(_log_folder) is str)
+        self._log_folder = _log_folder
+        self._logger = ObjectLogger(self, _log_folder, add_name=True, init=True)
+
+    def get_agents(self, address=True, agent_cls=None):
+        '''Get addresses of agents in the environment.'''
+        agents = []
+        if agent_cls is None:
+            agents =  list(self.agents.dict.values())
+        else:
+            #TODO: Fix
+            agents = list(self.agents.dict.values())
+        if address:
+            agents = [agent.addr for agent in agents]
+        return agents
+
+    async def trigger_act(self, addr):
+        '''Trigger agent in address to act.
+        '''
+        for a in self.get_agents(address=False):
+            if addr == a.addr:
+                ret = await a.act()
+                return ret
+
     def clear_candidates(self):
         '''Remove current candidates from the environment.
         '''
@@ -90,7 +109,7 @@ class Environment():
     def get_agent(self, name):
         '''Get agent by its name.'''
         agent = None
-        for a in self.agents:
+        for a in self.get_agents():
             if a.name == name:
                 agent = a
                 break
@@ -103,8 +122,8 @@ class Environment():
         '''
         assert type(n) == int
         assert n > 0
-        for a in self.agents:
-            others = self.agents[:]
+        for a in self.get_agents():
+            others = self.get_agents[:]
             others.remove(a)
             shuffle(others)
             for r_agent in others[:n]:
@@ -119,9 +138,9 @@ class Environment():
         :returns: random, non-connected, agent from the environment
         :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
-        r_agent = choice(self.agents)
+        r_agent = choice(self.get_agents)
         while r_agent.addr == agent.addr:
-            r_agent = choice(self.agents)
+            r_agent = choice(self.get_agents)
         return r_agent
 
     def add_artifact(self, artifact):
@@ -155,20 +174,20 @@ class Environment():
         that are not validated at least by one agent, i.e. they are vetoed.
 
         In larger societies this method might be costly, as it calls each
-        agents' ``validate_candidates``-method.
+        get_agents' ``validate_candidates``-method.
         '''
         valid_candidates = set(self.candidates)
-        for a in self.agents:
+        for a in self.get_agents(address=False):
             vc = set(a.validate_candidates(self.candidates))
             valid_candidates = valid_candidates.intersection(vc)
 
         self._candidates = list(valid_candidates)
-        self._log(logging.INFO, "{} valid candidates after agents used veto."
+        self._log(logging.INFO, "{} valid candidates after get_agents used veto."
                   .format(len(self.candidates)))
 
     def _gather_votes(self):
         votes = []
-        for a in self.agents:
+        for a in self.get_agents(address=False):
             vote = a.vote(candidates=self.candidates)
             votes.append(vote)
         return votes
@@ -325,7 +344,7 @@ class Environment():
         3. calls shutdown for its **container**.
         '''
         ret = self.save_info(folder)
-        for a in self.agents:
+        for a in self.get_agents:
             a.close(folder=folder)
         self.container.shutdown()
         return ret

@@ -8,6 +8,7 @@ creative system's behavior.
 from functools import wraps
 import logging
 import os
+import sys
 
 __all__ = ['log_before', 'log_after', 'ObjectLogger']
 
@@ -55,15 +56,16 @@ def log_after(attr, level=logging.DEBUG):
 
 
 class ObjectLogger():
-    '''Base logger for objects.
+    '''Base logger for objects. *Not* a subclass of base logger.
 
     Generates one file for each attribute to be logged.
     '''
     def __init__(self, obj, folder, add_name=False, init=True,
                  log_level=logging.DEBUG):
         '''Create new logger instance for *obj* in *folder*. If *add_name*
-        is true, then creates subfolder carrying :py:attr:`obj.name` to
-        *folder*.
+        is True, creates subfolder carrying :py:attr:`obj.name` to *folder*.
+        If *init* is true, sets logger's level to *log_level* and adds basic
+        *StreamHandler* to the logger.
         '''
         self._obj = obj
         self._folder = folder
@@ -100,6 +102,11 @@ class ObjectLogger():
         '''Root logging folder for this logger.'''
         return self._folder
 
+    def add_handler(self, handler):
+        '''Add handler to the logger.
+        '''
+        self.logger.addHandler(handler)
+
     def get_file(self, attr_name):
         '''Return absolute path to logging file for obj's attribute.'''
         return os.path.abspath(os.path.join(self.folder, "{}.log"
@@ -116,6 +123,7 @@ class ObjectLogger():
 
     def log(self, level, msg):
         self.logger.log(level, "{}: {}".format(self.obj.name, msg))
+        sys.stdout.flush()
 
     def write(self, attr_name, prefix='age'):
         '''Write attribute's value to file.

@@ -9,6 +9,8 @@ Linkola, S., Takala, T., and Toivonen, H. 2016. Novelty-Seeking Multi-Agent
 Systems. In The Proceedings of The Seventh International Conference on
 Computational Creativity (ICCC2016), 1-8. Paris, France. Sony CSL Paris,
 France.
+
+This implementation uses creamas.mp-module.
 '''
 import os
 import sys
@@ -18,11 +20,12 @@ import functools
 import logging
 import operator
 
+import aiomas
 import numpy as np
 from scipy import ndimage, misc
 
 from creamas.core import CreativeAgent, Artifact
-from creamas.core.environment import Environment
+from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
 from creamas.math import gaus_pdf
 
 from spiro import give_dots, give_dots_yield, spiro_image
@@ -202,7 +205,8 @@ class SpiroAgent(CreativeAgent):
         best_artifact.creation_time = self.age
         return best_artifact
 
-    async def act(self):
+    @aiomas.expose
+    def act(self):
         '''Agent's main method to create new spirographs.
 
         See Simulation and CreativeAgent documentation for details.
@@ -218,6 +222,9 @@ class SpiroAgent(CreativeAgent):
         self._log(logging.DEBUG, "Created spirograph with args={}, val={}"
                   .format(args, val))
         self.spiro_args = args
+        #print(self.addr, self.spiro_args)
+        with open(self.name, 'a') as f:
+            f.write("{}\n".format(self.spiro_args))
         self.arg_history.append(self.spiro_args)
         self.add_artifact(artifact)
         if val >= self._own_threshold:
@@ -422,6 +429,7 @@ class SpiroAgent(CreativeAgent):
         else:
             plt.show()
 
+    @aiomas.expose
     def close(self, folder):
         mean_dist, dists, indeces = self._artifact_distances()
         if len(dists) == 0:
@@ -445,12 +453,34 @@ class SpiroArtifact(Artifact):
     def __lt__(self, other):
         return str(self) < str(other)
 
+class SpiroEnvManager(EnvManager):
+    @aiomas.expose
+    async def candidates(self):
+        return self.container.candidates
 
-class SpiroEnvironment(Environment):
-    '''Environment for agents creating spirographs.
+    @aiomas.expose
+    async def add_candidate(self, artifact):
+        host_manager = await self.container.connect(self._host_addr)
+        host_manager.add_candidate(artifact)
+
+
+class SpiroMultiEnvManager(MultiEnvManager):
+    @aiomas.expose
+    def add_candidate(self, artifact):
+        self.container.add_candidate(artifact)
+
+    async def get_candidates(self, addr):
+        print(addr)
+        remote_manager = await self.container.connect(addr)
+        candidates = await remote_manager.candidates()
+        return candidates
+
+
+class SpiroMultiEnvironment(MultiEnvironment):
+    '''MultiEnvironment for agents creating spirographs.
     '''
-    def __init__(self, base_url, clock, connect_kwargs):
-        super().__init__(base_url, clock, connect_kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.save_image_number = 1
         self.img_size = 32
         self.age = 0
@@ -458,8 +488,21 @@ class SpiroEnvironment(Environment):
         self.valid_cand = []
         self.suggested_cand = []
 
+    async def get_candidates(self, addr):
+        candidates =  await self._manager.get_candidates(addr)
+        return candidates
+
+    async def gather_candidates(self):
+        cands = []
+        for addr in self._manager_addrs:
+            cand = await self.get_candidates(addr)
+            cands.extend(cand)
+        return cands
+
     def vote_and_save_info(self, age):
         self.age = age
+        self._candidates = aiomas.run(until=self.gather_candidates())
+        print(len(self.candidates))
         self.suggested_cand.append(len(self.candidates))
         self.validate_candidates()
         self.valid_cand.append(len(self.candidates))
@@ -649,11 +692,12 @@ class SpiroEnvironment(Environment):
             plt.close()
         else:
             plt.show()
-
+'''
     def destroy(self, folder):
         ameans = []
         for a in self.get_agents():
-            md = a.close(folder=folder)
+            remote_agent = self._manager.container.connect(a)
+            md = remote_agent.close(folder=folder)
             ameans.append(md)
         amin = min(ameans)
         amax = max(ameans)
@@ -678,7 +722,7 @@ class SpiroEnvironment(Environment):
         self.shutdown()
         ret = ret + ((amin,amax, amean),)
         return ret
-
+'''
 
 class STMemory():
     '''Agent's short-term memory model using a simple list which stores
@@ -715,22 +759,38 @@ class STMemory():
 
 
 if __name__ == "__main__":
+    import asyncio
     import aiomas
-    from creamas.core import Simulation
+    from creamas.core import Simulation, Environment
     from matplotlib import pyplot as plt
 
-    addr = ('localhost', 5555)
+    addr = ('localhost', 5550)
+    addrs = [('localhost', 5555),
+             ('localhost', 5556),
+             ('localhost', 5557),
+             ('localhost', 5558)]
 
     log_folder = 'logs'
-    env = SpiroEnvironment.create(addr, codec=aiomas.MsgPack)
-    env.log_folder = log_folder
-    for e in range(10):
-        SpiroAgent(env, desired_novelty=-1, search_width=20,
-                  log_folder=log_folder, log_level=logging.DEBUG)
+    menv = SpiroMultiEnvironment(addr, mgr_cls=SpiroMultiEnvManager,
+                                slave_env_cls=Environment,
+                                slave_mgr_cls=SpiroEnvManager,
+                                slave_addrs=addrs, log_folder=log_folder)
+    menv.log_folder = log_folder
+    for _ in range(4):
+        ret = aiomas.run(until=asyncio.ensure_future(menv.spawn('spiro_agent_mp:SpiroAgent', addr='tcp://localhost:5555/0', desired_novelty=-1, log_folder=log_folder)))
+    time.sleep(4)
+    for _ in range(4):
+        ret = aiomas.run(until=asyncio.ensure_future(menv.spawn('spiro_agent_mp:SpiroAgent', addr='tcp://localhost:5556/0', desired_novelty=-1, log_folder=log_folder)))
 
-    sim = Simulation(env, log_folder=log_folder,
-                     callback=env.vote_and_save_info)
-    sim.async_steps(200)
+#    for _ in range(16):
+#        ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent', desired_novelty=-1, log_folder=log_folder))
+    #    print(ret)
+
+    sim = Simulation(menv, log_folder=log_folder,
+                     callback=menv.vote_and_save_info)
+    #time.sleep(10)
+    sim.steps(20)
     ret = sim.end()
     print(ret)
+    
 
