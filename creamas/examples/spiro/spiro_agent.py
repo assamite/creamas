@@ -278,7 +278,7 @@ class SpiroAgent(CreativeAgent):
         for i in range(iterations):
             self.stmem.train_cycle(spiro.obj.flatten())
 
-    def domain_artifact_added(self, spiro, iterations=1):
+    async def domain_artifact_added(self, spiro, iterations=1):
         if spiro.creator == self.name:
             for a in self.A:
                 if a == spiro:
@@ -470,7 +470,7 @@ class SpiroEnvironment(Environment):
             accepted = True if v >= threshold else False
             a.accepted = accepted
             self.add_artifact(a)
-            for agent in self.get_agents():
+            for agent in self.get_agents(address=False):
                 agent.domain_artifact_added(a)
 
         self.clear_candidates()
@@ -577,7 +577,7 @@ class SpiroEnvironment(Environment):
         valid_line = ax2.plot(vxs, self.valid_cand, color='cornflowerblue',
                               marker="x", linestyle="")
         ax2.set_ylabel('valid candidates after veto', color='cornflowerblue')
-        a = self.get_agents()[0]
+        a = self.get_agents(address=False)[0]
         agent_vars = "{}{}_last={}_stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_mean={}_amean={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
             a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius,
@@ -602,7 +602,7 @@ class SpiroEnvironment(Environment):
 
         x = []
         y = []
-        for a in self.get_agents():
+        for a in self.get_agents(address=False):
             args = a.arg_history
             x = x + [e[0] for e in args]
             y = y + [e[1] for e in args]
@@ -610,7 +610,7 @@ class SpiroEnvironment(Environment):
 
         x = []
         y = []
-        for a in self.get_agents():
+        for a in self.get_agents(address=False):
             arts = a.A
             for ar in arts:
                 if ar.self_criticism == 'pass':
@@ -635,7 +635,7 @@ class SpiroEnvironment(Environment):
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
         ax.set_title(title)
 
-        a = self.get_agents()[0]
+        a = self.get_agents(address=False)[0]
         agent_vars = "{}{}_last={}, stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
             a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius)
@@ -652,13 +652,13 @@ class SpiroEnvironment(Environment):
 
     def destroy(self, folder):
         ameans = []
-        for a in self.get_agents():
+        for a in self.get_agents(address=False):
             md = a.close(folder=folder)
             ameans.append(md)
         amin = min(ameans)
         amax = max(ameans)
         amean = np.mean(ameans)
-        a = self.get_agents()[0]
+        a = self.get_agents(address=False)[0]
         ret = self.save_info(folder, [amin, amax, amean])
         agent_vars = "{}{}_last={}_veto={}_sc={}_jump={}_stmem=list{}_sw={}_mr={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add,
@@ -730,7 +730,7 @@ if __name__ == "__main__":
 
     sim = Simulation(env, log_folder=log_folder,
                      callback=env.vote_and_save_info)
-    sim.async_steps(200)
+    sim.steps(20)
     ret = sim.end()
     print(ret)
 

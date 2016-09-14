@@ -447,7 +447,17 @@ class CreativeAgent(aiomas.Agent):
         raise NotImplementedError('Override in subclass.')
 
     def validate_candidates(self, candidates):
+        '''Validate list of candidate artifacts.
+        '''
         return candidates
+
+    def validate_candidates_pickle(self, candidates_pkl):
+        '''Validate candidates from a given pickle. Pickle should contain
+        a list of valid *Artifact*-objects.
+        '''
+        cands = pickle.loads(candidates_pkl)
+        cands = self.validate_candidates(cands)
+        return pickle.dumps(cands)
 
     def vote(self, candidates):
         '''Rank artifact candidates based on agent's own *evaluate*-method.
@@ -469,7 +479,8 @@ class CreativeAgent(aiomas.Agent):
         ret = self.vote(candidates)
         return pickle.dumps(ret)
 
-    def get_older(self):
+    @aiomas.expose
+    async def get_older(self):
         '''Age agent by one simulation step.'''
         self._age = self._age + 1
 

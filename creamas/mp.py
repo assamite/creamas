@@ -9,6 +9,7 @@ import asyncio
 import logging
 import multiprocessing
 import operator
+import pickle
 
 from collections import Counter
 from random import choice, shuffle
@@ -43,7 +44,12 @@ class EnvManager(aiomas.subproc.Manager):
     async def report(self, msg):
         '''Report message to host manager.
         '''
-        host_manager = await self.container.connect(self.host_addr)
+        try:
+            host_manager = await self.container.connect(self.host_addr,
+                                                        timeout=5)
+        except:
+            raise ConnectionError("Could not reach host manager ({})."
+                                  .format(self._host_addr))
         ret = await host_manager.handle(msg)
         return ret
 
@@ -53,16 +59,18 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    def get_agents(self, agent_cls=None):
+    def get_agents(self, address=True, agent_cls=None):
         '''Return addresses of agents belonging to certain class in this
         container. If *agent_cls* is None, returns addresses of all agents
-        including the manager itself.
+        excluding the manager itself.
         '''
         agents = list(self.container.agents.dict.values())
+        agents = [a for a in agents if a.addr.rsplit("/", 1)[1] != "0"]
         if agent_cls is not None:
             agents = [a for a in agents if type(a) is agent_cls]
-        addrs = [a.addr for a in agents]
-        return addrs
+        if address:
+            agents = [a.addr for a in agents]
+        return agents
 
     @aiomas.expose
     def set_log_folder(self, log_folder, addr=None):
@@ -71,6 +79,8 @@ class EnvManager(aiomas.subproc.Manager):
     @aiomas.expose
     def stop(self, folder=None):
         ret = self.container.save_info(folder)
+        for a in self.get_agents(address=False):
+            a.close(folder=folder)
         self.stop_received.set_result(True)
         return ret
 
@@ -81,12 +91,53 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    def validate_candidates(self, candidates):
-        return candidates
+    async def get_older(self, addr):
+        '''Make agent in *addr* to get older, i.e. advance its internal clock.
+        '''
+        remote_agent = await self.container.connect(addr, timeout=5)
+        ret = await remote_agent.get_older()
+        return ret
+
+    @aiomas.expose
+    def candidates(self):
+        return pickle.dumps(self.container.candidates)
+
+    @aiomas.expose
+    def artifacts(self):
+        return pickle.dumps(self.container.artifacts)
+
+    @aiomas.expose
+    def validate_candidates_pickle(self, candidates_pkl):
+        '''For consistency.
+        '''
+        return candidates_pkl
+
+    @aiomas.expose
+    def clear_candidates(self):
+        self.container.clear_candidates()
+
+    @aiomas.expose
+    def vote_pickle(self, candidates_pkl):
+        cands = pickle.loads(candidates_pkl)
+        votes = [(c, 1.0) for c in cands]
+        return pickle.dumps(votes)
+
+    @aiomas.expose
+    async def add_candidate(self, artifact):
+        artifact_pkl = pickle.dumps(artifact)
+        host_manager = await self.container.connect(self._host_addr)
+        host_manager.add_candidate(artifact_pkl)
+
+    @aiomas.expose
+    async def get_artifacts(self):
+        host_manager = await self.container.connect(self._host_addr, timeout=5)
+        pkl = await host_manager.get_artifacts()
+        return pickle.loads(pkl)
 
     @aiomas.expose
     def close(self, folder=None):
         pass
+
 
 class MultiEnvManager(aiomas.Agent):
     '''An manager agent for the multi-environment.
@@ -101,22 +152,28 @@ class MultiEnvManager(aiomas.Agent):
     async def spawn(self, addr, agent_cls, *agent_args, **agent_kwargs):
         '''Spawn an agent to an environment in given address.
         '''
-        #print("Spawning {} to {}".format(agent_cls, addr))
         remote_manager = await self.container.connect(addr, timeout=5)
         proxy, port = await remote_manager.spawn(agent_cls, *agent_args,
                                                  **agent_kwargs)
         return proxy, port
 
     @aiomas.expose
-    async def get_agents(self, addr, agent_cls=None):
+    async def get_agents(self, addr, address=True, agent_cls=None,
+                         filter_managers=True):
         #print("Getting agents from {}".format(addr))
         remote_manager = await self.container.connect(addr, timeout=5)
-        agents = await remote_manager.get_agents(agent_cls)
+        agents = await remote_manager.get_agents(address=address,
+                                                 agent_cls=agent_cls)
+        if filter_managers:
+            if address:
+                agents = [a for a in agents if a.rsplit("/", 1)[1] != "0"]
+            else:
+                agents = [a for a in agents if a.addr.rsplit("/", 1)[1] != "0"]
         return agents
 
     @aiomas.expose
     async def kill(self, addr, folder=None):
-        '''Send stop command to the manager agent in given address. This will
+        '''Send stop command to the manager agent in a given address. This will
         shutdown the manager's environment.
         '''
         #print("Killing {}".format(addr))
@@ -129,7 +186,7 @@ class MultiEnvManager(aiomas.Agent):
         '''Trigger agent in given *addr* to act.
         '''
         if addr is not None:
-            remote_agent = await self.container.connect(addr)
+            remote_agent = await self.container.connect(addr, timeout=5)
             ret = await remote_agent.act()
             return ret
         else:
@@ -139,13 +196,60 @@ class MultiEnvManager(aiomas.Agent):
     def close(self, folder=None):
         pass
 
+    @aiomas.expose
+    async def set_host_manager(self, addr):
+        '''Set this manager as host manager to the manager in *addr*.
+        '''
+        remote_manager = await self.container.connect(addr, timeout=5)
+        ret = remote_manager.set_host_addr(self.addr)
+        return ret
+
+    async def get_older(self, addr):
+        '''Make agent in *addr* to get older, i.e. advance its internal clock.
+        '''
+        remote_agent = await self.container.connect(addr, timeout=5)
+        ret = await remote_agent.get_older()
+        return ret
+
+    async def get_candidates(self, addr):
+        '''Get candidates from the environment manager in *addr* manages.
+        '''
+        remote_manager = await self.container.connect(addr)
+        cands_pkl = await remote_manager.candidates()
+        return pickle.loads(cands_pkl)
+
+    @aiomas.expose
+    def add_candidate(self, artifact_pkl):
+        '''Add candidate artifact from pickle into the candidates.
+        '''
+        artifact = pickle.loads(artifact_pkl)
+        self.container.add_candidate(artifact)
+
+    @aiomas.expose
+    async def get_votes(self, addr, candidates):
+        cand_pkl = pickle.dumps(candidates)
+        remote_agent = await self.container.connect(addr, timeout=5)
+        votes_pkl = await remote_agent.vote_pickle(cand_pkl)
+        return pickle.loads(votes_pkl)
+
+    @aiomas.expose
+    async def clear_candidates(self, addr):
+        remote_manager = await self.container.connect(addr, timeout=5)
+        ret = await remote_manager.clear_candidates()
+
+    @aiomas.expose
+    async def get_artifacts(self):
+        pkl = pickle.dumps(self.menv.artifacts)
+        return pkl
+
+
 class MultiEnvironment():
     '''Environment for utilizing multiple processes.
     '''
     def __init__(self, addr, env_cls=Environment, mgr_cls=MultiEnvManager,
                  slave_addrs=[('localhost', 5555)], slave_env_cls=Environment,
                  slave_mgr_cls=EnvManager, name=None, clock=None,
-                 extra_ser=None, log_folder=None):
+                 extra_ser=None, log_folder=None, log_level=logging.INFO):
         '''
         :param addr: (HOST, PORT) address from the manager environment.
 
@@ -158,19 +262,19 @@ class MultiEnvironment():
 
         :param str name: Name of the environment. Will be shown in logs.
         '''
-        self._addrs = slave_addrs
-
         pool, r = spawn_containers(slave_addrs, env_cls=slave_env_cls,
                                    mgr_cls=slave_mgr_cls, codec=aiomas.MsgPack,
                                    clock=clock, extra_serializers=extra_ser)
-
         self._pool = pool
         self._r = r
+        self._manager_addrs = ["{}{}".format(_get_base_url(a), 0) for
+                               a in slave_addrs]
+
         self._env = env_cls.create(addr, codec=aiomas.MsgPack, clock=clock,
                                    extra_serializers=extra_ser)
         self._manager = mgr_cls(self._env)
-        self._manager_addrs = ["{}{}".format(_get_base_url(a), 0) for
-                               a in self._addrs]
+        self._manager.menv = self
+        r = aiomas.run(until=self._set_host_managers())
 
         self._age = 0
         self._artifacts = []
@@ -181,9 +285,14 @@ class MultiEnvironment():
 
         if type(log_folder) is str:
             self.logger = ObjectLogger(self, log_folder, add_name=True,
-                                       init=True)
+                                       init=True, log_level=log_level)
         else:
             self.logger = None
+
+    def _setup_slave_processes(self, slave_addrs, slave_env_cls,
+                               slave_mgr_cls, clock, extra_ser,
+                               codec=aiomas.MsgPack):
+        pass
 
     @property
     def name(self):
@@ -199,12 +308,17 @@ class MultiEnvironment():
     def age(self, _age):
         self._age = _age
 
-    def get_agents(self, addresses=True, agent_cls=None):
+    def get_agents(self, address=True, agent_cls=None):
         if self._consistent == False:
             ags = []
+            tasks = []
             for addr in self._manager_addrs:
-                agents = aiomas.run(until=self._manager.get_agents(addr, agent_cls=agent_cls))
-                ags.extend(agents)
+                tasks.append(asyncio.ensure_future
+                             (self.manager.get_agents
+                              (addr, address=True, agent_cls=agent_cls)))
+            aa = aiomas.run(until=asyncio.gather(*tasks))
+            for a in aa:
+                ags.extend(a)
             self._agents = ags
             self._consistent = True
             return ags
@@ -240,13 +354,20 @@ class MultiEnvironment():
             folders = [None for _ in range(len(addrs))]
             return folders
 
-    async def _register_host_manager(self):
+    async def _set_host_managers(self):
         for addr in self._manager_addrs:
-            remote_manager = await self._manager.connect(addr)
-            r = remote_manager.set_host_addr(self._manager.addr)
+            ret = await self._manager.set_host_manager(addr)
 
-    async def trigger_act(self, agent):
-        ret = await self._manager.act(agent)
+    async def trigger_act(self, addr):
+        '''Trigger agent in addr to act.
+        '''
+        if addr.rsplit("/", 1)[1] == '0':
+            self._log(logging.DEBUG, "Skipping manager in {} from acting."
+                      .format(addr))
+            return
+        self._log(logging.DEBUG, "Triggering agent in {} to act".format(addr))
+        r = await self._manager.get_older(addr)
+        ret = await self._manager.act(addr)
         return ret
 
     def random_addr(self):
@@ -279,15 +400,18 @@ class MultiEnvironment():
         '''Remove current candidates from the environment.
         '''
         self._candidates = []
+        tasks = []
+        for addr in self._manager_addrs:
+            tasks.append(asyncio.ensure_future(self._clear_candidates(addr)))
+        aiomas.run(until=asyncio.gather(*tasks))
 
-    def get_agent(self, name):
-        '''Get agent by its name.'''
-        agent = None
-        for a in self.get_agents():
-            if a.name == name:
-                agent = a
-                break
-        return agent
+    async def _clear_candidates(self, manager_addr):
+        ret = await self.manager.clear_candidates(manager_addr)
+        return ret
+
+    async def create_connection(self, addr, conn):
+        remote_agent = await self._env.connect(addr, timeout=5)
+        remote_agent.add_connection(conn)
 
     def create_initial_connections(self, n=5):
         '''Create random initial connections for all agents.
@@ -296,12 +420,12 @@ class MultiEnvironment():
         '''
         assert type(n) == int
         assert n > 0
-        for a in self.get_agents:
-            others = self.get_agents[:]
-            others.remove(a)
+        for addr in self.get_agents():
+            others = self.get_agents()[:]
+            others.remove(addr)
             shuffle(others)
             for r_agent in others[:n]:
-                a.add_connection(r_agent)
+                aiomas.run(until=self.create_connection(addr, r_agent))
 
     def get_random_agent(self, agent):
         '''Return random agent that is not the same as agent given as
@@ -312,7 +436,7 @@ class MultiEnvironment():
         :returns: random, non-connected, agent from the environment
         :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
-        r_agent = choice(self.get_agents())
+        r_agent = choice(self.get_agents(address=False))
         while r_agent.addr == agent.addr:
             r_agent = choice(self.get_agents)
         return r_agent
@@ -356,28 +480,33 @@ class MultiEnvironment():
         get_agents' ``validate_candidates``-method.
         '''
         valid_candidates = set(self.candidates)
-        print(len(valid_candidates))
         tasks = []
         for a in self._manager_addrs:
             tasks.append(self._validate_candidates(a))
         ret = aiomas.run(until=asyncio.gather(*tasks))
-        print(ret)
         for r in ret:
             result = yield from r
-            print(result)
             vc = set(result)
             valid_candidates = valid_candidates.intersection(vc)
-        print(valid_candidates)
 
         self._candidates = list(valid_candidates)
         self._log(logging.INFO, "{} valid candidates after get_agents used veto."
                   .format(len(self.candidates)))
 
+    async def get_vote(self, addr, candidates):
+        votes = await self._manager.get_votes(addr, candidates)
+        return votes
+
     def _gather_votes(self):
-        votes = []
-        for a in self.get_agents():
-            vote = a.vote(candidates=self.candidates)
-            votes.append(vote)
+        tasks = []
+        for addr in self.get_agents(address=True):
+            if addr.rsplit("/", 1)[1] == 0:
+                # Skip managers.
+                pass
+            else:
+                tasks.append(asyncio.ensure_future(self.get_vote(addr, self.candidates)))
+
+        votes = aiomas.run(until=asyncio.gather(*tasks))
         return votes
 
     def perform_voting(self, method='IRV', accepted=1):
@@ -512,7 +641,7 @@ class MultiEnvironment():
         if self.logger is not None:
             self.logger.log(level, msg)
 
-    def save_info(self, folder):
+    def save_info(self, folder, *args, **kwargs):
         '''Save information accumulated during the environments lifetime.
 
         Called from :py:meth:`~creamas.core.Environment.destroy`. Override in
@@ -569,6 +698,7 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
 
     import random
     random.seed()
+    print("Spawning {}".format(addr))
     kwargs['codec'] = aiomas.MsgPack
     task = start(addr, env_cls, mgr_cls, *args, **kwargs)
     aiomas.run(until=task)

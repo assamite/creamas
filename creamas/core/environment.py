@@ -14,6 +14,7 @@ adding agents to their container.
 
 import logging
 import operator
+import pickle
 from collections import Counter
 from random import choice, shuffle
 import multiprocessing
@@ -98,6 +99,9 @@ class Environment(aiomas.Container):
         '''
         for a in self.get_agents(address=False):
             if addr == a.addr:
+                self._log(logging.DEBUG,
+                          "Triggering agent in {} to act".format(a.addr))
+                ret = await a.get_older()
                 ret = await a.act()
                 return ret
 
@@ -105,15 +109,6 @@ class Environment(aiomas.Container):
         '''Remove current candidates from the environment.
         '''
         self._candidates = []
-
-    def get_agent(self, name):
-        '''Get agent by its name.'''
-        agent = None
-        for a in self.get_agents():
-            if a.name == name:
-                agent = a
-                break
-        return agent
 
     def create_initial_connections(self, n=5):
         '''Create random initial connections for all agents.
@@ -153,14 +148,19 @@ class Environment(aiomas.Container):
         self._log(logging.DEBUG, "ARTIFACTS appended: '{}', length={}"
                   .format(artifact, len(self.artifacts)))
 
-    def get_artifacts(self, agent):
+    async def get_artifacts(self, agent=None):
         '''Get artifacts published by certain agent.
 
         :returns: All artifacts published by the agent.
         :rtype: list
         '''
-        ret = [a for a in self.artifacts if agent.name == a.creator]
-        return ret
+        if hasattr(self, 'manager'):
+            artifacts =  await self.manager.get_artifacts()
+        else:
+            artifacts = self.artifacts
+        if agent is not None:
+            artifacts = [a for a in artifacts if agent.name == a.creator]
+        return artifacts
 
     def add_candidate(self, artifact):
         '''Add candidate artifact to current candidates.
@@ -324,7 +324,7 @@ class Environment(aiomas.Container):
         if self.logger is not None:
             self.logger.log(level, msg)
 
-    def save_info(self, folder):
+    def save_info(self, folder, *args, **kwargs):
         '''Save information accumulated during the environments lifetime.
 
         Called from :py:meth:`~creamas.core.Environment.destroy`. Override in

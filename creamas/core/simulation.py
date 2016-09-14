@@ -167,7 +167,7 @@ class Simulation():
         self._order = order
 
     def _get_order_agents(self):
-        agents = self.env.get_agents()
+        agents = self.env.get_agents(address=True)
         if self.order == 'alphabetical':
             return sorted(agents)
         shuffle(agents)
@@ -212,8 +212,6 @@ class Simulation():
         t = time.time()
         tasks = [asyncio.ensure_future(self.env.trigger_act(addr)) for
                  addr in self._agents_to_act]
-        #for a in self._agents_to_act:
-        #    a.get_older()
         aiomas.run(until=asyncio.gather(*tasks))
         self._agents_to_act = []
         self._step_processing_time = time.time() - t
@@ -252,7 +250,6 @@ class Simulation():
             self._init_step()
 
         agent = self._agents_to_act.pop(0)
-        #agent.get_older()
         aiomas.run(until=self.env.trigger_act(agent))
         t2 = time.time()
         self._step_processing_time += t2 - t

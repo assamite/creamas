@@ -16,13 +16,13 @@ import os
 import sys
 import time
 from collections import Counter
-import functools
 import logging
 import operator
+import pickle
 
 import aiomas
 import numpy as np
-from scipy import ndimage, misc
+from scipy import misc
 
 from creamas.core import CreativeAgent, Artifact
 from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
@@ -35,10 +35,10 @@ class SpiroAgent(CreativeAgent):
     (``STMemory``) learned from previously seen spirographs.
     '''
     def __init__(self, environment, desired_novelty, search_width=10,
-                 img_size=32, log_folder=None, log_level=logging.DEBUG,
+                 img_size=32, log_folder=None, log_level=logging.INFO,
                  memsize=36, learning_method='closest', learning_amount=3,
-                 learn_on_add=True, veto_threshold=0.10,
-                 critic_threshold=0.10, jump='none', move_radius=10.0):
+                 learn_on_add=True, veto_threshold=0.12,
+                 critic_threshold=0.12, jump='none', move_radius=10.0):
         '''
         :param environment:
             The environment for the agent.
@@ -206,15 +206,15 @@ class SpiroAgent(CreativeAgent):
         return best_artifact
 
     @aiomas.expose
-    def act(self):
+    async def act(self):
         '''Agent's main method to create new spirographs.
 
         See Simulation and CreativeAgent documentation for details.
         '''
         # Learn from domain artifacts.
         self.added_last = False
-        self.learn_from_domain(method=self.env_learning_method,
-                               amount=self.env_learning_amount)
+        r = await self.learn_from_domain(method=self.env_learning_method,
+                                         amount=self.env_learning_amount)
         # Invent new artifact
         artifact = self.invent(self.search_width)
         args = artifact.framings[self.name]['args']
@@ -222,9 +222,6 @@ class SpiroAgent(CreativeAgent):
         self._log(logging.DEBUG, "Created spirograph with args={}, val={}"
                   .format(args, val))
         self.spiro_args = args
-        #print(self.addr, self.spiro_args)
-        with open(self.name, 'a') as f:
-            f.write("{}\n".format(self.spiro_args))
         self.arg_history.append(self.spiro_args)
         self.add_artifact(artifact)
         if val >= self._own_threshold:
@@ -243,7 +240,7 @@ class SpiroAgent(CreativeAgent):
                       .format(largs, self.spiro_args))
         self.save_images(artifact)
 
-    def learn_from_domain(self, method='random', amount=10):
+    async def learn_from_domain(self, method='random', amount=10):
         '''Learn SOM from artifacts introduced to the environment.
 
         :param str method:
@@ -257,7 +254,7 @@ class SpiroAgent(CreativeAgent):
         '''
         if method == 'none':
             return
-        arts = self.env.artifacts
+        arts = await self.env.get_artifacts()
         if len(arts) == 0:
             return
         if 'random' in method:
@@ -285,7 +282,9 @@ class SpiroAgent(CreativeAgent):
         for i in range(iterations):
             self.stmem.train_cycle(spiro.obj.flatten())
 
-    def domain_artifact_added(self, spiro, iterations=1):
+    @aiomas.expose
+    async def domain_artifact_added(self, spiro, iterations=1):
+        spiro = pickle.loads(spiro)
         if spiro.creator == self.name:
             for a in self.A:
                 if a == spiro:
@@ -435,8 +434,8 @@ class SpiroAgent(CreativeAgent):
         if len(dists) == 0:
             mean_dist = 0.0
         self._log(logging.INFO, "Mean of distances: {}".format(mean_dist))
-        self.plot_distances(mean_dist, dists, indeces)
-        self.plot_places()
+        #self.plot_distances(mean_dist, dists, indeces)
+        #self.plot_places()
         return mean_dist
 
 
@@ -453,27 +452,25 @@ class SpiroArtifact(Artifact):
     def __lt__(self, other):
         return str(self) < str(other)
 
+
 class SpiroEnvManager(EnvManager):
     @aiomas.expose
-    async def candidates(self):
-        return self.container.candidates
-
-    @aiomas.expose
-    async def add_candidate(self, artifact):
-        host_manager = await self.container.connect(self._host_addr)
-        host_manager.add_candidate(artifact)
+    async def domain_artifact_added(self, artifact_pkl):
+        rets = []
+        for addr in self.get_agents():
+            r_agent = await self.container.connect(addr, timeout=5)
+            ret = await r_agent.domain_artifact_added(artifact_pkl)
+            rets.append(ret)
+        return rets
 
 
 class SpiroMultiEnvManager(MultiEnvManager):
     @aiomas.expose
-    def add_candidate(self, artifact):
-        self.container.add_candidate(artifact)
-
-    async def get_candidates(self, addr):
-        print(addr)
-        remote_manager = await self.container.connect(addr)
-        candidates = await remote_manager.candidates()
-        return candidates
+    async def domain_artifact_added(self, manager_addr, artifact):
+        pkl = pickle.dumps(artifact)
+        remote_manager = await self.container.connect(manager_addr, timeout=5)
+        ret = await remote_manager.domain_artifact_added(pkl)
+        return ret
 
 
 class SpiroMultiEnvironment(MultiEnvironment):
@@ -499,10 +496,13 @@ class SpiroMultiEnvironment(MultiEnvironment):
             cands.extend(cand)
         return cands
 
+    async def _add_domain_artifact(self, manager_addr, artifact):
+        ret = await self.manager.domain_artifact_added(manager_addr, artifact)
+        return ret
+
     def vote_and_save_info(self, age):
         self.age = age
         self._candidates = aiomas.run(until=self.gather_candidates())
-        print(len(self.candidates))
         self.suggested_cand.append(len(self.candidates))
         self.validate_candidates()
         self.valid_cand.append(len(self.candidates))
@@ -513,8 +513,10 @@ class SpiroMultiEnvironment(MultiEnvironment):
             accepted = True if v >= threshold else False
             a.accepted = accepted
             self.add_artifact(a)
-            for agent in self.get_agents():
-                agent.domain_artifact_added(a)
+            tasks = []
+            for addr in self._manager_addrs:
+                tasks.append(asyncio.ensure_future(self._add_domain_artifact(addr, a)))
+            aiomas.run(until=asyncio.gather(*tasks))
 
         self.clear_candidates()
         self.valid_candidates = []
@@ -554,7 +556,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
             fitted_curve = np.poly1d(np.polyfit(axs, adists, 2))
         self.plot_distances(ameans, accs, rejs, fitted_curve)
         self.plot_creators()
-        self.plot_places()
+        #self.plot_places()
         mean_sug_cand = np.mean(self.suggested_cand)
         mean_valid_cand = np.mean(self.valid_cand)
         return mean_dist, accs, rejs, mean_sug_cand, mean_valid_cand
@@ -620,16 +622,12 @@ class SpiroMultiEnvironment(MultiEnvironment):
         valid_line = ax2.plot(vxs, self.valid_cand, color='cornflowerblue',
                               marker="x", linestyle="")
         ax2.set_ylabel('valid candidates after veto', color='cornflowerblue')
-        a = self.get_agents()[0]
-        agent_vars = "{}{}_last={}_stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_mean={}_amean={}_maxN".format(
-            a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
-            a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius,
-            mean_dist, ameans[2])
+        a = self.get_agents(address=False)[0]
 
         if self.logger is not None:
-            imname = os.path.join(self.logger.folder, 'env_a{}_i{}_v{}_{}.png'
+            imname = os.path.join(self.logger.folder, 'env_a{}_i{}_v{}.png'
                                   .format(len(self.get_agents()), self.age,
-                                          self.voting_method, agent_vars))
+                                          self.voting_method))
             plt.savefig(imname)
             plt.close()
         else:
@@ -677,25 +675,35 @@ class SpiroMultiEnvironment(MultiEnvironment):
         ax.set_ylabel('r_')
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
         ax.set_title(title)
-
-        a = self.get_agents()[0]
-        agent_vars = "{}{}_last={}, stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_maxN".format(
-            a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
-            a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius)
         plt.tight_layout(rect=(0,0,0.8,1))
 
         if self.logger is not None:
-            imname = os.path.join(self.logger.folder, 'arts_a{}_i{}_v{}_{}.png'
+            imname = os.path.join(self.logger.folder, 'arts_a{}_i{}_v{}.png'
                                   .format(len(self.get_agents()), self.age,
-                                          self.voting_method, agent_vars))
+                                          self.voting_method))
             plt.savefig(imname)
             plt.close()
         else:
             plt.show()
+
+    def destroy(self, folder=None):
+        '''Destroy the environment and the subprocesses.
+        '''
+        ameans = [(0, 0, 0) for _ in range(3)]
+        ret = [self.save_info(folder, ameans)]
+        rets = aiomas.run(until=self._destroy_childs(folder))
+        rets = ret + rets
+        # Close and join the process pool nicely.
+        self._pool.close()
+        self._pool.terminate()
+        self._pool.join()
+        self._env.shutdown()
+        return rets
 '''
     def destroy(self, folder):
         ameans = []
-        for a in self.get_agents():
+        agents = aiomas.run(until=self.manager.get_agents())
+        for a in self.manager_get_agents():
             remote_agent = self._manager.container.connect(a)
             md = remote_agent.close(folder=folder)
             ameans.append(md)
@@ -768,29 +776,25 @@ if __name__ == "__main__":
     addrs = [('localhost', 5555),
              ('localhost', 5556),
              ('localhost', 5557),
-             ('localhost', 5558)]
+             ('localhost', 5558)
+             ]
 
     log_folder = 'logs'
     menv = SpiroMultiEnvironment(addr, mgr_cls=SpiroMultiEnvManager,
                                 slave_env_cls=Environment,
                                 slave_mgr_cls=SpiroEnvManager,
-                                slave_addrs=addrs, log_folder=log_folder)
+                                slave_addrs=addrs, log_folder=log_folder,
+                                log_level=logging.INFO)
     menv.log_folder = log_folder
-    for _ in range(4):
-        ret = aiomas.run(until=asyncio.ensure_future(menv.spawn('spiro_agent_mp:SpiroAgent', addr='tcp://localhost:5555/0', desired_novelty=-1, log_folder=log_folder)))
-    time.sleep(4)
-    for _ in range(4):
-        ret = aiomas.run(until=asyncio.ensure_future(menv.spawn('spiro_agent_mp:SpiroAgent', addr='tcp://localhost:5556/0', desired_novelty=-1, log_folder=log_folder)))
-
-#    for _ in range(16):
-#        ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent', desired_novelty=-1, log_folder=log_folder))
-    #    print(ret)
+    for _ in range(80):
+        ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent', desired_novelty=-1, log_folder=log_folder))
+        print(ret)
 
     sim = Simulation(menv, log_folder=log_folder,
                      callback=menv.vote_and_save_info)
     #time.sleep(10)
-    sim.steps(20)
+    sim.async_steps(200)
     ret = sim.end()
     print(ret)
-    
+
 
