@@ -10,7 +10,9 @@ Systems. In The Proceedings of The Seventh International Conference on
 Computational Creativity (ICCC2016), 1-8. Paris, France. Sony CSL Paris,
 France.
 
-This implementation uses creamas.mp-module.
+This implementation uses creamas.mp-module for multiprocessing. it should make
+the code substantially faster to run on machines with several cores than the
+basic implementation.
 '''
 import os
 import sys
@@ -772,6 +774,8 @@ if __name__ == "__main__":
     from creamas.core import Simulation, Environment
     from matplotlib import pyplot as plt
 
+    from serializers import get_spiro_ser
+
     addr = ('localhost', 5550)
     addrs = [('localhost', 5555),
              ('localhost', 5556),
@@ -784,16 +788,19 @@ if __name__ == "__main__":
                                 slave_env_cls=Environment,
                                 slave_mgr_cls=SpiroEnvManager,
                                 slave_addrs=addrs, log_folder=log_folder,
-                                log_level=logging.INFO)
+                                log_level=logging.INFO,
+                                extra_ser=[get_spiro_ser])
     menv.log_folder = log_folder
     for _ in range(80):
-        ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent', desired_novelty=-1, log_folder=log_folder))
+        ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent',
+                                          desired_novelty=-1,
+                                          log_folder=log_folder))
         print(ret)
 
     sim = Simulation(menv, log_folder=log_folder,
                      callback=menv.vote_and_save_info)
     #time.sleep(10)
-    sim.async_steps(200)
+    sim.async_steps(100)
     ret = sim.end()
     print(ret)
 

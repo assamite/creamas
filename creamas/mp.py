@@ -100,39 +100,38 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def candidates(self):
-        return pickle.dumps(self.container.candidates)
+        return self.container.candidates
 
     @aiomas.expose
     def artifacts(self):
-        return pickle.dumps(self.container.artifacts)
+        return self.container.artifacts
 
     @aiomas.expose
-    def validate_candidates_pickle(self, candidates_pkl):
+    def validate_candidates(self, candidates):
         '''For consistency.
         '''
-        return candidates_pkl
+        return candidates
 
     @aiomas.expose
     def clear_candidates(self):
         self.container.clear_candidates()
 
     @aiomas.expose
-    def vote_pickle(self, candidates_pkl):
-        cands = pickle.loads(candidates_pkl)
+    def vote(self, candidates):
+        cands = candidates
         votes = [(c, 1.0) for c in cands]
-        return pickle.dumps(votes)
+        return votes
 
     @aiomas.expose
     async def add_candidate(self, artifact):
-        artifact_pkl = pickle.dumps(artifact)
         host_manager = await self.container.connect(self._host_addr)
-        host_manager.add_candidate(artifact_pkl)
+        host_manager.add_candidate(artifact)
 
     @aiomas.expose
     async def get_artifacts(self):
         host_manager = await self.container.connect(self._host_addr, timeout=5)
-        pkl = await host_manager.get_artifacts()
-        return pickle.loads(pkl)
+        artifacts = await host_manager.get_artifacts()
+        return artifacts
 
     @aiomas.expose
     def close(self, folder=None):
@@ -160,7 +159,6 @@ class MultiEnvManager(aiomas.Agent):
     @aiomas.expose
     async def get_agents(self, addr, address=True, agent_cls=None,
                          filter_managers=True):
-        #print("Getting agents from {}".format(addr))
         remote_manager = await self.container.connect(addr, timeout=5)
         agents = await remote_manager.get_agents(address=address,
                                                  agent_cls=agent_cls)
@@ -215,22 +213,21 @@ class MultiEnvManager(aiomas.Agent):
         '''Get candidates from the environment manager in *addr* manages.
         '''
         remote_manager = await self.container.connect(addr)
-        cands_pkl = await remote_manager.candidates()
-        return pickle.loads(cands_pkl)
+        candidates = await remote_manager.candidates()
+        return candidates
 
     @aiomas.expose
-    def add_candidate(self, artifact_pkl):
-        '''Add candidate artifact from pickle into the candidates.
+    def add_candidate(self, artifact):
+        '''Add candidate artifact into the candidates.
         '''
-        artifact = pickle.loads(artifact_pkl)
-        self.container.add_candidate(artifact)
+        self.menv.add_candidate(artifact)
 
     @aiomas.expose
     async def get_votes(self, addr, candidates):
-        cand_pkl = pickle.dumps(candidates)
+        #cand_pkl = pickle.dumps(candidates)
         remote_agent = await self.container.connect(addr, timeout=5)
-        votes_pkl = await remote_agent.vote_pickle(cand_pkl)
-        return pickle.loads(votes_pkl)
+        votes = await remote_agent.vote(candidates)
+        return votes
 
     @aiomas.expose
     async def clear_candidates(self, addr):
@@ -239,8 +236,7 @@ class MultiEnvManager(aiomas.Agent):
 
     @aiomas.expose
     async def get_artifacts(self):
-        pkl = pickle.dumps(self.menv.artifacts)
-        return pkl
+        return self.menv.artifacts
 
 
 class MultiEnvironment():
@@ -288,11 +284,6 @@ class MultiEnvironment():
                                        init=True, log_level=log_level)
         else:
             self.logger = None
-
-    def _setup_slave_processes(self, slave_addrs, slave_env_cls,
-                               slave_mgr_cls, clock, extra_ser,
-                               codec=aiomas.MsgPack):
-        pass
 
     @property
     def name(self):

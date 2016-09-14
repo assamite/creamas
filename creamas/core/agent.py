@@ -358,24 +358,6 @@ class CreativeAgent(aiomas.Agent):
         '''Refill agent's resources to maximum.'''
         self._cur_res = self._max_res
 
-    @aiomas.expose
-    def evaluate_pickle(self, pkl):
-        '''Evaluate function that first unpickles artifact, then calls
-        **evaluate** and then pickles the evaluation results to be send over
-        tcp.
-
-        :param pickle pkl: pickled artifact to extract
-        :returns: pickled evaluation of the artifact
-        :rtype: pickle
-
-        .. note::
-
-            This function is exposed to other agents by default.
-        '''
-        artifact = pickle.loads(pkl)
-        ret = self.evaluate(artifact)
-        return pickle.dumps(ret)
-
     def evaluate(self, artifact):
         r'''Evaluate artifact with agent's current rules and weights.
 
@@ -451,14 +433,7 @@ class CreativeAgent(aiomas.Agent):
         '''
         return candidates
 
-    def validate_candidates_pickle(self, candidates_pkl):
-        '''Validate candidates from a given pickle. Pickle should contain
-        a list of valid *Artifact*-objects.
-        '''
-        cands = pickle.loads(candidates_pkl)
-        cands = self.validate_candidates(cands)
-        return pickle.dumps(cands)
-
+    @aiomas.expose
     def vote(self, candidates):
         '''Rank artifact candidates based on agent's own *evaluate*-method.
 
@@ -472,12 +447,6 @@ class CreativeAgent(aiomas.Agent):
         ranks = [(c, self.evaluate(c)) for c in candidates]
         ranks.sort(key=operator.itemgetter(1), reverse=True)
         return ranks
-
-    @aiomas.expose
-    async def vote_pickle(self, pkl):
-        candidates = pickle.loads(pkl)
-        ret = self.vote(candidates)
-        return pickle.dumps(ret)
 
     @aiomas.expose
     async def get_older(self):
