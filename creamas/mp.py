@@ -2,8 +2,7 @@
 .. py:module:: mp
     :platform: Unix
 
-Multiprocessing functions to spawn multiple environments into subprocesses
-to increase system performance.
+Multiprocessing functions to increase system performance.
 '''
 import asyncio
 import logging
@@ -23,6 +22,7 @@ from aiomas.codecs import MsgPack
 
 logger = logging.getLogger(__name__)
 
+TIMEOUT = 5
 
 class EnvManager(aiomas.subproc.Manager):
     """An agent that can start other agents within its environment.
@@ -38,6 +38,8 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def host_addr(self):
+        '''Get address of the host manager.
+        '''
         return self._host_addr
 
     @aiomas.expose
@@ -46,7 +48,7 @@ class EnvManager(aiomas.subproc.Manager):
         '''
         try:
             host_manager = await self.container.connect(self.host_addr,
-                                                        timeout=5)
+                                                        timeout=TIMEOUT)
         except:
             raise ConnectionError("Could not reach host manager ({})."
                                   .format(self._host_addr))
@@ -94,7 +96,7 @@ class EnvManager(aiomas.subproc.Manager):
     async def get_older(self, addr):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
-        remote_agent = await self.container.connect(addr, timeout=5)
+        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
         ret = await remote_agent.get_older()
         return ret
 
@@ -129,7 +131,8 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def get_artifacts(self):
-        host_manager = await self.container.connect(self._host_addr, timeout=5)
+        host_manager = await self.container.connect(self._host_addr,
+                                                    timeout=TIMEOUT)
         artifacts = await host_manager.get_artifacts()
         return artifacts
 
@@ -151,7 +154,7 @@ class MultiEnvManager(aiomas.Agent):
     async def spawn(self, addr, agent_cls, *agent_args, **agent_kwargs):
         '''Spawn an agent to an environment in given address.
         '''
-        remote_manager = await self.container.connect(addr, timeout=5)
+        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
         proxy, port = await remote_manager.spawn(agent_cls, *agent_args,
                                                  **agent_kwargs)
         return proxy, port
@@ -159,7 +162,7 @@ class MultiEnvManager(aiomas.Agent):
     @aiomas.expose
     async def get_agents(self, addr, address=True, agent_cls=None,
                          filter_managers=True):
-        remote_manager = await self.container.connect(addr, timeout=5)
+        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
         agents = await remote_manager.get_agents(address=address,
                                                  agent_cls=agent_cls)
         if filter_managers:
@@ -175,7 +178,7 @@ class MultiEnvManager(aiomas.Agent):
         shutdown the manager's environment.
         '''
         #print("Killing {}".format(addr))
-        remote_manager = await self.container.connect(addr, timeout=5)
+        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
         ret = await remote_manager.stop(folder)
         return ret
 
@@ -184,7 +187,7 @@ class MultiEnvManager(aiomas.Agent):
         '''Trigger agent in given *addr* to act.
         '''
         if addr is not None:
-            remote_agent = await self.container.connect(addr, timeout=5)
+            remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
             ret = await remote_agent.act()
             return ret
         else:
@@ -198,14 +201,14 @@ class MultiEnvManager(aiomas.Agent):
     async def set_host_manager(self, addr):
         '''Set this manager as host manager to the manager in *addr*.
         '''
-        remote_manager = await self.container.connect(addr, timeout=5)
+        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
         ret = remote_manager.set_host_addr(self.addr)
         return ret
 
     async def get_older(self, addr):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
-        remote_agent = await self.container.connect(addr, timeout=5)
+        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
         ret = await remote_agent.get_older()
         return ret
 
@@ -225,13 +228,13 @@ class MultiEnvManager(aiomas.Agent):
     @aiomas.expose
     async def get_votes(self, addr, candidates):
         #cand_pkl = pickle.dumps(candidates)
-        remote_agent = await self.container.connect(addr, timeout=5)
+        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
         votes = await remote_agent.vote(candidates)
         return votes
 
     @aiomas.expose
     async def clear_candidates(self, addr):
-        remote_manager = await self.container.connect(addr, timeout=5)
+        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
         ret = await remote_manager.clear_candidates()
 
     @aiomas.expose
@@ -299,14 +302,32 @@ class MultiEnvironment():
     def age(self, _age):
         self._age = _age
 
-    def get_agents(self, address=True, agent_cls=None):
+    def get_agents(self, address=True, filter_managers=True):
+        '''Get agents associated with the environment and its child
+        environments.
+
+        Essentially calls :py:meth:`get_agents` for each of the child
+        environment managers.
+
+        :param bool address:
+            If *True*, returns only addresses of the agents, otherwise returns
+            a :class:`Proxy` object for each agent.
+
+        :param bool filter_managers:
+            If *True* filters manager agents from the returned list.
+
+        :returns:
+            List of :py:class:`Proxy` objects or addresses as specified by the
+            input parameters.
+        '''
         if self._consistent == False:
             ags = []
             tasks = []
             for addr in self._manager_addrs:
                 tasks.append(asyncio.ensure_future
                              (self.manager.get_agents
-                              (addr, address=True, agent_cls=agent_cls)))
+                              (addr, address=True,
+                              filter_managers=filter_managers)))
             aa = aiomas.run(until=asyncio.gather(*tasks))
             for a in aa:
                 ags.extend(a)
@@ -401,7 +422,7 @@ class MultiEnvironment():
         return ret
 
     async def create_connection(self, addr, conn):
-        remote_agent = await self._env.connect(addr, timeout=5)
+        remote_agent = await self._env.connect(addr, timeout=TIMEOUT)
         remote_agent.add_connection(conn)
 
     def create_initial_connections(self, n=5):
@@ -666,29 +687,27 @@ class MultiEnvironment():
 
 
 def spawn_container(addr=('localhost', 5555), env_cls=Environment,
-                    mgr_cls=EnvManager, *args, **kwargs):
+                    mgr_cls=EnvManager, set_seed=True, *args, **kwargs):
     '''Spawn a new environment in a given address as a coroutine.
 
     Arguments and keyword arguments are passed down to the created environment
     at initialization time.
+
+    This function renames the title of the process to start with Creamas so
+    that the process is easily identifiable, e.g. with 'ps -x | grep Creamas'.
     '''
-    #logging.basicConfig(level=getattr(logging, log_level.upper()))
+    # Try setting the process name to easily recognize the spawned
+    # environments with 'ps -x' or 'top'
     try:
-        # Try importing setproctitle to change the name of the running process
-        # to something we can identify with, e.g. 'ps' or 'top'.
-        import setproctitle
-        setproctitle.setproctitle('creamas:{}'.format(addr[1]))
+        import setproctitle as spt
+        spt.setproctitle('Creamas: {}({})'.format(env_cls,
+                                                  _get_base_url(addr)))
     except:
         pass
 
-    try:
-        import numpy as np
-        np.random.seed()
-    except:
-        pass
+    if set_seed:
+        _set_random_seeds()
 
-    import random
-    random.seed()
     print("Spawning {}".format(addr))
     kwargs['codec'] = aiomas.MsgPack
     task = start(addr, env_cls, mgr_cls, *args, **kwargs)
@@ -766,3 +785,22 @@ def start(addr, env_cls=Environment, mgr_cls=EnvManager,
         logger.info('Execution interrupted by user')
     finally:
         yield from env.shutdown(as_coro=True)
+
+
+def _set_random_seeds():
+    '''Set new random seeds for the process.
+    '''
+    try:
+        import numpy as np
+        np.random.seed()
+    except:
+        pass
+
+    try:
+        import scipy as sp
+        sp.random.seed()
+    except:
+        pass
+
+    import random
+    random.seed()

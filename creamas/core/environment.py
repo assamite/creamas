@@ -37,6 +37,16 @@ class Environment(aiomas.Container):
         self._candidates = []
         self._name = 'env@{}'.format(base_url)
 
+        # Try setting the process name to easily recognize the spawned
+        # environments with 'ps -x' or 'top'
+        try:
+            import setproctitle as spt
+            spt.setproctitle('Creamas: {}({})'.format(type(self), base_url))
+        except:
+            print("plaa")
+            pass
+
+
     @property
     def name(self):
         '''Name of the environment.'''
