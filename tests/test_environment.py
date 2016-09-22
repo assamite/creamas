@@ -4,6 +4,7 @@
 
 Tests for environment module.
 '''
+import asyncio
 import unittest
 from random import choice
 
@@ -16,35 +17,32 @@ from creamas.core.environment import Environment
 
 class TestEnvironment(unittest.TestCase):
 
+    def setUp(self):
+        self.env = Environment.create(('localhost', 5555))
+        self.loop = asyncio.get_event_loop()
+
     def test_environment(self):
-        env = Environment(('localhost', 5555), name='test_env')
+        self.assertTrue(issubclass(self.env.__class__, aiomas.Container))
 
-        self.assertEqual(env.container.__class__, aiomas.Container)
-        self.assertEqual(env.name, 'test_env')
-
-        # create some get_agents to environment
-        get_agents = []
+        # create some agents to environment
+        agents = []
         for i in range(20):
-            get_agents.append(CreativeAgent(env))
+            agents.append(CreativeAgent(self.env))
 
         # see that all get_agents are actually in environment
-        env_agents = env.get_agents
-        for a in get_agents:
+        env_agents = self.env.get_agents(address=False)
+        for a in agents:
             self.assertIn(a, env_agents)
 
         for i in range(1000):
             a = choice(env_agents)
-            r = env.get_random_agent(a)
+            r = self.env.get_random_agent(a)
             # Random agent cannot be the same as the agent calling
             self.assertNotEqual(a, r)
 
-        for a in get_agents:
-            r = env.get_agent(a.name)
-            self.assertEqual(a, r)
-
         conns = 6
-        env.create_initial_connections(n=conns)
-        for a in get_agents:
+        self.env.create_initial_connections(n=conns)
+        for a in agents:
             a_conns = a.connections
             # all get_agents get enough random connections
             self.assertEqual(len(a_conns), conns)
@@ -53,16 +51,18 @@ class TestEnvironment(unittest.TestCase):
             # agent cannot have itself in connections
             self.assertNotIn(a, a_conns)
 
-        a = get_agents[0]
+        a = agents[0]
         arts = []
         for i in range(5):
             ar = Artifact(a, i)
             arts.append(ar)
-            env.add_artifact(ar)
+            self.env.add_artifact(ar)
 
+        e = self.env.get_artifacts(agents[0])
+        env_arts = self.loop.run_until_complete(e)
         for a in arts:
-            self.assertIn(a, env.get_artifacts(get_agents[0]))
+            self.assertIn(a, env_arts)
 
-        env.destroy()
         # destroy should shutdown aiomas.Container -> no _tcp_server anymore
-        self.assertIsNone(env.container._tcp_server)
+        self.env.destroy()
+        self.assertIsNone(self.env._tcp_server)

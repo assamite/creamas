@@ -791,7 +791,7 @@ if __name__ == "__main__":
                                 log_level=logging.INFO,
                                 extra_ser=[get_spiro_ser])
     menv.log_folder = log_folder
-    for _ in range(80):
+    for _ in range(8):
         ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent',
                                           desired_novelty=-1,
                                           log_folder=log_folder))
@@ -800,7 +800,7 @@ if __name__ == "__main__":
     sim = Simulation(menv, log_folder=log_folder,
                      callback=menv.vote_and_save_info)
     #time.sleep(10)
-    sim.async_steps(100)
+    sim.async_steps(10)
     ret = sim.end()
     print(ret)
 

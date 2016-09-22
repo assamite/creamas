@@ -71,12 +71,15 @@ class ObjectLogger():
         self._folder = folder
 
         if add_name:
-            obj_folder = os.path.join(self._folder, self._obj.name)
+            import re
+            a = re.split("[:/]", self._obj.name)
+            fold = "_".join([i for i in a if len(i) > 0])
+            obj_folder = os.path.join(self._folder, fold)
             if not os.path.exists(obj_folder):
                 os.makedirs(obj_folder)
             self._folder = obj_folder
 
-        self.logger = logging.getLogger("creamas.{}".format(self.obj.name))
+        self.logger = logging.getLogger("creamas.{}".format(self._obj.name))
         if len(self.logger.handlers) == 0:
             self.logger.addHandler(logging.NullHandler())
             if init:

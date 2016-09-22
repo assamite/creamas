@@ -74,17 +74,9 @@ class CreativeAgent(aiomas.Agent):
         self._attitudes = []
 
         if type(name) is str and len(name) > 0:
-            self.__name = None
-            if self.env.get_agent(name) is not None:
-                raise ValueError('Agent names should be unique within the '
-                                 'environment. Agent "{}" already found.'
-                                 .format(name))
             self.__name = name
         else:
-            import re
-            a = re.split("[:/]", self.addr)
-            n = "_".join([i for i in a if len(i) > 0])
-            self.__name = n
+            self.__name = self.addr
 
         if type(log_folder) is str:
             self.logger = ObjectLogger(self, log_folder, add_name=True,

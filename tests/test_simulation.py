@@ -21,7 +21,8 @@ class SimulationTestCase(unittest.TestCase):
 
     def test_create(self):
         '''Test Simulation.create.'''
-        sim = Simulation.create(env_cls=Environment, env_kwargs={},
+        sim = Simulation.create(env_cls=Environment,
+                                env_kwargs={'addr': ('localhost', 5555)},
                                 agent_cls=CreativeAgent, n_agents=10,
                                 agent_kwargs={}, conns=3, log_folder=None)
 
@@ -29,29 +30,30 @@ class SimulationTestCase(unittest.TestCase):
         self.assertEqual(sim.name, 'sim')
         self.assertEqual(env.__class__, Environment,
                          'env class is not expected')
-        get_agents = sim.env.get_agents
-        a = get_agents[0]
+        agents = sim.env.get_agents(address=False)
+        a = agents[0]
         self.assertEqual(a.__class__, CreativeAgent,
                          'Agent class is not expected')
-        self.assertEqual(len(get_agents), 10,
-                         'Simulation did not create correct amount of get_agents')
+        self.assertEqual(len(agents), 10,
+                         'Simulation did not create correct amount of agents')
 
-        for a in get_agents:
+        for a in agents:
             self.assertEqual(len(a.connections), 3,
                              'Simulation did not correct initial connections')
 
         sim.end()
-        self.assertIsNone(sim.env.container._tcp_server)
+        self.assertIsNone(sim.env._tcp_server)
 
         a_classes = [CreativeAgent, DummyAgent]
         a_nums = [10, 5]
         sim = Simulation.create(agent_cls=a_classes, n_agents=a_nums,
-                                agent_kwargs=[{}, {}])
+                                agent_kwargs=[{}, {}],
+                                env_kwargs={'addr': ('localhost', 5555)})
 
         # Both get_agents get created right amount
         n_ca = 0
         n_da = 0
-        for a in sim.env.get_agents:
+        for a in sim.env.get_agents(address=False):
             if a.__class__ == CreativeAgent:
                 n_ca += 1
             if a.__class__ == DummyAgent:
@@ -60,7 +62,8 @@ class SimulationTestCase(unittest.TestCase):
         self.assertEqual(n_da, 5)
         sim.end()
 
-        sim = Simulation.create(agent_cls=DummyAgent, conns=3)
+        sim = Simulation.create(agent_cls=DummyAgent, conns=3,
+                                env_kwargs={'addr': ('localhost', 5555)})
         self.assertEqual(sim.age, 0)
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.step()

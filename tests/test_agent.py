@@ -4,6 +4,7 @@
 
 Tests for agent module.
 '''
+import asyncio
 import unittest
 
 from creamas.core.agent import CreativeAgent
@@ -17,7 +18,8 @@ from creamas.core.mapper import Mapper
 class AgentTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.env = Environment(('localhost', 5555), name='test_env')
+        self.env = Environment.create(('localhost', 5555))
+        self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
         self.env.destroy()
@@ -31,10 +33,6 @@ class AgentTestCase(unittest.TestCase):
 
         self.assertEqual(a1.env, env)
         self.assertEqual(a2.name, 'test_name')
-
-        # No two agents with same name in environment.
-        with self.assertRaises(ValueError):
-            CreativeAgent(env, name='test_name')
 
         # All basic data structures have been initialized
         for a in test_agents:
@@ -54,7 +52,7 @@ class AgentTestCase(unittest.TestCase):
             self.assertEqual(len(a.attitudes), 0)
             self.assertEqual(type(a.attitudes), list)
 
-        a1.get_older()
+        self.loop.run_until_complete(a1.get_older())
         self.assertEqual(a1.age, 1)
         a1.age = 100
         self.assertEqual(a1.age, 100)
@@ -152,7 +150,8 @@ class AgentTestCase(unittest.TestCase):
         a1.add_artifact(art)
         self.assertIn(art, a1.A)
         a1.publish(art)
-        self.assertIn(art, env.get_artifacts(a1))
+        arts = self.loop.run_until_complete(self.env.get_artifacts(a1))
+        self.assertIn(art, arts)
 
         with self.assertRaises(TypeError):
             a1.add_artifact(1)

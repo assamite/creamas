@@ -33,7 +33,7 @@ class DummyAgent():
 class LoggingTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.env = Environment(('localhost', 5555))
+        self.env = Environment.create(('localhost', 5555))
         self.d = TempDirectory()
         self.td = self.d.path
 

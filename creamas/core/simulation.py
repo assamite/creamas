@@ -26,7 +26,7 @@ class Simulation():
     simulation environment.
     '''
     @classmethod
-    def create(self, agent_cls, n_agents=10, agent_kwargs={},
+    def create(self, agent_cls=None, n_agents=10, agent_kwargs={},
                env_cls=Environment, env_kwargs={}, callback=None, conns=0,
                log_folder=None):
         '''Convenience function to create simple simulations.
@@ -74,8 +74,7 @@ class Simulation():
         else:
             assert issubclass(agent_cls, CreativeAgent)
 
-        env_kwargs['log_folder'] = log_folder
-        env = env_cls(**env_kwargs)
+        env = env_cls.create(**env_kwargs)
 
         agents = []
         if hasattr(agent_cls, '__iter__'):

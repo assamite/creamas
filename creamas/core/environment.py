@@ -14,17 +14,16 @@ adding agents to their container.
 
 import logging
 import operator
-import pickle
 from collections import Counter
 from random import choice, shuffle
-import multiprocessing
 
 import aiomas
 
 from creamas.logging import ObjectLogger
 
 
-__all__ = ['Environment', 'MultiEnvironment']
+__all__ = ['Environment']
+
 
 class Environment(aiomas.Container):
     '''Core environment class.'''
@@ -43,9 +42,7 @@ class Environment(aiomas.Container):
             import setproctitle as spt
             spt.setproctitle('Creamas: {}({})'.format(type(self), base_url))
         except:
-            print("plaa")
             pass
-
 
     @property
     def name(self):
@@ -90,15 +87,17 @@ class Environment(aiomas.Container):
     def log_folder(self, _log_folder):
         assert(type(_log_folder) is str)
         self._log_folder = _log_folder
-        self._logger = ObjectLogger(self, _log_folder, add_name=True, init=True)
+        self._logger = ObjectLogger(self, _log_folder, add_name=True,
+                                    init=True)
 
     def get_agents(self, address=True, agent_cls=None):
-        '''Get addresses of agents in the environment.'''
+        '''Get addresses of agents in the environment.
+        '''
         agents = []
         if agent_cls is None:
-            agents =  list(self.agents.dict.values())
+            agents = list(self.agents.dict.values())
         else:
-            #TODO: Fix
+            # TODO: Fix
             agents = list(self.agents.dict.values())
         if address:
             agents = [agent.addr for agent in agents]
@@ -127,8 +126,8 @@ class Environment(aiomas.Container):
         '''
         assert type(n) == int
         assert n > 0
-        for a in self.get_agents():
-            others = self.get_agents[:]
+        for a in self.get_agents(address=False):
+            others = self.get_agents(address=False)[:]
             others.remove(a)
             shuffle(others)
             for r_agent in others[:n]:
@@ -143,9 +142,9 @@ class Environment(aiomas.Container):
         :returns: random, non-connected, agent from the environment
         :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
-        r_agent = choice(self.get_agents)
+        r_agent = choice(self.get_agents(address=False))
         while r_agent.addr == agent.addr:
-            r_agent = choice(self.get_agents)
+            r_agent = choice(self.get_agents(address=False))
         return r_agent
 
     def add_artifact(self, artifact):
@@ -165,7 +164,7 @@ class Environment(aiomas.Container):
         :rtype: list
         '''
         if hasattr(self, 'manager'):
-            artifacts =  await self.manager.get_artifacts()
+            artifacts = await self.manager.get_artifacts()
         else:
             artifacts = self.artifacts
         if agent is not None:
@@ -192,7 +191,8 @@ class Environment(aiomas.Container):
             valid_candidates = valid_candidates.intersection(vc)
 
         self._candidates = list(valid_candidates)
-        self._log(logging.INFO, "{} valid candidates after get_agents used veto."
+        self._log(logging.INFO,
+                  "{} valid candidates after get_agents used veto."
                   .format(len(self.candidates)))
 
     def _gather_votes(self):
@@ -354,7 +354,7 @@ class Environment(aiomas.Container):
         3. calls shutdown for its **container**.
         '''
         ret = self.save_info(folder)
-        for a in self.get_agents:
+        for a in self.get_agents(address=False):
             a.close(folder=folder)
-        self.container.shutdown()
+        self.shutdown()
         return ret
