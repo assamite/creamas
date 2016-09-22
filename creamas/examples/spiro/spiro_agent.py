@@ -317,7 +317,7 @@ class SpiroAgent(CreativeAgent):
         domain = artifact.in_domain
         ctime = artifact.creation_time
         if self.logger is not None:
-            im_name = '{}_N{}_{:0>4}_sc={}_d={}.png'.format(self.name, self.desired_novelty,
+            im_name = '{}_N{}_{:0>4}_sc={}_d={}.png'.format(self.sanitized_name(), self.desired_novelty,
                                                     ctime, sc, domain)
             path = os.path.join(self.logger.folder, im_name)
             misc.imsave(path, img)
@@ -358,7 +358,7 @@ class SpiroAgent(CreativeAgent):
             mean_line = ax.plot(indeces, f, label='Fitted', linestyle='-', color='red')
         legend = ax.legend(loc='upper right', prop={'size':8})
         agent_vars = "{}_{}_{}{}_last={}_stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_maxN".format(
-            self.name, self.age, self.env_learning_method, self.env_learning_amount, self.env_learn_on_add,
+            self.sanitized_name(), self.age, self.env_learning_method, self.env_learning_amount, self.env_learn_on_add,
             self.stmem.length, self._novelty_threshold, self._own_threshold,
             self.jump, self.search_width, self.move_radius)
         ax.set_title("{} min distances: env_learn={} {}"
@@ -400,7 +400,7 @@ class SpiroAgent(CreativeAgent):
         ax.set_ylim([-200, 200])
 
         agent_vars = "{}_{}_{}{}_last={}_stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_maxN".format(
-            self.name, self.age, self.env_learning_method, self.env_learning_amount, self.env_learn_on_add,
+            self.sanitized_name(), self.age, self.env_learning_method, self.env_learning_amount, self.env_learn_on_add,
             self.stmem.length, self._novelty_threshold, self._own_threshold,
             self.jump, self.search_width, self.move_radius)
 

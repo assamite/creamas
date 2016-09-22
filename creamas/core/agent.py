@@ -99,6 +99,11 @@ class CreativeAgent(aiomas.Agent):
         environment. Agent should not change its name during its lifetime.'''
         return self.__name
 
+    def sanitized_name(self):
+        import re
+        a = re.split("[:/]", self.name)
+        return "_".join([i for i in a if len(i) > 0])
+
     @name.setter
     def name(self, name):
         self.__name = name
