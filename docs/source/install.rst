@@ -7,8 +7,8 @@ cleanest way to start working with it is to create
 
 	$>git clone https://github.com/assamite/creamas.git creamas
 	$>cd creamas
-	$>virtualenv -p `which python3.5` env # create venv for python 3.5
-	$>source env/bin/activate # start virtualenv
+	$>pyvenv-3.5 venv # create venv for python 3.5
+	$>source venv/bin/activate # start virtualenv
 	$>pip install -r requirements.txt
 	$>pip install -r c_reqs.txt # packages using C are in different file for readthedocs
 

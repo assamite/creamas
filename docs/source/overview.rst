@@ -5,7 +5,7 @@ Creamas is developed as a tool for people to easily build and do research
 on multi-agent systems in the field of `computational creativity
 <https://en.wikipedia.org/wiki/Computational_creativity>`_. Creamas is built
 on top of `aiomas <http://aiomas.readthedocs.org/en/latest/>`_, which provides
-a communication route between agents and the basic agent implementation.
+a communication route (TCP) between agents and the basic agent implementation.
 
 Agents And Environments
 -----------------------
@@ -14,12 +14,12 @@ Agents in Creamas focus on building artifacts and evaluating them. Each agent
 belongs to an environment, which also serves as a
 communication route between agents. Environment can also hold other information
 shared by all agents, or, e.g. keep a track of agents places in a 3D
-environment. Agents are created by giving the environment as an initialization
+space. Agents are created by giving the environment as an initialization
 parameter.
 
 .. code-block:: python
 
-	from creamas.core import CreativeAgent,Environment
+	from creamas.core import CreativeAgent, Environment
 	# Create environment to http://localhost:5555/
 	env = Environment(('localhost', 5555))
 	# Create agent with address http://localhost:5555/0
@@ -27,11 +27,11 @@ parameter.
 	# Create agent with address http://localhost:5555/1
 	a2 = CreativeAgent(env)
 
-Agents create artifacts in some domain(s) and evaluate them. They can also ask
-other agent's opinions about their own artifacts or other artifacts they have
-seen. This way, the agents can accumulate knowledge about other agents
-preferences, and start to prefer asking opinions from certain agents while 
-avoiding others.
+The fundamental design principle guiding the development of Creamas is that
+each agent creates artifacts in some domain(s) and evaluates them. An agent can
+also ask other agent's opinions about their own artifacts or other artifacts
+they have seen. This allows the agent to accumulate knowledge about the
+preferences of other agents, which may alter the agent's own activity.
 
 .. code-block:: python
 
@@ -58,8 +58,11 @@ avoiding others.
 Features, Mappers And Rules
 ---------------------------
 
-Agents evaluate artifacts by extracting features from them. As features can
-have all kinds of outputs, they are paired with mappers. Mapper serves as a
+.. warning::
+	Functionality in this section is not yet fully developed and tested.
+
+Agents can evaluate artifacts by extracting features from them. As features can
+have all kinds of outputs, they are paired with mappers. A mapper serves as a
 function from feature's outputs to the interval :math:`[-1, 1] \in \mathbb{R}`.
 Where features are though to be artifact domain depended, and shareable between
 agents, mappers represent individual agent's preferences over possible feature
@@ -74,4 +77,4 @@ together, or add new features to them in order to make them more expressive.
 Simulation
 ----------
 
-* Quick intro to simulation
+See :doc:`create_sim`.

@@ -459,7 +459,7 @@ class MultiEnvironment():
         '''
         artifact.env_time = self.age
         self.artifacts.append(artifact)
-        self._log(logging.DEBUG, "ARTIFACTS appended: '{}', length={}"
+        self._log(logging.INFO, "ARTIFACTS appended: '{}', length={}"
                   .format(artifact, len(self.artifacts)))
 
     def get_artifacts(self, agent):

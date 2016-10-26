@@ -1,5 +1,5 @@
 '''
-.. py:module:: creamas.coreagent
+.. py:module:: agent
     :platform: Unix
 
 Agent module holds **CreativeAgent** implementation, a subclass of

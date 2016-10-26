@@ -286,7 +286,6 @@ class SpiroAgent(CreativeAgent):
 
     @aiomas.expose
     async def domain_artifact_added(self, spiro, iterations=1):
-        spiro = pickle.loads(spiro)
         if spiro.creator == self.name:
             for a in self.A:
                 if a == spiro:
@@ -457,11 +456,11 @@ class SpiroArtifact(Artifact):
 
 class SpiroEnvManager(EnvManager):
     @aiomas.expose
-    async def domain_artifact_added(self, artifact_pkl):
+    async def domain_artifact_added(self, artifact):
         rets = []
         for addr in self.get_agents():
             r_agent = await self.container.connect(addr, timeout=5)
-            ret = await r_agent.domain_artifact_added(artifact_pkl)
+            ret = await r_agent.domain_artifact_added(artifact)
             rets.append(ret)
         return rets
 
@@ -469,9 +468,8 @@ class SpiroEnvManager(EnvManager):
 class SpiroMultiEnvManager(MultiEnvManager):
     @aiomas.expose
     async def domain_artifact_added(self, manager_addr, artifact):
-        pkl = pickle.dumps(artifact)
         remote_manager = await self.container.connect(manager_addr, timeout=5)
-        ret = await remote_manager.domain_artifact_added(pkl)
+        ret = await remote_manager.domain_artifact_added(artifact)
         return ret
 
 

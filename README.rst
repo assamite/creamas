@@ -16,7 +16,7 @@ Creamas - Creative Multi-Agent Systems
     :scale: 100%
     :target: https://creamas.readthedocs.org/en/latest/?badge=latest
 
-Creative Multi-Agent Systems research code. Very early in development.
+Library for Creative Multi-Agent Systems.
 
 See project's github-pages for `documentation <https://assamite.github.io/creamas/>`_.
 

@@ -6,15 +6,16 @@ setup(
     author='Simo Linkola',
     author_email='simo.linkola at cs.helsinki.fi',
     description=('library for creative multi-agent systems'),
-    long_description=(open('README.rst', encoding='utf-8').read()),
+    long_description=('See http://assamite.github.io/creamas/'),
     url='',
     install_requires=[
-        'aiomas>=0.6.0',
-        'msgpack-python==0.4.6',
+        'aiomas>=1.0.3',
+        'msgpack-python>=0.4.6',
+        'numpy>=1.10.1',
     ],
     extras_require={
     },
-    packages=find_packages(exclude=['tests*', 'experiments']),
+    packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     entry_points={
         'console_scripts': [
