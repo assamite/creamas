@@ -19,7 +19,7 @@ def gaus_pdf(x, mean, std):
     :returns: pdf(s) in point **x**
     :rtype: float or numpy.ndarray
     '''
-    return exp(-((x - mean) / std)**2/2)/sqrt(2*pi) / std
+    return exp(-((x - mean) / std)**2 / 2) / sqrt(2 * pi) / std
 
 
 def logistic(x, x0, k, L):
@@ -35,4 +35,4 @@ def logistic(x, x0, k, L):
     :returns: function's value(s) in point **x**
     :rtype: float or numpy.ndarray
     '''
-    return L / (1 + exp(-k*(x-x0)))
+    return L / (1 + exp(-k * (x - x0)))

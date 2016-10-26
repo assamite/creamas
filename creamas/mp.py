@@ -396,7 +396,7 @@ class MultiEnvironment():
             n = len(agents)
             if n < ns:
                 ns = n
-                saddr = self._manager_addrs[i+1]
+                saddr = self._manager_addrs[i + 1]
         return saddr
 
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
@@ -608,7 +608,7 @@ class MultiEnvironment():
         for c in cl:
             if c == fpl[-1]:
                 if c not in ranking:
-                    ranking.append((c, len(ranking)+1))
+                    ranking.append((c, len(ranking) + 1))
 
     def _vote_IRV(self, votes):
         '''Perform IRV voting based on votes.
@@ -627,7 +627,7 @@ class MultiEnvironment():
             fp = f(votes)
             fpl = [e[0] for e in fp]
 
-        ranking.append((fpl[0], len(ranking)+1))
+        ranking.append((fpl[0], len(ranking) + 1))
         ranking = list(reversed(ranking))
         return ranking
 

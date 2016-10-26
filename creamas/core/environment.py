@@ -288,7 +288,7 @@ class Environment(aiomas.Container):
         for c in cl:
             if c == fpl[-1]:
                 if c not in ranking:
-                    ranking.append((c, len(ranking)+1))
+                    ranking.append((c, len(ranking) + 1))
 
     def _vote_IRV(self, votes):
         '''Perform IRV voting based on votes.
@@ -307,7 +307,7 @@ class Environment(aiomas.Container):
             fp = f(votes)
             fpl = [e[0] for e in fp]
 
-        ranking.append((fpl[0], len(ranking)+1))
+        ranking.append((fpl[0], len(ranking) + 1))
         ranking = list(reversed(ranking))
         return ranking
 

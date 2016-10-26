@@ -173,7 +173,7 @@ class Rule():
             return s + "empty)"
         for i in range(len(self.__R)):
             s += "{}:{}-".format(self.__W[i], self.__R[i])
-        return s+")"
+        return s + ")"
 
     def __iadd__(self, rule):
         ind = []
