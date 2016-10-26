@@ -9,6 +9,7 @@ install:
   - pip install tox
   - pip install coveralls
   - pip install aiomas
+  - pip install tox-travis
 
 script:
   - tox -e $TOXENV
