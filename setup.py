@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='creamas',
-    version='0.1.0',
+    version='0.0.1',
     author='Simo Linkola',
     author_email='simo.linkola at cs.helsinki.fi',
-    description=('library for creative multi-agent systems'),
+    description=('A library for creative MAS build on top of aiomas.'),
     long_description=('See http://assamite.github.io/creamas/'),
     url='',
     install_requires=[
