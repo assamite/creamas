@@ -2,12 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='creamas',
-    version='0.0.1',
+    version='0.1.0',
     author='Simo Linkola',
-    author_email='simo.linkola at cs.helsinki.fi',
+    author_email='simo.linkola at gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),
     long_description=('See http://assamite.github.io/creamas/'),
-    url='',
+    url='https://assamite.github.io/creamas/',
+    license='GNU General Public License v2 (GPLv2)',
     install_requires=[
         'aiomas>=1.0.3',
         'msgpack-python>=0.4.6',
@@ -23,7 +24,6 @@ setup(
     },
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Natural Language :: English',
