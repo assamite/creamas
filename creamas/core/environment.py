@@ -183,7 +183,7 @@ class Environment(aiomas.Container):
         that are not validated at least by one agent, i.e. they are vetoed.
 
         In larger societies this method might be costly, as it calls each
-        get_agents' ``validate_candidates``-method.
+        agents' :func:`validate_candidates`-method.
         '''
         valid_candidates = set(self.candidates)
         for a in self.get_agents(address=False):
@@ -205,7 +205,7 @@ class Environment(aiomas.Container):
     def perform_voting(self, method='IRV', accepted=1):
         '''Perform voting to decide the ordering of the current candidates.
 
-        Voting calls each agent's ``vote``-method, which might be costly in
+        Voting calls each agent's :func:`vote`-method, which might be costly in
         larger societies.
 
         :param str method:
@@ -221,7 +221,7 @@ class Environment(aiomas.Container):
             the number of returned candidates
 
         :returns:
-            list of :py:class`~creamas.core.artifact.Artifact`s, accepted
+            list of :py:class:`~creamas.core.artifact.Artifact`s, accepted
             artifacts
 
         :rype: list
