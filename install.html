@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="Implementing Agent Classes" href="create_agent.html"/>
         <link rel="prev" title="Overview" href="overview.html"/> 
@@ -83,7 +86,7 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
@@ -109,7 +112,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -136,12 +139,12 @@
 <p>Creamas is developed with <a class="reference external" href="https://docs.python.org/3.5/">Python 3.5</a> and the
 cleanest way to start working with it is to create
 <a class="reference external" href="https://virtualenv.readthedocs.org/en/latest/">virtualenv</a> dedicated for it:</p>
-<div class="highlight-python"><div class="highlight"><pre>$&gt;git clone https://github.com/assamite/creamas.git creamas
+<div class="highlight-default"><div class="highlight"><pre><span></span>$&gt;git clone https://github.com/assamite/creamas.git creamas
 $&gt;cd creamas
-$&gt;virtualenv -p `which python3.5` env # create venv for python 3.5
-$&gt;source env/bin/activate # start virtualenv
-$&gt;pip install requirements.txt
-$&gt;pip install c_reqs.txt # packages using C are in different file for readthedocs
+$&gt;pyvenv-3.5 venv # create venv for python 3.5
+$&gt;source venv/bin/activate # start virtualenv
+$&gt;pip install -r requirements.txt
+$&gt;pip install -r c_reqs.txt # packages using C are in different file for readthedocs
 </pre></div>
 </div>
 <p>That&#8217;s it! Now you are ready to use Creamas.</p>

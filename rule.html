@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Mapper" href="mapper.html"/>
@@ -92,7 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Rule</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
@@ -127,7 +130,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -167,7 +170,7 @@ instances. Rules are used by agents to evaluate artifacts.</p>
 <p>Like features, rules offer a simple interface where
 artifact can be evaluated by calling a rule instance with artifact as the
 only argument. Rules should return a float in [-1, 1] when evaluated.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
 <span class="n">rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="p">([</span><span class="n">myleaf</span><span class="p">,</span> <span class="n">myleaf2</span><span class="p">,</span> <span class="n">myrule</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span><span class="n">myartifact</span><span class="p">)</span>
 </pre></div>

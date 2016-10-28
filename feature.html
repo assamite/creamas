@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Rule" href="rule.html"/>
@@ -91,7 +94,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Feature</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
@@ -127,7 +130,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -162,20 +165,20 @@ rulesets.</p>
 <dt id="creamas.core.feature.Feature">
 <em class="property">class </em><code class="descclassname">creamas.core.feature.</code><code class="descname">Feature</code><span class="sig-paren">(</span><em>name</em>, <em>domains</em>, <em>rtype</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/feature.html#Feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.feature.Feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base feature class that is callable after initialization.</p>
-<p>Each feature value takes as an input a artifact, and returns feature&#8217;s
+<p>Each feature value takes as an input an artifact, and returns feature&#8217;s
 value for that artifact. If artifact type is not supported, feature&#8217;s
 evaluation should return None.</p>
 <p>Returned feature values can be of any type, but rules
 (<a class="reference internal" href="rule.html#creamas.core.rule.Rule" title="creamas.core.rule.Rule"><code class="xref py py-class docutils literal"><span class="pre">Rule</span></code></a>) should have appropriate mappers to
 map possible feature&#8217;s values to the interval [-1, 1].</p>
 <p>Usage example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myfeat</span> <span class="kn">import</span> <span class="n">MyFeature</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myfeat</span> <span class="kn">import</span> <span class="n">MyFeature</span>
 <span class="kn">from</span> <span class="nn">myartifact</span> <span class="kn">import</span> <span class="n">MyArtifact</span>
 <span class="n">myart</span> <span class="o">=</span> <span class="n">MyArtifact</span><span class="p">(</span><span class="o">*</span><span class="n">myparams</span><span class="p">)</span>
-<span class="n">myart</span><span class="o">.</span><span class="n">rtype</span> <span class="o">==</span> <span class="n">mytype</span> <span class="c"># True</span>
+<span class="n">myart</span><span class="o">.</span><span class="n">rtype</span> <span class="o">==</span> <span class="n">mytype</span> <span class="c1"># True</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">MyFeature</span><span class="p">()</span>
 <span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">myart</span><span class="p">)</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="n">mytype</span> <span class="c"># True</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="n">mytype</span> <span class="c1"># True</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -205,8 +208,7 @@ subclass.</strong></p>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#creamas.core.feature.Feature.rtype" title="creamas.core.feature.Feature.rtype">rtype</a></td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Raises NotImplementedError:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">if not overridden in subclass</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>NotImplementedError</strong> &#8211; if not overridden in subclass</td>
 </tr>
 </tbody>
 </table>

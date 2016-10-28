@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Agents" href="agents.html"/>
@@ -95,7 +98,7 @@
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Simulation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Simulation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
@@ -127,7 +130,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -155,7 +158,8 @@
             
   <div class="section" id="module-creamas.core.simulation">
 <span id="simulation"></span><h1>Simulation<a class="headerlink" href="#module-creamas.core.simulation" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-simulation"></span><p>Basic simulation implementation for research purposes.</p>
+<span class="target" id="module-simulation"></span><p>Basic simulation implementation where agents in the same environment can be
+run in an iterative manner.</p>
 <dl class="class">
 <dt id="creamas.core.simulation.Simulation">
 <em class="property">class </em><code class="descclassname">creamas.core.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>env</em>, <em>callback=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
@@ -180,10 +184,16 @@ simulation environment.</p>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="creamas.core.simulation.Simulation.async_step">
+<code class="descname">async_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.async_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.async_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress simulation by running all agents once asynchronously.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="creamas.core.simulation.Simulation.create">
-<em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>n_agents=10</em>, <em>agent_kwargs={}</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>env_kwargs={}</em>, <em>callback=None</em>, <em>conns=0</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience function to create simulation environment.</p>
+<em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>agent_cls=None</em>, <em>n_agents=10</em>, <em>agent_kwargs={}</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>env_kwargs={}</em>, <em>callback=None</em>, <em>conns=0</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to create simple simulations.</p>
 <p>Method first creates environment, then instantiates agents into it
 with give arguments, and finally creates simulation for the
 environment.</p>
@@ -200,7 +210,7 @@ keyword arguments.</li>
 <li><strong>env_cls</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>) &#8211; environment class for simulation</li>
 <li><strong>env_kwargs</strong> (<em>dict</em>) &#8211; keyword arguments passed to environment at creation time</li>
 <li><strong>callback</strong> (<em>callable</em>) &#8211; optional callable to call after each simulation step</li>
-<li><strong>conns</strong> (<em>int</em>) &#8211; Create <strong>conns</strong> amount of initial (random) connections for agents
+<li><strong>conns</strong> &#8211; Create <strong>conns</strong> amount of initial (random) connections for agents
 in the simulation environment.</li>
 <li><strong>log_folder</strong> (<em>str</em>) &#8211; folder for possible logging. This overwrites <em>log_folder</em> keyword
 argument from <strong>agent_kwargs</strong> and <strong>env_kwargs</strong>.</li>
@@ -290,8 +300,8 @@ simulation age.</p>
 <li>alphabetical: agents are sorted by name</li>
 <li>random: agents are shuffled</li>
 </ul>
-<p>Changing the order while iteration is in the middle of run will take
-place in the next iteration.</p>
+<p>Changing the order while iteration is unfinished will take place in the
+next iteration.</p>
 </dd></dl>
 
 </dd></dl>

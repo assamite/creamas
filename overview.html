@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="Installation" href="install.html"/>
         <link rel="prev" title="Creamas - Creative Multi-Agent Systems" href="index.html"/> 
@@ -82,7 +85,7 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Overview</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#agents-and-environments">Agents And Environments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#features-mappers-and-rules">Features, Mappers And Rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#simulation">Simulation</a></li>
@@ -114,7 +117,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -141,46 +144,46 @@
 <p>Creamas is developed as a tool for people to easily build and do research
 on multi-agent systems in the field of <a class="reference external" href="https://en.wikipedia.org/wiki/Computational_creativity">computational creativity</a>. Creamas is built
 on top of <a class="reference external" href="http://aiomas.readthedocs.org/en/latest/">aiomas</a>, which provides
-a communication route between agents and the basic agent implementation.</p>
+a communication route (TCP) between agents and the basic agent implementation.</p>
 <div class="section" id="agents-and-environments">
 <h2>Agents And Environments<a class="headerlink" href="#agents-and-environments" title="Permalink to this headline">¶</a></h2>
 <p>Agents in Creamas focus on building artifacts and evaluating them. Each agent
 belongs to an environment, which also serves as a
 communication route between agents. Environment can also hold other information
 shared by all agents, or, e.g. keep a track of agents places in a 3D
-environment. Agents are created by giving the environment as an initialization
+space. Agents are created by giving the environment as an initialization
 parameter.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">CreativeAgent</span><span class="p">,</span><span class="n">Environment</span>
-<span class="c"># Create environment to http://localhost:5555/</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
-<span class="c"># Create agent with address http://localhost:5555/0</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span>
+<span class="c1"># Create environment to http://localhost:5555/</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">((</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
+<span class="c1"># Create agent with address http://localhost:5555/0</span>
 <span class="n">a1</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-<span class="c"># Create agent with address http://localhost:5555/1</span>
+<span class="c1"># Create agent with address http://localhost:5555/1</span>
 <span class="n">a2</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Agents create artifacts in some domain(s) and evaluate them. They can also ask
-other agent&#8217;s opinions about their own artifacts or other artifacts they have
-seen. This way, the agents can accumulate knowledge about other agents
-preferences, and start to prefer asking opinions from certain agents while
-avoiding others.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># This is a toy example. Code won&#39;t work off the shelf as the agent&#39;s don&#39;t</span>
-<span class="c"># have any evaluation methods, which we will see in the next section.</span>
+<p>The fundamental design principle guiding the development of Creamas is that
+each agent creates artifacts in some domain(s) and evaluates them. An agent can
+also ask other agent&#8217;s opinions about their own artifacts or other artifacts
+they have seen. This allows the agent to accumulate knowledge about the
+preferences of other agents, which may alter the agent&#8217;s own activity.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># This is a toy example. Code won&#39;t work off the shelf as the agent&#39;s don&#39;t</span>
+<span class="c1"># have any evaluation methods, which we will see in the next section.</span>
 <span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">Artifact</span>
-<span class="c"># Create some artifact.</span>
+<span class="c1"># Create some artifact.</span>
 <span class="n">ar</span> <span class="o">=</span> <span class="n">Artifact</span><span class="p">()</span>
-<span class="c"># first evaluate it yourself</span>
+<span class="c1"># first evaluate it yourself</span>
 <span class="n">ev</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
-<span class="c"># ask other agent&#39;s opinion (evaluation) of it</span>
+<span class="c1"># ask other agent&#39;s opinion (evaluation) of it</span>
 <span class="n">ret</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">ask_opinion</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
-<span class="c"># get a1&#39;s current attitude towards a2</span>
+<span class="c1"># get a1&#39;s current attitude towards a2</span>
 <span class="n">att</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">get_attitude</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
-<span class="c"># get difference between evaluations</span>
+<span class="c1"># get difference between evaluations</span>
 <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ev</span> <span class="o">-</span> <span class="n">ret</span><span class="p">)</span>
-<span class="c"># if evaluations are very similar, become friendlier with the agent</span>
+<span class="c1"># if evaluations are very similar, become friendlier with the agent</span>
 <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
         <span class="n">a1</span><span class="o">.</span><span class="n">set_attitude</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">att</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="c"># if evaluations are very different, dislike the agent</span>
+<span class="c1"># if evaluations are very different, dislike the agent</span>
 <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
         <span class="n">a1</span><span class="o">.</span><span class="n">set_attitude</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">att</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
@@ -188,8 +191,12 @@ avoiding others.</p>
 </div>
 <div class="section" id="features-mappers-and-rules">
 <h2>Features, Mappers And Rules<a class="headerlink" href="#features-mappers-and-rules" title="Permalink to this headline">¶</a></h2>
-<p>Agents evaluate artifacts by extracting features from them. As features can
-have all kinds of outputs, they are paired with mappers. Mapper serves as a
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Functionality in this section is not yet fully developed and tested.</p>
+</div>
+<p>Agents can evaluate artifacts by extracting features from them. As features can
+have all kinds of outputs, they are paired with mappers. A mapper serves as a
 function from feature&#8217;s outputs to the interval <span class="math">\([-1, 1] \in \mathbb{R}\)</span>.
 Where features are though to be artifact domain depended, and shareable between
 agents, mappers represent individual agent&#8217;s preferences over possible feature
@@ -202,9 +209,7 @@ together, or add new features to them in order to make them more expressive.</p>
 </div>
 <div class="section" id="simulation">
 <h2>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Quick intro to simulation</li>
-</ul>
+<p>See <a class="reference internal" href="create_sim.html"><span class="doc">Using Simulation</span></a>.</p>
 </div>
 </div>
 

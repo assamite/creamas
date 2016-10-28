@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
@@ -131,14 +134,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.core.artifact</h1><div class="highlight"><pre>
-<span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. :py:module:: artifact</span>
 <span class="sd">    :platform: Unix</span>
 
 <span class="sd">Artifact module holds **Artifact**, a base class for artifacts created by</span>
 <span class="sd">creative agents.</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Artifact&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Artifact&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Artifact"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact">[docs]</a><span class="k">class</span> <span class="nc">Artifact</span><span class="p">():</span>
@@ -167,8 +170,8 @@
         <span class="sd">&#39;&#39;&#39;Domain of the artifact. Domain must match feature&#39;s possible domains</span>
 <span class="sd">        at evaluation time, or None is returned.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">evals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;*dict* - evaluations of the artifact.&#39;&#39;&#39;</span>
@@ -179,7 +182,7 @@
         <span class="sd">&#39;&#39;&#39;*dict* - framings given for the evaluations.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span>
 
-<div class="viewcode-block" id="Artifact.add_eval"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact.add_eval">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Artifact.add_eval"><a class="viewcode-back" href="../../../artifact.html#creamas.core.artifact.Artifact.add_eval">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Add or change agent&#39;s evaluation of the artifact with given framing</span>
 <span class="sd">        information.</span>
 
@@ -189,10 +192,10 @@
 <span class="sd">        :param object fr: framing information for the evaluation</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evals</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fr</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_framings</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fr</span></div>
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&quot;{}:{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

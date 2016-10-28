@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
@@ -131,7 +134,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.core.rule</h1><div class="highlight"><pre>
-<span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. py:module:: rule</span>
 <span class="sd">    :platform: Unix</span>
 
@@ -142,12 +145,9 @@
 <span class="sd">TODO: write rule to accept other rules in F also.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 
-<span class="kn">from</span> <span class="nn">creamas.core.feature</span> <span class="kn">import</span> <span class="n">Feature</span>
-<span class="kn">from</span> <span class="nn">creamas.core.mapper</span> <span class="kn">import</span> <span class="n">Mapper</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Rule&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Rule&#39;</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">RuleLeaf</span><span class="p">():</span>
@@ -170,14 +170,14 @@
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__domains</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__feat</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&quot;RuleLeaf({}:{}))&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__feat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mapper</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;RuleLeaf(</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">))&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__feat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mapper</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaf</span><span class="p">):</span>
-        <span class="n">rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaf</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">evaluation</span><span class="o">=</span><span class="s">&#39;ave&#39;</span><span class="p">)</span>
+        <span class="n">rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaf</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">evaluation</span><span class="o">=</span><span class="s1">&#39;ave&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rule</span>
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -206,8 +206,8 @@
 
 <div class="viewcode-block" id="Rule"><a class="viewcode-back" href="../../../rule.html#creamas.core.rule.Rule">[docs]</a><span class="k">class</span> <span class="nc">Rule</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Rule is a treelike data structure consisting of other Rules and RuleLeaf</span>
-<span class="sd">    instances. Rules are used by agents to evaluate artifacts. </span>
-<span class="sd">    </span>
+<span class="sd">    instances. Rules are used by agents to evaluate artifacts.</span>
+
 <span class="sd">    Like features, rules offer a simple interface where</span>
 <span class="sd">    artifact can be evaluated by calling a rule instance with artifact as the</span>
 <span class="sd">    only argument. Rules should return a float in [-1, 1] when evaluated.</span>
@@ -218,7 +218,7 @@
 <span class="sd">        rule = Rule([myleaf, myleaf2, myrule], [1.0, 1.0, 1.0])</span>
 <span class="sd">        res = rule(myartifact)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">evaluation</span><span class="o">=</span><span class="s">&#39;ave&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">evaluation</span><span class="o">=</span><span class="s1">&#39;ave&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param list rules:</span>
 <span class="sd">            Subrules for this rule. Subrule can be either an iterable of length</span>
@@ -246,17 +246,17 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_subrule</span><span class="p">(</span><span class="n">rules</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s">&#39;ave&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s1">&#39;ave&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">weighted_average</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s">&#39;min&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s">&#39;max&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">evaluation</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">maximum</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">evaluation</span><span class="p">,</span> <span class="s">&#39;__call__&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">evaluation</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">evaluation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&#39;evaluation&#39; keyword must be one of the &quot;</span>
-                             <span class="s">&quot;recognized types or callable, got {}.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;evaluation&#39; keyword must be one of the &quot;</span>
+                             <span class="s2">&quot;recognized types or callable, got </span><span class="si">{}</span><span class="s2">.&quot;</span>
                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evaluation</span><span class="p">))</span>
 
     <span class="nd">@property</span>
@@ -290,26 +290,26 @@
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">subrule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
-        <span class="nb">issubclass</span><span class="p">(</span><span class="n">subrule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Rule&#39;s class must be (subclass of) {} or {}, got &quot;</span>
-                            <span class="s">&quot;{}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">,</span> <span class="n">subrule</span><span class="o">.</span><span class="n">__class__</span><span class="p">))</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">subrule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rule&#39;s class must be (subclass of) </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">, got &quot;</span>
+                            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">,</span> <span class="n">subrule</span><span class="o">.</span><span class="n">__class__</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__domains</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__domains</span><span class="p">,</span> <span class="n">subrule</span><span class="o">.</span><span class="n">domains</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subrule</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">True</span>
-</div>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__domains</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;Rule(&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;Rule(&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__R</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&quot;empty)&quot;</span>
+            <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s2">&quot;empty)&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__R</span><span class="p">)):</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="s">&quot;{}:{}-&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__W</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">__R</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">s</span><span class="o">+</span><span class="s">&quot;)&quot;</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">-&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__W</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">__R</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
     <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="p">[]</span>
@@ -332,10 +332,10 @@
 
     <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">True</span>
-        <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
-</div>
+
 <span class="k">def</span> <span class="nf">weighted_average</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Evaluate artifact&#39;s value to be weighted average of values returned by</span>
 <span class="sd">    rule&#39;s subrules.</span>
@@ -344,7 +344,7 @@
     <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">)):</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">e</span> <span class="o">+=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">rule</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">w</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -361,7 +361,7 @@
     <span class="n">m</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">)):</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
                 <span class="n">m</span> <span class="o">=</span> <span class="n">e</span>
     <span class="k">return</span> <span class="n">m</span>
@@ -376,7 +376,7 @@
     <span class="n">m</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">)):</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">:</span>
                 <span class="n">m</span> <span class="o">=</span> <span class="n">e</span>
     <span class="k">return</span> <span class="n">m</span>

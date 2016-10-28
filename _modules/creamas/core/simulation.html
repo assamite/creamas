@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
@@ -131,21 +134,24 @@
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.core.simulation</h1><div class="highlight"><pre>
-<span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. py:module:: simulation</span>
 
-<span class="sd">Basic simulation implementation for research purposes.</span>
+<span class="sd">Basic simulation implementation where agents in the same environment can be</span>
+<span class="sd">run in an iterative manner.</span>
 <span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span>
 
+<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">aiomas</span>
 
-<span class="kn">from</span> <span class="nn">creamas.core.agent</span> <span class="kn">import</span> <span class="n">CreativeAgent</span>
-<span class="kn">from</span> <span class="nn">creamas.core.environment</span> <span class="kn">import</span> <span class="n">Environment</span>
-<span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="kn">import</span> <span class="n">ObjectLogger</span>
+<span class="kn">from</span> <span class="nn">creamas.core.agent</span> <span class="k">import</span> <span class="n">CreativeAgent</span>
+<span class="kn">from</span> <span class="nn">creamas.core.environment</span> <span class="k">import</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="k">import</span> <span class="n">ObjectLogger</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Simulation&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Simulation&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">():</span>
@@ -156,10 +162,10 @@
 <span class="sd">    simulation environment.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="Simulation.create"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="n">n_agents</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">agent_kwargs</span><span class="o">=</span><span class="p">{},</span>
-               <span class="n">env_cls</span><span class="o">=</span><span class="n">Environment</span><span class="p">,</span> <span class="n">env_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-               <span class="n">log_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Convenience function to create simulation environment.</span>
+<div class="viewcode-block" id="Simulation.create"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_agents</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">agent_kwargs</span><span class="o">=</span><span class="p">{},</span>
+               <span class="n">env_cls</span><span class="o">=</span><span class="n">Environment</span><span class="p">,</span> <span class="n">env_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">log_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Convenience function to create simple simulations.</span>
 
 <span class="sd">        Method first creates environment, then instantiates agents into it</span>
 <span class="sd">        with give arguments, and finally creates simulation for the</span>
@@ -188,7 +194,7 @@
 <span class="sd">        :param callable callback:</span>
 <span class="sd">            optional callable to call after each simulation step</span>
 
-<span class="sd">        :param int conns:</span>
+<span class="sd">        :param conns:</span>
 <span class="sd">            Create **conns** amount of initial (random) connections for agents</span>
 <span class="sd">            in the simulation environment.</span>
 
@@ -197,34 +203,33 @@
 <span class="sd">            argument from **agent_kwargs** and **env_kwargs**.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">env_cls</span><span class="p">,</span> <span class="n">Environment</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">callback</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="s">&#39;__call__&#39;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">callback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">agent_cls</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="n">CreativeAgent</span><span class="p">)</span>
 
-        <span class="n">env_kwargs</span><span class="p">[</span><span class="s">&#39;log_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_folder</span>
-        <span class="n">env</span> <span class="o">=</span> <span class="n">env_cls</span><span class="p">(</span><span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">env_cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
 
         <span class="n">agents</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_agents</span><span class="p">)):</span>
-                <span class="n">agent_kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s">&#39;environment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span>
-                <span class="n">agent_kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s">&#39;log_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_folder</span>
+                <span class="n">agent_kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;environment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span>
+                <span class="n">agent_kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;log_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_folder</span>
                 <span class="n">agents</span> <span class="o">=</span> <span class="n">agents</span> <span class="o">+</span> <span class="p">[</span><span class="n">agent_cls</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="o">**</span><span class="n">agent_kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span>
                                    <span class="nb">range</span><span class="p">(</span><span class="n">n_agents</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">agent_kwargs</span><span class="p">[</span><span class="s">&#39;environment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span>
-            <span class="n">agent_kwargs</span><span class="p">[</span><span class="s">&#39;log_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_folder</span>
+            <span class="n">agent_kwargs</span><span class="p">[</span><span class="s1">&#39;environment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span>
+            <span class="n">agent_kwargs</span><span class="p">[</span><span class="s1">&#39;log_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log_folder</span>
             <span class="n">agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">agent_cls</span><span class="p">(</span><span class="o">**</span><span class="n">agent_kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_agents</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">conns</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">env</span><span class="o">.</span><span class="n">create_initial_connections</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">conns</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">)</span>
-</div>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Create simulation for previously set up environment.</span>
 
 <span class="sd">        :param env: fully initialized environment with agents already set</span>
@@ -235,17 +240,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">env</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="s">&#39;alphabetical&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s">&#39;sim&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="s1">&#39;alphabetical&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;sim&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_start_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processing_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c"># List of agents that have not been triggered for current step.</span>
+        <span class="c1"># List of agents that have not been triggered for current step.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                                       <span class="n">init</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -281,35 +291,66 @@
 <span class="sd">        * alphabetical: agents are sorted by name</span>
 <span class="sd">        * random: agents are shuffled</span>
 
-<span class="sd">        Changing the order while iteration is in the middle of run will take</span>
-<span class="sd">        place in the next iteration.</span>
+<span class="sd">        Changing the order while iteration is unfinished will take place in the</span>
+<span class="sd">        next iteration.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span>
 
-    <span class="nd">@order.setter</span>
+    <span class="nd">@order</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;alphabetical&#39;</span><span class="p">,</span> <span class="s">&#39;random&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;alphabetical&#39;</span><span class="p">,</span> <span class="s1">&#39;random&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="n">order</span>
 
     <span class="k">def</span> <span class="nf">_get_order_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">agents</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">==</span> <span class="s">&#39;alphabetical&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">==</span> <span class="s1">&#39;alphabetical&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
         <span class="n">shuffle</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">agents</span>
 
     <span class="k">def</span> <span class="nf">_init_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Initialize next step of simulation to be run.&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">***** Step {} *****&quot;</span><span class="o">.</span> <span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_age</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">***** Step </span><span class="si">{:0&gt;4}</span><span class="s2"> *****&quot;</span><span class="o">.</span> <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_order_agents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_finalize_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Finalize simulation step after all agents have acted for the current</span>
 <span class="sd">        step.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">+=</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Step </span><span class="si">{}</span><span class="s2"> run in: </span><span class="si">{:.3f}</span><span class="s2">s (</span><span class="si">{:.3f}</span><span class="s2">s of &quot;</span>
+                  <span class="s2">&quot;actual processing time used)&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span><span class="p">,</span>
+                          <span class="n">t2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step_start_time</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processing_time</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span>
+
+    <span class="k">def</span> <span class="nf">async_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">async_step</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Simulation.async_step"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.async_step">[docs]</a>    <span class="k">def</span> <span class="nf">async_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Progress simulation by running all agents once asynchronously.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_step</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_act</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span> <span class="k">for</span>
+                 <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">]</span>
+        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_step</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Simulation.steps"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.steps">[docs]</a>    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Progress simulation with given amount of steps.</span>
@@ -320,9 +361,9 @@
 <span class="sd">        :param int n: amount of steps to run</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</div>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Simulation.step"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Progress simulation with single step.</span>
 
@@ -332,36 +373,44 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-</div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Simulation.next"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in</span>
 <span class="sd">        the current step.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="c"># all agents acted, init next step</span>
+        <span class="c1"># all agents acted, init next step</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_step</span><span class="p">()</span>
 
         <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">agent</span><span class="o">.</span><span class="n">get_older</span><span class="p">()</span>
-        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">act</span><span class="p">())</span>
+        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_act</span><span class="p">(</span><span class="n">agent</span><span class="p">))</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">+=</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t</span>
 
-        <span class="c"># all agents acted, finalize cur step</span>
+        <span class="c1"># all agents acted, finalize current step</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_step</span><span class="p">()</span>
-</div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_step</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Simulation.finish_step"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.finish_step">[docs]</a>    <span class="k">def</span> <span class="nf">finish_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Progress simulation to the end of the current step.&#39;&#39;&#39;</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-</div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span></div>
+
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Simulation.end"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Simulation.end"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;End simulation and destroy the current simulation environment.&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span></div></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Simulation run with </span><span class="si">{}</span><span class="s2"> steps took </span><span class="si">{:.3f}</span><span class="s2">s to &quot;</span>
+                  <span class="s2">&quot;complete, while actual processing time was </span><span class="si">{:.3f}</span><span class="s2">s.&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">_processing_time</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span></div></div>
 </pre></div>
 
            </div>

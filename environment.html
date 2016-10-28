@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Simulation" href="simulation.html"/>
@@ -94,7 +97,7 @@
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Environment</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
@@ -127,7 +130,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -155,27 +158,55 @@
             
   <div class="section" id="module-creamas.core.environment">
 <span id="environment"></span><h1>Environment<a class="headerlink" href="#module-creamas.core.environment" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-environment"></span><p>Environments for agents.</p>
+<span class="target" id="module-environment"></span><p>This module holds <code class="docutils literal"><span class="pre">Enviroment</span></code>-class, an universe where the agents live.
+Environment holds methods for inter-agent communication and some utilities that
+are usually needed when implementing creative multi-agent systems.</p>
+<p>All implementations should subclass <code class="docutils literal"><span class="pre">Environment</span></code> in order to provide basic
+functionality for the system to operate.</p>
+<p>Environments are used by defining their address at the instantation time, and
+adding agents to their container.</p>
 <dl class="class">
 <dt id="creamas.core.environment.Environment">
-<em class="property">class </em><code class="descclassname">creamas.core.environment.</code><code class="descname">Environment</code><span class="sig-paren">(</span><em>addr=('localhost'</em>, <em>5555)</em>, <em>name=None</em>, <em>clock=None</em>, <em>extra_ser=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic environment for agents.</p>
+<em class="property">class </em><code class="descclassname">creamas.core.environment.</code><code class="descname">Environment</code><span class="sig-paren">(</span><em>base_url</em>, <em>clock</em>, <em>connect_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Core environment class.</p>
 <dl class="method">
 <dt id="creamas.core.environment.Environment.add_artifact">
-<code class="descname">add_artifact</code><span class="sig-paren">(</span><em>agent</em>, <em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_artifact</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add artifact with given framing to the environment.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; Agent that produced the artifact</li>
-<li><strong>artifact</strong> (<em>object</em>) &#8211; Artifact to be added.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; Artifact to be added.</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.add_artifacts">
+<code class="descname">add_artifacts</code><span class="sig-paren">(</span><em>artifacts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add artifacts to <strong>artifacts</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifacts</strong> &#8211; list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a> objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.add_candidate">
+<code class="descname">add_candidate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_candidate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add candidate artifact to current candidates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.clear_candidates">
+<code class="descname">clear_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.clear_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.clear_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove current candidates from the environment.</p>
 </dd></dl>
 
 <dl class="method">
@@ -186,7 +217,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; number of connections for each agent</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; the number of connections for each agent</td>
 </tr>
 </tbody>
 </table>
@@ -205,14 +236,14 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.environment.Environment.get_agent">
-<code class="descname">get_agent</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get agent by its name.</p>
+<dt id="creamas.core.environment.Environment.get_agents">
+<code class="descname">get_agents</code><span class="sig-paren">(</span><em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get addresses of agents in the environment.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.get_artifacts">
-<code class="descname">get_artifacts</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_artifacts" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_artifacts</code><span class="sig-paren">(</span><em>agent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_artifacts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get artifacts published by certain agent.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -235,7 +266,7 @@ parameter.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; Agent that produced the artifact</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; Agent that is not wanted to return</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">random, non-connected, agent from the environment</td>
 </tr>
@@ -246,8 +277,41 @@ parameter.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="creamas.core.environment.Environment.perform_voting">
+<code class="descname">perform_voting</code><span class="sig-paren">(</span><em>method='IRV'</em>, <em>accepted=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.perform_voting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.perform_voting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform voting to decide the ordering of the current candidates.</p>
+<p>Voting calls each agent&#8217;s <code class="docutils literal"><span class="pre">vote</span></code>-method, which might be costly in
+larger societies.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em>) &#8211; Used voting method. One of the following:
+IRV = instant run-off voting,
+mean = best mean vote (requires cardinal ordering for votes),
+best = best singular vote (requires cardinal ordering, returns only
+one candidate),
+least_worst = least worst singular vote,
+random = selects random candidates</li>
+<li><strong>accepted</strong> (<em>int</em>) &#8211; the number of returned candidates</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of :py:class`~creamas.core.artifact.Artifact`s, accepted
+artifacts</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Rype:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="creamas.core.environment.Environment.save_info">
-<code class="descname">save_info</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.save_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.save_info" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_info</code><span class="sig-paren">(</span><em>folder</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.save_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.save_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save information accumulated during the environments lifetime.</p>
 <p>Called from <code class="xref py py-meth docutils literal"><span class="pre">destroy()</span></code>. Override in
 subclass.</p>
@@ -261,10 +325,25 @@ subclass.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="creamas.core.environment.Environment.trigger_act">
+<code class="descname">trigger_act</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.trigger_act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.trigger_act" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger agent in address to act.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.validate_candidates">
+<code class="descname">validate_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.validate_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.validate_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate current candidates in the environment by pruning candidates
+that are not validated at least by one agent, i.e. they are vetoed.</p>
+<p>In larger societies this method might be costly, as it calls each
+get_agents&#8217; <code class="docutils literal"><span class="pre">validate_candidates</span></code>-method.</p>
+</dd></dl>
+
 <dl class="attribute">
-<dt id="creamas.core.environment.Environment.agents">
-<code class="descname">agents</code><a class="headerlink" href="#creamas.core.environment.Environment.agents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Agents in environment.</p>
+<dt id="creamas.core.environment.Environment.age">
+<code class="descname">age</code><a class="headerlink" href="#creamas.core.environment.Environment.age" title="Permalink to this definition">¶</a></dt>
+<dd><p>Age of the environment.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -274,10 +353,23 @@ subclass.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="creamas.core.environment.Environment.container">
-<code class="descname">container</code><a class="headerlink" href="#creamas.core.environment.Environment.container" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="docutils literal"><span class="pre">aiomas.Container</span></code>, serves as a communication route between
-agents.</p>
+<dt id="creamas.core.environment.Environment.candidates">
+<code class="descname">candidates</code><a class="headerlink" href="#creamas.core.environment.Environment.candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current artifact candidates, subject to e.g. agents voting to
+determine which candidate(s) are added to <strong>artifacts</strong>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.log_folder">
+<code class="descname">log_folder</code><a class="headerlink" href="#creamas.core.environment.Environment.log_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging folder for the environment. If set, will create
+py:class::<cite>creamas.logging.ObjectLogger</cite> for that folder.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.core.environment.Environment.logger">
+<code class="descname">logger</code><a class="headerlink" href="#creamas.core.environment.Environment.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logger for the environment.</p>
 </dd></dl>
 
 <dl class="attribute">

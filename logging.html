@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
         <link rel="prev" title="Math" href="math.html"/> 
@@ -92,7 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Logging</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -117,7 +120,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -147,12 +150,19 @@
 creative system&#8217;s behavior.</p>
 <dl class="class">
 <dt id="creamas.logging.ObjectLogger">
-<em class="property">class </em><code class="descclassname">creamas.logging.</code><code class="descname">ObjectLogger</code><span class="sig-paren">(</span><em>obj</em>, <em>folder</em>, <em>add_name=False</em>, <em>init=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base logger for objects.</p>
+<em class="property">class </em><code class="descclassname">creamas.logging.</code><code class="descname">ObjectLogger</code><span class="sig-paren">(</span><em>obj</em>, <em>folder</em>, <em>add_name=False</em>, <em>init=True</em>, <em>log_level=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base logger for objects. <em>Not</em> a subclass of base logger.</p>
 <p>Generates one file for each attribute to be logged.</p>
 <p>Create new logger instance for <em>obj</em> in <em>folder</em>. If <em>add_name</em>
-is true, then creates subfolder carrying <code class="xref py py-attr docutils literal"><span class="pre">obj.name</span></code> to
-<em>folder</em>.</p>
+is True, creates subfolder carrying <code class="xref py py-attr docutils literal"><span class="pre">obj.name</span></code> to <em>folder</em>.
+If <em>init</em> is true, sets logger&#8217;s level to <em>log_level</em> and adds basic
+<em>StreamHandler</em> to the logger.</p>
+<dl class="method">
+<dt id="creamas.logging.ObjectLogger.add_handler">
+<code class="descname">add_handler</code><span class="sig-paren">(</span><em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.add_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.add_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add handler to the logger.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="creamas.logging.ObjectLogger.get_file">
 <code class="descname">get_file</code><span class="sig-paren">(</span><em>attr_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/logging.html#ObjectLogger.get_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.logging.ObjectLogger.get_file" title="Permalink to this definition">¶</a></dt>
