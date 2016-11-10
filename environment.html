@@ -280,7 +280,7 @@ parameter.</p>
 <dt id="creamas.core.environment.Environment.perform_voting">
 <code class="descname">perform_voting</code><span class="sig-paren">(</span><em>method='IRV'</em>, <em>accepted=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.perform_voting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.perform_voting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform voting to decide the ordering of the current candidates.</p>
-<p>Voting calls each agent&#8217;s <code class="docutils literal"><span class="pre">vote</span></code>-method, which might be costly in
+<p>Voting calls each agent&#8217;s <code class="xref py py-func docutils literal"><span class="pre">vote()</span></code>-method, which might be costly in
 larger societies.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -298,8 +298,9 @@ random = selects random candidates</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of :py:class`~creamas.core.artifact.Artifact`s, accepted
-artifacts</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a> objects,
+accepted artifacts. Some voting methods, e.g. mean, also return the
+associated scores for each accepted artifact.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Rype:</th><td class="field-body"><p class="first last">list</p>
@@ -337,7 +338,7 @@ subclass.</p>
 <dd><p>Validate current candidates in the environment by pruning candidates
 that are not validated at least by one agent, i.e. they are vetoed.</p>
 <p>In larger societies this method might be costly, as it calls each
-get_agents&#8217; <code class="docutils literal"><span class="pre">validate_candidates</span></code>-method.</p>
+agents&#8217; <code class="xref py py-func docutils literal"><span class="pre">validate_candidates()</span></code>-method.</p>
 </dd></dl>
 
 <dl class="attribute">

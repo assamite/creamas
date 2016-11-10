@@ -319,7 +319,7 @@
 <span class="sd">        that are not validated at least by one agent, i.e. they are vetoed.</span>
 
 <span class="sd">        In larger societies this method might be costly, as it calls each</span>
-<span class="sd">        get_agents&#39; ``validate_candidates``-method.</span>
+<span class="sd">        agents&#39; :func:`validate_candidates`-method.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">valid_candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -341,7 +341,7 @@
 <div class="viewcode-block" id="Environment.perform_voting"><a class="viewcode-back" href="../../../environment.html#creamas.core.environment.Environment.perform_voting">[docs]</a>    <span class="k">def</span> <span class="nf">perform_voting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;IRV&#39;</span><span class="p">,</span> <span class="n">accepted</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Perform voting to decide the ordering of the current candidates.</span>
 
-<span class="sd">        Voting calls each agent&#39;s ``vote``-method, which might be costly in</span>
+<span class="sd">        Voting calls each agent&#39;s :func:`vote`-method, which might be costly in</span>
 <span class="sd">        larger societies.</span>
 
 <span class="sd">        :param str method:</span>
@@ -357,8 +357,9 @@
 <span class="sd">            the number of returned candidates</span>
 
 <span class="sd">        :returns:</span>
-<span class="sd">            list of :py:class`~creamas.core.artifact.Artifact`s, accepted</span>
-<span class="sd">            artifacts</span>
+<span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects,</span>
+<span class="sd">            accepted artifacts. Some voting methods, e.g. mean, also return the</span>
+<span class="sd">            associated scores for each accepted artifact.</span>
 
 <span class="sd">        :rype: list</span>
 <span class="sd">        &#39;&#39;&#39;</span>
