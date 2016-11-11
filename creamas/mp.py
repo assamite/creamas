@@ -2,7 +2,17 @@
 .. py:module:: mp
     :platform: Unix
 
-Multiprocessing functions to increase system performance.
+This module contains multiprocessing implementation for
+:class:`~creamas.core.environment.Environment`,
+:class:`~creamas.mp.MultiEnvironment`.
+It uses managers to obtain the same functionality as the single processor
+environment. See :class:`~creamas.mp.EnvManager` and
+:class:`~creamas.mp.MultiEnvManager` for details.
+
+.. warning::
+    This functionality is currently non-tested. However, it *seems* to work
+    as intended and may be used in
+    :class:`~creamas.core.simulation.Simulation`.
 '''
 import asyncio
 import logging
@@ -22,9 +32,20 @@ from creamas.core.environment import Environment
 logger = logging.getLogger(__name__)
 TIMEOUT = 5
 
+# TODO: Refactor code! To use abstract classes.
+
 
 class EnvManager(aiomas.subproc.Manager):
-    """An agent that can start other agents within its environment.
+    """A single environment manager agent for a child environment running
+    inside a multiprocessing environment.
+
+    A Manager can spawn other agents into its environment, and can execute
+    other tasks relevant to the environment.
+
+    .. note::
+        You should not have need to create managers directly, instead pass the
+        desired manager class to an instance of
+        :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
     @aiomas.expose
     def set_host_addr(self, addr):
@@ -43,7 +64,7 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def report(self, msg):
-        '''Report message to host manager.
+        '''Report message to the host manager.
         '''
         try:
             host_manager = await self.container.connect(self.host_addr,
@@ -141,8 +162,17 @@ class EnvManager(aiomas.subproc.Manager):
 
 
 class MultiEnvManager(aiomas.Agent):
-    '''An manager agent for the multi-environment.
-    '''
+    """A multi-environment manager agent for a whole multiprocessing
+    environment.
+
+    A Manager can spawn other agents into its child environments, and can
+    execute other tasks relevant to the whole environment.
+
+    .. note::
+        You should not have need to create managers directly, instead pass the
+        desired manager class to an instance of
+        :class:`~creamas.mp.MultiEnvironment` at its initialization time.
+    """
     @aiomas.expose
     def handle(self, msg):
         '''Handle message. Override in subclass if needed.

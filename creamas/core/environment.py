@@ -192,7 +192,7 @@ class Environment(aiomas.Container):
 
         self._candidates = list(valid_candidates)
         self._log(logging.INFO,
-                  "{} valid candidates after get_agents used veto."
+                  "{} valid candidates after agents used veto."
                   .format(len(self.candidates)))
 
     def _gather_votes(self):
@@ -221,8 +221,9 @@ class Environment(aiomas.Container):
             the number of returned candidates
 
         :returns:
-            list of :py:class:`~creamas.core.artifact.Artifact`s, accepted
-            artifacts
+            list of :py:class:`~creamas.core.artifact.Artifact` objects,
+            accepted artifacts. Some voting methods, e.g. mean, also return the
+            associated scores for each accepted artifact.
 
         :rype: list
         '''

@@ -51,7 +51,6 @@ class Artifact():
         information.
 
         :param agent: agent which did the evaluation
-        :domain agent: :py:class:`~creamas.core.agent.CreativeAgent`
         :param float e: evaluation for the artifact
         :param object fr: framing information for the evaluation
         '''

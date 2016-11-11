@@ -346,7 +346,7 @@ class CreativeAgent(aiomas.Agent):
         '''Publish artifact to agent's environment.
 
         :param artifact: artifact to be published
-        :type artifact: `~creamas.core.artifact.Artifact`
+        :type artifact: :py:class:`~creamas.core.artifact.Artifact`
         '''
         self.env.add_artifact(artifact)
         self._log(logging.DEBUG, "Published {} to domain.".format(artifact))
@@ -386,6 +386,7 @@ class CreativeAgent(aiomas.Agent):
         w = 0.0
         if len(self.R) == 0:
             return 0.0, None
+
         for i in range(len(self.R)):
             s += self.R[i](artifact) * self.W[i]
             w += abs(self.W[i])
@@ -441,7 +442,7 @@ class CreativeAgent(aiomas.Agent):
         :returns:
             ordered list of (candidate, evaluation)-tuples
         '''
-        ranks = [(c, self.evaluate(c)) for c in candidates]
+        ranks = [(c, self.evaluate(c)[0]) for c in candidates]
         ranks.sort(key=operator.itemgetter(1), reverse=True)
         return ranks
 

@@ -172,7 +172,7 @@ class SpiroAgent(CreativeAgent):
         '''
         if self.desired_novelty > 0:
             return self.hedonic_value(self.novelty(artifact.obj))
-        return self.novelty(artifact.obj) / self.img_size
+        return self.novelty(artifact.obj) / self.img_size, None
 
     def invent(self, n):
         '''Invent new spirograph by taking n random steps from current position
@@ -186,13 +186,13 @@ class SpiroAgent(CreativeAgent):
         args = self.randomize_args()
         img = self.create(args[0], args[1])
         best_artifact = SpiroArtifact(self, img, domain='image')
-        ev = self.evaluate(best_artifact)
+        ev, _ = self.evaluate(best_artifact)
         best_artifact.add_eval(self, ev, fr={'args': args})
         for i in range(n-1):
             args = self.randomize_args()
             img = self.create(args[0], args[1])
             artifact = SpiroArtifact(self, img, domain='image')
-            ev = self.evaluate(artifact)
+            ev, _ = self.evaluate(artifact)
             artifact.add_eval(self, ev, fr={'args': args})
             if ev > best_artifact.evals[self.name]:
                 best_artifact = artifact
@@ -293,7 +293,7 @@ class SpiroAgent(CreativeAgent):
         valid = []
         for c in candidates:
             if c.creator != self.name:
-                ceval= self.evaluate(c)
+                ceval, _ = self.evaluate(c)
                 if ceval >= self._novelty_threshold:
                     valid.append(c)
                     if ceval > besteval:
@@ -730,7 +730,7 @@ if __name__ == "__main__":
 
     sim = Simulation(env, log_folder=log_folder,
                      callback=env.vote_and_save_info)
-    sim.steps(20)
+    sim.steps(100)
     ret = sim.end()
     print(ret)
 
