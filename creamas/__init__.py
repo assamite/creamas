@@ -19,4 +19,4 @@ __all__ = [
     'log_after', 'log_before', 'ObjectLogger',
 ]
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'

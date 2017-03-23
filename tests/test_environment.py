@@ -21,6 +21,9 @@ class TestEnvironment(unittest.TestCase):
         self.env = Environment.create(('localhost', 5555))
         self.loop = asyncio.get_event_loop()
 
+    def tearDown(self):
+        self.env.destroy()
+
     def test_environment(self):
         self.assertTrue(issubclass(self.env.__class__, aiomas.Container))
 

@@ -26,7 +26,8 @@ __all__ = ['Environment']
 
 
 class Environment(aiomas.Container):
-    '''Core environment class.'''
+    '''Base environment class inherited from :py:class:`aiomas.Container`.
+    '''
     def __init__(self, base_url, clock, connect_kwargs):
         super().__init__(base_url, clock, connect_kwargs)
         self._age = 0
@@ -345,17 +346,24 @@ class Environment(aiomas.Container):
         '''
         pass
 
-    def destroy(self, folder=None):
+    def destroy(self, folder=None, as_coro=False):
         '''Destroy the environment.
 
         Does the following:
 
         1. calls :py:meth:`~creamas.core.Environment.save_info`
         2. for each agent: calls :py:meth:`close`
-        3. calls shutdown for its **container**.
+        3. Shuts down its RPC-service.
         '''
-        ret = self.save_info(folder)
-        for a in self.get_agents(address=False):
-            a.close(folder=folder)
-        self.shutdown()
-        return ret
+        async def _destroy(folder):
+            ret = self.save_info(folder)
+            for a in self.get_agents(address=False):
+                a.close(folder=folder)
+            await self.shutdown(as_coro=True)
+            return ret
+
+        if as_coro:
+            return _destroy(folder)
+        else:
+            ret = aiomas.run(until=_destroy(folder))
+            return ret

@@ -47,6 +47,10 @@ class EnvManager(aiomas.subproc.Manager):
         desired manager class to an instance of
         :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
+    @property
+    def env(self):
+        return self.container
+
     @aiomas.expose
     def set_host_addr(self, addr):
         '''Set host (or master) manager for this manager.
@@ -67,8 +71,8 @@ class EnvManager(aiomas.subproc.Manager):
         '''Report message to the host manager.
         '''
         try:
-            host_manager = await self.container.connect(self.host_addr,
-                                                        timeout=TIMEOUT)
+            host_manager = await self.env.connect(self.host_addr,
+                                                  timeout=TIMEOUT)
         except:
             raise ConnectionError("Could not reach host manager ({})."
                                   .format(self._host_addr))
@@ -86,7 +90,7 @@ class EnvManager(aiomas.subproc.Manager):
         container. If *agent_cls* is None, returns addresses of all agents
         excluding the manager itself.
         '''
-        agents = list(self.container.agents.dict.values())
+        agents = list(self.env.agents.dict.values())
         agents = [a for a in agents if a.addr.rsplit("/", 1)[1] != "0"]
         if agent_cls is not None:
             agents = [a for a in agents if type(a) is agent_cls]
@@ -100,7 +104,7 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def stop(self, folder=None):
-        ret = self.container.save_info(folder)
+        ret = self.env.save_info(folder)
         for a in self.get_agents(address=False):
             a.close(folder=folder)
         self.stop_received.set_result(True)
@@ -116,7 +120,7 @@ class EnvManager(aiomas.subproc.Manager):
     async def get_older(self, addr):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
-        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
         ret = await remote_agent.get_older()
         return ret
 
@@ -146,13 +150,12 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def add_candidate(self, artifact):
-        host_manager = await self.container.connect(self._host_addr)
+        host_manager = await self.env.connect(self._host_addr)
         host_manager.add_candidate(artifact)
 
     @aiomas.expose
     async def get_artifacts(self):
-        host_manager = await self.container.connect(self._host_addr,
-                                                    timeout=TIMEOUT)
+        host_manager = await self.env.connect(self._host_addr, timeout=TIMEOUT)
         artifacts = await host_manager.get_artifacts()
         return artifacts
 
@@ -161,7 +164,7 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
 
-class MultiEnvManager(aiomas.Agent):
+class MultiEnvManager(aiomas.subproc.Manager):
     """A multi-environment manager agent for a whole multiprocessing
     environment.
 
@@ -173,6 +176,10 @@ class MultiEnvManager(aiomas.Agent):
         desired manager class to an instance of
         :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
+    @property
+    def env(self):
+        return self.container
+
     @aiomas.expose
     def handle(self, msg):
         '''Handle message. Override in subclass if needed.
@@ -183,7 +190,7 @@ class MultiEnvManager(aiomas.Agent):
     async def spawn(self, addr, agent_cls, *agent_args, **agent_kwargs):
         '''Spawn an agent to an environment in given address.
         '''
-        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         proxy, port = await remote_manager.spawn(agent_cls, *agent_args,
                                                  **agent_kwargs)
         return proxy, port
@@ -191,7 +198,12 @@ class MultiEnvManager(aiomas.Agent):
     @aiomas.expose
     async def get_agents(self, addr, address=True, agent_cls=None,
                          filter_managers=True):
-        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
+        '''Get agents in the slave manager's environment.
+
+        :param addr: Address of the slave environment's manager
+        :param address: Return only the addresses of the agents, not proxies.
+        '''
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         agents = await remote_manager.get_agents(address=address,
                                                  agent_cls=agent_cls)
         if filter_managers:
@@ -206,7 +218,7 @@ class MultiEnvManager(aiomas.Agent):
         '''Send stop command to the manager agent in a given address. This will
         shutdown the manager's environment.
         '''
-        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         ret = await remote_manager.stop(folder)
         return ret
 
@@ -215,7 +227,7 @@ class MultiEnvManager(aiomas.Agent):
         '''Trigger agent in given *addr* to act.
         '''
         if addr is not None:
-            remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
+            remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
             ret = await remote_agent.act()
             return ret
         else:
@@ -229,21 +241,21 @@ class MultiEnvManager(aiomas.Agent):
     async def set_host_manager(self, addr):
         '''Set this manager as host manager to the manager in *addr*.
         '''
-        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         ret = remote_manager.set_host_addr(self.addr)
         return ret
 
     async def get_older(self, addr):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
-        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
         ret = await remote_agent.get_older()
         return ret
 
     async def get_candidates(self, addr):
         '''Get candidates from the environment manager in *addr* manages.
         '''
-        remote_manager = await self.container.connect(addr)
+        remote_manager = await self.env.connect(addr)
         candidates = await remote_manager.candidates()
         return candidates
 
@@ -255,27 +267,32 @@ class MultiEnvManager(aiomas.Agent):
 
     @aiomas.expose
     async def get_votes(self, addr, candidates):
-        remote_agent = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
         votes = await remote_agent.vote(candidates)
         return votes
 
     @aiomas.expose
     async def clear_candidates(self, addr):
-        remote_manager = await self.container.connect(addr, timeout=TIMEOUT)
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         ret = await remote_manager.clear_candidates()
         return ret
 
     @aiomas.expose
     async def get_artifacts(self):
-        return self.menv.artifacts
+        return self.env.artifacts
+
+    @aiomas.expose
+    async def destroy(self):
+        return self.env.destroy()
 
 
 class MultiEnvironment():
     '''Environment for utilizing multiple processes.
     '''
-    def __init__(self, addr, env_cls=Environment, mgr_cls=MultiEnvManager,
-                 slave_addrs=[('localhost', 5555)], slave_env_cls=Environment,
-                 slave_mgr_cls=EnvManager, name=None, clock=None,
+    def __init__(self, addr, env_cls=None, mgr_cls=None,
+                 slave_addrs=[], slave_env_cls=None,
+                 slave_params=None,
+                 slave_mgr_cls=None, name=None, clock=None,
                  extra_ser=None, log_folder=None, log_level=logging.INFO):
         '''
         :param addr: (HOST, PORT) address from the manager environment.
@@ -290,18 +307,13 @@ class MultiEnvironment():
         :param str name: Name of the environment. Will be shown in logs.
         '''
         pool, r = spawn_containers(slave_addrs, env_cls=slave_env_cls,
+                                   env_params=slave_params,
                                    mgr_cls=slave_mgr_cls, codec=aiomas.MsgPack,
                                    clock=clock, extra_serializers=extra_ser)
         self._pool = pool
         self._r = r
         self._manager_addrs = ["{}{}".format(_get_base_url(a), 0) for
                                a in slave_addrs]
-
-        self._env = env_cls.create(addr, codec=aiomas.MsgPack, clock=clock,
-                                   extra_serializers=extra_ser)
-        self._manager = mgr_cls(self._env)
-        self._manager.menv = self
-        r = aiomas.run(until=self._set_host_managers())
 
         self._age = 0
         self._artifacts = []
@@ -315,6 +327,12 @@ class MultiEnvironment():
                                        init=True, log_level=log_level)
         else:
             self.logger = None
+
+        self._env = env_cls.create(addr, codec=aiomas.MsgPack, clock=clock,
+                                   extra_serializers=extra_ser)
+        self._manager = mgr_cls(self._env)
+        self._manager.menv = self
+        r = aiomas.run(until=self._set_host_managers())
 
     @property
     def name(self):
@@ -367,10 +385,14 @@ class MultiEnvironment():
 
     @property
     def addrs(self):
+        '''Addresses of the slave environment managers.
+        '''
         return self._manager_addrs
 
     @property
     def manager(self):
+        '''This multi-environment's manager.
+        '''
         return self._manager
 
     @property
@@ -395,7 +417,7 @@ class MultiEnvironment():
             return folders
 
     async def _set_host_managers(self):
-        for addr in self._manager_addrs:
+        for addr in self.addrs:
             await self._manager.set_host_manager(addr)
 
     async def trigger_act(self, addr):
@@ -409,6 +431,18 @@ class MultiEnvironment():
         await self._manager.get_older(addr)
         ret = await self._manager.act(addr)
         return ret
+
+    async def trigger_all(self):
+        '''Trigger all agents in all the child environments to act.'''
+        rets = []
+        tasks = []
+        for addr in self.get_agents():
+            task = asyncio.ensure_future(self.trigger_act(addr))
+            tasks.append(task)
+        rr = aiomas.run(until=asyncio.gather(*tasks))
+        for r in rr:
+            rets.append(r)
+        return rets
 
     def random_addr(self):
         '''Get random env.
@@ -430,6 +464,15 @@ class MultiEnvironment():
         return saddr
 
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
+        '''Spawn a new agent.
+
+        If *addr* is None, spawns the agent in the slave environment with
+        currently smallest number of agents.
+
+        :param agent_cls: Subclass of :py:class:`~CreativeAgent`
+        :param addr: Address for the slave enviroment's manager, if specified.
+        :returns: Proxy and address for the created agent.
+        '''
         if addr is None:
             addr = await self._get_smallest_env()
         proxy, r_addr = await self._manager.spawn(addr, agent_cls, *args,
@@ -695,26 +738,33 @@ class MultiEnvironment():
         pass
 
     async def _destroy_childs(self, folder):
-        '''Destroy child environments.
+        '''Shutdown the child environments.
         '''
         rets = []
-        for addr in self._manager_addrs:
+        for addr in self.addrs:
             ret = await self._manager.kill(addr, folder)
             rets.append(ret)
         return rets
 
-    def destroy(self, folder=None):
-        '''Destroy the environment and the subprocesses.
+    def destroy(self, folder=None, as_coro=False):
+        '''Destroy the multiprocessing environment and its slave environments.
         '''
-        ret = [self.save_info(folder)]
-        rets = aiomas.run(until=self._destroy_childs(folder))
-        rets = ret + rets
-        # Close and join the process pool nicely.
-        self._pool.close()
-        self._pool.terminate()
-        self._pool.join()
-        self._env.shutdown()
-        return rets
+        async def _destroy(folder):
+            ret = [self.save_info(folder)]
+            rets = await self._destroy_childs(folder)
+            rets = ret + rets
+            # Close and join the process pool nicely.
+            self._pool.close()
+            self._pool.terminate()
+            self._pool.join()
+            await self._env.shutdown(as_coro=True)
+            return rets
+
+        if as_coro:
+            return _destroy(folder)
+        else:
+            ret = aiomas.run(until=_destroy(folder))
+            return ret
 
 
 def spawn_container(addr=('localhost', 5555), env_cls=Environment,
@@ -724,8 +774,9 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
     Arguments and keyword arguments are passed down to the created environment
     at initialization time.
 
-    This function renames the title of the process to start with Creamas so
-    that the process is easily identifiable, e.g. with 'ps -x | grep Creamas'.
+    If 'setproctitle' is installed, this function renames the title of the
+    process to start with Creamas so that the process is easily identifiable,
+    e.g. with 'ps -x | grep Creamas'.
     '''
     # Try setting the process name to easily recognize the spawned
     # environments with 'ps -x' or 'top'
@@ -739,18 +790,22 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
     if set_seed:
         _set_random_seeds()
 
-    print("Spawning {}".format(addr))
     kwargs['codec'] = aiomas.MsgPack
     task = start(addr, env_cls, mgr_cls, *args, **kwargs)
-    aiomas.run(until=task)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(task)
 
 
 def spawn_containers(addrs=[('localhost', 5555)], env_cls=Environment,
+                     env_params=None,
                      mgr_cls=EnvManager, *args, **kwargs):
     '''Spawn environments in a multiprocessing :class:`multiprocessing.Pool`.
 
     Arguments and keyword arguments are passed down to the created environments
-    at initialization time.
+    at initialization time if *env_params* is None. If *env_params* is not
+    None, then it is assumed to contain individual initialization parameters
+    for each environment in *addrs*.
 
     :param addrs:
         List of (HOST, PORT) addresses for the environments.
@@ -758,6 +813,9 @@ def spawn_containers(addrs=[('localhost', 5555)], env_cls=Environment,
     :param env_cls:
         Callable for the environments. Must be a subclass of
         :py:class:`~creamas.core.environment.Environment`.
+
+    :param env_params: Initialization parameters for the environments.
+    :type env_params: Iterable of same length as *addrs* or None.
 
     :param mgr_cls:
         Callable for the managers. Must be a subclass of
@@ -771,10 +829,15 @@ def spawn_containers(addrs=[('localhost', 5555)], env_cls=Environment,
     kwargs['env_cls'] = env_cls
     kwargs['mgr_cls'] = mgr_cls
     r = []
-    for addr in addrs:
+    for i, addr in enumerate(addrs):
+        if env_params is not None:
+            k = env_params[i]
+            k['env_cls'] = env_cls
+            k['mgr_cls'] = mgr_cls
         # Copy kwargs so that we can apply different address to different
         # containers.
-        k = kwargs.copy()
+        else:
+            k = kwargs.copy()
         k['addr'] = addr
         ret = pool.apply_async(spawn_container, args=args, kwds=k)
         r.append(ret)
@@ -807,6 +870,7 @@ def start(addr, env_cls=Environment, mgr_cls=EnvManager,
         Class of the manager agent, subclass of *EnvManager*.
     """
     env_kwargs.update(as_coro=True)
+    log_folder = env_kwargs.get('log_folder', None)
     env = yield from env_cls.create(addr, *env_args, **env_kwargs)
     try:
         manager = mgr_cls(env)
@@ -815,7 +879,7 @@ def start(addr, env_cls=Environment, mgr_cls=EnvManager,
     except KeyboardInterrupt:
         logger.info('Execution interrupted by user')
     finally:
-        yield from env.shutdown(as_coro=True)
+        yield from env.destroy(folder=log_folder, as_coro=True)
 
 
 def _set_random_seeds():

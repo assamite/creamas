@@ -781,7 +781,8 @@ if __name__ == "__main__":
              ]
 
     log_folder = 'logs'
-    menv = SpiroMultiEnvironment(addr, mgr_cls=SpiroMultiEnvManager,
+    menv = SpiroMultiEnvironment(addr, env_cls=Environment,
+                                mgr_cls=SpiroMultiEnvManager,
                                 slave_env_cls=Environment,
                                 slave_mgr_cls=SpiroEnvManager,
                                 slave_addrs=addrs, log_folder=log_folder,

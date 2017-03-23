@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='creamas',
-    version='0.1.1',
+    version='0.1.2',
     author='Simo Linkola',
     author_email='simo.linkola at gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),
-    long_description=('See http://assamite.github.io/creamas/'),
+    long_description=('See https://assamite.github.io/creamas/'),
     url='https://assamite.github.io/creamas/',
     license='GNU General Public License v2 (GPLv2)',
     install_requires=[

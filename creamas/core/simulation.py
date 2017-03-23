@@ -229,7 +229,7 @@ class Simulation():
             self.step()
 
     def step(self):
-        '''Progress simulation with single step.
+        '''Progress simulation with a single step.
 
         Can not be called when some of the agents have not acted for the
         current step.
