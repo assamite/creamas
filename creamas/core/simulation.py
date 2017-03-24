@@ -8,7 +8,6 @@ import time
 import logging
 from random import shuffle
 
-import asyncio
 import aiomas
 
 from creamas.core.agent import CreativeAgent
@@ -209,9 +208,7 @@ class Simulation():
         assert len(self._agents_to_act) == 0
         self._init_step()
         t = time.time()
-        tasks = [asyncio.ensure_future(self.env.trigger_act(addr)) for
-                 addr in self._agents_to_act]
-        aiomas.run(until=asyncio.gather(*tasks))
+        aiomas.run(until=self.env.trigger_all())
         self._agents_to_act = []
         self._step_processing_time = time.time() - t
         self._finalize_step()
@@ -248,8 +245,8 @@ class Simulation():
         if len(self._agents_to_act) == 0:
             self._init_step()
 
-        agent = self._agents_to_act.pop(0)
-        aiomas.run(until=self.env.trigger_act(agent))
+        addr = self._agents_to_act.pop(0)
+        aiomas.run(until=self.env.trigger_act(addr=addr))
         t2 = time.time()
         self._step_processing_time += t2 - t
 

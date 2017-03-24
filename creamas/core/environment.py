@@ -104,16 +104,26 @@ class Environment(aiomas.Container):
             agents = [agent.addr for agent in agents]
         return agents
 
-    async def trigger_act(self, addr):
+    async def trigger_act(self, addr=None, agent=None):
         '''Trigger agent in address to act.
         '''
+        if agent is None:
+            for a in self.get_agents(address=False):
+                if addr == a.addr:
+                    agent = a
+        self._log(logging.DEBUG, "Triggering agent in {}".format(agent.addr))
+        await agent.get_older()
+        ret = await agent.act()
+        return ret
+
+    async def trigger_all(self):
+        '''Trigger all agents to act.
+        '''
+        rets = []
         for a in self.get_agents(address=False):
-            if addr == a.addr:
-                self._log(logging.DEBUG,
-                          "Triggering agent in {} to act".format(a.addr))
-                ret = await a.get_older()
-                ret = await a.act()
-                return ret
+            ret = await self.trigger_act(agent=a)
+            rets.append(ret)
+        return rets
 
     def clear_candidates(self):
         '''Remove current candidates from the environment.

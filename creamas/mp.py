@@ -111,15 +111,17 @@ class EnvManager(aiomas.subproc.Manager):
         return ret
 
     @aiomas.expose
-    def act(self):
+    async def act(self):
         '''For consistency. Override in subclass if needed.
         '''
         pass
 
     @aiomas.expose
-    async def get_older(self, addr):
+    async def get_older(self, addr=None):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
+        if addr is None:
+            return
         remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
         ret = await remote_agent.get_older()
         return ret
@@ -162,6 +164,11 @@ class EnvManager(aiomas.subproc.Manager):
     @aiomas.expose
     def close(self, folder=None):
         pass
+
+    @aiomas.expose
+    async def trigger_all(self):
+        ret = await self.env.trigger_all()
+        return ret
 
 
 class MultiEnvManager(aiomas.subproc.Manager):
@@ -245,6 +252,14 @@ class MultiEnvManager(aiomas.subproc.Manager):
         ret = remote_manager.set_host_addr(self.addr)
         return ret
 
+    @aiomas.expose
+    async def trigger_all(self):
+        '''Trigger all agents in the managed multi-environment to act.
+        '''
+        ret = await self.menv.trigger_all()
+        return ret
+
+    @aiomas.expose
     async def get_older(self, addr):
         '''Make agent in *addr* to get older, i.e. advance its internal clock.
         '''
@@ -252,6 +267,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         ret = await remote_agent.get_older()
         return ret
 
+    @aiomas.expose
     async def get_candidates(self, addr):
         '''Get candidates from the environment manager in *addr* manages.
         '''
@@ -432,14 +448,19 @@ class MultiEnvironment():
         ret = await self._manager.act(addr)
         return ret
 
+    async def _trigger_slave(self, slave_mgr_addr):
+        r_manager = await self._env.connect(slave_mgr_addr)
+        ret = await r_manager.trigger_all()
+        return ret
+
     async def trigger_all(self):
         '''Trigger all agents in all the child environments to act.'''
         rets = []
         tasks = []
-        for addr in self.get_agents():
-            task = asyncio.ensure_future(self.trigger_act(addr))
+        for addr in self.addrs:
+            task = asyncio.ensure_future(self._trigger_slave(addr))
             tasks.append(task)
-        rr = aiomas.run(until=asyncio.gather(*tasks))
+        rr = await asyncio.gather(*tasks)
         for r in rr:
             rets.append(r)
         return rets
