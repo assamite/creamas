@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='creamas',
-    version='0.1.3',
+    version='0.1.4',
     author='Simo Linkola',
     author_email='simo.linkola at gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),

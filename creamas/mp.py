@@ -36,14 +36,15 @@ TIMEOUT = 5
 
 
 class EnvManager(aiomas.subproc.Manager):
-    """A single environment manager agent for a child environment running
+    """A single environment manager agent for a slave environment running
     inside a multiprocessing environment.
 
     A Manager can spawn other agents into its environment, and can execute
-    other tasks relevant to the environment.
+    other tasks relevant to the environment. The manager should always be the
+    first agent created to the environment.
 
     .. note::
-        You should not have need to create managers directly, instead pass the
+        You should not need to create managers directly, instead pass the
         desired manager class to an instance of
         :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
@@ -86,24 +87,25 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def get_agents(self, address=True, agent_cls=None):
-        '''Return addresses of agents belonging to certain class in this
-        container. If *agent_cls* is None, returns addresses of all agents
-        excluding the manager itself.
+        '''Get agents from the managed environment
+
+        This is a managing function for the
+        :py:meth:`~creamas.environment.Environment.get_agents`, but returned
+        agent lists exclude the manager by default.
         '''
-        agents = list(self.env.agents.dict.values())
-        agents = [a for a in agents if a.addr.rsplit("/", 1)[1] != "0"]
-        if agent_cls is not None:
-            agents = [a for a in agents if type(a) is agent_cls]
-        if address:
-            agents = [a.addr for a in agents]
+        agents = self.env.get_agents(address=address, agent_cls=agent_cls)
+        agents = [a for a in agents if a.addr == self.addr]
         return agents
 
     @aiomas.expose
-    def set_log_folder(self, log_folder, addr=None):
-        self.container.log_folder = log_folder
+    def set_log_folder(self, log_folder):
+        self.env.log_folder = log_folder
 
     @aiomas.expose
     def stop(self, folder=None):
+        '''Stop the managed environment, close all the agents and set
+        stop_received on this agent to True.
+        '''
         ret = self.env.save_info(folder)
         for a in self.get_agents(address=False):
             a.close(folder=folder)
@@ -128,35 +130,56 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def candidates(self):
-        return self.container.candidates
+        '''Return candidates from the managed environment.
+        '''
+        return self.env.candidates
 
     @aiomas.expose
     def artifacts(self):
-        return self.container.artifacts
+        '''Return artifacts from the managed environment.
+        '''
+        return self.env.artifacts
 
     @aiomas.expose
     def validate_candidates(self, candidates):
-        '''For consistency.
+        '''Returns the candidate list unaltered.
+
+        Implemented for consistency.
         '''
         return candidates
 
     @aiomas.expose
     def clear_candidates(self):
-        self.container.clear_candidates()
+        '''Clear candidates in the managed environment.
+
+        This is a managing function for
+        :py:meth:`~creamas.environment.Environment.clear_candidates`.
+        '''
+        self.env.clear_candidates()
 
     @aiomas.expose
     def vote(self, candidates):
+        '''Vote for candidates. Manager votes each candidate similarly.
+
+        Implemented for consistency.
+        '''
         cands = candidates
         votes = [(c, 1.0) for c in cands]
         return votes
 
     @aiomas.expose
     async def add_candidate(self, artifact):
+        '''Add candidate to the host manager's list of candidates.
+        '''
         host_manager = await self.env.connect(self._host_addr)
         host_manager.add_candidate(artifact)
 
     @aiomas.expose
     async def get_artifacts(self):
+        '''Get all artifacts from the host environment.
+
+        :returns: All the artifacts in the environment.
+        '''
         host_manager = await self.env.connect(self._host_addr, timeout=TIMEOUT)
         artifacts = await host_manager.get_artifacts()
         return artifacts
@@ -167,16 +190,39 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def trigger_all(self):
+        '''Trigger all agents in the managed environment to act once.
+
+        This is a managing function for
+        :py:meth:`~creamas.environment.Environment.trigger_all`.
+        '''
         ret = await self.env.trigger_all()
         return ret
+
+    @aiomas.expose
+    async def spawn_n(self, agent_cls, n, *args, **kwargs):
+        '''Spawn *n* agents to the managed environment. This is a convenience
+        function so that one does not have to repeatedly make connections to
+        the environment to spawn multiple agents with the same parameters.
+
+        See :py:meth:`~creamas.mp.EnvManager.spawn` for details.
+        '''
+        rets = []
+        for _ in range(n):
+            ret = await self.spawn(agent_cls, *args, **kwargs)
+            rets.append(ret)
+        return rets
 
 
 class MultiEnvManager(aiomas.subproc.Manager):
     """A multi-environment manager agent for a whole multiprocessing
     environment.
 
-    A Manager can spawn other agents into its child environments, and can
-    execute other tasks relevant to the whole environment.
+    A Manager can spawn other agents into its slave environments, and can
+    execute other tasks relevant to the whole environment. The manager should
+    always be the first (and usually only) agent created for the
+    multi-environment's managing environment. The actual simulation agents
+    should be created to the slave environments, typically using
+    multi-environment's or its manager's functionality.
 
     .. note::
         You should not have need to create managers directly, instead pass the
@@ -195,7 +241,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def spawn(self, addr, agent_cls, *agent_args, **agent_kwargs):
-        '''Spawn an agent to an environment in given address.
+        '''Spawn an agent to an environment in a given address.
         '''
         remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         proxy, port = await remote_manager.spawn(agent_cls, *agent_args,
@@ -255,6 +301,9 @@ class MultiEnvManager(aiomas.subproc.Manager):
     @aiomas.expose
     async def trigger_all(self):
         '''Trigger all agents in the managed multi-environment to act.
+
+        This is a managing function for
+        :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.
         '''
         ret = await self.menv.trigger_all()
         return ret
@@ -304,6 +353,14 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
 class MultiEnvironment():
     '''Environment for utilizing multiple processes.
+
+    :py:class:`MultiEnvironment` has a managing environment, typically
+    containing only a single manager, and a set of slave environments each
+    having their own manager and (once spawned) the actual agents.
+
+    :py:class:`MultiEnvironment` and the slave environments are internally
+    initialized to have :py:class:`aiomas.MsgPack` as the codec for the
+    message serialization.
     '''
     def __init__(self, addr, env_cls=None, mgr_cls=None,
                  slave_addrs=[], slave_env_cls=None,
@@ -314,11 +371,24 @@ class MultiEnvironment():
         :param addr: (HOST, PORT) address from the manager environment.
 
         :param env_cls:
-            Class for the environments. Must be a subclass of
+            Class for the environment. Must be a subclass of
             :py:class::`~creamas.core.environment.Environment`.
+
+        :param mgr_cls:
+            Class for the multi-environment's manager.
 
         :param addrs:
             List of (HOST, PORT) addresses for the slave-environments.
+
+        :param slave_env_cls: Class for the slave environments.
+
+        :param slave_params:
+            If not None, must be a list of the same size as *addrs*. Each item
+            in the list containing parameter values for one slave environment.
+
+        :param slave_mgr_cls:
+            Class of the slave environment managers.
+
 
         :param str name: Name of the environment. Will be shown in logs.
         '''
@@ -344,6 +414,7 @@ class MultiEnvironment():
         else:
             self.logger = None
 
+        self._addr = addr
         self._env = env_cls.create(addr, codec=aiomas.MsgPack, clock=clock,
                                    extra_serializers=extra_ser)
         self._manager = mgr_cls(self._env)

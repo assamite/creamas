@@ -92,14 +92,11 @@ class Environment(aiomas.Container):
                                     init=True)
 
     def get_agents(self, address=True, agent_cls=None):
-        '''Get addresses of agents in the environment.
+        '''Get addresses of the agents in the environment.
         '''
-        agents = []
-        if agent_cls is None:
-            agents = list(self.agents.dict.values())
-        else:
-            # TODO: Fix
-            agents = list(self.agents.dict.values())
+        agents = list(self.agents.dict.values())
+        if agent_cls is not None:
+            agents = [a for a in agents if type(a) is agent_cls]
         if address:
             agents = [agent.addr for agent in agents]
         return agents
