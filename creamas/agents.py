@@ -101,19 +101,3 @@ class NumberAgent(CreativeAgent):
     @aiomas.expose
     def add(self, value):
         return value + choice(self.F)
-
-'''
-    @aiomas.expose
-    def extract(self, artifact):
-        number = artifact.obj
-        evaluation = 0.0
-        framing = []
-        if len(self.F) == 0:
-            return evaluation, framing
-        for n in self.F:
-            if number % n == 0:
-                framing.append(n)
-                evaluation += 1
-
-        return evaluation / len(self.F), framing
-'''

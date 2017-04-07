@@ -79,5 +79,6 @@ class SimulationTestCase(unittest.TestCase):
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.end()
 
+
 if __name__ == '__main__':
     unittest.main()
