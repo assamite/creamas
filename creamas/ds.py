@@ -5,6 +5,12 @@
 The module holds a base implementation, :py:class:`DistributedEnvironment`,
 for simulations and environments where the resources span over multiple nodes
 on computing clusters or other distributed systems.
+
+.. note::
+
+    The module needs `asyncssh <http://asyncssh.readthedocs.io/en/latest/>`_
+    (>=1.6.2, developed with 1.6.2) to function. **Asyncssh** is not installed
+    by default as a dependency.
 '''
 import asyncio
 import logging

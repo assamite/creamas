@@ -13,7 +13,6 @@ setup(
         'aiomas>=1.0.3',
         'msgpack-python>=0.4.6',
         'numpy>=1.10.1',
-        'asyncssh>=1.6.2',
     ],
     extras_require={
     },
