@@ -455,7 +455,7 @@ class MultiEnvironment():
     use any time consuming internal initialization. If the slaves are not
     reachable after a few seconds after the initialization, an exception is
     raised. Thus, any slave environments should do their additional
-    preparations, e.g. agent spawning, outside their :meth:``__init__``, after
+    preparations, e.g. agent spawning, outside their :meth:`__init__`, after
     :py:class:`MultiEnvironment` has been initialized successfully.
 
     .. note::
@@ -471,11 +471,11 @@ class MultiEnvironment():
                  slave_mgr_cls=None, name=None, clock=None,
                  extra_ser=None, log_folder=None, log_level=logging.INFO):
         '''
-        :param addr: (HOST, PORT) address from the manager environment.
+        :param addr: (HOST, PORT) address for the manager environment.
 
         :param env_cls:
             Class for the environment. Must be a subclass of
-            :py:class::`~creamas.core.environment.Environment`.
+            :py:class:`~creamas.core.environment.Environment`.
 
         :param mgr_cls:
             Class for the multi-environment's manager.
