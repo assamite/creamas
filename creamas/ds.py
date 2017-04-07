@@ -217,9 +217,9 @@ class DistributedEnvironment():
             *nodes*, if str the same command is used for each node.
 
         .. warning::
-            The spawning process of nodes assumes that in each node the manager
-            environment of the multi-environment is initialized in the port
-            given by the parameter *menv_port* at the object's initialization
+            The spawning process of the nodes assumes that the manager agent of
+            each multi-environment (on each node) is initialized in the port
+            given by the parameter *port* at the object's initialization
             time.
         '''
         pool = multiprocessing.Pool(len(self.nodes))
