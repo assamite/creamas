@@ -144,7 +144,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">aiomas</span>
 
 <span class="kn">from</span> <span class="nn">creamas.core.agent</span> <span class="k">import</span> <span class="n">CreativeAgent</span>
@@ -157,7 +156,7 @@
 <div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Base class for iterative simulations.</span>
 
-<span class="sd">    In each simulation step calls</span>
+<span class="sd">    In each step the simulation calls</span>
 <span class="sd">    :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in</span>
 <span class="sd">    simulation environment.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -233,7 +232,9 @@
         <span class="sd">&#39;&#39;&#39;Create simulation for previously set up environment.</span>
 
 <span class="sd">        :param env: fully initialized environment with agents already set</span>
-<span class="sd">        :type env: :py:class:`~creamas.core.environment.Environment`</span>
+<span class="sd">        :type env:</span>
+<span class="sd">            :py:class:`~creamas.core.environment.Environment` or</span>
+<span class="sd">            :py:class:`~creamas.mp.MultiEnvironment`</span>
 <span class="sd">        :param callable callback: function to call after each simulation step</span>
 <span class="sd">        :parat str log_folder: folder to log simulation information</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -345,9 +346,7 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_step</span><span class="p">()</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_act</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span> <span class="k">for</span>
-                 <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">]</span>
-        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_step</span><span class="p">()</span></div>
@@ -365,7 +364,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Simulation.step"><a class="viewcode-back" href="../../../simulation.html#creamas.core.simulation.Simulation.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Progress simulation with single step.</span>
+        <span class="sd">&#39;&#39;&#39;Progress simulation with a single step.</span>
 
 <span class="sd">        Can not be called when some of the agents have not acted for the</span>
 <span class="sd">        current step.</span>
@@ -384,8 +383,8 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_step</span><span class="p">()</span>
 
-        <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_act</span><span class="p">(</span><span class="n">agent</span><span class="p">))</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_to_act</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_act</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="n">addr</span><span class="p">))</span>
         <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step_processing_time</span> <span class="o">+=</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t</span>
 

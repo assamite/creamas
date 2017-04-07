@@ -147,20 +147,18 @@ single computer set up. Each agent wishing to use simulation has to implement
 <strong>act</strong>:</p>
 <dl class="method">
 <dt>
-<code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
+<code class="descclassname">CreativeAgent.</code><code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Trigger agent to act. <strong>Dummy method, override in subclass.</strong></p>
+<p>This function serves as the main function for the simulations, and
+is called for each agent on each iteration step of the simulation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>NotImplementedError</strong> &#8211; if not overridden in subclass</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>NotImplementedError</strong> &#8211; If not overridden in subclass.</td>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This is an async method that should be awaited.</p>
-</div>
 </dd></dl>
 
 <p>Simulation calls <strong>act</strong> for each agent in each simulation step. What agents

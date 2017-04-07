@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Distributed Systems &mdash; Creamas 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
+        <link rel="up" title="API Documentation" href="api.html"/>
+        <link rel="next" title="Features" href="features.html"/>
+        <link rel="prev" title="Multiprocessing functionality" href="mp.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Distributed Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+      
+    <li>Distributed Systems</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/ds.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.ds">
+<span id="distributed-systems"></span><h1>Distributed Systems<a class="headerlink" href="#module-creamas.ds" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-ds"></span><p>The module holds a base implementation, <code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code>,
+for simulations and environments where the resources span over multiple nodes
+on computing clusters or other distributed systems.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The module needs <a class="reference external" href="http://asyncssh.readthedocs.io/en/latest/">asyncssh</a>
+(&gt;=1.6.2, developed with 1.6.2) to function. <strong>Asyncssh</strong> is not installed
+by default as a dependency.</p>
+</div>
+<dl class="class">
+<dt id="creamas.ds.DistributedEnvironment">
+<em class="property">class </em><code class="descclassname">creamas.ds.</code><code class="descname">DistributedEnvironment</code><span class="sig-paren">(</span><em>host</em>, <em>port</em>, <em>nodes</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distributed environment which manages several nodes containing
+multi-environments.</p>
+<p>This environment is used to spawn the multi-environments on the different
+servers (nodes) using SSH-connections. The spawning process assumes that
+the user can make a SSH-connection without login credentials to each
+node. The environment can then be used to wait until all the nodes are
+ready (have done their individual initialization) and do optional
+additional preparing of the nodes (e.g. adding inter-node connections
+between agents).</p>
+<p>After all the nodes are ready and prepared, the environment can be used
+to run an iterative (asynchronous) simulation using
+<code class="xref py py-meth docutils literal"><span class="pre">DistributedEnvironment.trigger_all()</span></code> which calls
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvManager.trigger_all" title="creamas.mp.MultiEnvManager.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code></a> for each node&#8217;s manager.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">To free the resources on each node, it is crucial to call
+<code class="xref py py-meth docutils literal"><span class="pre">DistributedEnvironment.destroy()</span></code> after the simulation has been
+done. Otherwise, some rogue processes are likely to be left unattended
+on the external nodes.</p>
+</div>
+<p>The intended order of usage is as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">DistributedEnvironment</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="c1"># &#39;pool&#39; holds the process pool for SSH-connections to nodes,</span>
+<span class="c1"># &#39;r&#39; contains the (future) return values of the connections.</span>
+<span class="n">pool</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">spawn_nodes</span><span class="p">(</span><span class="n">spawn_cmd</span><span class="p">)</span>
+<span class="n">timeout</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">nodes_ready</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">wait_nodes</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">nodes_ready</span><span class="p">:</span>
+    <span class="c1"># All nodes are ready so we can do additional preparation</span>
+    <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">prepare_nodes</span><span class="p">())</span>
+    <span class="c1"># Run the simulation</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">())</span>
+
+<span class="c1"># Destroy the simulation afterwards to free the resources on each node.</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>host</strong> &#8211; Host of the <em>env</em> property (this node). The host should not be
+present in <em>nodes</em>.</li>
+<li><strong>port</strong> &#8211; Port for the managing environments on each node (incl. this node),
+e.g. 5555. This port is not checked for availability before the
+node environments are spawned.</li>
+<li><strong>nodes</strong> &#8211; List of nodes (servers) which are used to host the
+multi-environments. Each node should allow SSH-connections without
+login credentials.</li>
+<li><strong>logger</strong> &#8211; Optional logger for this simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy the simulation.</p>
+<p>Stop the nodes and free other resources associated with the simulation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.prepare_nodes">
+<code class="descname">prepare_nodes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.prepare_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.prepare_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare nodes (and slave environments and agents) so that they are
+ready for the simulation. Should be called after <code class="xref py py-meth docutils literal"><span class="pre">wait_nodes()</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Override in the subclass for the intended functionality.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.spawn_nodes">
+<code class="descname">spawn_nodes</code><span class="sig-paren">(</span><em>spawn_cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.spawn_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.spawn_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spawn all multi-environments on the nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>spawn_cmd</strong> (<em>int</em>) &#8211; str or list, command(s) used to spawn the environment on each node.
+If list, the parameter must contain one command for each node in
+<em>nodes</em>, if str the same command is used for each node.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The spawning process of the nodes assumes that the manager agent of
+each multi-environment (on each node) is initialized in the port
+given by the parameter <em>port</em> at the object&#8217;s initialization
+time.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.stop_nodes">
+<code class="descname">stop_nodes</code><span class="sig-paren">(</span><em>timeout=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.stop_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop all the nodes by sending a stop-message to their managers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> (<em>int</em>) &#8211; Timeout for connecting to each manager. If a connection can not
+be made before the timeout expires, the resulting error for that
+particular manager is logged, but the stopping of other managers
+is not halted.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.trigger_all">
+<code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.trigger_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger all agents in all the nodes to act asynchronously.</p>
+<p>This method makes a connection to each manager in <em>manager_addrs</em>
+and asynchronously executes <code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code> in all of them.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="environment.html#creamas.core.environment.Environment.trigger_all" title="creamas.core.environment.Environment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">creamas.core.environment.Environment.trigger_all()</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment.trigger_all" title="creamas.mp.MultiEnvironment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvironment.trigger_all()</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvManager.trigger_all" title="creamas.mp.MultiEnvManager.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvManager.trigger_all()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.ds.DistributedEnvironment.wait_nodes">
+<code class="descname">wait_nodes</code><span class="sig-paren">(</span><em>timeout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.wait_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.wait_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until all nodes are ready or timeout expires. Should be called
+after <code class="xref py py-meth docutils literal"><span class="pre">spawn_nodes()</span></code>.</p>
+<p>Node is assumed ready when its managers <code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code>-method
+returns True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timeout</strong> (<em>int</em>) &#8211; Timeout (in seconds) after which the method will return even though
+all the nodes are not ready yet.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.ds.DistributedEnvironment.env">
+<code class="descname">env</code><a class="headerlink" href="#creamas.ds.DistributedEnvironment.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment used to communicate with node managers.</p>
+<p>This simulation does not hold manager on its own by default, but it is
+easy to create one on your own, if you need the node manager&#8217;s to be
+able to communicate back to this simulation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.ds.DistributedEnvironment.manager_addrs">
+<code class="descname">manager_addrs</code><a class="headerlink" href="#creamas.ds.DistributedEnvironment.manager_addrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Addresses of node managers.</p>
+<p>These addresses are derived from <em>nodes</em> and <em>port</em> parameters
+given at the initialization time, and are used to communicate tasks
+(trigger agents) to the nodes. Each manager is assumed to be the
+first agent in its own manager environment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="creamas.ds.DistributedEnvironment.nodes">
+<code class="descname">nodes</code><a class="headerlink" href="#creamas.ds.DistributedEnvironment.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment nodes (excluding the current host).</p>
+<p>Altering the nodes after the initialization most probably causes
+unexpected behavior.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.ds.ssh_exec">
+<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a command on a given server using asynchronous SSH-connection.</p>
+<p>The method does not propagate exceptions raised during the SSH-connection,
+instead they are logged by <em>logger</em> as errors. The method will exit after
+the first exception is raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>server</strong> (<em>str</em>) &#8211; Address of the server</li>
+<li><strong>cmd</strong> (<em>str</em>) &#8211; Command to be executed</li>
+<li><strong>logger</strong> &#8211; Optional, logger for errors during the command execution.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.ds.ssh_exec_in_new_loop">
+<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec_in_new_loop</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec_in_new_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec_in_new_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> but creates a new event loop and executes
+<code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> in that event loop.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mp.html" class="btn btn-neutral" title="Multiprocessing functionality" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,1363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>creamas.mp &mdash; Creamas 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Creamas 0.1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>creamas.mp</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for creamas.mp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. py:module:: mp</span>
+<span class="sd">    :platform: Unix</span>
+
+<span class="sd">This module contains multiprocessing implementation for</span>
+<span class="sd">:class:`~creamas.core.environment.Environment`,</span>
+<span class="sd">:class:`~creamas.mp.MultiEnvironment`.</span>
+
+<span class="sd">A :class:`~creamas.mp.MultiEnvironment` holds several</span>
+<span class="sd">:class:`~creamas.core.environment.Environment` slaves, which are spawned on</span>
+<span class="sd">their own processes, and uses managers to obtain much of the same functionality</span>
+<span class="sd">as the single processor environment. See :class:`~creamas.mp.EnvManager` and</span>
+<span class="sd">:class:`~creamas.mp.MultiEnvManager` for details.</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">    This functionality is currently largely untested. However, it *seems* to</span>
+<span class="sd">    work as intended and may be used in</span>
+<span class="sd">    :class:`~creamas.core.simulation.Simulation`.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">shuffle</span>
+
+<span class="kn">import</span> <span class="nn">aiomas</span>
+<span class="kn">from</span> <span class="nn">aiomas.agent</span> <span class="k">import</span> <span class="n">_get_base_url</span>
+
+<span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="k">import</span> <span class="n">ObjectLogger</span>
+<span class="kn">from</span> <span class="nn">creamas.core.environment</span> <span class="k">import</span> <span class="n">Environment</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># TODO: Refactor code! To use abstract classes.</span>
+
+
+<div class="viewcode-block" id="EnvManager"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager">[docs]</a><span class="k">class</span> <span class="nc">EnvManager</span><span class="p">(</span><span class="n">aiomas</span><span class="o">.</span><span class="n">subproc</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A manager for :class:`~creamas.core.environment.Environment`.</span>
+
+<span class="sd">    Managers are used in environments which need to be able to execute</span>
+<span class="sd">    commands originating from outside sources, e.g. in slave environments</span>
+<span class="sd">    inside a multiprocessing environment.</span>
+
+<span class="sd">    A manager can spawn other agents into its environment, and can execute</span>
+<span class="sd">    other tasks relevant to the environment. The manager should always be the</span>
+<span class="sd">    first agent created to the environment.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        You should not need to create managers directly, instead pass the</span>
+<span class="sd">        desired manager class to an instance of</span>
+<span class="sd">        :class:`~creamas.mp.MultiEnvironment` at its initialization time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.set_host_addr"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.set_host_addr">[docs]</a>    <span class="k">def</span> <span class="nf">set_host_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set host (or master) manager for this manager.</span>
+
+<span class="sd">        :param addr:</span>
+<span class="sd">            Address for the host manager.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host_addr</span> <span class="o">=</span> <span class="n">addr</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.host_addr"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.host_addr">[docs]</a>    <span class="k">def</span> <span class="nf">host_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get address of the host manager.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host_addr</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.report"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.report">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Report message to the host manager.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">host_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host_addr</span><span class="p">,</span>
+                                                  <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Could not reach host manager (</span><span class="si">{}</span><span class="s2">).&quot;</span>
+                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_addr</span><span class="p">))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">host_manager</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.handle"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.handle">[docs]</a>    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle message, override in subclass if needed.&#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.get_agents"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.get_agents">[docs]</a>    <span class="k">def</span> <span class="nf">get_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get agents from the managed environment</span>
+
+<span class="sd">        This is a managing function for the</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.get_agents`, but returned</span>
+<span class="sd">        agent lists exclude this manager by default.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">agents</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">agents</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">addr</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">agents</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">set_log_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">log_folder</span> <span class="o">=</span> <span class="n">log_folder</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.stop"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Stop the managed environment, close all the agents and set</span>
+<span class="sd">        stop_received on this agent to True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">save_info</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_received</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.act"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;For consistency. Override in subclass if needed.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.get_older"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.get_older">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_older</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Make agent in *addr* to get older, i.e. advance its internal clock.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">addr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">get_older</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.candidates">[docs]</a>    <span class="k">def</span> <span class="nf">candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return candidates from the managed environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">candidates</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.artifacts"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.artifacts">[docs]</a>    <span class="k">def</span> <span class="nf">artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return artifacts from the managed environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">artifacts</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.validate"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the candidate list unaltered.</span>
+
+<span class="sd">        Implemented for consistency.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">candidates</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.validate_candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.validate_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Validate the candidates with the agents in the managed environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="n">candidates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">candidates</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.clear_candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.clear_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Clear candidates in the managed environment.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.clear_candidates`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">()</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.vote"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.vote">[docs]</a>    <span class="k">def</span> <span class="nf">vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Vote for candidates. Manager votes each candidate similarly.</span>
+
+<span class="sd">        Implemented for consistency.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cands</span> <span class="o">=</span> <span class="n">candidates</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cands</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">votes</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="n">candidates</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_gather_votes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">votes</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.add_candidate"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.add_candidate">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add candidate to the host manager&#39;s list of candidates.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">host_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_addr</span><span class="p">)</span>
+        <span class="n">host_manager</span><span class="o">.</span><span class="n">add_candidate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.get_artifacts"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.get_artifacts">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get all artifacts from the host environment.</span>
+
+<span class="sd">        :returns: All the artifacts in the environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">host_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">artifacts</span> <span class="o">=</span> <span class="k">await</span> <span class="n">host_manager</span><span class="o">.</span><span class="n">get_artifacts</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">artifacts</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.trigger_all"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.trigger_all">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger all agents in the managed environment to act once.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.trigger_all`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.is_ready"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.is_ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Check if the managed environment is ready.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.is_ready`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">is_ready</span><span class="p">()</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="EnvManager.spawn_n"><a class="viewcode-back" href="../../mp.html#creamas.mp.EnvManager.spawn_n">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">spawn_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Spawn *n* agents to the managed environment. This is a convenience</span>
+<span class="sd">        function so that one does not have to repeatedly make connections to</span>
+<span class="sd">        the environment to spawn multiple agents with the same parameters.</span>
+
+<span class="sd">        See :py:meth:`~creamas.mp.EnvManager.spawn` for details.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div></div>
+
+
+<div class="viewcode-block" id="MultiEnvManager"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager">[docs]</a><span class="k">class</span> <span class="nc">MultiEnvManager</span><span class="p">(</span><span class="n">aiomas</span><span class="o">.</span><span class="n">subproc</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A manager for :class:`~creamas.mp.MultiEnvironment`.</span>
+
+<span class="sd">    A Manager can spawn other agents into its slave environments, and can</span>
+<span class="sd">    execute other tasks relevant to the whole environment. The manager should</span>
+<span class="sd">    always be the first (and usually only) agent created for the</span>
+<span class="sd">    multi-environment&#39;s managing environment. The actual simulation agents</span>
+<span class="sd">    should be created to the slave environments, typically using</span>
+<span class="sd">    multi-environment&#39;s or its manager&#39;s functionality.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        You should not need to create managers directly, instead pass the</span>
+<span class="sd">        desired manager class to an instance of</span>
+<span class="sd">        :class:`~creamas.mp.MultiEnvironment` at its initialization time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.handle"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.handle">[docs]</a>    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle message. Override in subclass if needed.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.spawn"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.spawn">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">agent_args</span><span class="p">,</span> <span class="o">**</span><span class="n">agent_kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Spawn an agent to an environment in a manager in the given address.</span>
+
+<span class="sd">        *agent_args* and *agent_kwargs* are passed to the manager doing to</span>
+<span class="sd">        spawning to be used as the agent&#39;s initialization parameters.</span>
+
+<span class="sd">        :param str addr: Environment&#39;s manager&#39;s address</span>
+
+<span class="sd">        :param agent_cls:</span>
+<span class="sd">            Class of the agent as a string, e.g. creamas.grid:GridAgent</span>
+
+<span class="sd">        :returns: :class:`Proxy` and port of the spawned agent</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">proxy</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">agent_args</span><span class="p">,</span>
+                                                 <span class="o">**</span><span class="n">agent_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proxy</span><span class="p">,</span> <span class="n">port</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.spawn_n"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.spawn_n">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">spawn_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">agent_args</span><span class="p">,</span> <span class="o">**</span><span class="n">agent_kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Same as :meth:`~creamas.mp.MultiEnvManager.spawn`, but spawn</span>
+<span class="sd">        multiple agents with same initialization parameters.</span>
+
+<span class="sd">        This should considerably reduce the time needed to spawn a large number</span>
+<span class="sd">        of homogeneous agents.</span>
+
+<span class="sd">        *agent_args* and *agent_kwargs* are passed to the manager doing to</span>
+<span class="sd">        spawning to be used as the agent&#39;s initialization parameters.</span>
+
+<span class="sd">        :param str addr: Environment&#39;s manager&#39;s address</span>
+
+<span class="sd">        :param agent_cls:</span>
+<span class="sd">            Class of the agent as a string, e.g. creamas.grid:GridAgent</span>
+
+<span class="sd">        :param int n: Number of agents to spawn.</span>
+
+<span class="sd">        :returns: List of (:class:`Proxy`, port) tuples for the spawned agents.</span>
+
+<span class="sd">        ... seealso::</span>
+
+<span class="sd">            :meth:`creamas.mp.EnvManager.spawn_n`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">spawn_n</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">agent_args</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">agent_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.get_agents"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.get_agents">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get all agents in all the slave environments.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`creamas.mp.MultiEnvironment.get_agents`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">)</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.get_slave_agents"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.get_slave_agents">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_slave_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get agents in the specified manager&#39;s environment.</span>
+
+<span class="sd">        :param str addr: Address of the environment&#39;s manager</span>
+
+<span class="sd">        :param bool address:</span>
+<span class="sd">            Return only the addresses of the agents, not proxies.</span>
+
+<span class="sd">        :param agent_cls:</span>
+<span class="sd">            If specified, return only the agents that are members of the class.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            :meth:`creamas.environment.Environment.get_agents`</span>
+<span class="sd">            :meth:`creamas.mp.EnvManager.get_agents`,</span>
+<span class="sd">            :meth:`creamas.mp.MultiEnvironment.get_agents`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+                                            <span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">agents</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.kill"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.kill">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Send stop command to the manager agent in a given address. This will</span>
+<span class="sd">        shutdown the manager&#39;s environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">_kill</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.act"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger agent in given *addr* to act.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">addr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">act</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.set_host_manager"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.set_host_manager">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_host_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set this manager as a host manager to the manager in *addr*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">set_host_addr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.trigger_all"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.trigger_all">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger all agents in the managed multi-environment to act.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.is_ready"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.is_ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;A managing function for</span>
+<span class="sd">        :py:meth:`~creamas.mp.MultiEnvironment.is_ready`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">is_ready</span><span class="p">()</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.get_older"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.get_older">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_older</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Make agent in *addr* to get older, i.e. advance its internal clock.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">get_older</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.get_candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.get_candidates">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get candidates from the environment manager in *addr* manages.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">candidates</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">candidates</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.add_candidate"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.add_candidate">[docs]</a>    <span class="k">def</span> <span class="nf">add_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add candidate artifact into the candidates.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">add_candidate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">_gather_votes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">votes</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">artifacts</span>
+
+    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
+<div class="viewcode-block" id="MultiEnvManager.destroy"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvManager.destroy">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;A managing function for</span>
+<span class="sd">        :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="MultiEnvironment"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment">[docs]</a><span class="k">class</span> <span class="nc">MultiEnvironment</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Environment for utilizing multiple processes (and cores) on a single</span>
+<span class="sd">    machine.</span>
+
+<span class="sd">    :py:class:`MultiEnvironment` has a managing environment, typically</span>
+<span class="sd">    containing only a single manager, and a set of slave environments each</span>
+<span class="sd">    having their own manager and (once spawned) the actual agents.</span>
+
+<span class="sd">    Currently, the implementation assumes that the slave environments do not</span>
+<span class="sd">    use any time consuming internal initialization. If the slaves are not</span>
+<span class="sd">    reachable after a few seconds after the initialization, an exception is</span>
+<span class="sd">    raised. Thus, any slave environments should do their additional</span>
+<span class="sd">    preparations, e.g. agent spawning, outside their :meth:`__init__`, after</span>
+<span class="sd">    :py:class:`MultiEnvironment` has been initialized successfully.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        :py:class:`MultiEnvironment` and the slave environments are internally</span>
+<span class="sd">        initialized to have :py:class:`aiomas.MsgPack` as the codec for the</span>
+<span class="sd">        message serialization. Any communication to these environments and</span>
+<span class="sd">        agents in them must use the same codec.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">env_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mgr_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">slave_addrs</span><span class="o">=</span><span class="p">[],</span> <span class="n">slave_env_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">slave_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">slave_mgr_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clock</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">extra_ser</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param addr: (HOST, PORT) address for the manager environment.</span>
+
+<span class="sd">        :param env_cls:</span>
+<span class="sd">            Class for the environment. Must be a subclass of</span>
+<span class="sd">            :py:class:`~creamas.core.environment.Environment`.</span>
+
+<span class="sd">        :param mgr_cls:</span>
+<span class="sd">            Class for the multi-environment&#39;s manager.</span>
+
+<span class="sd">        :param addrs:</span>
+<span class="sd">            List of (HOST, PORT) addresses for the slave-environments.</span>
+
+<span class="sd">        :param slave_env_cls: Class for the slave environments.</span>
+
+<span class="sd">        :param slave_params:</span>
+<span class="sd">            If not None, must be a list of the same size as *addrs*. Each item</span>
+<span class="sd">            in the list containing parameter values for one slave environment.</span>
+
+<span class="sd">        :param slave_mgr_cls:</span>
+<span class="sd">            Class of the slave environment managers.</span>
+
+
+<span class="sd">        :param str name: Name of the environment. Will be shown in logs.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pool</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">spawn_containers</span><span class="p">(</span><span class="n">slave_addrs</span><span class="p">,</span> <span class="n">env_cls</span><span class="o">=</span><span class="n">slave_env_cls</span><span class="p">,</span>
+                                   <span class="n">env_params</span><span class="o">=</span><span class="n">slave_params</span><span class="p">,</span>
+                                   <span class="n">mgr_cls</span><span class="o">=</span><span class="n">slave_mgr_cls</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="n">aiomas</span><span class="o">.</span><span class="n">MsgPack</span><span class="p">,</span>
+                                   <span class="n">clock</span><span class="o">=</span><span class="n">clock</span><span class="p">,</span> <span class="n">extra_serializers</span><span class="o">=</span><span class="n">extra_ser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">pool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_base_url</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span>
+                               <span class="n">a</span> <span class="ow">in</span> <span class="n">slave_addrs</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_artifacts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="s1">&#39;multi-env&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_consistent</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_agents</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                       <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addr</span> <span class="o">=</span> <span class="n">addr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">env_cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="n">aiomas</span><span class="o">.</span><span class="n">MsgPack</span><span class="p">,</span> <span class="n">clock</span><span class="o">=</span><span class="n">clock</span><span class="p">,</span>
+                                   <span class="n">extra_serializers</span><span class="o">=</span><span class="n">extra_ser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span> <span class="o">=</span> <span class="n">mgr_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">menv</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_host_managers</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Name of the environment.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Age of the environment.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_age</span>
+
+    <span class="nd">@age</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_age</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="n">_age</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Environment hosting the manager of this multi-environment. This</span>
+<span class="sd">        environment is also used without the manager to connect to the slave</span>
+<span class="sd">        environment managers.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+                                                 <span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">agents</span>
+
+<div class="viewcode-block" id="MultiEnvironment.get_agents"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.get_agents">[docs]</a>    <span class="k">def</span> <span class="nf">get_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get agents from the slave environments. This method excludes each</span>
+<span class="sd">        slave environment&#39;s manager agent from the returned list.</span>
+
+<span class="sd">        Essentially calls :py:meth:`get_agents` for each of the slave</span>
+<span class="sd">        environment managers.</span>
+
+<span class="sd">        :param bool address:</span>
+<span class="sd">            If *True*, returns only addresses of the agents, otherwise returns</span>
+<span class="sd">            a :class:`Proxy` object for each agent.</span>
+
+<span class="sd">        :param agent_cls:</span>
+<span class="sd">            If specified, returns only agents that are members of that</span>
+<span class="sd">            particular class.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            List of :class:`Proxy` objects or addresses as specified by the</span>
+<span class="sd">            input parameters.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consistent</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">ags</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_agents</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">agent_cls</span><span class="o">=</span><span class="n">agent_cls</span><span class="p">)</span>
+                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+            <span class="n">aa</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aa</span><span class="p">:</span>
+                <span class="n">ags</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_agents</span> <span class="o">=</span> <span class="n">ags</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_consistent</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="n">ags</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">addrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Addresses of the slave environment managers.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;This multi-environment&#39;s manager.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Published artifacts for all get_agents.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_artifacts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Current artifact candidates, subject to e.g. agents voting to</span>
+<span class="sd">        determine which candidate(s) are added to **artifacts**.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span>
+
+<div class="viewcode-block" id="MultiEnvironment.check_ready"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.check_ready">[docs]</a>    <span class="k">def</span> <span class="nf">check_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Check if this multi-environment itself is ready.</span>
+
+<span class="sd">        Override in subclass if it needs any additional (asynchronous)</span>
+<span class="sd">        initialization other than spawning its slave environments.</span>
+
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :returns: This basic implementation returns always True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.is_ready"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.is_ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Check if the multi-environment has been fully initialized.</span>
+
+<span class="sd">        This calls each slave environment managers&#39; :py:meth:`is_ready` and</span>
+<span class="sd">        checks if the multi-environment itself is ready by calling</span>
+<span class="sd">        :py:meth:`~creamas.mp.MultiEnvironment.check_ready`.</span>
+
+<span class="sd">        ... seealso::</span>
+
+<span class="sd">            :py:meth:`creamas.core.environment.Environment.is_ready`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">is_ready</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_ready</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># We have a short timeout, because this is likely to be polled</span>
+                <span class="c1"># consecutively until the slaves are ready.</span>
+                <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">ready</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">is_ready</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_log_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">addrs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">os</span>
+            <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_folder</span><span class="p">,</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                       <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">))]</span>
+            <span class="k">return</span> <span class="n">folders</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_set_host_managers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+            <span class="n">r_manager</span><span class="o">.</span><span class="n">set_host_addr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiEnvironment.trigger_act"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.trigger_act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger agent in *addr* to act.</span>
+
+<span class="sd">        This is very inefficient if used repeatedly. In case you want to</span>
+<span class="sd">        trigger all agents in the slave environments to act, you should use</span>
+<span class="sd">        :py:meth:`trigger_all`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;Skipping manager in </span><span class="si">{}</span><span class="s2"> from acting.&quot;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;Triggering agent in </span><span class="si">{}</span><span class="s2"> to act&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">get_older</span><span class="p">()</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">act</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_trigger_slave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_mgr_addr</span><span class="p">):</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">slave_mgr_addr</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<div class="viewcode-block" id="MultiEnvironment.trigger_all"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.trigger_all">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Trigger all agents in all the slave environments to act</span>
+<span class="sd">        asynchronously.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_slave</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="n">rr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rr</span><span class="p">:</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.random_addr"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.random_addr">[docs]</a>    <span class="k">def</span> <span class="nf">random_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get random manager for a slave environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">)</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_smallest_env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get address for the environment with smallest amount of agents.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_agents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
+        <span class="n">saddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">addr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_agents</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">ns</span><span class="p">:</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="n">saddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">saddr</span>
+
+<div class="viewcode-block" id="MultiEnvironment.spawn"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.spawn">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Spawn a new agent.</span>
+
+<span class="sd">        If *addr* is None, spawns the agent in the slave environment with</span>
+<span class="sd">        currently smallest number of agents.</span>
+
+<span class="sd">        :param agent_cls: Subclass of :py:class:`~CreativeAgent`</span>
+<span class="sd">        :param addr: Address for the slave enviroment&#39;s manager, if specified.</span>
+<span class="sd">        :returns: Proxy and address for the created agent.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">addr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_smallest_env</span><span class="p">()</span>
+        <span class="n">proxy</span><span class="p">,</span> <span class="n">r_addr</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_consistent</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">proxy</span><span class="p">,</span> <span class="n">r_addr</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.clear_candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.clear_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Remove current candidates from the environment.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">:</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear_candidates</span><span class="p">(</span><span class="n">addr</span><span class="p">)))</span>
+        <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager_addr</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">(</span><span class="n">manager_addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<div class="viewcode-block" id="MultiEnvironment.create_connection"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.create_connection">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">addr2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create connection from agent in *addr* to agent in *addr2*.</span>
+
+<span class="sd">        This does not create a connection the other way around.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">addr2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.create_initial_connections"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.create_initial_connections">[docs]</a>    <span class="k">def</span> <span class="nf">create_initial_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create random initial connections for all agents.</span>
+
+<span class="sd">        :param int n: the number of connections for each agent</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span>
+        <span class="k">assert</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">():</span>
+            <span class="n">others</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">()[:]</span>
+            <span class="n">others</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="n">shuffle</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r_agent</span> <span class="ow">in</span> <span class="n">others</span><span class="p">[:</span><span class="n">n</span><span class="p">]:</span>
+                <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">r_agent</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.get_random_agent"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.get_random_agent">[docs]</a>    <span class="k">def</span> <span class="nf">get_random_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return random agent that is not the same as agent given as</span>
+<span class="sd">        parameter.</span>
+
+<span class="sd">        :param agent: Agent that is not wanted to return</span>
+<span class="sd">        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`</span>
+<span class="sd">        :returns: random, non-connected, agent from the environment</span>
+<span class="sd">        :rtype: :py:class:`~creamas.core.agent.CreativeAgent`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">while</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">addr</span> <span class="o">==</span> <span class="n">agent</span><span class="o">.</span><span class="n">addr</span><span class="p">:</span>
+            <span class="n">r_agent</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r_agent</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.add_artifact"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.add_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add artifact with given framing to the environment.</span>
+
+<span class="sd">        :param object artifact: Artifact to be added.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">artifact</span><span class="o">.</span><span class="n">env_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">age</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;ARTIFACTS appended: &#39;</span><span class="si">{}</span><span class="s2">&#39;, length=</span><span class="si">{}</span><span class="s2">&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.get_artifacts"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.get_artifacts">[docs]</a>    <span class="k">def</span> <span class="nf">get_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get artifacts published by certain agent.</span>
+
+<span class="sd">        :returns: All artifacts published by the agent.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">artifacts</span> <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">creator</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.add_candidate"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.add_candidate">[docs]</a>    <span class="k">def</span> <span class="nf">add_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add candidate artifact to current candidates.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;CANDIDATES appended:&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">vc</span> <span class="o">=</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vc</span>
+
+<div class="viewcode-block" id="MultiEnvironment.validate_candidates"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.validate_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Validate current candidates in the environment by pruning candidates</span>
+<span class="sd">        that are not validated at least by one agent, i.e. they are vetoed.</span>
+
+<span class="sd">        In larger societies this method might be costly, as it calls each</span>
+<span class="sd">        agents&#39; ``validate_candidates``-method.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">valid_candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="p">:</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_validate_candidates</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">r</span>
+            <span class="n">vc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="n">valid_candidates</span> <span class="o">=</span> <span class="n">valid_candidates</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">vc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">valid_candidates</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                  <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> valid candidates after get_agents used veto.&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)))</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_votes</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">votes</span>
+
+    <span class="k">def</span> <span class="nf">_gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_votes</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">))</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">))</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="n">votes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">votes</span>
+
+<div class="viewcode-block" id="MultiEnvironment.perform_voting"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.perform_voting">[docs]</a>    <span class="k">def</span> <span class="nf">perform_voting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;IRV&#39;</span><span class="p">,</span> <span class="n">accepted</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform voting to decide the ordering of the current candidates.</span>
+
+<span class="sd">        Voting calls each agent&#39;s ``vote``-method, which might be costly in</span>
+<span class="sd">        larger societies.</span>
+
+<span class="sd">        :param str method:</span>
+<span class="sd">            Used voting method. One of the following:</span>
+<span class="sd">            IRV = instant run-off voting,</span>
+<span class="sd">            mean = best mean vote (requires cardinal ordering for votes),</span>
+<span class="sd">            best = best singular vote (requires cardinal ordering, returns only</span>
+<span class="sd">            one candidate),</span>
+<span class="sd">            least_worst = least worst singular vote,</span>
+<span class="sd">            random = selects random candidates</span>
+
+<span class="sd">        :param int accepted:</span>
+<span class="sd">            the number of returned candidates</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            list of :py:class`~creamas.core.artifact.Artifact`s, accepted</span>
+<span class="sd">            artifacts</span>
+
+<span class="sd">        :rype: list</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="s2">&quot;Could not perform voting because &quot;</span>
+                      <span class="s2">&quot;there are no candidates!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Voting from </span><span class="si">{}</span><span class="s2"> candidates with method: </span><span class="si">{}</span><span class="s2">&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">),</span> <span class="n">method</span><span class="p">))</span>
+
+        <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gather_votes</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;IRV&#39;</span><span class="p">:</span>
+            <span class="n">ordering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vote_IRV</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="n">ordering</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;best&#39;</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">votes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;least_worst&#39;</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">votes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
+            <span class="n">rcands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+            <span class="n">shuffle</span><span class="p">(</span><span class="n">rcands</span><span class="p">)</span>
+            <span class="n">rcands</span> <span class="o">=</span> <span class="n">rcands</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rcands</span><span class="p">))]</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rcands</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vote_mean</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">accepted</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best</span></div>
+
+<div class="viewcode-block" id="MultiEnvironment.add_artifacts"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.add_artifacts">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Add artifacts to **artifacts**.</span>
+
+<span class="sd">        :param artifacts:</span>
+<span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">artifact</span> <span class="ow">in</span> <span class="n">artifacts</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_remove_zeros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Remove zeros in IRV voting.&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fpl</span><span class="p">:</span>
+                    <span class="n">v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cl</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fpl</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ranking</span><span class="p">:</span>
+                    <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_remove_last</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Remove last candidate in IRV voting.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">fpl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cl</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">fpl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ranking</span><span class="p">:</span>
+                    <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranking</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_vote_IRV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">votes</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform IRV voting based on votes.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Counter</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">()</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="n">ranking</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span>
+        <span class="n">fpl</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">fpl</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_zeros</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_last</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">)</span>
+            <span class="n">cl</span> <span class="o">=</span> <span class="n">fpl</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span>
+            <span class="n">fpl</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">]</span>
+
+        <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fpl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranking</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ranking</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">ranking</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ranking</span>
+
+    <span class="k">def</span> <span class="nf">_vote_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">accepted</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform mean voting based on votes.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">sums</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">vote</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vote</span><span class="p">:</span>
+                <span class="n">sums</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sums</span><span class="p">:</span>
+            <span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sums</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">ordering</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">ordering</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">))]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">best</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiEnvironment.save_info"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.save_info">[docs]</a>    <span class="k">def</span> <span class="nf">save_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save information accumulated during the environments lifetime.</span>
+
+<span class="sd">        Called from :py:meth:`~creamas.mp.MultiEnvironment.destroy`. Override</span>
+<span class="sd">        in subclass.</span>
+
+<span class="sd">        :param str folder: root folder to save information</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_kill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_destroy_slaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Shutdown the slave environments.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kill</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span>
+
+<div class="viewcode-block" id="MultiEnvironment.destroy"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">as_coro</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Destroy the multiprocessing environment and its slave environments.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_destroy</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">save_info</span><span class="p">(</span><span class="n">folder</span><span class="p">)]</span>
+            <span class="n">rets</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_slaves</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+            <span class="n">rets</span> <span class="o">=</span> <span class="n">ret</span> <span class="o">+</span> <span class="n">rets</span>
+            <span class="c1"># Close and join the process pool nicely.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">as_coro</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">rets</span>
+
+        <span class="k">if</span> <span class="n">as_coro</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_destroy</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">_destroy</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">ret</span></div></div>
+
+
+<div class="viewcode-block" id="spawn_container"><a class="viewcode-back" href="../../mp.html#creamas.mp.spawn_container">[docs]</a><span class="k">def</span> <span class="nf">spawn_container</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">),</span> <span class="n">env_cls</span><span class="o">=</span><span class="n">Environment</span><span class="p">,</span>
+                    <span class="n">mgr_cls</span><span class="o">=</span><span class="n">EnvManager</span><span class="p">,</span> <span class="n">set_seed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Spawn a new environment in a given address as a coroutine.</span>
+
+<span class="sd">    Arguments and keyword arguments are passed down to the created environment</span>
+<span class="sd">    at initialization time.</span>
+
+<span class="sd">    If &#39;setproctitle&#39; is installed, this function renames the title of the</span>
+<span class="sd">    process to start with &#39;creamas&#39; so that the process is easily identifiable,</span>
+<span class="sd">    e.g. with ``ps -x | grep creamas``.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Try setting the process name to easily recognize the spawned</span>
+    <span class="c1"># environments with &#39;ps -x&#39; or &#39;top&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">setproctitle</span> <span class="k">as</span> <span class="nn">spt</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;creamas: </span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_cls</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                                         <span class="n">_get_base_url</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
+        <span class="n">spt</span><span class="o">.</span><span class="n">setproctitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">set_seed</span><span class="p">:</span>
+        <span class="n">_set_random_seeds</span><span class="p">()</span>
+
+    <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;codec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">MsgPack</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">start</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">env_cls</span><span class="p">,</span> <span class="n">mgr_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+    <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spawn_containers"><a class="viewcode-back" href="../../mp.html#creamas.mp.spawn_containers">[docs]</a><span class="k">def</span> <span class="nf">spawn_containers</span><span class="p">(</span><span class="n">addrs</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">)],</span> <span class="n">env_cls</span><span class="o">=</span><span class="n">Environment</span><span class="p">,</span>
+                     <span class="n">env_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">mgr_cls</span><span class="o">=</span><span class="n">EnvManager</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Spawn environments in a multiprocessing :class:`multiprocessing.Pool`.</span>
+
+<span class="sd">    Arguments and keyword arguments are passed down to the created environments</span>
+<span class="sd">    at initialization time if *env_params* is None. If *env_params* is not</span>
+<span class="sd">    None, then it is assumed to contain individual initialization parameters</span>
+<span class="sd">    for each environment in *addrs*.</span>
+
+<span class="sd">    :param addrs:</span>
+<span class="sd">        List of (HOST, PORT) addresses for the environments.</span>
+
+<span class="sd">    :param env_cls:</span>
+<span class="sd">        Callable for the environments. Must be a subclass of</span>
+<span class="sd">        :py:class:`~creamas.core.environment.Environment`.</span>
+
+<span class="sd">    :param env_params: Initialization parameters for the environments.</span>
+<span class="sd">    :type env_params: Iterable of same length as *addrs* or None.</span>
+
+<span class="sd">    :param mgr_cls:</span>
+<span class="sd">        Callable for the managers. Must be a subclass of</span>
+<span class="sd">        :py:class:`~creamas.mp.EnvManager`.s</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        The created process pool and the *ApplyAsync* results for the spawned</span>
+<span class="sd">        environments.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">))</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;env_cls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_cls</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;mgr_cls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mgr_cls</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">addr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">addrs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">env_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">env_params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">k</span><span class="p">[</span><span class="s1">&#39;env_cls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_cls</span>
+            <span class="n">k</span><span class="p">[</span><span class="s1">&#39;mgr_cls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mgr_cls</span>
+        <span class="c1"># Copy kwargs so that we can apply different address to different</span>
+        <span class="c1"># containers.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">k</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">spawn_container</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwds</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pool</span><span class="p">,</span> <span class="n">r</span></div>
+
+
+<span class="nd">@asyncio</span><span class="o">.</span><span class="n">coroutine</span>
+<div class="viewcode-block" id="start"><a class="viewcode-back" href="../../mp.html#creamas.mp.start">[docs]</a><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">env_cls</span><span class="o">=</span><span class="n">Environment</span><span class="p">,</span> <span class="n">mgr_cls</span><span class="o">=</span><span class="n">EnvManager</span><span class="p">,</span>
+          <span class="o">*</span><span class="n">env_args</span><span class="p">,</span> <span class="o">**</span><span class="n">env_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;`Coroutine</span>
+<span class="sd">    &lt;https://docs.python.org/3/library/asyncio-task.html#coroutine&gt;`_ that</span>
+<span class="sd">    starts an environment with *mgr_cls* manager agent.</span>
+
+<span class="sd">    The agent will connect to *addr* ``(&#39;host&#39;, port)`` and wait for commands</span>
+<span class="sd">    to spawn new agents within its environment.</span>
+
+<span class="sd">    The *env_args* and *env_kwargs* will be passed to</span>
+<span class="sd">    :meth:`~creamas.core.environment.Environment.create()` factory function.</span>
+
+<span class="sd">    This coroutine finishes after :meth:`EnvManager.stop()` was called or when</span>
+<span class="sd">    a :exc:`KeyboardInterrupt` is raised.</span>
+
+<span class="sd">    :param addr:</span>
+<span class="sd">        (HOST, PORT) for the new environment</span>
+
+<span class="sd">    :param env_cls:</span>
+<span class="sd">        Class of the environment, subclass of *Environment*.</span>
+
+<span class="sd">    :param mgr_cls:</span>
+<span class="sd">        Class of the manager agent, subclass of *EnvManager*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">env_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">as_coro</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">log_folder</span> <span class="o">=</span> <span class="n">env_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_folder&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">env_cls</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="o">*</span><span class="n">env_args</span><span class="p">,</span> <span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">manager</span> <span class="o">=</span> <span class="n">mgr_cls</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">manager</span>
+        <span class="k">yield from</span> <span class="n">manager</span><span class="o">.</span><span class="n">stop_received</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Execution interrupted by user&#39;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">env</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">folder</span><span class="o">=</span><span class="n">log_folder</span><span class="p">,</span> <span class="n">as_coro</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_set_random_seeds</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Set new random seeds for the process.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

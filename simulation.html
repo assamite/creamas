@@ -102,6 +102,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
@@ -164,7 +166,7 @@ run in an iterative manner.</p>
 <dt id="creamas.core.simulation.Simulation">
 <em class="property">class </em><code class="descclassname">creamas.core.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>env</em>, <em>callback=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for iterative simulations.</p>
-<p>In each simulation step calls
+<p>In each step the simulation calls
 <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-meth docutils literal"><span class="pre">act()</span></code></a> for each agent in
 simulation environment.</p>
 <p>Create simulation for previously set up environment.</p>
@@ -173,7 +175,8 @@ simulation environment.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>env</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>) &#8211; fully initialized environment with agents already set</li>
+<li><strong>env</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a> or
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>) &#8211; fully initialized environment with agents already set</li>
 <li><strong>callback</strong> (<em>callable</em>) &#8211; function to call after each simulation step</li>
 </ul>
 </td>
@@ -243,7 +246,7 @@ the current step.</p>
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.step">
 <code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Progress simulation with single step.</p>
+<dd><p>Progress simulation with a single step.</p>
 <p>Can not be called when some of the agents have not acted for the
 current step.</p>
 </dd></dl>

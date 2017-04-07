@@ -6,6 +6,8 @@ API Documentation
 	
 	core
 	agents
+	mp
+	ds
 	features
 	mappers
 	math
