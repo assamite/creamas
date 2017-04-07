@@ -10,8 +10,8 @@ Systems. In The Proceedings of The Seventh International Conference on
 Computational Creativity (ICCC2016), 1-8. Paris, France. Sony CSL Paris,
 France.
 
-This implementation uses creamas.mp-module for multiprocessing. It should make
-the code substantially faster to run on machines with several cores.
+This implementation uses ``creamas.mp``-module for multiprocessing. It should
+make the code substantially faster to run on machines with several cores.
 '''
 import os
 import sys
@@ -293,7 +293,7 @@ class SpiroAgent(CreativeAgent):
         if self.env_learn_on_add:
             self.learn(spiro)
 
-    def validate_candidates(self, candidates):
+    def validate(self, candidates):
         besteval = 0.0
         bestcand = None
         valid = []
@@ -690,7 +690,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         '''
         ameans = [(0, 0, 0) for _ in range(3)]
         ret = [self.save_info(folder, ameans)]
-        rets = aiomas.run(until=self._destroy_childs(folder))
+        rets = aiomas.run(until=self._destroy_slaves(folder))
         rets = ret + rets
         # Close and join the process pool nicely.
         self._pool.close()
@@ -698,38 +698,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         self._pool.join()
         self._env.shutdown()
         return rets
-'''
-    def destroy(self, folder):
-        ameans = []
-        agents = aiomas.run(until=self.manager.get_agents())
-        for a in self.manager_get_agents():
-            remote_agent = self._manager.container.connect(a)
-            md = remote_agent.close(folder=folder)
-            ameans.append(md)
-        amin = min(ameans)
-        amax = max(ameans)
-        amean = np.mean(ameans)
-        a = self.get_agents()[0]
-        ret = self.save_info(folder, [amin, amax, amean])
-        agent_vars = "{}{}_last={}_veto={}_sc={}_jump={}_stmem=list{}_sw={}_mr={}_maxN".format(
-            a.env_learning_method, a.env_learning_amount, a.env_learn_on_add,
-            a._novelty_threshold, a._own_threshold, a.jump,
-            a.stmem.length, a.search_width, a.move_radius)
 
-        if self.logger is not None:
-            fname = os.path.join(self.logger.folder, 'runinfo_a{}_i{}_v{}_{}.txt'
-                                  .format(len(self.get_agents()), self.age,
-                                          self.voting_method, agent_vars))
-            with open(fname, "w") as f:
-                for e in ret:
-                    f.write("{}\n".format(e))
-                f.write("amin:{}\n".format(amin))
-                f.write("amax:{}\n".format(amax))
-                f.write("amean:{}\n".format(amean))
-        self.shutdown()
-        ret = ret + ((amin,amax, amean),)
-        return ret
-'''
 
 class STMemory():
     '''Agent's short-term memory model using a simple list which stores
@@ -774,13 +743,13 @@ if __name__ == "__main__":
     from serializers import get_spiro_ser
 
     addr = ('localhost', 5550)
-    addrs = [('localhost', 5555),
-             ('localhost', 5556),
-             ('localhost', 5557),
-             ('localhost', 5558)
+    addrs = [('localhost', 5560),
+             ('localhost', 5561),
+             ('localhost', 5562),
+             ('localhost', 5563)
              ]
 
-    log_folder = 'logs'
+    log_folder = None
     menv = SpiroMultiEnvironment(addr, env_cls=Environment,
                                 mgr_cls=SpiroMultiEnvManager,
                                 slave_env_cls=Environment,
@@ -789,7 +758,10 @@ if __name__ == "__main__":
                                 log_level=logging.INFO,
                                 extra_ser=[get_spiro_ser])
     menv.log_folder = log_folder
-    for _ in range(8):
+    loop = asyncio.get_event_loop()
+    ret = loop.run_until_complete(menv.is_ready())
+    print(ret)
+    for _ in range(64):
         ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent',
                                           desired_novelty=-1,
                                           log_folder=log_folder))

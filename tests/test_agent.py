@@ -69,47 +69,39 @@ class AgentTestCase(unittest.TestCase):
         self.assertEqual(a1.max_res, 0)
 
         # adding connections works
-        self.assertTrue(a1.add_connection(a_agents[0]))
-        self.assertTrue(a1.add_connection(a_agents[1], 0.5))
-        self.assertTrue(a1.add_connection(a_agents[2], -0.5))
+        self.assertTrue(a1.add_connection(a_agents[0].addr))
+        self.assertTrue(a1.add_connection(a_agents[1].addr, 0.5))
+        self.assertTrue(a1.add_connection(a_agents[2].addr, -0.5))
         self.assertEqual(len(a1.connections), 3)
         self.assertEqual(len(a1.attitudes), 3)
-        self.assertEqual(a1.get_attitude(a_agents[0]), 0.0)
-        self.assertEqual(a1.get_attitude(a_agents[1]), 0.5)
-        self.assertEqual(a1.get_attitude(a_agents[2]), -0.5)
+        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.0)
+        self.assertEqual(a1.get_attitude(a_agents[1].addr), 0.5)
+        self.assertEqual(a1.get_attitude(a_agents[2].addr), -0.5)
 
         # Removing connection removes the right connection and attitude.
-        a1.remove_connection(a_agents[1])
+        a1.remove_connection(a_agents[1].addr)
         self.assertEqual(len(a1.connections), 2)
         self.assertEqual(len(a1.attitudes), 2)
-        self.assertEqual(a1.get_attitude(a_agents[0]), 0.0)
-        self.assertEqual(a1.get_attitude(a_agents[2]), -0.5)
-        self.assertIsNone(a1.get_attitude(a_agents[1]))
+        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.0)
+        self.assertEqual(a1.get_attitude(a_agents[2].addr), -0.5)
+        self.assertIsNone(a1.get_attitude(a_agents[1].addr))
 
         # Set attitude works, and attitude cannot be set outside -1,1.
-        a1.set_attitude(a_agents[0], 0.5)
-        self.assertEqual(a1.get_attitude(a_agents[0]), 0.5)
+        a1.set_attitude(a_agents[0].addr, 0.5)
+        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.5)
 
         with self.assertRaises(AssertionError):
-            a1.set_attitude(a_agents[0], -1.1)
+            a1.set_attitude(a_agents[0].addr, -1.1)
 
         with self.assertRaises(AssertionError):
-            a1.set_attitude(a_agents[0], -1.1)
+            a1.set_attitude(a_agents[0].addr, 1.1)
 
         # Removing non-existing connection returns false
-        self.assertFalse(a1.remove_connection(a_agents[1]))
+        self.assertFalse(a1.remove_connection(a_agents[1].addr))
 
-        a1.set_attitude(a_agents[1], -0.5)
-        self.assertIn(a_agents[1], a1.connections)
-        self.assertEqual(a1.get_attitude(a_agents[1]), -0.5)
-
-        # Cannot try to remove other than CreativeAgents
-        with self.assertRaises(TypeError):
-            a1.remove_connection('b')
-
-        # connection must be subclass of CreativeAgent
-        with self.assertRaises(TypeError):
-            a1.add_connection('a', 0.5)
+        a1.set_attitude(a_agents[1].addr, -0.5)
+        self.assertIn(a_agents[1].addr, a1.connections)
+        self.assertEqual(a1.get_attitude(a_agents[1].addr), -0.5)
 
         # FEATURES
         # feature must be subclass of Feature

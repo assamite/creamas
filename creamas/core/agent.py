@@ -10,6 +10,7 @@ import logging
 import operator
 import pickle
 from random import choice
+import re
 
 import aiomas
 
@@ -53,8 +54,7 @@ class CreativeAgent(aiomas.Agent):
         Attitude towards each agent in **connections**, in [-1,1]
 
     :ivar str ~creamas.core.agent.CreativeAgent.name:
-        Name of the agent. defaults to A<n>, where n is the agent's number in
-        environment. Agent's name must be unique within its environment.
+        Name of the agent. Defaults to address of the agent.
 
     :ivar ~creamas.core.agent.CreativeAgent.age:
         Age of the agent
@@ -90,23 +90,24 @@ class CreativeAgent(aiomas.Agent):
         return self._age
 
     @age.setter
-    def age(self, i):
-        self._age = i
+    def age(self, age):
+        self._age = age
 
     @property
     def name(self):
-        '''Human readable name of the agent. Must be unique in agent's
-        environment. Agent should not change its name during its lifetime.'''
+        '''Human readable name of the agent. The agent should not change its
+        name during its lifetime.'''
         return self.__name
-
-    def sanitized_name(self):
-        import re
-        a = re.split("[:/]", self.name)
-        return "_".join([i for i in a if len(i) > 0])
 
     @name.setter
     def name(self, name):
         self.__name = name
+
+    def sanitized_name(self):
+        '''Sanitized name of the agent, used for file and directory creation.
+        '''
+        a = re.split("[:/]", self.name)
+        return "_".join([i for i in a if len(i) > 0])
 
     @property
     def env(self):
@@ -118,21 +119,16 @@ class CreativeAgent(aiomas.Agent):
     def R(self):
         '''Rules agent uses to evaluate artifacts. Each rule in **R** is
         expected to be a callable with single parameter, the artifact to be
-        evaluated. Callable should return a float in [-1,1], where 1 means that
-        rule is very prominent in the artifact, and 0 that there is none of
-        that rule in the artifact, and -1 means that the artifact shows
+        evaluated. Callable should return a float in [-1,1]; where 1 means that
+        rule is very prominent in the artifact; 0 means that there is none of
+        that rule in the artifact; -1 means that the artifact shows
         traits opposite to the rule.
-
-        .. note::
-
-            If used other way than what is stated above, override
-            :py:meth:`~creamas.core.agent.CreativeAgent.extract`.
         '''
         return self._R
 
     @property
     def W(self):
-        '''Weights for features. Each weight should be in [-1,1].'''
+        '''Weights for the features. Each weight should be in [-1,1].'''
         return self._W
 
     @property
@@ -179,7 +175,7 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def connections(self):
-        '''Connections to the other agents in the **env**.'''
+        '''Addresses of the other agents the agent is aware of.'''
         return self._connections
 
     @property
@@ -192,26 +188,26 @@ class CreativeAgent(aiomas.Agent):
         '''
         return "{}:{}".format(self.__module__, self.__class__.__name__)
 
-    def get_attitude(self, agent):
+    def get_attitude(self, addr):
         '''Get attitude towards agent in **connections**. If agent is not in
         **connections**, returns None.
         '''
         try:
-            ind = self._connections.index(agent)
+            ind = self._connections.index(addr)
             return self._attitudes[ind]
         except:
             return None
 
-    def set_attitude(self, agent, attitude):
+    def set_attitude(self, addr, attitude):
         '''Set attitude towards agent. If agent is not in **connections**, adds
         it.
         '''
         assert (attitude >= -1.0 and attitude <= 1.0)
         try:
-            ind = self._connections.index(agent)
+            ind = self._connections.index(addr)
             self._attitudes[ind] = attitude
         except:
-            self.add_connection(agent, attitude)
+            self.add_connection(addr, attitude)
 
     def set_weight(self, rule, weight):
         '''Set weight for rule in **R**, if rule is not in **R**, adds
@@ -241,7 +237,12 @@ class CreativeAgent(aiomas.Agent):
             return None
 
     def add_artifact(self, artifact):
-        '''Add artifact to **A**.'''
+        '''Add artifact to **A**.
+
+        :raises TypeError:
+            If the artifact is not a member of
+            :class:`~creamas.core.artifact.Artifact` or its subclass.
+        '''
         if not issubclass(artifact.__class__, Artifact):
             raise TypeError("Artifact to add ({}) is not {}."
                             .format(artifact, Artifact))
@@ -288,34 +289,26 @@ class CreativeAgent(aiomas.Agent):
         except:
             return False
 
-    def add_connection(self, agent, attitude=0.0):
-        '''Added agent to current **connections** with given initial attitude.
+    def add_connection(self, addr, attitude=0.0):
+        '''Added agent with given address to current **connections** with given
+        initial attitude.
 
         Does nothing if agent is already in **connections**.
 
-        :param agent: agent to be added
-        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
-        :param attitude: initial attitude towards agent, in [-1, 1]
-        :type attitude: float
+        :param str addr: Address of the agent to be added
+        :param float attitude: initial attitude towards agent, in [-1, 1]
+        :returns: True if the agent was successfully added, False otherwise.
         '''
-        if not issubclass(agent.__class__, CreativeAgent):
-            raise TypeError("Agent to add in connections ({}), was not "
-                            "subclass of {}"
-                            .format(agent, CreativeAgent))
-        if agent not in self._connections:
-            self.connections.append(agent)
+        if addr not in self._connections:
+            self.connections.append(addr)
             self.attitudes.append(attitude)
             return True
         return False
 
-    def remove_connection(self, agent):
-        '''Remove agent from current connections.'''
-        if not issubclass(agent.__class__, CreativeAgent):
-            raise TypeError("Agent to remove from connections ({}), was "
-                            "not subclass of {}"
-                            .format(agent, CreativeAgent))
+    def remove_connection(self, addr):
+        '''Remove agent with given address from current connections.'''
         try:
-            ind = self._connections.index(agent)
+            ind = self._connections.index(addr)
             del self._connections[ind]
             del self._attitudes[ind]
             return True
@@ -323,7 +316,11 @@ class CreativeAgent(aiomas.Agent):
             return False
 
     async def connect(self, addr):
-        '''Connect to agent in given address.
+        '''Connect to agent in given address using the agent's environment.
+
+        This is a shortcut to ``agent.env.connect(addr)``.
+
+        :returns: :class:`Proxy` object for the connected agent.
         '''
         remote_agent = await self.env.connect(addr)
         return remote_agent
@@ -331,15 +328,10 @@ class CreativeAgent(aiomas.Agent):
     async def random_connection(self):
         '''Connect to random agent from current **connections**.
 
-        .. note::
-
-            This is an async method that should be awaited.
-
-        :returns: connected remote agent
-        :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
+        :returns: :class:`Proxy` object for the connected agent.
         '''
-        r_agent = choice(self._connections)
-        remote_agent = await self.env.connect(r_agent.addr)
+        addr = choice(self._connections)
+        remote_agent = await self.env.connect(addr)
         return remote_agent
 
     def publish(self, artifact):
@@ -395,52 +387,66 @@ class CreativeAgent(aiomas.Agent):
             return 0.0, None
         return s / w, None
 
-    async def ask_opinion(self, agent, artifact):
+    async def ask_opinion(self, addr, artifact):
         '''Ask agent's opinion about artifact.
 
-        .. note::
+        The artifact object should be serializable by the environment.
 
-            This is an async method that should be awaited.
-
-        :param agent: agent which opinion is asked
+        :param str addr: Address of the agent which opinion is asked
         :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
         :param object artifact: artifact to be evaluated
         :returns: agent's evaluation of the artifact
         :rtype: float
         '''
-        remote_agent = await self.container.connect(agent.addr)
+        remote_agent = await self.container.connect(addr)
         pkl = pickle.dumps(artifact)
         ret = await remote_agent.evaluate_pickle(pkl)
         ev = pickle.loads(ret)
         return ev
 
     @aiomas.expose
-    async def act(self):
+    async def act(self, *args, **kwargs):
         '''Trigger agent to act. **Dummy method, override in subclass.**
 
-        :raises NotImplementedError: if not overridden in subclass
+        This function serves as the main function for the simulations, and
+        is called for each agent on each iteration step of the simulation.
 
-        .. note::
-
-            This is an async method that should be awaited.
+        :raises NotImplementedError: If not overridden in subclass.
         '''
         raise NotImplementedError('Override in subclass.')
 
-    def validate_candidates(self, candidates):
-        '''Validate list of candidate artifacts.
+    def validate(self, candidates):
+        '''Validate a list of candidate artifacts.
+
+        Candidate validation should prune unwanted artifacts from the overall
+        candidate set. Agent can use its own reasoning to validate the
+        given candidates. The method should return a subset of the given
+        *candidates* list containing the validated artifacts (i.e. the
+        artifacts that are not pruned).
+
+        This basic implementation returns the given candidate list as is.
         '''
         return candidates
 
     @aiomas.expose
     def vote(self, candidates):
-        '''Rank artifact candidates based on agent's own *evaluate*-method.
+        '''Rank artifact candidates.
+
+        The voting is needed for the agents living in societies using social
+        social decision making. The function should return a sorted list
+        of (candidate, evaluation)-tuples. Depending on the social choice
+        function used, the evaluation might be omitted from the actual decision
+        making, or only a number of (the highest ranking) candidates may be
+        used.
+
+        This basic implementation ranks candidates based on :meth:`evaluate`.
 
         :param candidates:
             list of :py:class:`~creamas.core.artifact.Artifact` objects to be
             ranked
 
         :returns:
-            ordered list of (candidate, evaluation)-tuples
+            Ordered list of (candidate, evaluation)-tuples
         '''
         ranks = [(c, self.evaluate(c)[0]) for c in candidates]
         ranks.sort(key=operator.itemgetter(1), reverse=True)
@@ -460,6 +466,8 @@ class CreativeAgent(aiomas.Agent):
         '''Perform any bookkeeping needed before closing the agent.
 
         **Dummy implementation, override in subclass if needed.**
+
+        :param str folder: Folder where the agent should save its data.
         '''
         pass
 

@@ -5,13 +5,16 @@
 This module contains multiprocessing implementation for
 :class:`~creamas.core.environment.Environment`,
 :class:`~creamas.mp.MultiEnvironment`.
-It uses managers to obtain the same functionality as the single processor
-environment. See :class:`~creamas.mp.EnvManager` and
+
+A :class:`~creamas.mp.MultiEnvironment` holds several
+:class:`~creamas.core.environment.Environment` slaves, which are spawned on
+their own processes, and uses managers to obtain much of the same functionality
+as the single processor environment. See :class:`~creamas.mp.EnvManager` and
 :class:`~creamas.mp.MultiEnvManager` for details.
 
 .. warning::
-    This functionality is currently non-tested. However, it *seems* to work
-    as intended and may be used in
+    This functionality is currently largely untested. However, it *seems* to
+    work as intended and may be used in
     :class:`~creamas.core.simulation.Simulation`.
 '''
 import asyncio
@@ -36,10 +39,13 @@ TIMEOUT = 5
 
 
 class EnvManager(aiomas.subproc.Manager):
-    """A single environment manager agent for a slave environment running
+    """A manager for :class:`~creamas.core.environment.Environment`.
+
+    Managers are used in environments which need to be able to execute
+    commands originating from outside sources, e.g. in slave environments
     inside a multiprocessing environment.
 
-    A Manager can spawn other agents into its environment, and can execute
+    A manager can spawn other agents into its environment, and can execute
     other tasks relevant to the environment. The manager should always be the
     first agent created to the environment.
 
@@ -91,10 +97,13 @@ class EnvManager(aiomas.subproc.Manager):
 
         This is a managing function for the
         :py:meth:`~creamas.environment.Environment.get_agents`, but returned
-        agent lists exclude the manager by default.
+        agent lists exclude this manager by default.
         '''
         agents = self.env.get_agents(address=address, agent_cls=agent_cls)
-        agents = [a for a in agents if a.addr == self.addr]
+        if address:
+            agents = [a for a in agents if a != self.addr]
+        else:
+            agents = [a for a in agents if a.addr != self.addr]
         return agents
 
     @aiomas.expose
@@ -141,12 +150,20 @@ class EnvManager(aiomas.subproc.Manager):
         return self.env.artifacts
 
     @aiomas.expose
-    def validate_candidates(self, candidates):
+    def validate(self, candidates):
         '''Returns the candidate list unaltered.
 
         Implemented for consistency.
         '''
         return candidates
+
+    @aiomas.expose
+    def validate_candidates(self, candidates):
+        '''Validate the candidates with the agents in the managed environment.
+        '''
+        self.env._candidates = candidates
+        self.env.validate_candidates()
+        return self.env.candidates
 
     @aiomas.expose
     def clear_candidates(self):
@@ -165,6 +182,12 @@ class EnvManager(aiomas.subproc.Manager):
         '''
         cands = candidates
         votes = [(c, 1.0) for c in cands]
+        return votes
+
+    @aiomas.expose
+    def get_votes(self, candidates):
+        self.env._candidates = candidates
+        votes = self.env._gather_votes()
         return votes
 
     @aiomas.expose
@@ -199,6 +222,15 @@ class EnvManager(aiomas.subproc.Manager):
         return ret
 
     @aiomas.expose
+    async def is_ready(self):
+        '''Check if the managed environment is ready.
+
+        This is a managing function for
+        :py:meth:`~creamas.environment.Environment.is_ready`.
+        '''
+        return self.env.is_ready()
+
+    @aiomas.expose
     async def spawn_n(self, agent_cls, n, *args, **kwargs):
         '''Spawn *n* agents to the managed environment. This is a convenience
         function so that one does not have to repeatedly make connections to
@@ -214,8 +246,7 @@ class EnvManager(aiomas.subproc.Manager):
 
 
 class MultiEnvManager(aiomas.subproc.Manager):
-    """A multi-environment manager agent for a whole multiprocessing
-    environment.
+    """A manager for :class:`~creamas.mp.MultiEnvironment`.
 
     A Manager can spawn other agents into its slave environments, and can
     execute other tasks relevant to the whole environment. The manager should
@@ -225,7 +256,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
     multi-environment's or its manager's functionality.
 
     .. note::
-        You should not have need to create managers directly, instead pass the
+        You should not need to create managers directly, instead pass the
         desired manager class to an instance of
         :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
@@ -241,7 +272,17 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def spawn(self, addr, agent_cls, *agent_args, **agent_kwargs):
-        '''Spawn an agent to an environment in a given address.
+        '''Spawn an agent to an environment in a manager in the given address.
+
+        *agent_args* and *agent_kwargs* are passed to the manager doing to
+        spawning to be used as the agent's initialization parameters.
+
+        :param str addr: Environment's manager's address
+
+        :param agent_cls:
+            Class of the agent as a string, e.g. creamas.grid:GridAgent
+
+        :returns: :class:`Proxy` and port of the spawned agent
         '''
         remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         proxy, port = await remote_manager.spawn(agent_cls, *agent_args,
@@ -249,21 +290,64 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return proxy, port
 
     @aiomas.expose
-    async def get_agents(self, addr, address=True, agent_cls=None,
-                         filter_managers=True):
-        '''Get agents in the slave manager's environment.
+    async def spawn_n(self, addr, agent_cls, n, *agent_args, **agent_kwargs):
+        '''Same as :meth:`~creamas.mp.MultiEnvManager.spawn`, but spawn
+        multiple agents with same initialization parameters.
 
-        :param addr: Address of the slave environment's manager
-        :param address: Return only the addresses of the agents, not proxies.
+        This should considerably reduce the time needed to spawn a large number
+        of homogeneous agents.
+
+        *agent_args* and *agent_kwargs* are passed to the manager doing to
+        spawning to be used as the agent's initialization parameters.
+
+        :param str addr: Environment's manager's address
+
+        :param agent_cls:
+            Class of the agent as a string, e.g. creamas.grid:GridAgent
+
+        :param int n: Number of agents to spawn.
+
+        :returns: List of (:class:`Proxy`, port) tuples for the spawned agents.
+
+        ... seealso::
+
+            :meth:`creamas.mp.EnvManager.spawn_n`
         '''
         remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        agents = await remote_manager.get_agents(address=address,
-                                                 agent_cls=agent_cls)
-        if filter_managers:
-            if address:
-                agents = [a for a in agents if a.rsplit("/", 1)[1] != "0"]
-            else:
-                agents = [a for a in agents if a.addr.rsplit("/", 1)[1] != "0"]
+        rets = await remote_manager.spawn_n(agent_cls, n, *agent_args,
+                                            **agent_kwargs)
+        return rets
+
+    @aiomas.expose
+    async def get_agents(self, address=True, agent_cls=None):
+        '''Get all agents in all the slave environments.
+
+        This is a managing function for
+        :meth:`creamas.mp.MultiEnvironment.get_agents`.
+        '''
+        return await self.menv.get_agents(address=address, agent_cls=agent_cls)
+
+    @aiomas.expose
+    async def get_slave_agents(self, addr, address=True, agent_cls=None):
+        '''Get agents in the specified manager's environment.
+
+        :param str addr: Address of the environment's manager
+
+        :param bool address:
+            Return only the addresses of the agents, not proxies.
+
+        :param agent_cls:
+            If specified, return only the agents that are members of the class.
+
+        .. seealso::
+
+            :meth:`creamas.environment.Environment.get_agents`
+            :meth:`creamas.mp.EnvManager.get_agents`,
+            :meth:`creamas.mp.MultiEnvironment.get_agents`
+        '''
+        r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+        agents = await r_manager.get_agents(address=address,
+                                            agent_cls=agent_cls)
         return agents
 
     @aiomas.expose
@@ -271,8 +355,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         '''Send stop command to the manager agent in a given address. This will
         shutdown the manager's environment.
         '''
-        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        ret = await remote_manager.stop(folder)
+        ret = await self.menv._kill(addr, folder)
         return ret
 
     @aiomas.expose
@@ -292,7 +375,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def set_host_manager(self, addr):
-        '''Set this manager as host manager to the manager in *addr*.
+        '''Set this manager as a host manager to the manager in *addr*.
         '''
         remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         ret = remote_manager.set_host_addr(self.addr)
@@ -307,6 +390,13 @@ class MultiEnvManager(aiomas.subproc.Manager):
         '''
         ret = await self.menv.trigger_all()
         return ret
+
+    @aiomas.expose
+    async def is_ready(self):
+        '''A managing function for
+        :py:meth:`~creamas.mp.MultiEnvironment.is_ready`.
+        '''
+        return await self.menv.is_ready()
 
     @aiomas.expose
     async def get_older(self, addr):
@@ -331,9 +421,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         self.menv.add_candidate(artifact)
 
     @aiomas.expose
-    async def get_votes(self, addr, candidates):
-        remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
-        votes = await remote_agent.vote(candidates)
+    def get_votes(self, addr, candidates):
+        votes = self.menv._gather_votes()
         return votes
 
     @aiomas.expose
@@ -348,19 +437,33 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def destroy(self):
+        '''A managing function for
+        :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.
+        '''
         return self.env.destroy()
 
 
 class MultiEnvironment():
-    '''Environment for utilizing multiple processes.
+    '''Environment for utilizing multiple processes (and cores) on a single
+    machine.
 
     :py:class:`MultiEnvironment` has a managing environment, typically
     containing only a single manager, and a set of slave environments each
     having their own manager and (once spawned) the actual agents.
 
-    :py:class:`MultiEnvironment` and the slave environments are internally
-    initialized to have :py:class:`aiomas.MsgPack` as the codec for the
-    message serialization.
+    Currently, the implementation assumes that the slave environments do not
+    use any time consuming internal initialization. If the slaves are not
+    reachable after a few seconds after the initialization, an exception is
+    raised. Thus, any slave environments should do their additional
+    preparations, e.g. agent spawning, outside their :meth:``__init__``, after
+    :py:class:`MultiEnvironment` has been initialized successfully.
+
+    .. note::
+
+        :py:class:`MultiEnvironment` and the slave environments are internally
+        initialized to have :py:class:`aiomas.MsgPack` as the codec for the
+        message serialization. Any communication to these environments and
+        agents in them must use the same codec.
     '''
     def __init__(self, addr, env_cls=None, mgr_cls=None,
                  slave_addrs=[], slave_env_cls=None,
@@ -435,32 +538,45 @@ class MultiEnvironment():
     def age(self, _age):
         self._age = _age
 
-    def get_agents(self, address=True, filter_managers=True):
-        '''Get agents associated with the environment and its child
-        environments.
+    @property
+    def env(self):
+        '''Environment hosting the manager of this multi-environment. This
+        environment is also used without the manager to connect to the slave
+        environment managers.
+        '''
+        return self._env
 
-        Essentially calls :py:meth:`get_agents` for each of the child
+    async def _get_agents(self, addr, address=True, agent_cls=None):
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
+        agents = await remote_manager.get_agents(address=address,
+                                                 agent_cls=agent_cls)
+        return agents
+
+    def get_agents(self, address=True, agent_cls=None):
+        '''Get agents from the slave environments. This method excludes each
+        slave environment's manager agent from the returned list.
+
+        Essentially calls :py:meth:`get_agents` for each of the slave
         environment managers.
 
         :param bool address:
             If *True*, returns only addresses of the agents, otherwise returns
             a :class:`Proxy` object for each agent.
 
-        :param bool filter_managers:
-            If *True* filters manager agents from the returned list.
+        :param agent_cls:
+            If specified, returns only agents that are members of that
+            particular class.
 
         :returns:
-            List of :py:class:`Proxy` objects or addresses as specified by the
+            List of :class:`Proxy` objects or addresses as specified by the
             input parameters.
         '''
         if self._consistent is False:
             ags = []
             tasks = []
             for addr in self._manager_addrs:
-                tasks.append(asyncio.ensure_future
-                             (self.manager.get_agents
-                              (addr, address=True,
-                               filter_managers=filter_managers)))
+                t = self._get_agents(addr, address=True, agent_cls=agent_cls)
+                tasks.append(asyncio.ensure_future(t))
             aa = aiomas.run(until=asyncio.gather(*tasks))
             for a in aa:
                 ags.extend(a)
@@ -494,6 +610,44 @@ class MultiEnvironment():
         '''
         return self._candidates
 
+    def check_ready(self):
+        '''Check if this multi-environment itself is ready.
+
+        Override in subclass if it needs any additional (asynchronous)
+        initialization other than spawning its slave environments.
+
+        :rtype: bool
+        :returns: This basic implementation returns always True.
+        '''
+        return True
+
+    async def is_ready(self):
+        '''Check if the multi-environment has been fully initialized.
+
+        This calls each slave environment managers' :py:meth:`is_ready` and
+        checks if the multi-environment itself is ready by calling
+        :py:meth:`~creamas.mp.MultiEnvironment.check_ready`.
+
+        ... seealso::
+
+            :py:meth:`creamas.core.environment.Environment.is_ready`
+        '''
+        if not self.env.is_ready():
+            return False
+        if not self.check_ready():
+            return False
+        for addr in self.addrs:
+            try:
+                # We have a short timeout, because this is likely to be polled
+                # consecutively until the slaves are ready.
+                r_manager = await self.env.connect(addr, timeout=1)
+                ready = await r_manager.is_ready()
+                if not ready:
+                    return False
+            except:
+                return False
+        return True
+
     def _get_log_folders(self, log_folder, addrs):
         if type(log_folder) is str:
             import os
@@ -505,18 +659,24 @@ class MultiEnvironment():
 
     async def _set_host_managers(self):
         for addr in self.addrs:
-            await self._manager.set_host_manager(addr)
+            r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+            r_manager.set_host_addr(self._manager.addr)
 
     async def trigger_act(self, addr):
-        '''Trigger agent in addr to act.
+        '''Trigger agent in *addr* to act.
+
+        This is very inefficient if used repeatedly. In case you want to
+        trigger all agents in the slave environments to act, you should use
+        :py:meth:`trigger_all`.
         '''
         if addr.rsplit("/", 1)[1] == '0':
             self._log(logging.DEBUG, "Skipping manager in {} from acting."
                       .format(addr))
             return
         self._log(logging.DEBUG, "Triggering agent in {} to act".format(addr))
-        await self._manager.get_older(addr)
-        ret = await self._manager.act(addr)
+        r_agent = await self.env.connect(addr)
+        await r_agent.get_older()
+        ret = await r_agent.act()
         return ret
 
     async def _trigger_slave(self, slave_mgr_addr):
@@ -525,7 +685,9 @@ class MultiEnvironment():
         return ret
 
     async def trigger_all(self):
-        '''Trigger all agents in all the child environments to act.'''
+        '''Trigger all agents in all the slave environments to act
+        asynchronously.
+        '''
         rets = []
         tasks = []
         for addr in self.addrs:
@@ -537,18 +699,18 @@ class MultiEnvironment():
         return rets
 
     def random_addr(self):
-        '''Get random env.
+        '''Get random manager for a slave environment.
         '''
         return choice(self._manager_addrs)
 
     async def _get_smallest_env(self):
         '''Get address for the environment with smallest amount of agents.
         '''
-        agents = await self._manager.get_agents(self._manager_addrs[0])
+        agents = await self._get_agents(self._manager_addrs[0])
         ns = len(agents)
         saddr = self._manager_addrs[0]
         for i, addr in enumerate(self._manager_addrs[1:]):
-            agents = await self._manager.get_agents(addr)
+            agents = await self._get_agents(addr)
             n = len(agents)
             if n < ns:
                 ns = n
@@ -585,9 +747,13 @@ class MultiEnvironment():
         ret = await self.manager.clear_candidates(manager_addr)
         return ret
 
-    async def create_connection(self, addr, conn):
-        remote_agent = await self._env.connect(addr, timeout=TIMEOUT)
-        remote_agent.add_connection(conn)
+    async def create_connection(self, addr, addr2):
+        '''Create connection from agent in *addr* to agent in *addr2*.
+
+        This does not create a connection the other way around.
+        '''
+        remote_agent = await self.env.connect(addr, timeout=TIMEOUT)
+        await remote_agent.add_connection(addr2)
 
     def create_initial_connections(self, n=5):
         '''Create random initial connections for all agents.
@@ -624,7 +790,7 @@ class MultiEnvironment():
         '''
         artifact.env_time = self.age
         self.artifacts.append(artifact)
-        self._log(logging.INFO, "ARTIFACTS appended: '{}', length={}"
+        self._log(logging.DEBUG, "ARTIFACTS appended: '{}', length={}"
                   .format(artifact, len(self.artifacts)))
 
     def get_artifacts(self, agent):
@@ -644,7 +810,7 @@ class MultiEnvironment():
                   .format(artifact))
 
     async def _validate_candidates(self, addr):
-        remote_manager = await self._manager.container.connect(addr)
+        remote_manager = await self.env.connect(addr)
         vc = remote_manager.validate_candidates(self.candidates)
         return vc
 
@@ -653,7 +819,7 @@ class MultiEnvironment():
         that are not validated at least by one agent, i.e. they are vetoed.
 
         In larger societies this method might be costly, as it calls each
-        get_agents' ``validate_candidates``-method.
+        agents' ``validate_candidates``-method.
         '''
         valid_candidates = set(self.candidates)
         tasks = []
@@ -670,21 +836,21 @@ class MultiEnvironment():
                   "{} valid candidates after get_agents used veto."
                   .format(len(self.candidates)))
 
-    async def get_vote(self, addr, candidates):
-        votes = await self._manager.get_votes(addr, candidates)
+    async def get_votes(self, addr, candidates):
+        r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+        votes = await r_manager.get_votes(candidates)
         return votes
 
     def _gather_votes(self):
         tasks = []
-        for addr in self.get_agents(address=True):
-            if addr.rsplit("/", 1)[1] == 0:
-                # Skip managers.
-                pass
-            else:
-                t = asyncio.ensure_future(self.get_vote(addr, self.candidates))
-                tasks.append(t)
+        for addr in self.addrs:
+            t = asyncio.ensure_future(self.get_votes(addr, self.candidates))
+            tasks.append(t)
 
-        votes = aiomas.run(until=asyncio.gather(*tasks))
+        ret = aiomas.run(until=asyncio.gather(*tasks))
+        votes = []
+        for r in ret:
+            votes.extend(r)
         return votes
 
     def perform_voting(self, method='IRV', accepted=1):
@@ -822,19 +988,24 @@ class MultiEnvironment():
     def save_info(self, folder, *args, **kwargs):
         '''Save information accumulated during the environments lifetime.
 
-        Called from :py:meth:`~creamas.core.Environment.destroy`. Override in
-        subclass.
+        Called from :py:meth:`~creamas.mp.MultiEnvironment.destroy`. Override
+        in subclass.
 
         :param str folder: root folder to save information
         '''
         pass
 
-    async def _destroy_childs(self, folder):
-        '''Shutdown the child environments.
+    async def _kill(self, addr, folder):
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
+        ret = await remote_manager.stop(folder)
+        return ret
+
+    async def _destroy_slaves(self, folder):
+        '''Shutdown the slave environments.
         '''
         rets = []
         for addr in self.addrs:
-            ret = await self._manager.kill(addr, folder)
+            ret = await self._kill(addr, folder)
             rets.append(ret)
         return rets
 
@@ -843,7 +1014,7 @@ class MultiEnvironment():
         '''
         async def _destroy(folder):
             ret = [self.save_info(folder)]
-            rets = await self._destroy_childs(folder)
+            rets = await self._destroy_slaves(folder)
             rets = ret + rets
             # Close and join the process pool nicely.
             self._pool.close()
@@ -867,15 +1038,16 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
     at initialization time.
 
     If 'setproctitle' is installed, this function renames the title of the
-    process to start with Creamas so that the process is easily identifiable,
-    e.g. with 'ps -x | grep Creamas'.
+    process to start with 'creamas' so that the process is easily identifiable,
+    e.g. with ``ps -x | grep creamas``.
     '''
     # Try setting the process name to easily recognize the spawned
     # environments with 'ps -x' or 'top'
     try:
         import setproctitle as spt
-        spt.setproctitle('Creamas: {}({})'.format(env_cls,
-                                                  _get_base_url(addr)))
+        title = 'creamas: {}({})'.format(env_cls.__class__.__name__,
+                                         _get_base_url(addr))
+        spt.setproctitle(title)
     except:
         pass
 

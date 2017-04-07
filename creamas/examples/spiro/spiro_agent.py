@@ -287,7 +287,7 @@ class SpiroAgent(CreativeAgent):
         if self.env_learn_on_add:
             self.learn(spiro)
 
-    def validate_candidates(self, candidates):
+    def validate(self, candidates):
         besteval = 0.0
         bestcand = None
         valid = []
@@ -730,7 +730,7 @@ if __name__ == "__main__":
 
     sim = Simulation(env, log_folder=log_folder,
                      callback=env.vote_and_save_info)
-    sim.steps(100)
+    sim.steps(10)
     ret = sim.end()
     print(ret)
 

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='creamas',
-    version='0.1.4',
+    version='0.1.5',
     author='Simo Linkola',
     author_email='simo.linkola at gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),
@@ -13,6 +13,7 @@ setup(
         'aiomas>=1.0.3',
         'msgpack-python>=0.4.6',
         'numpy>=1.10.1',
+        'asyncssh>=1.6.2',
     ],
     extras_require={
     },

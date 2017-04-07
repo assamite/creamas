@@ -11,13 +11,14 @@ functionality for the system to operate.
 Environments are used by defining their address at the instantation time, and
 adding agents to their container.
 '''
+import asyncio
 
 import logging
 import operator
 from collections import Counter
 from random import choice, shuffle
 
-import aiomas
+from aiomas import Container
 
 from creamas.logging import ObjectLogger
 
@@ -25,7 +26,7 @@ from creamas.logging import ObjectLogger
 __all__ = ['Environment']
 
 
-class Environment(aiomas.Container):
+class Environment(Container):
     '''Base environment class inherited from :py:class:`aiomas.Container`.
     '''
     def __init__(self, base_url, clock, connect_kwargs):
@@ -92,7 +93,12 @@ class Environment(aiomas.Container):
                                     init=True)
 
     def get_agents(self, address=True, agent_cls=None):
-        '''Get addresses of the agents in the environment.
+        '''Get agents in the environment.
+
+        :param bool address: If true, returns only addresses of the agents.
+        :param agent_cls:
+            Optional, if specified returns only agents belonging to that
+            particular class.
         '''
         agents = list(self.agents.dict.values())
         if agent_cls is not None:
@@ -102,8 +108,14 @@ class Environment(aiomas.Container):
         return agents
 
     async def trigger_act(self, addr=None, agent=None):
-        '''Trigger agent in address to act.
+        '''Trigger agent to act.
+
+        If *agent* is None, then looks the agent by the address.
+
+        :raises ValueError: if both *agent* and *addr* are None.
         '''
+        if agent is None and addr is None:
+            raise ValueError("Either addr or agent has to be defined.")
         if agent is None:
             for a in self.get_agents(address=False):
                 if addr == a.addr:
@@ -114,18 +126,40 @@ class Environment(aiomas.Container):
         return ret
 
     async def trigger_all(self):
-        '''Trigger all agents to act.
+        '''Trigger all agents in the environment to act asynchronously.
         '''
         rets = []
+        tasks = []
         for a in self.get_agents(address=False):
-            ret = await self.trigger_act(agent=a)
-            rets.append(ret)
+            task = asyncio.ensure_future(self.trigger_act(agent=a))
+            tasks.append(task)
+        rets = await asyncio.gather(*tasks)
         return rets
 
     def clear_candidates(self):
         '''Remove current candidates from the environment.
         '''
         self._candidates = []
+
+    def is_ready(self):
+        '''Check if the environment is fully initialized.
+
+        The function is mainly used by the multiprocessing environment managers
+        and distributed environments to ensure that the environment has been
+        correctly initialized before any other preparations are done for the
+        environments or the simulation is started.
+
+        Override the function in the subclasses which need more time consuming
+        initialization routines. The function should return True when the
+        environment is ready be used in a simulation, or when any
+        cross-environment initialization routines can be run. That is, the
+        environment is inherently in a coherent state, and can execute orders
+        from managers or simulations.
+
+        :rtype: bool
+        :returns: This basic implementation returns always True.
+        '''
+        return True
 
     def create_initial_connections(self, n=5):
         '''Create random initial connections for all agents.
@@ -191,11 +225,11 @@ class Environment(aiomas.Container):
         that are not validated at least by one agent, i.e. they are vetoed.
 
         In larger societies this method might be costly, as it calls each
-        agents' :func:`validate_candidates`-method.
+        agents' :meth:`validate`.
         '''
         valid_candidates = set(self.candidates)
         for a in self.get_agents(address=False):
-            vc = set(a.validate_candidates(self.candidates))
+            vc = set(a.validate(self.candidates))
             valid_candidates = valid_candidates.intersection(vc)
 
         self._candidates = list(valid_candidates)
@@ -372,5 +406,6 @@ class Environment(aiomas.Container):
         if as_coro:
             return _destroy(folder)
         else:
-            ret = aiomas.run(until=_destroy(folder))
+            loop = asyncio.get_event_loop()
+            ret = loop.run_until_complete(_destroy(folder))
             return ret

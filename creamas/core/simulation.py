@@ -20,7 +20,7 @@ __all__ = ['Simulation']
 class Simulation():
     '''Base class for iterative simulations.
 
-    In each simulation step calls
+    In each step the simulation calls
     :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in
     simulation environment.
     '''
@@ -96,7 +96,9 @@ class Simulation():
         '''Create simulation for previously set up environment.
 
         :param env: fully initialized environment with agents already set
-        :type env: :py:class:`~creamas.core.environment.Environment`
+        :type env:
+            :py:class:`~creamas.core.environment.Environment` or
+            :py:class:`~creamas.mp.MultiEnvironment`
         :param callable callback: function to call after each simulation step
         :parat str log_folder: folder to log simulation information
         '''
