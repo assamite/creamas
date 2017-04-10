@@ -27,13 +27,15 @@ async def ssh_exec(server, cmd):
     '''Execute a command on a given server using asynchronous SSH-connection.
 
     The method does not propagate exceptions raised during the SSH-connection,
-    instead they are returned. The method will exit after the first exception
-    is raised.
+    instead, the exceptions are caught and returned. The method will exit after
+    the first exception is raised.
 
     :param str server: Address of the server
     :param str cmd: Command to be executed
 
-    :returns: Return value of the SSH-connection and possible exception.
+    :returns:
+        (closed SSH-connection, exception)-tuple, if no exceptions are caught,
+        the second value is *None*.
     '''
     ret = None
     try:
