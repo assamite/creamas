@@ -59,6 +59,7 @@ def ssh_exec_in_new_loop(server, cmd):
     ret = loop.run_until_complete(task)
     return ret
 
+
 class DistributedEnvironment():
     '''Distributed environment which manages several nodes containing
     multi-environments.
