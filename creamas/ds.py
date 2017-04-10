@@ -23,20 +23,18 @@ import asyncssh
 from creamas import Environment
 
 
-async def ssh_exec(server, cmd, logger=None):
+async def ssh_exec(server, cmd):
     '''Execute a command on a given server using asynchronous SSH-connection.
 
     The method does not propagate exceptions raised during the SSH-connection,
-    instead they are logged by *logger* as errors. The method will exit after
-    the first exception is raised.
+    instead they are returned. The method will exit after the first exception
+    is raised.
 
     :param str server: Address of the server
     :param str cmd: Command to be executed
-    :param logger:
-        Optional, logger for errors during the command execution.
+
+    :returns: Return value of the SSH-connection and possible exception.
     '''
-    if logger is not None:
-        logger.debug("Executing cmd='{}' on {}".format(cmd, server))
     ret = None
     try:
         # Setting known_hosts to None is an evil to do, but in this exercise we
@@ -45,18 +43,15 @@ async def ssh_exec(server, cmd, logger=None):
         ret = await conn.run(cmd)
         conn.close()
     except:
-        if logger is not None:
-            logger.error("Error while executing cmd='{}' on server={}\n{}"
-                         .format(cmd, server, traceback.format_exc()))
-        return ret
-    return ret
+        return (ret, traceback.format_exc())
+    return (ret, None)
 
 
-def ssh_exec_in_new_loop(server, cmd, logger=None):
+def ssh_exec_in_new_loop(server, cmd):
     '''Same as :func:`ssh_exec` but creates a new event loop and executes
     :func:`ssh_exec` in that event loop.
     '''
-    task = ssh_exec(server, cmd, logger)
+    task = ssh_exec(server, cmd)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(task)
@@ -147,9 +142,9 @@ class DistributedEnvironment():
     def env(self):
         '''Environment used to communicate with node managers.
 
-        This simulation does not hold manager on its own by default, but it is
-        easy to create one on your own, if you need the node manager's to be
-        able to communicate back to this simulation.
+        The environment does not hold any agents by default, but it is easy to
+        create a manager for it on your own, if the node managers need to
+        be able to communicate back to this environment.
         '''
         return self._env
 
@@ -160,7 +155,7 @@ class DistributedEnvironment():
         These addresses are derived from *nodes* and *port* parameters
         given at the initialization time, and are used to communicate tasks
         (trigger agents) to the nodes. Each manager is assumed to be the
-        first agent in its own manager environment.
+        first agent in its own managed environment.
         '''
         return self._manager_addrs
 
@@ -174,6 +169,14 @@ class DistributedEnvironment():
         :param int timeout:
             Timeout (in seconds) after which the method will return even though
             all the nodes are not ready yet.
+
+        .. seealso::
+
+            :meth:`creamas.core.environment.Environment.is_ready`,
+            :meth:`creamas.mp.MultiEnvironment.is_ready`,
+            :meth:`creamas.mp.EnvManager.is_ready`,
+            :meth:`creamas.mp.MultiEnvManager.is_ready`
+
         '''
         self.logger.info("Waiting for nodes to become ready...")
         t = time.time()
@@ -209,18 +212,18 @@ class DistributedEnvironment():
         return manager_addrs
 
     def spawn_nodes(self, spawn_cmd):
-        '''Spawn all multi-environments on the nodes.
+        '''Spawn all multi-environments on the nodes using SSH.
 
         :param int spawn_cmd:
             str or list, command(s) used to spawn the environment on each node.
-            If list, the parameter must contain one command for each node in
+            If list, it must contain one command for each node in
             *nodes*, if str the same command is used for each node.
 
         .. warning::
             The spawning process of the nodes assumes that the manager agent of
             each multi-environment (on each node) is initialized in the port
-            given by the parameter *port* at the object's initialization
-            time.
+            given by the parameter *port* at the distributed environment's
+            initialization time.
         '''
         pool = multiprocessing.Pool(len(self.nodes))
         rets = []
@@ -229,7 +232,7 @@ class DistributedEnvironment():
                 cmd = spawn_cmd[i]
             else:
                 cmd = spawn_cmd
-            args = [node, cmd, self.logger]
+            args = [node, cmd]
             ret = pool.apply_async(ssh_exec_in_new_loop, args=args)
             rets.append(ret)
         self._pool = pool

@@ -91,8 +91,7 @@ class GridAgent(CreativeAgent):
     async def rcv(self, msg):
         '''Receive and handle message coming from another agent.
         '''
-        self._log(logging.INFO, "{} got message: {}".format(self.addr, msg))
-        return None
+        pass
 
     @aiomas.expose
     async def act(self, *args, **kwargs):

@@ -11,6 +11,8 @@ import socket
 import os
 import sys
 
+from creamas import Environment
+
 from creamas.grid import GridMultiEnvironment, GridEnvironment, GridEnvManager, GridMultiEnvManager
 import utils
 
@@ -47,7 +49,7 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, log_folder=None,
     :returns: Instance of :py:class:`GridMultiEnvironment`
     '''
     name = "menv_{}_{}".format(origin[0], origin[1])
-    menv = GridMultiEnvironment(addr, env_cls=GridEnvironment,
+    menv = GridMultiEnvironment(addr, env_cls=Environment,
                                 mgr_cls=GridMultiEnvManager,
                                 slave_env_cls=GridEnvironment,
                                 slave_mgr_cls=GridEnvManager,
@@ -137,8 +139,8 @@ if __name__ == "__main__":
                         default=(4,4),
                         help='Grid size for each of the slave environments.')
     parser.add_argument('--agent_cls', type=str, dest='agent_cls',
-                        help='If present, this agent class is used to populate '
-                        'the multi-environment, e.g. grid:GridAgent.')
+                        help="If present, this agent class is used to populate "
+                        "the multi-environment, e.g. 'grid_agent:ExampleGridAgent'")
     parser.add_argument('--folder', type=str, dest='folder',
                         help="Logging folder for the multi-enviroment.")
     args = parser.parse_args()

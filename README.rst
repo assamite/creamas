@@ -11,11 +11,6 @@ Creamas - Creative Multi-Agent Systems
     :alt: Coverage
     :scale: 100%
 
-.. image:: https://readthedocs.org/projects/creamas/badge/?version=latest
-    :alt: Documentation Status
-    :scale: 100%
-    :target: https://creamas.readthedocs.org/en/latest/?badge=latest
-
 Library for Creative Multi-Agent Systems.
 
 See project's github-pages for `documentation <https://assamite.github.io/creamas/>`_.

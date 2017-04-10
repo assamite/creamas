@@ -45,32 +45,6 @@ logger = logging.getLogger(__name__)
 LOG_LEVEL = logging.INFO
 MGR_FILE = 'mgr_addrs.txt'
 
-async def ssh_exec(server, cmd, prefix=None):
-    '''Execute cmd (with :py:data:`main.CMD_PREFIX`) on given server via ssh.
-    '''
-    if prefix is not None:
-        cmd = "{}{}".format(prefix, cmd)
-    logger.debug("Trying to execute cmd='{}' on {}".format(cmd, server))
-    ret = None
-    try:
-        # Setting known_hosts to None is an evil to do, but in this exercise we
-        # do not care about it.
-        conn = await asyncssh.connect(server, known_hosts=None)
-        ret = await conn.run(cmd)
-        conn.close()
-    except:
-        logger.error("Something went wrong when executing cmd='{}' on {}\n{}"
-                     .format(cmd, server, traceback.format_exc()))
-        return ret
-    return ret
-
-
-def _ssh_exec_in_new_loop(server, cmd):
-    task = ssh_exec(server, cmd)
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(task)
-
 
 class DistributedGridEnvironment(DistributedEnvironment):
     '''Distributed grid environment.
@@ -268,7 +242,7 @@ if __name__ == "__main__":
                         help="If present, this agent class is used to "
                         "populate all the multi-environments in different "
                         "Ukko-nodes. The used form is 'module:class', "
-                        "e.g. 'grid:GridAgent'.")
+                        "e.g. 'grid_agent:ExampleGridAgent'.")
     args = parser.parse_args()
 
     if args.venv is not None:
@@ -300,6 +274,7 @@ if __name__ == "__main__":
     dgs.save_manager_addrs(MGR_FILE)
     loop = asyncio.get_event_loop()
     timeout = 30
+    logger.info("Waiting for nodes to become ready...")
     nodes_ready = loop.run_until_complete(dgs.wait_nodes(timeout))
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")

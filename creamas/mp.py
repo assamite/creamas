@@ -1037,9 +1037,10 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
     Arguments and keyword arguments are passed down to the created environment
     at initialization time.
 
-    If 'setproctitle' is installed, this function renames the title of the
-    process to start with 'creamas' so that the process is easily identifiable,
-    e.g. with ``ps -x | grep creamas``.
+    If `setproctitle <https://pypi.python.org/pypi/setproctitle>`_ is
+    installed, this function renames the title of the process to start with
+    'creamas' so that the process is easily identifiable, e.g. with
+    ``ps -x | grep creamas``.
     '''
     # Try setting the process name to easily recognize the spawned
     # environments with 'ps -x' or 'top'
@@ -1113,25 +1114,27 @@ def start(addr, env_cls=Environment, mgr_cls=EnvManager,
           *env_args, **env_kwargs):
     """`Coroutine
     <https://docs.python.org/3/library/asyncio-task.html#coroutine>`_ that
-    starts an environment with *mgr_cls* manager agent.
+    starts an environment with :class:`mgr_cls` manager agent.
 
     The agent will connect to *addr* ``('host', port)`` and wait for commands
     to spawn new agents within its environment.
 
-    The *env_args* and *env_kwargs* will be passed to
-    :meth:`~creamas.core.environment.Environment.create()` factory function.
+    The *env_args* and *env_kwargs* will be passed to :meth:`env_cls.create()`
+    factory function.
 
-    This coroutine finishes after :meth:`EnvManager.stop()` was called or when
+    This coroutine finishes after manager's :meth:`stop` was called or when
     a :exc:`KeyboardInterrupt` is raised.
 
     :param addr:
         (HOST, PORT) for the new environment
 
     :param env_cls:
-        Class of the environment, subclass of *Environment*.
+        Class of the environment, subclass of
+        :class:`~creamas.core.environment.Environment`.
 
     :param mgr_cls:
-        Class of the manager agent, subclass of *EnvManager*.
+        Class of the manager agent, subclass of
+        :class:`~creamas.mp.EnvManager`.
     """
     env_kwargs.update(as_coro=True)
     log_folder = env_kwargs.get('log_folder', None)
