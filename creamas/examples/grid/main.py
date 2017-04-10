@@ -99,7 +99,6 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self.cmds = self._build_cmds(port, n_slaves, gs, agent_cls, folder)
         self.spawn_nodes(self.cmds)
 
-
     def _make_node_grid(self, ngs, manager_addrs):
         assert ngs[0]*ngs[1] == len(manager_addrs)
         grid = [[None for _ in range(ngs[1])] for _ in range(ngs[0])]
@@ -270,11 +269,10 @@ if __name__ == "__main__":
     logger.info("Using Ukko-nodes: {}".format(" ".join(nodes)))
 
     dgs = DistributedGridEnvironment(HOST, port, nodes, ngs, n_slaves, gs,
-                                     agent_cls, folder)
+                                     agent_cls, folder, logger=logger)
     dgs.save_manager_addrs(MGR_FILE)
     loop = asyncio.get_event_loop()
     timeout = 30
-    logger.info("Waiting for nodes to become ready...")
     nodes_ready = loop.run_until_complete(dgs.wait_nodes(timeout))
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")
@@ -284,7 +282,7 @@ if __name__ == "__main__":
         for i in range(0, steps):
             t = time.time()
             logger.info("***** Step {}/{} *****".format(i+1, steps))
-            loop.run_until_complete(dgs.async_step())
+            loop.run_until_complete(dgs.trigger_all())
             logger.info("Iteration completed in {} seconds"
                         .format(time.time() - t))
         logger.info("Simulation iterations finished. Destroying the main "
