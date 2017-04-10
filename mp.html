@@ -853,9 +853,10 @@ environment managers.</p>
 <dd><p>Spawn a new environment in a given address as a coroutine.</p>
 <p>Arguments and keyword arguments are passed down to the created environment
 at initialization time.</p>
-<p>If &#8216;setproctitle&#8217; is installed, this function renames the title of the
-process to start with &#8216;creamas&#8217; so that the process is easily identifiable,
-e.g. with <code class="docutils literal"><span class="pre">ps</span> <span class="pre">-x</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">creamas</span></code>.</p>
+<p>If <a class="reference external" href="https://pypi.python.org/pypi/setproctitle">setproctitle</a> is
+installed, this function renames the title of the process to start with
+&#8216;creamas&#8217; so that the process is easily identifiable, e.g. with
+<code class="docutils literal"><span class="pre">ps</span> <span class="pre">-x</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">creamas</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -892,12 +893,12 @@ environments.</p>
 <dt id="creamas.mp.start">
 <code class="descclassname">creamas.mp.</code><code class="descname">start</code><span class="sig-paren">(</span><em>addr</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>mgr_cls=&lt;class 'creamas.mp.EnvManager'&gt;</em>, <em>*env_args</em>, <em>**env_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.start" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#coroutine">Coroutine</a> that
-starts an environment with <em>mgr_cls</em> manager agent.</p>
+starts an environment with <code class="xref py py-class docutils literal"><span class="pre">mgr_cls</span></code> manager agent.</p>
 <p>The agent will connect to <em>addr</em> <code class="docutils literal"><span class="pre">('host',</span> <span class="pre">port)</span></code> and wait for commands
 to spawn new agents within its environment.</p>
-<p>The <em>env_args</em> and <em>env_kwargs</em> will be passed to
-<code class="xref py py-meth docutils literal"><span class="pre">create()</span></code> factory function.</p>
-<p>This coroutine finishes after <code class="xref py py-meth docutils literal"><span class="pre">EnvManager.stop()</span></code> was called or when
+<p>The <em>env_args</em> and <em>env_kwargs</em> will be passed to <code class="xref py py-meth docutils literal"><span class="pre">env_cls.create()</span></code>
+factory function.</p>
+<p>This coroutine finishes after manager&#8217;s <code class="xref py py-meth docutils literal"><span class="pre">stop()</span></code> was called or when
 a <code class="xref py py-exc docutils literal"><span class="pre">KeyboardInterrupt</span></code> is raised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -905,8 +906,10 @@ a <code class="xref py py-exc docutils literal"><span class="pre">KeyboardInterr
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>addr</strong> &#8211; (HOST, PORT) for the new environment</li>
-<li><strong>env_cls</strong> &#8211; Class of the environment, subclass of <em>Environment</em>.</li>
-<li><strong>mgr_cls</strong> &#8211; Class of the manager agent, subclass of <em>EnvManager</em>.</li>
+<li><strong>env_cls</strong> &#8211; Class of the environment, subclass of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</li>
+<li><strong>mgr_cls</strong> &#8211; Class of the manager agent, subclass of
+<a class="reference internal" href="#creamas.mp.EnvManager" title="creamas.mp.EnvManager"><code class="xref py py-class docutils literal"><span class="pre">EnvManager</span></code></a>.</li>
 </ul>
 </td>
 </tr>

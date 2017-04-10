@@ -1173,9 +1173,10 @@
 <span class="sd">    Arguments and keyword arguments are passed down to the created environment</span>
 <span class="sd">    at initialization time.</span>
 
-<span class="sd">    If &#39;setproctitle&#39; is installed, this function renames the title of the</span>
-<span class="sd">    process to start with &#39;creamas&#39; so that the process is easily identifiable,</span>
-<span class="sd">    e.g. with ``ps -x | grep creamas``.</span>
+<span class="sd">    If `setproctitle &lt;https://pypi.python.org/pypi/setproctitle&gt;`_ is</span>
+<span class="sd">    installed, this function renames the title of the process to start with</span>
+<span class="sd">    &#39;creamas&#39; so that the process is easily identifiable, e.g. with</span>
+<span class="sd">    ``ps -x | grep creamas``.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c1"># Try setting the process name to easily recognize the spawned</span>
     <span class="c1"># environments with &#39;ps -x&#39; or &#39;top&#39;</span>
@@ -1249,25 +1250,27 @@
           <span class="o">*</span><span class="n">env_args</span><span class="p">,</span> <span class="o">**</span><span class="n">env_kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;`Coroutine</span>
 <span class="sd">    &lt;https://docs.python.org/3/library/asyncio-task.html#coroutine&gt;`_ that</span>
-<span class="sd">    starts an environment with *mgr_cls* manager agent.</span>
+<span class="sd">    starts an environment with :class:`mgr_cls` manager agent.</span>
 
 <span class="sd">    The agent will connect to *addr* ``(&#39;host&#39;, port)`` and wait for commands</span>
 <span class="sd">    to spawn new agents within its environment.</span>
 
-<span class="sd">    The *env_args* and *env_kwargs* will be passed to</span>
-<span class="sd">    :meth:`~creamas.core.environment.Environment.create()` factory function.</span>
+<span class="sd">    The *env_args* and *env_kwargs* will be passed to :meth:`env_cls.create()`</span>
+<span class="sd">    factory function.</span>
 
-<span class="sd">    This coroutine finishes after :meth:`EnvManager.stop()` was called or when</span>
+<span class="sd">    This coroutine finishes after manager&#39;s :meth:`stop` was called or when</span>
 <span class="sd">    a :exc:`KeyboardInterrupt` is raised.</span>
 
 <span class="sd">    :param addr:</span>
 <span class="sd">        (HOST, PORT) for the new environment</span>
 
 <span class="sd">    :param env_cls:</span>
-<span class="sd">        Class of the environment, subclass of *Environment*.</span>
+<span class="sd">        Class of the environment, subclass of</span>
+<span class="sd">        :class:`~creamas.core.environment.Environment`.</span>
 
 <span class="sd">    :param mgr_cls:</span>
-<span class="sd">        Class of the manager agent, subclass of *EnvManager*.</span>
+<span class="sd">        Class of the manager agent, subclass of</span>
+<span class="sd">        :class:`~creamas.mp.EnvManager`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">env_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">as_coro</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">log_folder</span> <span class="o">=</span> <span class="n">env_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_folder&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>

@@ -240,13 +240,13 @@ ready for the simulation. Should be called after <code class="xref py py-meth do
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.spawn_nodes">
 <code class="descname">spawn_nodes</code><span class="sig-paren">(</span><em>spawn_cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.spawn_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.spawn_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Spawn all multi-environments on the nodes.</p>
+<dd><p>Spawn all multi-environments on the nodes using SSH.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>spawn_cmd</strong> (<em>int</em>) &#8211; str or list, command(s) used to spawn the environment on each node.
-If list, the parameter must contain one command for each node in
+If list, it must contain one command for each node in
 <em>nodes</em>, if str the same command is used for each node.</td>
 </tr>
 </tbody>
@@ -255,8 +255,8 @@ If list, the parameter must contain one command for each node in
 <p class="first admonition-title">Warning</p>
 <p class="last">The spawning process of the nodes assumes that the manager agent of
 each multi-environment (on each node) is initialized in the port
-given by the parameter <em>port</em> at the object&#8217;s initialization
-time.</p>
+given by the parameter <em>port</em> at the distributed environment&#8217;s
+initialization time.</p>
 </div>
 </dd></dl>
 
@@ -307,15 +307,22 @@ all the nodes are not ready yet.</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="environment.html#creamas.core.environment.Environment.is_ready" title="creamas.core.environment.Environment.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">creamas.core.environment.Environment.is_ready()</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment.is_ready" title="creamas.mp.MultiEnvironment.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvironment.is_ready()</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.EnvManager.is_ready" title="creamas.mp.EnvManager.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.EnvManager.is_ready()</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvManager.is_ready" title="creamas.mp.MultiEnvManager.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvManager.is_ready()</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="creamas.ds.DistributedEnvironment.env">
 <code class="descname">env</code><a class="headerlink" href="#creamas.ds.DistributedEnvironment.env" title="Permalink to this definition">¶</a></dt>
 <dd><p>Environment used to communicate with node managers.</p>
-<p>This simulation does not hold manager on its own by default, but it is
-easy to create one on your own, if you need the node manager&#8217;s to be
-able to communicate back to this simulation.</p>
+<p>The environment does not hold any agents by default, but it is easy to
+create a manager for it on your own, if the node managers need to
+be able to communicate back to this environment.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -325,7 +332,7 @@ able to communicate back to this simulation.</p>
 <p>These addresses are derived from <em>nodes</em> and <em>port</em> parameters
 given at the initialization time, and are used to communicate tasks
 (trigger agents) to the nodes. Each manager is assumed to be the
-first agent in its own manager environment.</p>
+first agent in its own managed environment.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -340,20 +347,23 @@ unexpected behavior.</p>
 
 <dl class="function">
 <dt id="creamas.ds.ssh_exec">
-<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a command on a given server using asynchronous SSH-connection.</p>
 <p>The method does not propagate exceptions raised during the SSH-connection,
-instead they are logged by <em>logger</em> as errors. The method will exit after
+instead, the exceptions are caught and returned. The method will exit after
 the first exception is raised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>server</strong> (<em>str</em>) &#8211; Address of the server</li>
 <li><strong>cmd</strong> (<em>str</em>) &#8211; Command to be executed</li>
-<li><strong>logger</strong> &#8211; Optional, logger for errors during the command execution.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(closed SSH-connection, exception)-tuple, if no exceptions are caught,
+the second value is <em>None</em>.</p>
 </td>
 </tr>
 </tbody>
@@ -362,7 +372,7 @@ the first exception is raised.</p>
 
 <dl class="function">
 <dt id="creamas.ds.ssh_exec_in_new_loop">
-<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec_in_new_loop</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec_in_new_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec_in_new_loop" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec_in_new_loop</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec_in_new_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec_in_new_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as <code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> but creates a new event loop and executes
 <code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> in that event loop.</p>
 </dd></dl>
