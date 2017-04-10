@@ -56,8 +56,8 @@ def ssh_exec_in_new_loop(server, cmd):
     task = ssh_exec(server, cmd)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(task)
-
+    ret = loop.run_until_complete(task)
+    return ret
 
 class DistributedEnvironment():
     '''Distributed environment which manages several nodes containing
@@ -184,11 +184,11 @@ class DistributedEnvironment():
         t = time.time()
         online = []
         while len(online) < len(self.manager_addrs):
-            if time.time() - t > timeout:
-                self.logger.info("Timeout while waiting for the nodes to "
-                                 "become online.")
-                return False
             for addr in self.manager_addrs:
+                if time.time() - t > timeout:
+                    self.logger.info("Timeout while waiting for the nodes to "
+                                     "become online.")
+                    return False
                 if addr not in online:
                     try:
                         r_manager = await self.env.connect(addr, timeout=1)
