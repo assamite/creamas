@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Multiprocessing functionality &mdash; Creamas 0.1.0 documentation</title>
+  <title>Multiprocessing functionality &mdash; Creamas 0.2.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
         <link rel="next" title="Distributed Systems" href="ds.html"/>
         <link rel="prev" title="Agents" href="agents.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -181,13 +181,13 @@ desired manager class to an instance of
 </div>
 <dl class="method">
 <dt id="creamas.mp.EnvManager.act">
-<code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.act" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">act</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>For consistency. Override in subclass if needed.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.add_candidate">
-<code class="descname">add_candidate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.add_candidate" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">add_candidate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.add_candidate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add candidate to the host manager&#8217;s list of candidates.</p>
 </dd></dl>
 
@@ -222,7 +222,7 @@ agent lists exclude this manager by default.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.get_artifacts">
-<code class="descname">get_artifacts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.get_artifacts" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_artifacts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.get_artifacts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all artifacts from the host environment.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -236,7 +236,7 @@ agent lists exclude this manager by default.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.get_older">
-<code class="descname">get_older</code><span class="sig-paren">(</span><em>addr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.get_older" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_older</code><span class="sig-paren">(</span><em>addr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.get_older" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make agent in <em>addr</em> to get older, i.e. advance its internal clock.</p>
 </dd></dl>
 
@@ -254,7 +254,7 @@ agent lists exclude this manager by default.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.is_ready">
-<code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.is_ready" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.is_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the managed environment is ready.</p>
 <p>This is a managing function for
 <code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code>.</p>
@@ -262,7 +262,7 @@ agent lists exclude this manager by default.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.report">
-<code class="descname">report</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.report" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">report</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Report message to the host manager.</p>
 </dd></dl>
 
@@ -282,7 +282,7 @@ agent lists exclude this manager by default.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.spawn_n">
-<code class="descname">spawn_n</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>n</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.spawn_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.spawn_n" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">spawn_n</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>n</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.spawn_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.spawn_n" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn <em>n</em> agents to the managed environment. This is a convenience
 function so that one does not have to repeatedly make connections to
 the environment to spawn multiple agents with the same parameters.</p>
@@ -298,7 +298,7 @@ stop_received on this agent to True.</p>
 
 <dl class="method">
 <dt id="creamas.mp.EnvManager.trigger_all">
-<code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.trigger_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#EnvManager.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.EnvManager.trigger_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger all agents in the managed environment to act once.</p>
 <p>This is a managing function for
 <code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code>.</p>
@@ -344,7 +344,7 @@ desired manager class to an instance of
 </div>
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.act">
-<code class="descname">act</code><span class="sig-paren">(</span><em>addr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.act" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">act</code><span class="sig-paren">(</span><em>addr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger agent in given <em>addr</em> to act.</p>
 </dd></dl>
 
@@ -356,14 +356,14 @@ desired manager class to an instance of
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.destroy">
-<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.destroy" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.destroy" title="Permalink to this definition">¶</a></dt>
 <dd><p>A managing function for
 <a class="reference internal" href="#creamas.mp.MultiEnvironment.trigger_all" title="creamas.mp.MultiEnvironment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.get_agents">
-<code class="descname">get_agents</code><span class="sig-paren">(</span><em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_agents" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_agents</code><span class="sig-paren">(</span><em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_agents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all agents in all the slave environments.</p>
 <p>This is a managing function for
 <a class="reference internal" href="#creamas.mp.MultiEnvironment.get_agents" title="creamas.mp.MultiEnvironment.get_agents"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvironment.get_agents()</span></code></a>.</p>
@@ -371,19 +371,19 @@ desired manager class to an instance of
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.get_candidates">
-<code class="descname">get_candidates</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_candidates" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_candidates</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_candidates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get candidates from the environment manager in <em>addr</em> manages.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.get_older">
-<code class="descname">get_older</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_older" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_older</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_older" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make agent in <em>addr</em> to get older, i.e. advance its internal clock.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.get_slave_agents">
-<code class="descname">get_slave_agents</code><span class="sig-paren">(</span><em>addr</em>, <em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_slave_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_slave_agents" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_slave_agents</code><span class="sig-paren">(</span><em>addr</em>, <em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.get_slave_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.get_slave_agents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get agents in the specified manager&#8217;s environment.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -414,27 +414,27 @@ desired manager class to an instance of
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.is_ready">
-<code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.is_ready" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.is_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>A managing function for
 <a class="reference internal" href="#creamas.mp.MultiEnvironment.is_ready" title="creamas.mp.MultiEnvironment.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.kill">
-<code class="descname">kill</code><span class="sig-paren">(</span><em>addr</em>, <em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.kill" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">kill</code><span class="sig-paren">(</span><em>addr</em>, <em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.kill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send stop command to the manager agent in a given address. This will
 shutdown the manager&#8217;s environment.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.set_host_manager">
-<code class="descname">set_host_manager</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.set_host_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.set_host_manager" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">set_host_manager</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.set_host_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.set_host_manager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set this manager as a host manager to the manager in <em>addr</em>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.spawn">
-<code class="descname">spawn</code><span class="sig-paren">(</span><em>addr</em>, <em>agent_cls</em>, <em>*agent_args</em>, <em>**agent_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.spawn" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">spawn</code><span class="sig-paren">(</span><em>addr</em>, <em>agent_cls</em>, <em>*agent_args</em>, <em>**agent_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.spawn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn an agent to an environment in a manager in the given address.</p>
 <p><em>agent_args</em> and <em>agent_kwargs</em> are passed to the manager doing to
 spawning to be used as the agent&#8217;s initialization parameters.</p>
@@ -457,7 +457,7 @@ spawning to be used as the agent&#8217;s initialization parameters.</p>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.spawn_n">
-<code class="descname">spawn_n</code><span class="sig-paren">(</span><em>addr</em>, <em>agent_cls</em>, <em>n</em>, <em>*agent_args</em>, <em>**agent_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.spawn_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.spawn_n" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">spawn_n</code><span class="sig-paren">(</span><em>addr</em>, <em>agent_cls</em>, <em>n</em>, <em>*agent_args</em>, <em>**agent_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.spawn_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.spawn_n" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as <a class="reference internal" href="#creamas.mp.MultiEnvManager.spawn" title="creamas.mp.MultiEnvManager.spawn"><code class="xref py py-meth docutils literal"><span class="pre">spawn()</span></code></a>, but spawn
 multiple agents with same initialization parameters.</p>
 <p>This should considerably reduce the time needed to spawn a large number
@@ -488,7 +488,7 @@ spawning to be used as the agent&#8217;s initialization parameters.</p>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvManager.trigger_all">
-<code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.trigger_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvManager.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvManager.trigger_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger all agents in the managed multi-environment to act.</p>
 <p>This is a managing function for
 <a class="reference internal" href="#creamas.mp.MultiEnvironment.trigger_all" title="creamas.mp.MultiEnvironment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code></a>.</p>
@@ -597,7 +597,7 @@ initialization other than spawning its slave environments.</p>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvironment.create_connection">
-<code class="descname">create_connection</code><span class="sig-paren">(</span><em>addr</em>, <em>addr2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.create_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.create_connection" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">create_connection</code><span class="sig-paren">(</span><em>addr</em>, <em>addr2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.create_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.create_connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create connection from agent in <em>addr</em> to agent in <em>addr2</em>.</p>
 <p>This does not create a connection the other way around.</p>
 </dd></dl>
@@ -685,15 +685,26 @@ parameter.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="creamas.mp.MultiEnvironment.get_votes">
+<em class="property">coroutine </em><code class="descname">get_votes</code><span class="sig-paren">(</span><em>addr</em>, <em>candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.get_votes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.get_votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get votes for <em>candidates</em> from a manager in <em>addr</em>.</p>
+<p>Manager should implement <code class="xref py py-meth docutils literal"><span class="pre">get_votes()</span></code>.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.EnvManager.get_votes()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="creamas.mp.MultiEnvironment.is_ready">
-<code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.is_ready" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.is_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the multi-environment has been fully initialized.</p>
 <p>This calls each slave environment managers&#8217; <code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code> and
 checks if the multi-environment itself is ready by calling
 <a class="reference internal" href="#creamas.mp.MultiEnvironment.check_ready" title="creamas.mp.MultiEnvironment.check_ready"><code class="xref py py-meth docutils literal"><span class="pre">check_ready()</span></code></a>.</p>
-<p>... seealso:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>:py:meth:`creamas.core.environment.Environment.is_ready`
-</pre></div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="environment.html#creamas.core.environment.Environment.is_ready" title="creamas.core.environment.Environment.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">creamas.core.environment.Environment.is_ready()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -754,7 +765,7 @@ in subclass.</p>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvironment.spawn">
-<code class="descname">spawn</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>*args</em>, <em>*</em>, <em>addr=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.spawn" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">spawn</code><span class="sig-paren">(</span><em>agent_cls</em>, <em>*args</em>, <em>*</em>, <em>addr=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.spawn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn a new agent.</p>
 <p>If <em>addr</em> is None, spawns the agent in the slave environment with
 currently smallest number of agents.</p>
@@ -777,16 +788,19 @@ currently smallest number of agents.</p>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvironment.trigger_act">
-<code class="descname">trigger_act</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.trigger_act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.trigger_act" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">trigger_act</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.trigger_act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.trigger_act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger agent in <em>addr</em> to act.</p>
-<p>This is very inefficient if used repeatedly. In case you want to
-trigger all agents in the slave environments to act, you should use
-<code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code>.</p>
+<p>This method is very inefficient if used repeatedly for a large number
+of agents.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#creamas.mp.MultiEnvironment.trigger_all" title="creamas.mp.MultiEnvironment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">creamas.mp.MultiEnvironment.trigger_all()</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.mp.MultiEnvironment.trigger_all">
-<code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.trigger_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#MultiEnvironment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.MultiEnvironment.trigger_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger all agents in all the slave environments to act
 asynchronously.</p>
 </dd></dl>
@@ -891,7 +905,7 @@ environments.</p>
 
 <dl class="function">
 <dt id="creamas.mp.start">
-<code class="descclassname">creamas.mp.</code><code class="descname">start</code><span class="sig-paren">(</span><em>addr</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>mgr_cls=&lt;class 'creamas.mp.EnvManager'&gt;</em>, <em>*env_args</em>, <em>**env_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.start" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descclassname">creamas.mp.</code><code class="descname">start</code><span class="sig-paren">(</span><em>addr</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>mgr_cls=&lt;class 'creamas.mp.EnvManager'&gt;</em>, <em>*env_args</em>, <em>**env_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/mp.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.mp.start" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#coroutine">Coroutine</a> that
 starts an environment with <code class="xref py py-class docutils literal"><span class="pre">mgr_cls</span></code> manager agent.</p>
 <p>The agent will connect to <em>addr</em> <code class="docutils literal"><span class="pre">('host',</span> <span class="pre">port)</span></code> and wait for commands
@@ -938,7 +952,7 @@ a <code class="xref py py-exc docutils literal"><span class="pre">KeyboardInterr
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2017, Simo Linkola.
 
     </p>
   </div>
@@ -960,7 +974,7 @@ a <code class="xref py py-exc docutils literal"><span class="pre">KeyboardInterr
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

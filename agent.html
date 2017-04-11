@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Agent &mdash; Creamas 0.1.0 documentation</title>
+  <title>Agent &mdash; Creamas 0.2.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
         <link rel="up" title="Core" href="core.html"/>
         <link rel="next" title="Artifact" href="artifact.html"/>
         <link rel="prev" title="Core" href="core.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -191,7 +191,7 @@ creative agents.</p>
 </table>
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.act">
-<code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">act</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger agent to act. <strong>Dummy method, override in subclass.</strong></p>
 <p>This function serves as the main function for the simulations, and
 is called for each agent on each iteration step of the simulation.</p>
@@ -271,7 +271,7 @@ initial attitude.</p>
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.ask_opinion">
-<code class="descname">ask_opinion</code><span class="sig-paren">(</span><em>addr</em>, <em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.ask_opinion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.ask_opinion" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">ask_opinion</code><span class="sig-paren">(</span><em>addr</em>, <em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.ask_opinion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.ask_opinion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ask agent&#8217;s opinion about artifact.</p>
 <p>The artifact object should be serializable by the environment.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -311,7 +311,7 @@ initial attitude.</p>
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.connect">
-<code class="descname">connect</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connect" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">connect</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to agent in given address using the agent&#8217;s environment.</p>
 <p>This is a shortcut to <code class="docutils literal"><span class="pre">agent.env.connect(addr)</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -359,7 +359,7 @@ artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> 
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.get_older">
-<code class="descname">get_older</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_older" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">get_older</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.get_older"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.get_older" title="Permalink to this definition">¶</a></dt>
 <dd><p>Age agent by one simulation step.</p>
 </dd></dl>
 
@@ -391,7 +391,7 @@ artifact <span class="math">\(A\)</span>, and <span class="math">\(w_i\)</span> 
 
 <dl class="method">
 <dt id="creamas.core.agent.CreativeAgent.random_connection">
-<code class="descname">random_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.random_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.random_connection" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">random_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/agent.html#CreativeAgent.random_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.agent.CreativeAgent.random_connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to random agent from current <strong>connections</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -590,7 +590,7 @@ name during its lifetime.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2017, Simo Linkola.
 
     </p>
   </div>
@@ -612,7 +612,7 @@ name during its lifetime.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

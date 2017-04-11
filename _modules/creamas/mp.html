@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.mp &mdash; Creamas 0.1.0 documentation</title>
+  <title>creamas.mp &mdash; Creamas 0.2.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Creamas 0.1.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Creamas 0.2.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -557,7 +557,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">add_candidate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
 
     <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
-    <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="n">candidates</span>
         <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">_gather_votes</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">votes</span>
 
@@ -627,7 +628,6 @@
 
 <span class="sd">        :param slave_mgr_cls:</span>
 <span class="sd">            Class of the slave environment managers.</span>
-
 
 <span class="sd">        :param str name: Name of the environment. Will be shown in logs.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -764,7 +764,7 @@
 <span class="sd">        checks if the multi-environment itself is ready by calling</span>
 <span class="sd">        :py:meth:`~creamas.mp.MultiEnvironment.check_ready`.</span>
 
-<span class="sd">        ... seealso::</span>
+<span class="sd">        .. seealso::</span>
 
 <span class="sd">            :py:meth:`creamas.core.environment.Environment.is_ready`</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -801,22 +801,20 @@
 <div class="viewcode-block" id="MultiEnvironment.trigger_act"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.trigger_act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Trigger agent in *addr* to act.</span>
 
-<span class="sd">        This is very inefficient if used repeatedly. In case you want to</span>
-<span class="sd">        trigger all agents in the slave environments to act, you should use</span>
-<span class="sd">        :py:meth:`trigger_all`.</span>
+<span class="sd">        This method is very inefficient if used repeatedly for a large number</span>
+<span class="sd">        of agents.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            :py:meth:`creamas.mp.MultiEnvironment.trigger_all`</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">addr</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;Skipping manager in </span><span class="si">{}</span><span class="s2"> from acting.&quot;</span>
-                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;Triggering agent in </span><span class="si">{}</span><span class="s2"> to act&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
-        <span class="n">r_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">get_older</span><span class="p">()</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">act</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_trigger_slave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_mgr_addr</span><span class="p">):</span>
-        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">slave_mgr_addr</span><span class="p">)</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">slave_mgr_addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret</span>
 
@@ -946,7 +944,7 @@
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
         <span class="n">vc</span> <span class="o">=</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">vc</span>
 
@@ -972,10 +970,18 @@
                   <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> valid candidates after get_agents used veto.&quot;</span>
                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)))</span></div>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiEnvironment.get_votes"><a class="viewcode-back" href="../../mp.html#creamas.mp.MultiEnvironment.get_votes">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get votes for *candidates* from a manager in *addr*.</span>
+
+<span class="sd">        Manager should implement :meth:`get_votes`.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            :meth:`creamas.mp.EnvManager.get_votes`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span>
         <span class="n">votes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_votes</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">votes</span>
+        <span class="k">return</span> <span class="n">votes</span></div>
 
     <span class="k">def</span> <span class="nf">_gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1313,7 +1319,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2017, Simo Linkola.
 
     </p>
   </div>
@@ -1335,7 +1341,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

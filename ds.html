@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Distributed Systems &mdash; Creamas 0.1.0 documentation</title>
+  <title>Distributed Systems &mdash; Creamas 0.2.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
+    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
         <link rel="up" title="API Documentation" href="api.html"/>
         <link rel="next" title="Features" href="features.html"/>
         <link rel="prev" title="Multiprocessing functionality" href="mp.html"/> 
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -228,7 +228,7 @@ login credentials.</li>
 
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.prepare_nodes">
-<code class="descname">prepare_nodes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.prepare_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.prepare_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">prepare_nodes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.prepare_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.prepare_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare nodes (and slave environments and agents) so that they are
 ready for the simulation. Should be called after <code class="xref py py-meth docutils literal"><span class="pre">wait_nodes()</span></code>.</p>
 <div class="admonition note">
@@ -262,7 +262,7 @@ initialization time.</p>
 
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.stop_nodes">
-<code class="descname">stop_nodes</code><span class="sig-paren">(</span><em>timeout=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.stop_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.stop_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">stop_nodes</code><span class="sig-paren">(</span><em>timeout=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.stop_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.stop_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop all the nodes by sending a stop-message to their managers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -279,7 +279,7 @@ is not halted.</td>
 
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.trigger_all">
-<code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.trigger_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.trigger_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger all agents in all the nodes to act asynchronously.</p>
 <p>This method makes a connection to each manager in <em>manager_addrs</em>
 and asynchronously executes <code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code> in all of them.</p>
@@ -293,7 +293,7 @@ and asynchronously executes <code class="xref py py-meth docutils literal"><span
 
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.wait_nodes">
-<code class="descname">wait_nodes</code><span class="sig-paren">(</span><em>timeout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.wait_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.wait_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descname">wait_nodes</code><span class="sig-paren">(</span><em>timeout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.wait_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.wait_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wait until all nodes are ready or timeout expires. Should be called
 after <code class="xref py py-meth docutils literal"><span class="pre">spawn_nodes()</span></code>.</p>
 <p>Node is assumed ready when its managers <code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code>-method
@@ -347,7 +347,7 @@ unexpected behavior.</p>
 
 <dl class="function">
 <dt id="creamas.ds.ssh_exec">
-<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a command on a given server using asynchronous SSH-connection.</p>
 <p>The method does not propagate exceptions raised during the SSH-connection,
 instead, the exceptions are caught and returned. The method will exit after
@@ -398,7 +398,7 @@ the second value is <em>None</em>.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2017, Simo Linkola.
 
     </p>
   </div>
@@ -420,7 +420,7 @@ the second value is <em>None</em>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
