@@ -23,7 +23,7 @@ be used to build any types of agent-based systems. If you are looking for a
 minimalistic MAS-library, check out `aiomas
 <https://aiomas.readthedocs.io/en/latest/>`_ on top of which Creamas is built.
 
-.. note::
+.. attention::
 
-	Creamas is developed with Python 3.5., and will not work on earlier Python
+	Creamas is developed with Python 3.5, and will not work on earlier Python
 	versions; not now or in the future.
