@@ -11,11 +11,19 @@ Creamas - Creative Multi-Agent Systems
     :alt: Coverage
     :scale: 100%
 
-Library for Creative Multi-Agent Systems.
+.. image:: https://readthedocs.org/projects/creamas/badge/?version=latest
+	:target: http://creamas.readthedocs.io/en/latest/?badge=latest
+	:alt: Documentation Status
 
-See project's github-pages for `documentation <https://assamite.github.io/creamas/>`_.
 
-**Important!** *Considering the project's early development status, the documentation 
-might not reflect the code's current functionality at times.*
+Creamas is a library designed to help creating multi-agent systems in the field
+of computational creativity. However, the requirements for the multi-agent
+systems (and agents especially) are not strict, and therefore the library can
+be used to build any types of agent-based systems. If you are looking for a
+minimalistic MAS-library, check out `aiomas
+<https://aiomas.readthedocs.io/en/latest/>`_ on top of which Creamas is built.
 
-Developed with Python 3.5.
+.. note::
+
+	Creamas is developed with Python 3.5., and will not work on earlier Python
+	versions; not now or in the future.
