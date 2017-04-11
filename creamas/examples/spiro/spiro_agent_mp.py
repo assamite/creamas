@@ -12,6 +12,12 @@ France.
 
 This implementation uses ``creamas.mp``-module for multiprocessing. It should
 make the code substantially faster to run on machines with several cores.
+
+.. note::
+
+    This example is research code and provided as is. Therefore, the quality
+    of the code and its documentation is insufficient.
+
 '''
 import os
 import sys

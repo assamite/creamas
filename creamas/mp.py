@@ -421,7 +421,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         self.menv.add_candidate(artifact)
 
     @aiomas.expose
-    def get_votes(self, addr, candidates):
+    def get_votes(self, candidates):
+        self.menv._candidates = candidates
         votes = self.menv._gather_votes()
         return votes
 
@@ -491,7 +492,6 @@ class MultiEnvironment():
 
         :param slave_mgr_cls:
             Class of the slave environment managers.
-
 
         :param str name: Name of the environment. Will be shown in logs.
         '''
@@ -628,7 +628,7 @@ class MultiEnvironment():
         checks if the multi-environment itself is ready by calling
         :py:meth:`~creamas.mp.MultiEnvironment.check_ready`.
 
-        ... seealso::
+        .. seealso::
 
             :py:meth:`creamas.core.environment.Environment.is_ready`
         '''
@@ -665,22 +665,20 @@ class MultiEnvironment():
     async def trigger_act(self, addr):
         '''Trigger agent in *addr* to act.
 
-        This is very inefficient if used repeatedly. In case you want to
-        trigger all agents in the slave environments to act, you should use
-        :py:meth:`trigger_all`.
+        This method is very inefficient if used repeatedly for a large number
+        of agents.
+
+        .. seealso::
+
+            :py:meth:`creamas.mp.MultiEnvironment.trigger_all`
         '''
-        if addr.rsplit("/", 1)[1] == '0':
-            self._log(logging.DEBUG, "Skipping manager in {} from acting."
-                      .format(addr))
-            return
-        self._log(logging.DEBUG, "Triggering agent in {} to act".format(addr))
-        r_agent = await self.env.connect(addr)
+        r_agent = await self.env.connect(addr, timeout=TIMEOUT)
         await r_agent.get_older()
         ret = await r_agent.act()
         return ret
 
     async def _trigger_slave(self, slave_mgr_addr):
-        r_manager = await self._env.connect(slave_mgr_addr)
+        r_manager = await self.env.connect(slave_mgr_addr, timeout=TIMEOUT)
         ret = await r_manager.trigger_all()
         return ret
 
@@ -810,7 +808,7 @@ class MultiEnvironment():
                   .format(artifact))
 
     async def _validate_candidates(self, addr):
-        remote_manager = await self.env.connect(addr)
+        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         vc = remote_manager.validate_candidates(self.candidates)
         return vc
 
@@ -837,6 +835,14 @@ class MultiEnvironment():
                   .format(len(self.candidates)))
 
     async def get_votes(self, addr, candidates):
+        '''Get votes for *candidates* from a manager in *addr*.
+
+        Manager should implement :meth:`get_votes`.
+
+        .. seealso::
+
+            :meth:`creamas.mp.EnvManager.get_votes`
+        '''
         r_manager = await self.env.connect(addr, timeout=TIMEOUT)
         votes = await r_manager.get_votes(candidates)
         return votes

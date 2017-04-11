@@ -9,6 +9,12 @@ Linkola, S., Takala, T., and Toivonen, H. 2016. Novelty-Seeking Multi-Agent
 Systems. In The Proceedings of The Seventh International Conference on
 Computational Creativity (ICCC2016), 1-8. Paris, France. Sony CSL Paris,
 France.
+
+.. note::
+
+    This example is research code and provided as is. Therefore, the quality
+    of the code and its documentation is insufficient.
+
 '''
 import os
 import sys
