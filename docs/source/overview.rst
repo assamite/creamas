@@ -21,21 +21,21 @@ parameter.
 .. code-block:: python
 
 	from creamas.core import CreativeAgent, Environment
-	# Create environment to http://localhost:5555/
+	# Create environment to tcp://localhost:5555/
 	env = Environment.create(('localhost', 5555))
-	# Create agent with address http://localhost:5555/0
+	# Create agent with address tcp://localhost:5555/0
 	a1 = CreativeAgent(env)
-	# Create agent with address http://localhost:5555/1
+	# Create agent with address tcp://localhost:5555/1
 	a2 = CreativeAgent(env)
 
 The fundamental design principle guiding the development of Creamas is that
 each agent creates artifacts in some domain(s) and evaluates them. A lot of the
 current functionality is geared towards this goal. However, Creamas does not
 take a stand on the design of the  multi-agent systems and is therefore quite
-agnostic of the actual agent implementations.
+agnostic of the agent implementations.
 
 Exchanging artifacts and information about them is one of the main tasks of
-the agents. An agent can also ask other agent's opinions about their own
+the agents. An agent can ask other agent's opinions about their own
 artifacts or other artifacts they have seen. This allows the agent to accumulate
 knowledge about the preferences of other agents, which may alter the agent's
 own activity.

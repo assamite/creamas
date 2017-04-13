@@ -388,7 +388,7 @@ class CreativeAgent(aiomas.Agent):
         return s / w, None
 
     async def ask_opinion(self, addr, artifact):
-        '''Ask agent's opinion about artifact.
+        '''Ask agent's opinion about an artifact.
 
         The artifact object should be serializable by the environment.
 
@@ -398,11 +398,9 @@ class CreativeAgent(aiomas.Agent):
         :returns: agent's evaluation of the artifact
         :rtype: float
         '''
-        remote_agent = await self.container.connect(addr)
-        pkl = pickle.dumps(artifact)
-        ret = await remote_agent.evaluate_pickle(pkl)
-        ev = pickle.loads(ret)
-        return ev
+        remote_agent = await self.env.connect(addr)
+        ret = await remote_agent.evaluate(artifact)
+        return ret
 
     @aiomas.expose
     async def act(self, *args, **kwargs):
