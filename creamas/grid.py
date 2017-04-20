@@ -119,7 +119,8 @@ class GridEnvironment(Environment):
     @property
     def gs(self):
         '''Size of the grid as a 2-tuple. Changing the size of the grid after
-        spawning any agents in the environment may cause unexpected behavior.
+        spawning any agents in the environment will clear the grid, but does
+        not remove the agents from the environment.
         '''
         return self._gs
 
@@ -141,6 +142,8 @@ class GridEnvironment(Environment):
 
     @property
     def grid(self):
+        '''The agents in the grid. 2D-list with the same size as **gs**.
+        '''
         return self._grid
 
     @property
@@ -164,10 +167,12 @@ class GridEnvironment(Environment):
         return self.is_full()
 
     def is_full(self):
-        ''':class:`GridEnvironment` is full when it is fully populated with
-        agents.
+        ''':class:`GridEnvironment` is full when its **grid** is fully
+        populated with agents.
 
-        :returns: True if the grid is full, False otherwise.
+        :returns:
+            True if the grid is full, False otherwise. Will also return False
+            for uninitialized grids with (0,0) grid size.
         '''
         if len(self.grid) == 0:
             return False
@@ -180,6 +185,11 @@ class GridEnvironment(Environment):
 
     def add_to_grid(self, agent):
         '''Add agent to the next available spot in the grid.
+
+        :returns:
+            (x,y) of the agent in the grid. This is the agent's overall
+            coordinate in the grand grid (i.e. the actual coordinate of the
+            agent w.t.r **origin**).
 
         :raises: `ValueError` if the grid is full.
         '''
@@ -197,6 +207,12 @@ class GridEnvironment(Environment):
     def insert_to_grid(self, xy, agent):
         '''Insert agent into the grid. Replaces an existing agent in the grid,
         but does no remove it from the environment.
+
+        :param tuple xy:
+            (x,y) of the agent in the grand grid (i.e., taking account the
+            **origin**).
+
+        :param agent: subclass of :class:`~creamas.grid.GridAgent`
         '''
         i = xy[0] - self.origin[0]
         j = xy[1] - self.origin[1]
@@ -229,8 +245,10 @@ class GridEnvironment(Environment):
         return addr
 
     async def set_agent_neighbors(self):
-        '''Set neighbors for each agent in each cardinal direction. Assumes
-        that the neighbors of this grid environment have already been set.
+        '''Set neighbors for each agent in each cardinal direction.
+
+        This method assumes that the neighboring :class:`GridEnvironment` of
+        this grid environment have already been set.
         '''
         for i in range(len(self.grid)):
             for j in range(len(self.grid[0])):
@@ -326,7 +344,7 @@ class GridEnvManager(EnvManager):
 
 
 class GridMultiEnvironment(MultiEnvironment):
-    '''Multi-environment which stacks its :py:class:`GridEnvironment`s
+    '''Multi-environment which stacks its slave :py:class:`GridEnvironment`s
     horizontally.
     '''
 
@@ -360,6 +378,8 @@ class GridMultiEnvironment(MultiEnvironment):
 
     @property
     def gs(self):
+        '''Grid size for each slave environment.
+        '''
         return self._gs
 
     @property
@@ -443,6 +463,16 @@ class GridMultiEnvironment(MultiEnvironment):
             r_manager = await self.env.connect(addr)
             await r_manager.set_agent_neighbors()
 
+    async def set_neighbors(self):
+        '''Set neighbors for all slave environments and agents in them.
+
+        This is a convenience function for calling
+        :meth:`~creamas.grid.GridMultiEnvironment.set_slave_neighbors` and
+        :meth:`~creamas.grid.GridMultiEnvironment.set_agent_neighbors`.
+        '''
+        await self.set_slave_neighbors()
+        await self.set_agent_neighbors()
+
     async def _populate_slave(self, addr, agent_cls, n, *args, **kwargs):
         r_manager = await self.env.connect(addr, timeout=5)
         ret = await r_manager.spawn_n(agent_cls, n, *args, **kwargs)
@@ -450,8 +480,8 @@ class GridMultiEnvironment(MultiEnvironment):
 
     async def populate(self, agent_cls, *args, **kwargs):
         '''Populate all the slave grid environments with agents. Assumes that
-        no agents have been spawned yet to the slave environment grids (this
-        excludes the managers).
+        no agents have been spawned yet to the slave environment grids
+        (excluding the managers).
         '''
         n = self.gs[0] * self.gs[1]
         tasks = []
@@ -502,24 +532,27 @@ class GridMultiEnvManager(MultiEnvManager):
 
     @aiomas.expose
     async def set_slave_neighbors(self):
-        '''Set neighbor environments for all the slave environments. Assumes
-        that the neighboring multi-environments are set for the managed
-        multi-environment.
+        '''Set neighbor environments for all the slave environments. 
+
+        This is a managing function for
+        :meth:`creamas.grid.GridMultiEnvironment.set_slave_neighbors`.
         '''
         await self.menv.set_slave_neighbors()
 
     @aiomas.expose
     async def set_agent_neighbors(self):
+        '''Set neighbor agents for all the agents in the slave environments. 
+
+        This is a managing function for
+        :meth:`creamas.grid.GridMultiEnvironment.set_agent_neighbors`.
+        '''
         await self.menv.set_agent_neighbors()
 
     @aiomas.expose
     async def set_neighbors(self):
         '''Set neighbors for all the agents in all the slave environments.
 
-        Assumes that the multi-environment managed by this agent has its
-        multi-environment neighbors set. First sets the neighbors for all
-        the slave environments, and then sets neighbors for all the agents
-        in them.
+        This is a managing function for
+        :meth:`creamas.grid.GridMultiEnvironment.set_neighbors`.
         '''
-        await self.set_slave_neighbors()
-        await self.set_agent_neighbors()
+        await self.menv.set_neighbors()

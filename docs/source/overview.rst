@@ -6,17 +6,18 @@ on, multi-agent systems in the field of `computational creativity
 <https://en.wikipedia.org/wiki/Computational_creativity>`_. Creamas is built
 on top of `aiomas <http://aiomas.readthedocs.org/en/latest/>`_, which provides
 a communication route (RPC) between agents and the basic agent and container
-(environment) implementations.
+implementations.
 
 Agents And Environments
 -----------------------
 
-Agents in Creamas focus on building artifacts and evaluating them. Each agent
-belongs to an environment, which also serves as a communication route between
-agents. Environment can also hold other information shared by all agents, or,
-e.g. provide means for the agents to communicate with nearby agents in a
-3D-space. Agents are created by giving the environment as an initialization
-parameter.
+Agents (:class:`~creamas.CreativeAgent`) in Creamas focus on building artifacts
+and evaluating them. Each agent belongs to :class:`~creamas.Environment`, which
+also serves as a communication route between the agents.
+Environment can also hold other information shared by
+all agents, or, e.g. provide means for the agents to communicate with nearby
+agents in a 2D-grid. Agents are created by giving the environment as an
+initialization parameter.
 
 .. code-block:: python
 
@@ -29,20 +30,28 @@ parameter.
 	a2 = CreativeAgent(env)
 
 The fundamental design principle guiding the development of Creamas is that
-each agent creates artifacts in some domain(s) and evaluates them. A lot of the
-current functionality is geared towards this goal. However, Creamas does not
-take a stand on the design of the  multi-agent systems and is therefore quite
-agnostic of the agent implementations.
+each agent creates artifacts (:class:`~creamas.Artifact`) in some domain(s) and
+evaluates them. A lot of the current functionality is geared towards this goal.
+
+.. note::
+
+	Creamas does not take a stand on the design of the multi-agent systems or
+	individual agents and is quite agnostic of the agent implementations.
+	Therefore, Creamas can be used to develop arbitrary
+	agent societies, but you might want to take a look at `aiomas
+	<http://aiomas.readthedocs.org/en/latest/>`_ if you do not need any of
+	the additional functionality provided by Creamas.
 
 Exchanging artifacts and information about them is one of the main tasks of
-the agents. An agent can ask other agent's opinions about their own
-artifacts or other artifacts they have seen. This allows the agent to accumulate
+the agents. An agent can ask other agent's opinions about its own
+artifacts or other artifacts it has seen. This allows the agent to accumulate
 knowledge about the preferences of other agents, which may alter the agent's
-own activity.
+own behavior. The basic interagent communication requires the agent to know the
+other agent's (tcp) address.
 
 .. code-block:: python
 
-	# This is a toy example. Code won't work off the shelf as the agent's don't
+	# This is a toy example. Code won't work off the shelf as the agents don't
 	# have any evaluation methods, which we will see in the next section.
 	from creamas.core import Artifact
 	# Create some artifact.

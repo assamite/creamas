@@ -23,7 +23,7 @@ import asyncssh
 from creamas import Environment
 
 
-async def ssh_exec(server, cmd):
+async def ssh_exec(server, cmd, **ssh_kwargs):
     '''Execute a command on a given server using asynchronous SSH-connection.
 
     The method does not propagate exceptions raised during the SSH-connection,
@@ -33,6 +33,12 @@ async def ssh_exec(server, cmd):
     :param str server: Address of the server
     :param str cmd: Command to be executed
 
+    :param ssh_kwargs:
+        Any additional SSH-connection arguments, as specified by
+        :meth:`asyncssh.connect`. See `asyncssh documentation
+        <http://asyncssh.readthedocs.io/en/latest/api.html#connect>`_ for
+        details.
+
     :returns:
         (closed SSH-connection, exception)-tuple, if no exceptions are caught,
         the second value is *None*.
@@ -41,7 +47,7 @@ async def ssh_exec(server, cmd):
     try:
         # Setting known_hosts to None is an evil to do, but in this exercise we
         # do not care about it.
-        conn = await asyncssh.connect(server, known_hosts=None)
+        conn = await asyncssh.connect(server, **ssh_kwargs)
         ret = await conn.run(cmd)
         conn.close()
     except:
@@ -49,11 +55,11 @@ async def ssh_exec(server, cmd):
     return (ret, None)
 
 
-def ssh_exec_in_new_loop(server, cmd):
+def ssh_exec_in_new_loop(server, cmd, **ssh_kwargs):
     '''Same as :func:`ssh_exec` but creates a new event loop and executes
     :func:`ssh_exec` in that event loop.
     '''
-    task = ssh_exec(server, cmd)
+    task = ssh_exec(server, cmd, **ssh_kwargs)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     ret = loop.run_until_complete(task)
@@ -214,13 +220,19 @@ class DistributedEnvironment():
 
         return manager_addrs
 
-    def spawn_nodes(self, spawn_cmd):
+    def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
         '''Spawn all multi-environments on the nodes using SSH.
 
         :param int spawn_cmd:
             str or list, command(s) used to spawn the environment on each node.
             If list, it must contain one command for each node in
             *nodes*, if str the same command is used for each node.
+
+        :param ssh_kwargs:
+            Any additional SSH-connection arguments, as specified by
+            :meth:`asyncssh.connect`. See `asyncssh documentation
+            <http://asyncssh.readthedocs.io/en/latest/api.html#connect>`_ for
+            details.
 
         .. warning::
             The spawning process of the nodes assumes that the manager agent of
@@ -236,7 +248,8 @@ class DistributedEnvironment():
             else:
                 cmd = spawn_cmd
             args = [node, cmd]
-            ret = pool.apply_async(ssh_exec_in_new_loop, args=args)
+            ret = pool.apply_async(ssh_exec_in_new_loop, args=args,
+                                   kwds=ssh_kwargs)
             rets.append(ret)
         self._pool = pool
         self._r = rets

@@ -3,7 +3,7 @@
     :platform: Unix
 
 Agent module holds **CreativeAgent** implementation, a subclass of
-``aiomas.Agent``, which holds basic functionality thought to be shared by all
+``aiomas.Agent``, which holds basic functionality thought to be shared by
 creative agents.
 '''
 import logging
@@ -290,8 +290,8 @@ class CreativeAgent(aiomas.Agent):
             return False
 
     def add_connection(self, addr, attitude=0.0):
-        '''Added agent with given address to current **connections** with given
-        initial attitude.
+        '''Add an agent with given address to current **connections** with
+        given initial attitude.
 
         Does nothing if agent is already in **connections**.
 
@@ -419,10 +419,16 @@ class CreativeAgent(aiomas.Agent):
         Candidate validation should prune unwanted artifacts from the overall
         candidate set. Agent can use its own reasoning to validate the
         given candidates. The method should return a subset of the given
-        *candidates* list containing the validated artifacts (i.e. the
+        candidates list containing the validated artifacts (i.e. the
         artifacts that are not pruned).
 
-        This basic implementation returns the given candidate list as is.
+        .. note::
+            This basic implementation returns the given candidate list as is.
+            Override this function in the subclass for the appropriate
+            validation procedure.
+
+        :param candidates: A list of candidate artifacts
+        :returns: The validated artifacts, a subset of given candidates
         '''
         return candidates
 
@@ -430,14 +436,15 @@ class CreativeAgent(aiomas.Agent):
     def vote(self, candidates):
         '''Rank artifact candidates.
 
-        The voting is needed for the agents living in societies using social
+        The voting is needed for the agents living in societies using
         social decision making. The function should return a sorted list
         of (candidate, evaluation)-tuples. Depending on the social choice
         function used, the evaluation might be omitted from the actual decision
         making, or only a number of (the highest ranking) candidates may be
         used.
 
-        This basic implementation ranks candidates based on :meth:`evaluate`.
+        This basic implementation ranks candidates based on
+        :meth:`~creamas.core.agent.CreativeAgent.evaluate`.
 
         :param candidates:
             list of :py:class:`~creamas.core.artifact.Artifact` objects to be
