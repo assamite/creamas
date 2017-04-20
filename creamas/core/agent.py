@@ -8,7 +8,6 @@ creative agents.
 '''
 import logging
 import operator
-import pickle
 from random import choice
 import re
 

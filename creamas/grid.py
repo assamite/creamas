@@ -532,7 +532,7 @@ class GridMultiEnvManager(MultiEnvManager):
 
     @aiomas.expose
     async def set_slave_neighbors(self):
-        '''Set neighbor environments for all the slave environments. 
+        '''Set neighbor environments for all the slave environments.
 
         This is a managing function for
         :meth:`creamas.grid.GridMultiEnvironment.set_slave_neighbors`.
@@ -541,7 +541,7 @@ class GridMultiEnvManager(MultiEnvManager):
 
     @aiomas.expose
     async def set_agent_neighbors(self):
-        '''Set neighbor agents for all the agents in the slave environments. 
+        '''Set neighbor agents for all the agents in the slave environments.
 
         This is a managing function for
         :meth:`creamas.grid.GridMultiEnvironment.set_agent_neighbors`.
