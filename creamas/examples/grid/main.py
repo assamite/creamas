@@ -97,7 +97,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self._ngs = ngs
         self.grid = self._make_node_grid(ngs, self.manager_addrs)
         self.cmds = self._build_cmds(port, n_slaves, gs, agent_cls, folder)
-        self.spawn_nodes(self.cmds)
+        self.spawn_nodes(self.cmds, known_hosts=None)
 
     def _make_node_grid(self, ngs, manager_addrs):
         assert ngs[0]*ngs[1] == len(manager_addrs)
