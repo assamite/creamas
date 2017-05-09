@@ -1,8 +1,14 @@
 from setuptools import setup, find_packages
+import re
+
+# Parse version number from creamas/__init__.py to keep it in one place.
+__version__ = re.search(
+    r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+    open('creamas/__init__.py').read()).group(1)
 
 setup(
     name='creamas',
-    version='0.2.1',
+    version=__version__,
     author='Simo Linkola',
     author_email='simo.linkola at gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),
