@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
@@ -239,15 +240,21 @@ ready for the simulation. Should be called after <code class="xref py py-meth do
 
 <dl class="method">
 <dt id="creamas.ds.DistributedEnvironment.spawn_nodes">
-<code class="descname">spawn_nodes</code><span class="sig-paren">(</span><em>spawn_cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.spawn_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.spawn_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">spawn_nodes</code><span class="sig-paren">(</span><em>spawn_cmd</em>, <em>**ssh_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#DistributedEnvironment.spawn_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.DistributedEnvironment.spawn_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn all multi-environments on the nodes using SSH.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>spawn_cmd</strong> (<em>int</em>) &#8211; str or list, command(s) used to spawn the environment on each node.
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spawn_cmd</strong> (<em>int</em>) &#8211; str or list, command(s) used to spawn the environment on each node.
 If list, it must contain one command for each node in
-<em>nodes</em>, if str the same command is used for each node.</td>
+<em>nodes</em>, if str the same command is used for each node.</li>
+<li><strong>ssh_kwargs</strong> &#8211; Any additional SSH-connection arguments, as specified by
+<code class="xref py py-meth docutils literal"><span class="pre">asyncssh.connect()</span></code>. See <a class="reference external" href="http://asyncssh.readthedocs.io/en/latest/api.html#connect">asyncssh documentation</a> for
+details.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -347,7 +354,7 @@ unexpected behavior.</p>
 
 <dl class="function">
 <dt id="creamas.ds.ssh_exec">
-<em class="property">coroutine </em><code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
+<em class="property">coroutine </em><code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>**ssh_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a command on a given server using asynchronous SSH-connection.</p>
 <p>The method does not propagate exceptions raised during the SSH-connection,
 instead, the exceptions are caught and returned. The method will exit after
@@ -359,6 +366,10 @@ the first exception is raised.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>server</strong> (<em>str</em>) &#8211; Address of the server</li>
 <li><strong>cmd</strong> (<em>str</em>) &#8211; Command to be executed</li>
+<li><strong>ssh_kwargs</strong> &#8211; <p>Any additional SSH-connection arguments, as specified by
+<code class="xref py py-meth docutils literal"><span class="pre">asyncssh.connect()</span></code>. See <a class="reference external" href="http://asyncssh.readthedocs.io/en/latest/api.html#connect">asyncssh documentation</a> for
+details.</p>
+</li>
 </ul>
 </td>
 </tr>
@@ -372,7 +383,7 @@ the second value is <em>None</em>.</p>
 
 <dl class="function">
 <dt id="creamas.ds.ssh_exec_in_new_loop">
-<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec_in_new_loop</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec_in_new_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec_in_new_loop" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">creamas.ds.</code><code class="descname">ssh_exec_in_new_loop</code><span class="sig-paren">(</span><em>server</em>, <em>cmd</em>, <em>**ssh_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/ds.html#ssh_exec_in_new_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.ds.ssh_exec_in_new_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as <code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> but creates a new event loop and executes
 <code class="xref py py-func docutils literal"><span class="pre">ssh_exec()</span></code> in that event loop.</p>
 </dd></dl>

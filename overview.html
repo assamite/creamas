@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
@@ -146,35 +147,43 @@
 on, multi-agent systems in the field of <a class="reference external" href="https://en.wikipedia.org/wiki/Computational_creativity">computational creativity</a>. Creamas is built
 on top of <a class="reference external" href="http://aiomas.readthedocs.org/en/latest/">aiomas</a>, which provides
 a communication route (RPC) between agents and the basic agent and container
-(environment) implementations.</p>
+implementations.</p>
 <div class="section" id="agents-and-environments">
 <h2>Agents And Environments<a class="headerlink" href="#agents-and-environments" title="Permalink to this headline">¶</a></h2>
-<p>Agents in Creamas focus on building artifacts and evaluating them. Each agent
-belongs to an environment, which also serves as a communication route between
-agents. Environment can also hold other information shared by all agents, or,
-e.g. provide means for the agents to communicate with nearby agents in a
-3D-space. Agents are created by giving the environment as an initialization
-parameter.</p>
+<p>Agents (<code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code>) in Creamas focus on building artifacts
+and evaluating them. Each agent belongs to <code class="xref py py-class docutils literal"><span class="pre">Environment</span></code>, which
+also serves as a communication route between the agents.
+Environment can also hold other information shared by
+all agents, or, e.g. provide means for the agents to communicate with nearby
+agents in a 2D-grid. Agents are created by giving the environment as an
+initialization parameter.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span>
-<span class="c1"># Create environment to http://localhost:5555/</span>
+<span class="c1"># Create environment to tcp://localhost:5555/</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="o">.</span><span class="n">create</span><span class="p">((</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
-<span class="c1"># Create agent with address http://localhost:5555/0</span>
+<span class="c1"># Create agent with address tcp://localhost:5555/0</span>
 <span class="n">a1</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-<span class="c1"># Create agent with address http://localhost:5555/1</span>
+<span class="c1"># Create agent with address tcp://localhost:5555/1</span>
 <span class="n">a2</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The fundamental design principle guiding the development of Creamas is that
-each agent creates artifacts in some domain(s) and evaluates them. A lot of the
-current functionality is geared towards this goal. However, Creamas does not
-take a stand on the design of the  multi-agent systems and is therefore quite
-agnostic of the actual agent implementations.</p>
+each agent creates artifacts (<code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code>) in some domain(s) and
+evaluates them. A lot of the current functionality is geared towards this goal.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Creamas does not take a stand on the design of the multi-agent systems or
+individual agents and is quite agnostic of the agent implementations.
+Therefore, Creamas can be used to develop arbitrary
+agent societies, but you might want to take a look at <a class="reference external" href="http://aiomas.readthedocs.org/en/latest/">aiomas</a> if you do not need any of
+the additional functionality provided by Creamas.</p>
+</div>
 <p>Exchanging artifacts and information about them is one of the main tasks of
-the agents. An agent can also ask other agent&#8217;s opinions about their own
-artifacts or other artifacts they have seen. This allows the agent to accumulate
+the agents. An agent can ask other agent&#8217;s opinions about its own
+artifacts or other artifacts it has seen. This allows the agent to accumulate
 knowledge about the preferences of other agents, which may alter the agent&#8217;s
-own activity.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># This is a toy example. Code won&#39;t work off the shelf as the agent&#39;s don&#39;t</span>
+own behavior. The basic interagent communication requires the agent to know the
+other agent&#8217;s (tcp) address.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># This is a toy example. Code won&#39;t work off the shelf as the agents don&#39;t</span>
 <span class="c1"># have any evaluation methods, which we will see in the next section.</span>
 <span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">Artifact</span>
 <span class="c1"># Create some artifact.</span>

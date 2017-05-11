@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Documentation</a></li>
 </ul>
 
@@ -139,12 +140,11 @@
 <span class="sd">    :platform: Unix</span>
 
 <span class="sd">Agent module holds **CreativeAgent** implementation, a subclass of</span>
-<span class="sd">``aiomas.Agent``, which holds basic functionality thought to be shared by all</span>
+<span class="sd">``aiomas.Agent``, which holds basic functionality thought to be shared by</span>
 <span class="sd">creative agents.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">choice</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -426,8 +426,8 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="CreativeAgent.add_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">attitude</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Added agent with given address to current **connections** with given</span>
-<span class="sd">        initial attitude.</span>
+        <span class="sd">&#39;&#39;&#39;Add an agent with given address to current **connections** with</span>
+<span class="sd">        given initial attitude.</span>
 
 <span class="sd">        Does nothing if agent is already in **connections**.</span>
 
@@ -524,7 +524,7 @@
         <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="CreativeAgent.ask_opinion"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.ask_opinion">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Ask agent&#39;s opinion about artifact.</span>
+        <span class="sd">&#39;&#39;&#39;Ask agent&#39;s opinion about an artifact.</span>
 
 <span class="sd">        The artifact object should be serializable by the environment.</span>
 
@@ -534,11 +534,9 @@
 <span class="sd">        :returns: agent&#39;s evaluation of the artifact</span>
 <span class="sd">        :rtype: float</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-        <span class="n">pkl</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate_pickle</span><span class="p">(</span><span class="n">pkl</span><span class="p">)</span>
-        <span class="n">ev</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ev</span></div>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
 
     <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
 <div class="viewcode-block" id="CreativeAgent.act"><a class="viewcode-back" href="../../../create_sim.html#creamas.core.agent.CreativeAgent.act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -557,10 +555,16 @@
 <span class="sd">        Candidate validation should prune unwanted artifacts from the overall</span>
 <span class="sd">        candidate set. Agent can use its own reasoning to validate the</span>
 <span class="sd">        given candidates. The method should return a subset of the given</span>
-<span class="sd">        *candidates* list containing the validated artifacts (i.e. the</span>
+<span class="sd">        candidates list containing the validated artifacts (i.e. the</span>
 <span class="sd">        artifacts that are not pruned).</span>
 
-<span class="sd">        This basic implementation returns the given candidate list as is.</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This basic implementation returns the given candidate list as is.</span>
+<span class="sd">            Override this function in the subclass for the appropriate</span>
+<span class="sd">            validation procedure.</span>
+
+<span class="sd">        :param candidates: A list of candidate artifacts</span>
+<span class="sd">        :returns: The validated artifacts, a subset of given candidates</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">candidates</span></div>
 
@@ -568,14 +572,15 @@
 <div class="viewcode-block" id="CreativeAgent.vote"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.vote">[docs]</a>    <span class="k">def</span> <span class="nf">vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Rank artifact candidates.</span>
 
-<span class="sd">        The voting is needed for the agents living in societies using social</span>
+<span class="sd">        The voting is needed for the agents living in societies using</span>
 <span class="sd">        social decision making. The function should return a sorted list</span>
 <span class="sd">        of (candidate, evaluation)-tuples. Depending on the social choice</span>
 <span class="sd">        function used, the evaluation might be omitted from the actual decision</span>
 <span class="sd">        making, or only a number of (the highest ranking) candidates may be</span>
 <span class="sd">        used.</span>
 
-<span class="sd">        This basic implementation ranks candidates based on :meth:`evaluate`.</span>
+<span class="sd">        This basic implementation ranks candidates based on</span>
+<span class="sd">        :meth:`~creamas.core.agent.CreativeAgent.evaluate`.</span>
 
 <span class="sd">        :param candidates:</span>
 <span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects to be</span>

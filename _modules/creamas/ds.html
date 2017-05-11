@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
 
@@ -159,7 +160,7 @@
 <span class="kn">from</span> <span class="nn">creamas</span> <span class="k">import</span> <span class="n">Environment</span>
 
 
-<div class="viewcode-block" id="ssh_exec"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="ssh_exec"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Execute a command on a given server using asynchronous SSH-connection.</span>
 
 <span class="sd">    The method does not propagate exceptions raised during the SSH-connection,</span>
@@ -169,6 +170,12 @@
 <span class="sd">    :param str server: Address of the server</span>
 <span class="sd">    :param str cmd: Command to be executed</span>
 
+<span class="sd">    :param ssh_kwargs:</span>
+<span class="sd">        Any additional SSH-connection arguments, as specified by</span>
+<span class="sd">        :meth:`asyncssh.connect`. See `asyncssh documentation</span>
+<span class="sd">        &lt;http://asyncssh.readthedocs.io/en/latest/api.html#connect&gt;`_ for</span>
+<span class="sd">        details.</span>
+
 <span class="sd">    :returns:</span>
 <span class="sd">        (closed SSH-connection, exception)-tuple, if no exceptions are caught,</span>
 <span class="sd">        the second value is *None*.</span>
@@ -177,7 +184,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Setting known_hosts to None is an evil to do, but in this exercise we</span>
         <span class="c1"># do not care about it.</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">known_hosts</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">except</span><span class="p">:</span>
@@ -185,11 +192,11 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ssh_exec_in_new_loop"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec_in_new_loop">[docs]</a><span class="k">def</span> <span class="nf">ssh_exec_in_new_loop</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="ssh_exec_in_new_loop"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec_in_new_loop">[docs]</a><span class="k">def</span> <span class="nf">ssh_exec_in_new_loop</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Same as :func:`ssh_exec` but creates a new event loop and executes</span>
 <span class="sd">    :func:`ssh_exec` in that event loop.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">task</span> <span class="o">=</span> <span class="n">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
@@ -350,13 +357,19 @@
 
         <span class="k">return</span> <span class="n">manager_addrs</span>
 
-<div class="viewcode-block" id="DistributedEnvironment.spawn_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spawn_cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="DistributedEnvironment.spawn_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spawn_cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Spawn all multi-environments on the nodes using SSH.</span>
 
 <span class="sd">        :param int spawn_cmd:</span>
 <span class="sd">            str or list, command(s) used to spawn the environment on each node.</span>
 <span class="sd">            If list, it must contain one command for each node in</span>
 <span class="sd">            *nodes*, if str the same command is used for each node.</span>
+
+<span class="sd">        :param ssh_kwargs:</span>
+<span class="sd">            Any additional SSH-connection arguments, as specified by</span>
+<span class="sd">            :meth:`asyncssh.connect`. See `asyncssh documentation</span>
+<span class="sd">            &lt;http://asyncssh.readthedocs.io/en/latest/api.html#connect&gt;`_ for</span>
+<span class="sd">            details.</span>
 
 <span class="sd">        .. warning::</span>
 <span class="sd">            The spawning process of the nodes assumes that the manager agent of</span>
@@ -372,7 +385,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">spawn_cmd</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="n">cmd</span><span class="p">]</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">ssh_exec_in_new_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">ssh_exec_in_new_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                                   <span class="n">kwds</span><span class="o">=</span><span class="n">ssh_kwargs</span><span class="p">)</span>
             <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">=</span> <span class="n">rets</span>

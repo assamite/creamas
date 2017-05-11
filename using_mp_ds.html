@@ -1,0 +1,404 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Multiprocessing and Distributed Systems &mdash; Creamas 0.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
+        <link rel="next" title="API Documentation" href="api.html"/>
+        <link rel="prev" title="Using Simulation" href="create_sim.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multiprocessing and Distributed Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#support-for-multiple-cores">Support for Multiple Cores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#slave-environments-and-managers">Slave Environments and Managers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#managing-functions">Managing Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#communication-between-master-and-slaves">Communication Between Master and Slaves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#developing-for-multiple-cores">Developing for Multiple Cores</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#support-for-distributed-systems">Support for Distributed Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-a-distributed-environment">Using a Distributed Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spawning-nodes">Spawning Nodes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Creamas</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Multiprocessing and Distributed Systems</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/using_mp_ds.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="multiprocessing-and-distributed-systems">
+<h1>Multiprocessing and Distributed Systems<a class="headerlink" href="#multiprocessing-and-distributed-systems" title="Permalink to this headline">¶</a></h1>
+<p>Creamas has builtin basic support for agent environments running on multiple
+cores (see <a class="reference internal" href="mp.html"><span class="doc">Multiprocessing functionality</span></a>) and agent environments set up on distributed systems
+(see <a class="reference internal" href="ds.html"><span class="doc">Distributed Systems</span></a>), e.g. computing clusters. In this section, we explain the
+basic architectural concepts required to understand how to build your own
+multiprocessing and distributed environments. You should be familiar with
+basic overview of the library before venturing forth (see <a class="reference internal" href="overview.html"><span class="doc">Overview</span></a>).</p>
+<p>Next, we first go over multiprocessing implementation of the basic environment,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>, and then the distributed system
+implementation, <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a>.</p>
+<div class="section" id="support-for-multiple-cores">
+<h2>Support for Multiple Cores<a class="headerlink" href="#support-for-multiple-cores" title="Permalink to this headline">¶</a></h2>
+<p>Multiprocessing support in Creamas is built around
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>. This class spawns a set of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a> slaves in their own subprocesses
+and acts as
+a master for them. The master environment has also its own instance of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a> which is used to communicate
+with the slaves, but because it does not contain any agents (other than
+a possible manager agent, as we will see when dealing with distributed systems),
+we will not distinguish it from the <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> for
+the time being.</p>
+<div class="section" id="slave-environments-and-managers">
+<h3>Slave Environments and Managers<a class="headerlink" href="#slave-environments-and-managers" title="Permalink to this headline">¶</a></h3>
+<p>Each of the slave environments in the <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>
+is executed in its own subprocess (see Figure 1.).
+As the slave environments are outside the master environment&#8217;s
+process, their functions cannot be directly called by the master and thus the
+slaves require other functionality to accept orders from the master.
+To this end, each slave environment is initialized
+with a manager agent, <a class="reference internal" href="mp.html#creamas.mp.EnvManager" title="creamas.mp.EnvManager"><code class="xref py py-class docutils literal"><span class="pre">EnvManager</span></code></a> or its subclass,
+which acts as a bridge between external sources and the environment instance itself;
+the external source being in most cases the master environment.</p>
+<div class="figure" id="id2">
+<a class="reference internal image-reference" href="_images/multiprocessing_architecture.svg"><img alt="_images/multiprocessing_architecture.svg" src="_images/multiprocessing_architecture.svg" width="100%" /></a>
+<p class="caption"><span class="caption-text">Figure 1. Basic architecture for <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>.</span></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If an environment is a slave environment in some
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>, then its first agent (the agent in path
+<code class="docutils literal"><span class="pre">tcp://environment-address:port/0</span></code>) is always expected to be an instance of
+<a class="reference internal" href="mp.html#creamas.mp.EnvManager" title="creamas.mp.EnvManager"><code class="xref py py-class docutils literal"><span class="pre">EnvManager</span></code></a>, or a subclass of it.</p>
+</div>
+</div>
+<div class="section" id="managing-functions">
+<h3>Managing Functions<a class="headerlink" href="#managing-functions" title="Permalink to this headline">¶</a></h3>
+<p>The basic manager implementation contains several exposed
+<em>managing functions</em> for the environment&#8217;s functions, i.e. functions that call
+the underlying environment&#8217;s
+functions with the same name. These managing functions allow the master to
+execute tasks on each of the slave environments, e.g., to collect the addresses
+of all the agents in all the environments or trigger <code class="xref py py-meth docutils literal"><span class="pre">act()</span></code> of each of
+these agents.</p>
+</div>
+<div class="section" id="communication-between-master-and-slaves">
+<h3>Communication Between Master and Slaves<a class="headerlink" href="#communication-between-master-and-slaves" title="Permalink to this headline">¶</a></h3>
+<p>The communication between the master and the slave environment happens through
+<strong>tcp</strong> connection. In principle, the functionality works as follows:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Master environment connects to the slave&#8217;s manager.</li>
+<li>Master environment calls slave manager&#8217;s exposed method.</li>
+<li>The slave&#8217;s manager calls the method with the same name in its environment
+with the given arguments.</li>
+<li>The slave environment executes the method an returns possible return value.</li>
+<li>The slave manager passes the return value back to the master environment.</li>
+<li>Master environment closes the connection.</li>
+</ol>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Managers do not check who gives the execution orders by default. When
+deploying in open environments, e.g. environments exposed to internet, it
+is important that you do not expose any unwanted functionality through them
+without adding some safe guards to the exposed functions.</p>
+<p class="last">Creamas is mainly developed to be a research tool to be used in closed
+environments, and therefore does not offer protection for attacks of any
+kind.</p>
+</div>
+</div>
+<div class="section" id="developing-for-multiple-cores">
+<h3>Developing for Multiple Cores<a class="headerlink" href="#developing-for-multiple-cores" title="Permalink to this headline">¶</a></h3>
+<p>To utilize multiprocessing support in your own implementations, you can give
+following initialization parameters to <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Address</strong>: Address for the manager environment.</li>
+<li><strong>Environment class</strong>: Class for the manager/master environment
+which is used to connect to each of the slave managers.</li>
+<li><strong>Manager class</strong>: Class for the master environment&#8217;s manager. This
+should not be needed if you are not using <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>
+as a part of <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a></li>
+<li><strong>Slave addresses</strong>: Addresses for the slave environments, the size of this
+list will define how many subprocesses are spawned.</li>
+<li><strong>Slave environment class</strong>: Class for each slave environment inside the
+multiprocessing environment.</li>
+<li><strong>Slave environment parameters</strong>: Initialization parameters for each slave
+environment.</li>
+<li><strong>Slave manager class</strong>: This is the manager agent class that is used for
+each slave environment.</li>
+</ul>
+</div></blockquote>
+<p>You can, of course, also subclass <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> itself
+(see <code class="xref py py-class docutils literal"><span class="pre">GridMultiEnvironment</span></code> for an example).</p>
+</div>
+</div>
+<div class="section" id="support-for-distributed-systems">
+<h2>Support for Distributed Systems<a class="headerlink" href="#support-for-distributed-systems" title="Permalink to this headline">¶</a></h2>
+<p>Support for distributed systems in Creamas is built around
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a>. Distributed environment is
+designed to be used with multiple (quite homogeneous) nodes which operate in
+a closed system <a class="footnote-reference" href="#f1" id="id1">[1]</a> where each node can make <strong>tcp</strong> connections to ports in
+other nodes. Further on, it requires that it is located in a machine that is
+able to make SSH connections to the nodes.</p>
+<p>The basic architecture of <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a> can
+be seen in the Figure 2. In short,  <code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code> with its own manager, which accepts orders
+from <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a>. The slave environments inside
+each <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> then hold the actual agents for the
+simulation (and the manager for the slave environment).</p>
+<div class="figure" id="id3">
+<a class="reference internal image-reference" href="_images/distributed_architecture.svg"><img alt="_images/distributed_architecture.svg" src="_images/distributed_architecture.svg" width="100%" /></a>
+<p class="caption"><span class="caption-text">Figure 2. Basic architecture for <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a>.
+It manages a set of nodes each containing a <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>.</span></p>
+</div>
+<p>Next, we look at how to set up and use <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a>.
+In the following, node and <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> are used
+interchangeably.</p>
+<div class="section" id="using-a-distributed-environment">
+<h3>Using a Distributed Environment<a class="headerlink" href="#using-a-distributed-environment" title="Permalink to this headline">¶</a></h3>
+<p>Initialization of a distributed environment is done roughly in the following
+steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Initialize <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a> with list of node
+locations</li>
+<li>Create node spawning terminal commands for each node, i.e. commands
+which start <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> on each node.</li>
+<li>Spawn nodes using <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment.spawn_nodes" title="creamas.ds.DistributedEnvironment.spawn_nodes"><code class="xref py py-meth docutils literal"><span class="pre">spawn_nodes()</span></code></a></li>
+<li>Wait until all nodes are <strong>ready</strong>
+(see, e.g. <a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment.is_ready" title="creamas.mp.MultiEnvironment.is_ready"><code class="xref py py-meth docutils literal"><span class="pre">is_ready()</span></code></a>) using
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment.wait_nodes" title="creamas.ds.DistributedEnvironment.wait_nodes"><code class="xref py py-meth docutils literal"><span class="pre">wait_nodes()</span></code></a>. A node is ready
+when it has finished its own initialization and is ready to execute
+orders.</li>
+<li>Make any additional preparation for the nodes using
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment.prepare_nodes" title="creamas.ds.DistributedEnvironment.prepare_nodes"><code class="xref py py-meth docutils literal"><span class="pre">prepare_nodes()</span></code></a>.</li>
+</ol>
+</div></blockquote>
+<p>After this sequence, the <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a> should be
+ready to be used. The main usage for iterative simulations is to call
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment.trigger_all" title="creamas.ds.DistributedEnvironment.trigger_all"><code class="xref py py-meth docutils literal"><span class="pre">trigger_all()</span></code></a>, which triggers all
+agents in all the nodes (in all the slave environments) to act.</p>
+</div>
+<div class="section" id="spawning-nodes">
+<h3>Spawning Nodes<a class="headerlink" href="#spawning-nodes" title="Permalink to this headline">¶</a></h3>
+<p>When <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment.spawn_nodes" title="creamas.ds.DistributedEnvironment.spawn_nodes"><code class="xref py py-meth docutils literal"><span class="pre">spawn_nodes()</span></code></a> is called,
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a> spawns a new process for each node
+in the list of node locations given at initialization time. For each process
+it does the following:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>it opens a SSH connection to one of the nodes, and</li>
+<li>executes a command line script on the node.</li>
+</ol>
+</div></blockquote>
+<p>The command line script executed is assumed to spawn an instance of
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a> with a manager attached to it. This
+manager is then used to communicate any commands from
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal"><span class="pre">DistributedEnvironment</span></code></a> to the slave environments on that
+node. The command line script can also do other preparation for the node, e.g.
+populate its slave environments with agents.</p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Closed because the managers do not verify the messages sent to them by default.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="create_sim.html" class="btn btn-neutral" title="Using Simulation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2017, Simo Linkola.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
