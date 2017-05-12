@@ -106,3 +106,6 @@ However, these functionalities are not yet fully tested, but have been used in
 several systems and platforms effectively. Multiprocessing functionality is in
 ``mp``-module (see :doc:`mp`), and distributing the environments on several
 nodes is in ``ds``-module (see :doc:`ds`).
+
+If you want to learn more about multiprocessing and distributed system support
+in Creamas, read an overview of them: :doc:`using_mp_ds`.

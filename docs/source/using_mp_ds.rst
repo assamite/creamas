@@ -43,6 +43,9 @@ the external source being in most cases the master environment.
 	:width: 100%
 
 	Figure 1. Basic architecture for :class:`~creamas.mp.MultiEnvironment`.
+	The environment in the main process is used to connect to each slave
+	environment's manager and sends commands to them. The managers then forward
+	the commands to the slave environments which execute them.
 
 .. note::
 
@@ -142,6 +145,9 @@ simulation (and the manager for the slave environment).
 
 	Figure 2. Basic architecture for :class:`~creamas.ds.DistributedEnvironment`.
 	It manages a set of nodes each containing a :class:`~creamas.mp.MultiEnvironment`.
+	The main difference from the single node implementation is, that the main
+	process environment on each node also holds a manager which accepts commands
+	for that node.
 
 Next, we look at how to set up and use :class:`~creamas.ds.DistributedEnvironment`.
 In the following, node and :class:`~creamas.mp.MultiEnvironment` are used
@@ -189,6 +195,25 @@ manager is then used to communicate any commands from
 node. The command line script can also do other preparation for the node, e.g.
 populate its slave environments with agents.
 
+The command line script executed is assumed to wait until the
+:class:`~creamas.mp.MultiEnvironment` is stopped, i.e. it does not exit
+after the initialization (as in the naive case this would delete the
+environment). To achieve this, you can for example add a following kind of
+function to your node spawning script and call it last in the script::
+
+	async def run_node(menv, log_folder):
+	    try:
+	        await menv.manager.stop_received
+	    except KeyboardInterrupt:
+	        logger.info('Execution interrupted by user.')
+	    finally:
+	        ret = await menv.destroy(log_folder, as_coro=True)
+	        return ret
+
+When called, the script will block its execution until the manager of
+:class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop sign is
+sent to each node's manager when :meth:`~creamas.ds.DistributedEnvironment.stop_nodes`
+is called. See ``creamas/examples/grid/grid_node.py`` for an example.
 
 .. rubric:: Footnotes
 
