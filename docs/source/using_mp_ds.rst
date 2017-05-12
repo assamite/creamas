@@ -75,7 +75,7 @@ The communication between the master and the slave environment happens through
 	2. Master environment calls slave manager's exposed method.
 	3. The slave's manager calls the method with the same name in its environment
 	   with the given arguments.
-	4. The slave environment executes the method an returns possible return value.
+	4. The slave environment executes the method and returns possible return value.
 	5. The slave manager passes the return value back to the master environment.
 	6. Master environment closes the connection.
 
@@ -96,7 +96,7 @@ Developing for Multiple Cores
 To utilize multiprocessing support in your own implementations, you can give
 following initialization parameters to :class:`~creamas.mp.MultiEnvironment`:
 
-	* **Address**: Address for the manager environment.
+	* **Address**: Address for the manager/master environment.
 
 	* **Environment class**: Class for the manager/master environment
 	  which is used to connect to each of the slave managers.
@@ -210,10 +210,13 @@ function to your node spawning script and call it last in the script::
 	        ret = await menv.destroy(log_folder, as_coro=True)
 	        return ret
 
-When called, the script will block its execution until the manager of
-:class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop sign is
-sent to each node's manager when :meth:`~creamas.ds.DistributedEnvironment.stop_nodes`
-is called. See ``creamas/examples/grid/grid_node.py`` for an example.
+When :func:`run_node` is called, the script will block its execution until the
+manager of :class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop
+sign is sent to each node's manager when :meth:`~creamas.ds.DistributedEnvironment.stop_nodes`
+is called.
+
+See ``creamas/examples/grid/`` for an example implementation of a distributed
+agent environment.
 
 .. rubric:: Footnotes
 

@@ -82,8 +82,8 @@ Features, Mappers And Rules
 Agents can evaluate artifacts by extracting features from them. As features can
 have all kinds of outputs, they are paired with mappers. A mapper serves as a
 function from feature's outputs to the interval :math:`[-1, 1] \in \mathbb{R}`.
-Where features are though to be artifact domain depended, and shareable between
-agents, mappers represent individual agent's preferences over possible feature
+Features are artifact domain depended, and shareable between agents.
+Mappers represent individual agent's preferences over possible feature
 values.
 
 Rules combine a set of features, and their corresponding mappers, to a

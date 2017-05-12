@@ -4,7 +4,7 @@ Implementing Agent Classes
 All agents used in Creamas must inherit from 
 :py:class:`~creamas.core.agent.CreativeAgent`. They should also accept 
 the agent's :class:`~creamas.core.environment.Environment` as the first
-parameter in their :meth:`__init__`. The environment should then by passed on
+parameter in their :meth:`__init__`. The environment should then be passed on
 to :py:meth:`super().__init__`.
 
 Each agent class should call :py:meth:`super().__init__` as one of the first
