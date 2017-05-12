@@ -1,14 +1,14 @@
 Using Simulation
 ==========================
 
-*creamas* contains easy to use iterative simulation to perform experiments on 
+Creamas contains easy to use iterative simulation to perform experiments on 
 single computer set up. Each agent wishing to use simulation has to implement 
-**act**:
+:meth:`~creamas.core.agent.CreativeAgent.act`:
 
 .. automethod:: creamas.core.agent.CreativeAgent.act
 	:noindex:
 
-Simulation calls **act** for each agent in each simulation step. What agents 
+Simulation calls :meth:`act` for each agent in each simulation step. What agents 
 do in their turn is up to you!
 
 Simple Simulations
@@ -34,7 +34,7 @@ Creating simple iterative simulation is made easy with
 	# End simulation and destroy it's environment.
 	sim.end()
 
-**create** offers few arguments to modify simulation initialization:
+:func:`create` offers few arguments to modify simulation initialization:
 
 1. You can create simulation with multiple agent classes each with its own 
    keyword arguments and number of agents. 
@@ -71,7 +71,7 @@ Complex Simulation Setups
 If you need more control on creating the environment and agents, you can 
 create your environment directly and then create your agents. After you have
 fully initialized the environment, you can then pass it to the 
-:py:class:`Simulation` at initialization time.
+:class:`~creamas.core.simulation.Simulation` at initialization time.
 
 .. code-block:: python
 

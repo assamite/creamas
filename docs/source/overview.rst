@@ -6,7 +6,9 @@ on, multi-agent systems in the field of `computational creativity
 <https://en.wikipedia.org/wiki/Computational_creativity>`_. Creamas is built
 on top of `aiomas <http://aiomas.readthedocs.org/en/latest/>`_, which provides
 a communication route (RPC) between agents and the basic agent and container
-implementations.
+(dubbed as :class:`~creamas.Environment` in Creamas) implementations. If you
+want to know more about how the low level communication works, see aiomas
+documentation.
 
 Agents And Environments
 -----------------------

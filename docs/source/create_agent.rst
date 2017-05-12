@@ -1,7 +1,7 @@
 Implementing Agent Classes
 ==========================
 
-All agents used in *creamas* must inherit from 
+All agents used in Creamas must inherit from 
 :py:class:`~creamas.core.agent.CreativeAgent`. They should also accept one 
 parameter that is passed down to :py:meth:`super().__init__`:
 
