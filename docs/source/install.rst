@@ -7,9 +7,10 @@ the easiest way to install the latest distribution of Creamas is using
 
 	pip install creamas
 
-We encourage the use of `virtual environments <https://virtualenv.readthedocs.org/en/latest/>`_ to avoid conflicting package requirements in your projects.
+We encourage the use of `virtual environments <https://virtualenv.readthedocs.org/en/latest/>`_
+to avoid conflicting package requirements in your projects.
 
-Installing the development version
+Installing the Development Version
 ----------------------------------
 
 If you want to use the latest development version, you can clone the repository

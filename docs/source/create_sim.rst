@@ -85,7 +85,7 @@ fully initialized the environment, you can then pass it to the
 		# do some complex calculation
 		# ...
 
-		Starspawn(env, cause_havoc=True, non_euclidian_angle=mystery)
+		StarSpawnAgent(env, cause_havoc=True, non_euclidian_angle=mystery)
 
 	sim = Simulation(env=env)
 
