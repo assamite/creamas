@@ -2,7 +2,8 @@ Installation
 ============
 
 Creamas is developed with `Python 3.5 <https://docs.python.org/3.5/>`_,
-the easiest way to install the latest distribution of Creamas is using ``pip``::
+the easiest way to install the latest distribution of Creamas is using
+`pip <https://pip.pypa.io/en/stable/>`_::
 
 	pip install creamas
 
