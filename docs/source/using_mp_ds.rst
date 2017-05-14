@@ -131,7 +131,7 @@ other nodes. Further on, it requires that it is located in a machine that is
 able to make SSH connections to the nodes.
 
 The basic architecture of :class:`~creamas.ds.DistributedEnvironment` can
-be seen in the Figure 2. In short,  :class:`~creamas.ds.DistributedEnvironment acts
+be seen in the Figure 2. In short, :class:`~creamas.ds.DistributedEnvironment` acts
 as a master for the whole environment, i.e. it does not hold "actual" simulation
 agents, but serves only as a manager for the simulation. Other nodes
 in the environment then each contain an instance of
