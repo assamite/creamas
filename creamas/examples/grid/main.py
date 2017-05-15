@@ -95,7 +95,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self._agent_cls = agent_cls
         self._log_folder = folder
         self._ngs = ngs
-        self.grid = self._make_node_grid(ngs, self.manager_addrs)
+        self.grid = self._make_node_grid(ngs, self.addrs)
         self.cmds = self._build_cmds(port, n_slaves, gs, agent_cls, folder)
         self.spawn_nodes(self.cmds, known_hosts=None)
 
@@ -110,7 +110,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
 
     def save_manager_addrs(self, filename):
         with open(filename, 'w') as f:
-            for addr in self.manager_addrs:
+            for addr in self.addrs:
                 f.write("{}\n".format(addr))
 
     def _build_cmds(self, port, n_slaves, gs, agent_cls, folder):
@@ -172,7 +172,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self.logger.debug("Setting grid neighbors for the slave environments "
                           "and their agents.")
         tasks = []
-        for addr in self.manager_addrs:
+        for addr in self.addrs:
             task = asyncio.ensure_future(self._set_neighbors(addr))
             tasks.append(task)
         await asyncio.gather(*tasks)

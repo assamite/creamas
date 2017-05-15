@@ -66,6 +66,35 @@ def ssh_exec_in_new_loop(server, cmd, **ssh_kwargs):
     return ret
 
 
+async def run_node(menv, log_folder):
+    '''Run :class:`~creamas.mp.MultiEnvironment` until its manager's
+    :meth:`~creamas.mp.MultiEnvManager.stop` is called.
+
+    :param menv: :class:`~creamas.mp.MultiEnvironment` to wait for.
+    :param str log_folder: Logging folder to be used when 
+
+    This method will block the current thread until the manager's
+    :meth:`~creamas.mp.MultiEnvManager.stop` is called. After the stop-message
+    is received, multi-environment is destroyed.
+
+    The method is intended to be
+    used in :class:`~creamas.ds.DistributedEnvironment` scripts which spawn
+    multi-environments on different nodes. That is, using this function in the
+    script will block the script's further execution until the simulation has
+    run its course and the nodes need to be destroyed.
+    Calling :meth:`~creamas.ds.DistributedEnvironment.destroy` will
+    automatically call each node manager's stop-method and therefore release
+    the script.
+    '''
+    try:
+        await menv.manager.stop_received
+    except KeyboardInterrupt:
+        pass
+    finally:
+        ret = await menv.destroy(log_folder, as_coro=True)
+        return ret
+
+
 class DistributedEnvironment():
     '''Distributed environment which manages several nodes containing
     multi-environments.
@@ -158,7 +187,7 @@ class DistributedEnvironment():
         return self._env
 
     @property
-    def manager_addrs(self):
+    def addrs(self):
         '''Addresses of node managers.
 
         These addresses are derived from *nodes* and *port* parameters
@@ -190,8 +219,8 @@ class DistributedEnvironment():
         self.logger.info("Waiting for nodes to become ready...")
         t = time.time()
         online = []
-        while len(online) < len(self.manager_addrs):
-            for addr in self.manager_addrs:
+        while len(online) < len(self.addrs):
+            for addr in self.addrs:
                 if time.time() - t > timeout:
                     self.logger.info("Timeout while waiting for the nodes to "
                                      "become online.")
@@ -204,7 +233,7 @@ class DistributedEnvironment():
                             online.append(addr)
                             self.logger.info("Node {}/{} ready: {}"
                                              .format(len(online),
-                                                     len(self.manager_addrs),
+                                                     len(self.addrs),
                                                      addr))
                     except:
                         pass
@@ -275,7 +304,7 @@ class DistributedEnvironment():
     async def trigger_all(self):
         '''Trigger all agents in all the nodes to act asynchronously.
 
-        This method makes a connection to each manager in *manager_addrs*
+        This method makes a connection to each manager in *addrs*
         and asynchronously executes :meth:`trigger_all` in all of them.
 
         .. seealso::
@@ -285,7 +314,7 @@ class DistributedEnvironment():
             :py:meth:`creamas.mp.MultiEnvManager.trigger_all`
         '''
         tasks = []
-        for addr in self.manager_addrs:
+        for addr in self.addrs:
             task = asyncio.ensure_future(self._trigger_node(addr))
             tasks.append(task)
         ret = await asyncio.gather(*tasks)
@@ -300,7 +329,7 @@ class DistributedEnvironment():
             particular manager is logged, but the stopping of other managers
             is not halted.
         '''
-        for addr in self.manager_addrs:
+        for addr in self.addrs:
             try:
                 r_manager = await self.env.connect(addr, timeout=timeout)
                 await r_manager.stop()

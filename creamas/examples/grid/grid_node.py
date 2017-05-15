@@ -157,9 +157,10 @@ if __name__ == "__main__":
                 " log={} agent_cls={}"
                 .format(addr, args.n_slaves, origin, gs, log_folder, agent_cls))
     menv = create_grid_menv(addr, addrs, gs, origin, log_folder)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(menv.set_host_managers())
     if agent_cls is not None:
         populate_menv(menv, agent_cls, log_folder)
-    loop = asyncio.get_event_loop()
 
     # Run this node until its manager's stop-service is called.
     ret = loop.run_until_complete(run_node(menv, log_folder))
