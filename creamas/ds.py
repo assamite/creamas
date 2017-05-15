@@ -71,7 +71,7 @@ async def run_node(menv, log_folder):
     :meth:`~creamas.mp.MultiEnvManager.stop` is called.
 
     :param menv: :class:`~creamas.mp.MultiEnvironment` to wait for.
-    :param str log_folder: Logging folder to be used when 
+    :param str log_folder: Logging folder to be used when ``stop`` is called.
 
     This method will block the current thread until the manager's
     :meth:`~creamas.mp.MultiEnvManager.stop` is called. After the stop-message
