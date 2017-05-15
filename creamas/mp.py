@@ -669,14 +669,14 @@ class MultiEnvironment():
             :meth:`creamas.mp.MultiEnvManager.is_ready`
 
         '''
-        self.logger.info("Waiting for slaves to become ready...")
+        self._log(logging.INFO, "Waiting for slaves to become ready...")
         t = time.time()
         online = []
         while len(online) < len(self.addrs):
             for addr in self.addrs:
                 if time.time() - t > timeout:
-                    self.logger.info("Timeout while waiting for the slaves to "
-                                     "become online.")
+                    self._log(logging.INFO, "Timeout while waiting for the "
+                              "slaves to become online.")
                     return False
                 if addr not in online:
                     try:
@@ -684,14 +684,14 @@ class MultiEnvironment():
                         ready = await r_manager.is_ready()
                         if ready:
                             online.append(addr)
-                            self.logger.info("Slave {}/{} ready: {}"
-                                             .format(len(online),
-                                                     len(self.addrs),
-                                                     addr))
+                            self._log(logging.INFO, "Slave {}/{} ready: {}"
+                                      .format(len(online),
+                                              len(self.addrs),
+                                              addr))
                     except:
                         pass
-        self.logger.info("All slaves ready in {} seconds!"
-                         .format(time.time() - t))
+        self._log(logging.INFO, "All slaves ready in {} seconds!"
+                  .format(time.time() - t))
         return True
 
     def _get_log_folders(self, log_folder, addrs):

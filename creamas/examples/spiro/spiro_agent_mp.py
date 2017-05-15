@@ -766,6 +766,7 @@ if __name__ == "__main__":
     menv.log_folder = log_folder
     loop = asyncio.get_event_loop()
     ret = loop.run_until_complete(menv.set_host_managers())
+    ret = loop.run_until_complete(menv.wait_slaves(30))
     ret = loop.run_until_complete(menv.is_ready())
     print(ret)
     for _ in range(64):
