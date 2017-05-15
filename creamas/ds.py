@@ -250,18 +250,24 @@ class DistributedEnvironment():
         return manager_addrs
 
     def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
-        '''Spawn all multi-environments on the nodes using SSH.
+        '''Spawn multi-environments on the nodes through SSH-connections.
 
-        :param int spawn_cmd:
+        :param spawn_cmd:
             str or list, command(s) used to spawn the environment on each node.
-            If list, it must contain one command for each node in
-            *nodes*, if str the same command is used for each node.
+            If *list*, it must contain one command for each node in
+            :attr:`nodes`. If *str*, the same command is used for each node.
 
         :param ssh_kwargs:
             Any additional SSH-connection arguments, as specified by
             :meth:`asyncssh.connect`. See `asyncssh documentation
             <http://asyncssh.readthedocs.io/en/latest/api.html#connect>`_ for
             details.
+
+        Nodes are spawned by creating a multiprocessing pool where each node
+        has its own subprocess. These subprocesses then use SSH-connections
+        to spawn the multi-environments on the nodes. The SSH-connections in
+        the pool are kept alive until the nodes are stopped, i.e. this
+        distributed environment is destroyed.
 
         .. warning::
             The spawning process of the nodes assumes that the manager agent of
