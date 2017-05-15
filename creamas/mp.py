@@ -427,9 +427,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return votes
 
     @aiomas.expose
-    async def clear_candidates(self, addr):
-        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        ret = await remote_manager.clear_candidates()
+    async def clear_candidates(self):
+        ret = await self.menv.clear_candidates()
         return ret
 
     @aiomas.expose
@@ -520,9 +519,12 @@ class MultiEnvironment():
         self._addr = addr
         self._env = env_cls.create(addr, codec=aiomas.MsgPack, clock=clock,
                                    extra_serializers=extra_ser)
-        self._manager = mgr_cls(self._env)
-        self._manager.menv = self
-        r = aiomas.run(until=self._set_host_managers())
+
+        if mgr_cls is not None:
+            self._manager = mgr_cls(self._env)
+            self._manager.menv = self
+        else:
+            self._manager = None
 
     @property
     def name(self):
@@ -657,7 +659,16 @@ class MultiEnvironment():
             folders = [None for _ in range(len(addrs))]
             return folders
 
-    async def _set_host_managers(self):
+    async def set_host_managers(self):
+        '''Set the master environment's manager as host manager for the slave
+        environment managers.
+
+        This enables the slave environment managers to communicate back to the
+        master environment. The master environment manager,
+        :attr:`~creamas.mp.MultiEnvironment.manager`, must be an instance
+        of :class:`~creamas.mp.MultiEnvManager` or its subclass if this method
+        is called.
+        '''
         for addr in self.addrs:
             r_manager = await self.env.connect(addr, timeout=TIMEOUT)
             r_manager.set_host_addr(self._manager.addr)
@@ -727,8 +738,8 @@ class MultiEnvironment():
         '''
         if addr is None:
             addr = await self._get_smallest_env()
-        proxy, r_addr = await self._manager.spawn(addr, agent_cls, *args,
-                                                  **kwargs)
+        r_manager = await self.env.connect(addr)
+        proxy, r_addr = await r_manager.spawn(agent_cls, *args, **kwargs)
         self._consistent = False
         return proxy, r_addr
 
@@ -742,7 +753,8 @@ class MultiEnvironment():
         aiomas.run(until=asyncio.gather(*tasks))
 
     async def _clear_candidates(self, manager_addr):
-        ret = await self.manager.clear_candidates(manager_addr)
+        r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
+        ret = await r_manager.clear_candidates()
         return ret
 
     async def create_connection(self, addr, addr2):
