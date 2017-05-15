@@ -21,6 +21,7 @@ import asyncio
 import logging
 import multiprocessing
 import operator
+import time
 
 from collections import Counter
 from random import choice, shuffle
@@ -297,8 +298,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         This should considerably reduce the time needed to spawn a large number
         of homogeneous agents.
 
-        *agent_args* and *agent_kwargs* are passed to the manager doing to
-        spawning to be used as the agent's initialization parameters.
+        *agent_args* and *agent_kwargs* are passed to the manager doing the
+        spawning to be used as agents initialization parameters.
 
         :param str addr: Environment's manager's address
 
@@ -648,6 +649,49 @@ class MultiEnvironment():
                     return False
             except:
                 return False
+        return True
+
+    async def wait_slaves(self, timeout):
+        '''Wait until all slaves are ready or timeout expires.
+
+        Slave environment is assumed to be ready when its manager's
+        :py:meth:`is_ready`-method returns True.
+
+        :param int timeout:
+            Timeout (in seconds) after which the method will return even though
+            all the nodes are not ready yet.
+
+        .. seealso::
+
+            :meth:`creamas.core.environment.Environment.is_ready`,
+            :meth:`creamas.mp.MultiEnvironment.is_ready`,
+            :meth:`creamas.mp.EnvManager.is_ready`,
+            :meth:`creamas.mp.MultiEnvManager.is_ready`
+
+        '''
+        self.logger.info("Waiting for slaves to become ready...")
+        t = time.time()
+        online = []
+        while len(online) < len(self.addrs):
+            for addr in self.addrs:
+                if time.time() - t > timeout:
+                    self.logger.info("Timeout while waiting for the slaves to "
+                                     "become online.")
+                    return False
+                if addr not in online:
+                    try:
+                        r_manager = await self.env.connect(addr, timeout=1)
+                        ready = await r_manager.is_ready()
+                        if ready:
+                            online.append(addr)
+                            self.logger.info("Slave {}/{} ready: {}"
+                                             .format(len(online),
+                                                     len(self.addrs),
+                                                     addr))
+                    except:
+                        pass
+        self.logger.info("All slaves ready in {} seconds!"
+                         .format(time.time() - t))
         return True
 
     def _get_log_folders(self, log_folder, addrs):
