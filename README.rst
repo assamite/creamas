@@ -21,7 +21,7 @@ of computational creativity. However, the requirements for the multi-agent
 systems (and agents especially) are not strict, and therefore the library can
 be used to build any types of agent-based systems. If you are looking for a
 minimalistic MAS-library, check out `aiomas
-<https://aiomas.readthedocs.io/en/latest/>`_ on top of which Creamas is built.
+<https://aiomas.readthedocs.io/en/latest/>`_. Creamas is build on top of it.
 
 .. attention::
 
