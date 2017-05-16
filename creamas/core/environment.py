@@ -128,7 +128,6 @@ class Environment(Container):
     async def trigger_all(self):
         '''Trigger all agents in the environment to act asynchronously.
         '''
-        rets = []
         tasks = []
         for a in self.get_agents(address=False):
             task = asyncio.ensure_future(self.trigger_act(agent=a))
