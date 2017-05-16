@@ -125,13 +125,20 @@ class Environment(Container):
         ret = await agent.act()
         return ret
 
-    async def trigger_all(self):
+    async def trigger_all(self, exclude_manager=False):
         '''Trigger all agents in the environment to act asynchronously.
+
+        :param bool exclude_manager:
+            If True, excludes the first agent (i.e. the manager agent) in the
+            environment from acting.
         '''
         tasks = []
         for a in self.get_agents(address=False):
-            task = asyncio.ensure_future(self.trigger_act(agent=a))
-            tasks.append(task)
+            if exclude_manager and a.addr.rsplit("/", 1)[1] == '0':
+                continue
+            else:
+                task = asyncio.ensure_future(self.trigger_act(agent=a))
+                tasks.append(task)
         rets = await asyncio.gather(*tasks)
         return rets
 
