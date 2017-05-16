@@ -213,13 +213,13 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    async def trigger_all(self):
+    async def trigger_all(self, exclude_manager=True):
         '''Trigger all agents in the managed environment to act once.
 
         This is a managing function for
         :py:meth:`~creamas.environment.Environment.trigger_all`.
         '''
-        ret = await self.env.trigger_all()
+        ret = await self.env.trigger_all(exclude_manager)
         return ret
 
     @aiomas.expose
@@ -383,13 +383,13 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return ret
 
     @aiomas.expose
-    async def trigger_all(self):
+    async def trigger_all(self, exclude_manager=True):
         '''Trigger all agents in the managed multi-environment to act.
 
         This is a managing function for
         :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.
         '''
-        ret = await self.menv.trigger_all()
+        ret = await self.menv.trigger_all(exclude_manager)
         return ret
 
     @aiomas.expose
@@ -732,14 +732,16 @@ class MultiEnvironment():
         ret = await r_agent.act()
         return ret
 
-    async def _trigger_slave(self, slave_mgr_addr):
+    async def _trigger_slave(self, slave_mgr_addr, exclude_manager=True):
         r_manager = await self.env.connect(slave_mgr_addr, timeout=TIMEOUT)
-        ret = await r_manager.trigger_all()
+        ret = await r_manager.trigger_all(exclude_manager=exclude_manager)
         return ret
 
     async def trigger_all(self):
-        '''Trigger all agents in all the slave environments to act
+        '''Trigger all agents in all the slave environments to :meth:`act`
         asynchronously.
+
+        By design, the slave environment managers are excluded from acting.
         '''
         rets = []
         tasks = []
