@@ -92,15 +92,25 @@ class Environment(Container):
         self._logger = ObjectLogger(self, _log_folder, add_name=True,
                                     init=True)
 
-    def get_agents(self, address=True, agent_cls=None):
+    def get_agents(self, address=True, agent_cls=None, exclude_manager=False):
         '''Get agents in the environment.
 
         :param bool address: If true, returns only addresses of the agents.
         :param agent_cls:
             Optional, if specified returns only agents belonging to that
             particular class.
+
+        :param bool exclude_manager:
+            If True, excludes the environment's manager, i.e. the agent in the
+            address ``tcp://environment-host:port/0``, from the returned
+            list.
+
+        :returns: A list of agents in the environment.
+        :rtype: list
         '''
         agents = list(self.agents.dict.values())
+        if exclude_manager:
+            agents = [a for a in agents if a.addr.rsplit('/', 1)[1] != '0']
         if agent_cls is not None:
             agents = [a for a in agents if type(a) is agent_cls]
         if address:

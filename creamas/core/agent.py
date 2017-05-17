@@ -325,7 +325,7 @@ class CreativeAgent(aiomas.Agent):
         return remote_agent
 
     async def random_connection(self):
-        '''Connect to random agent from current **connections**.
+        '''Connect to random agent from current :attr:`connections`.
 
         :returns: :class:`Proxy` object for the connected agent.
         '''

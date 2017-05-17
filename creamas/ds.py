@@ -13,6 +13,7 @@ on computing clusters or other distributed systems.
     by default as a dependency.
 '''
 import asyncio
+import itertools
 import logging
 import multiprocessing
 import time
@@ -353,3 +354,29 @@ class DistributedEnvironment():
         self._pool.terminate()
         self._pool.join()
         self.env.shutdown()
+
+    async def _get_agents(self, addr, address=True, agent_cls=None):
+        r_manager = await self.env.connect(addr)
+        agents = await r_manager.get_agents(address, agent_cls)
+        return agents
+
+    async def get_agents(self, address=True, agent_cls=None):
+        '''Return all the relevant agents from all the nodes.
+
+        The method excludes all the manager agents from the returned list.
+
+        .. seealso::
+
+            :meth:`creamas.Environment.get_agents`,
+            :meth:`creamas.mp.MultiEnvironment.get_agents`,
+            :meth:`creamas.mp.MultiEnvManager.get_agents`
+        '''
+        tasks = []
+        for addr in self.addrs:
+            task = asyncio.ensure_future(self._get_agents(addr,
+                                                          address,
+                                                          agent_cls))
+            tasks.append(task)
+        rets = await asyncio.gather(*tasks)
+        agents = list(itertools.chain(*rets))
+        return agents

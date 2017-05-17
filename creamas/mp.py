@@ -22,6 +22,7 @@ import logging
 import multiprocessing
 import operator
 import time
+import itertools
 
 from collections import Counter
 from random import choice, shuffle
@@ -93,18 +94,17 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    def get_agents(self, address=True, agent_cls=None):
-        '''Get agents from the managed environment
+    def get_agents(self, address=True, agent_cls=None, exclude_manager=True):
+        '''Get agents from the managed environment.
 
         This is a managing function for the
-        :py:meth:`~creamas.environment.Environment.get_agents`, but returned
-        agent lists exclude this manager by default.
+        :py:meth:`~creamas.environment.Environment.get_agents`. Returned
+        agent lists exclude the environment's manager agent (this agent) by
+        default.
         '''
-        agents = self.env.get_agents(address=address, agent_cls=agent_cls)
-        if address:
-            agents = [a for a in agents if a != self.addr]
-        else:
-            agents = [a for a in agents if a.addr != self.addr]
+        agents = self.env.get_agents(address=address,
+                                     agent_cls=agent_cls,
+                                     exclude_manager=exclude_manager)
         return agents
 
     @aiomas.expose
@@ -317,6 +317,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
         rets = await remote_manager.spawn_n(agent_cls, n, *agent_args,
                                             **agent_kwargs)
+        self.menv._consistent = False
         return rets
 
     @aiomas.expose
@@ -556,11 +557,11 @@ class MultiEnvironment():
         return agents
 
     def get_agents(self, address=True, agent_cls=None):
-        '''Get agents from the slave environments. This method excludes each
-        slave environment's manager agent from the returned list.
+        '''Get agents from the slave environments.
 
-        Essentially calls :py:meth:`get_agents` for each of the slave
-        environment managers.
+        Slave environment managers are excluded from the returned list by
+        default. Essentially, this method calls each slave environment
+        manager's :meth:`creamas.mp.EnvManager.get_agents` asynchronously.
 
         :param bool address:
             If *True*, returns only addresses of the agents, otherwise returns
@@ -580,9 +581,8 @@ class MultiEnvironment():
             for addr in self._manager_addrs:
                 t = self._get_agents(addr, address=True, agent_cls=agent_cls)
                 tasks.append(asyncio.ensure_future(t))
-            aa = aiomas.run(until=asyncio.gather(*tasks))
-            for a in aa:
-                ags.extend(a)
+            rets = aiomas.run(asyncio.gather(*tasks))
+            ags = list(itertools.chain(*rets))
             self._agents = ags
             self._consistent = True
             return ags
