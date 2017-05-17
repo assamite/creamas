@@ -167,13 +167,19 @@ class Environment(Container):
         '''
         return True
 
-    def create_initial_connections(self, n=5):
-        '''Create random initial connections for all agents.
+    def create_random_connections(self, n=5):
+        '''Create random connections for all agents in the environment.
 
         :param int n: the number of connections for each agent
+
+        Existing agent connections that would be created by chance are not
+        doubled in the agent's :attr:`connections`, but count towards
+        connections created.
         '''
-        assert type(n) == int
-        assert n > 0
+        if type(n) != int:
+            raise TypeError("Argument 'n' must be of type int.")
+        if n <= 0:
+            raise ValueError("Argument 'n' must be greater than zero.")
         for a in self.get_agents(address=False):
             others = self.get_agents(address=False)[:]
             others.remove(a)
@@ -206,10 +212,17 @@ class Environment(Container):
                   .format(artifact, len(self.artifacts)))
 
     async def get_artifacts(self, agent=None):
-        '''Get artifacts published by certain agent.
+        '''Get artifacts published to the environment.
 
-        :returns: All artifacts published by the agent.
+        :param agent:
+            If not *None*, then returns only artifacts created by the agent.
+
+        :returns: All artifacts published (by the agent).
         :rtype: list
+
+        If environment has a :attr:`manager` agent, e.g. it is a slave
+        environment in a :class:`~creamas.mp.MultiEnvironment`, then the
+        manager's :method:`~creamas.mp.EnvManager.get_artifacts` is called.
         '''
         if hasattr(self, 'manager'):
             artifacts = await self.manager.get_artifacts()
@@ -239,7 +252,7 @@ class Environment(Container):
             valid_candidates = valid_candidates.intersection(vc)
 
         self._candidates = list(valid_candidates)
-        self._log(logging.INFO,
+        self._log(logging.DEBUG,
                   "{} valid candidates after agents used veto."
                   .format(len(self.candidates)))
 
@@ -279,7 +292,7 @@ class Environment(Container):
             self._log(logging.WARNING, "Could not perform voting because "
                       "there are no candidates!")
             return []
-        self._log(logging.INFO, "Voting from {} candidates with method: {}"
+        self._log(logging.DEBUG, "Voting from {} candidates with method: {}"
                   .format(len(self.candidates), method))
 
         votes = self._gather_votes()

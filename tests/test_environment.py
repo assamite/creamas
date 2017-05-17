@@ -44,7 +44,7 @@ class TestEnvironment(unittest.TestCase):
             self.assertNotEqual(a, r)
 
         conns = 6
-        self.env.create_initial_connections(n=conns)
+        self.env.create_random_connections(n=conns)
         for a in agents:
             a_conns = a.connections
             # all get_agents get enough random connections

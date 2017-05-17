@@ -289,10 +289,10 @@ class CreativeAgent(aiomas.Agent):
             return False
 
     def add_connection(self, addr, attitude=0.0):
-        '''Add an agent with given address to current **connections** with
+        '''Add an agent with given address to current :attr:`connections` with
         given initial attitude.
 
-        Does nothing if agent is already in **connections**.
+        Does nothing if address is already in :attr:`connections`.
 
         :param str addr: Address of the agent to be added
         :param float attitude: initial attitude towards agent, in [-1, 1]

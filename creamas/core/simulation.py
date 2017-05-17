@@ -88,7 +88,7 @@ class Simulation():
             agents = [agent_cls(**agent_kwargs) for e in range(n_agents)]
 
         if conns > 0:
-            env.create_initial_connections(n=conns)
+            env.create_random_connections(n=conns)
 
         return Simulation(env, callback, log_folder)
 
