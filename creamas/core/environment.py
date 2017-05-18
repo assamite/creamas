@@ -225,14 +225,14 @@ class Environment(Container):
         '''Get artifacts published to the environment.
 
         :param agent:
-            If not *None*, then returns only artifacts created by the agent.
+            If not ``None``, then returns only artifacts created by the agent.
 
         :returns: All artifacts published (by the agent).
         :rtype: list
 
         If environment has a :attr:`manager` agent, e.g. it is a slave
         environment in a :class:`~creamas.mp.MultiEnvironment`, then the
-        manager's :method:`~creamas.mp.EnvManager.get_artifacts` is called.
+        manager's :meth:`~creamas.mp.EnvManager.get_artifacts` is called.
         '''
         if hasattr(self, 'manager'):
             artifacts = await self.manager.get_artifacts()

@@ -7,21 +7,26 @@ know their neighbors in each of the four cardinal directions. Currently
 implemented are:
 
     * :class:`~creamas.grid.GridAgent`: The base grid agent implementation,
-      subclass for your needs. The agent knows its neighbors in the cardinal
-      directions.
+      should be used inside :class:`~creamas.grid.GridEnvironment`. Agent
+      places itself in the environment's
+      :attr:`~creamas.grid.GridEnvironment.grid` and knows its neighbors
+      in the cardinal directions: N, E, S, W. Subclass the agent for your
+      specific needs.
 
-    * :class:`~creamas.grid.GridEnvironment`: A single process environment.
-
-    * :class:`~creamas.grid.GridEnvManager`: A manager for a single process
+    * :class:`~creamas.grid.GridEnvironment`: A single process grid
       environment.
 
+    * :class:`~creamas.grid.GridEnvManager`: A manager for a single process
+      grid environment.
+
     * :class:`~creamas.grid.GridMultiEnvironment`: Multi-processing environment
-      holding several :class:`~creamas.grid.GridEnvironment` slaves.
+      holding several :class:`~creamas.grid.GridEnvironment` slaves with
+      managers.
 
     * :class:`~creamas.grid.GridMultiEnvManager`: A manager for a
       multi-processing environment. Used especially if the environment needs to
-      be able to take order from external sources, e.g. when used as a part of
-      :class:`creamas.ds.DistributedEnvironment`.
+      be able to execute commands from external sources, e.g. when used as a
+      part of :class:`creamas.ds.DistributedEnvironment`.
 '''
 import asyncio
 import logging
@@ -350,21 +355,23 @@ class GridEnvManager(EnvManager):
             * Grid is full, i.e. it has maximum number of agents.
             * All the (possible) neighboring grids have been initialized and
               have the maximum number of agents. That is, if managed grid's
-              neighbor map still points to *None*, this grid is assumed to be
+              neighbor map still points to ``None``, this grid is assumed to be
               in the edge of the super-grid containing multiple
-              :py:class:`GridEnvironment`s.
+              :py:class:`GridEnvironment` instances.
+
         '''
         await self.env.set_agent_neighbors()
 
 
 class GridMultiEnvironment(MultiEnvironment):
-    '''Multi-environment which stacks its slave :py:class:`GridEnvironment`s
-    horizontally.
+    '''Multi-environment which stacks its slave :py:class:`GridEnvironment`
+    instances horizontally.
 
-    .. note:: 
+    .. note::
 
         The manager agents for the slave environments will not be part of
-        :attr:`grid` in the slave environments.
+        :attr:`~creamas.grid.GridEnvironment.grid` in the slave environments.
+
     '''
     def __init__(self, *args, **kwargs):
         self._gs = kwargs.pop('grid_size')
@@ -422,7 +429,7 @@ class GridMultiEnvironment(MultiEnvironment):
         return None
 
     async def get_xy_address(self, xy):
-        '''Get address of the agent residing in *xy* coordinate, or None
+        '''Get address of the agent residing in *xy* coordinate, or ``None``
         if no such agent is in this multi-environment.
         '''
         manager_addr = self.get_xy_environment(xy)
@@ -435,8 +442,7 @@ class GridMultiEnvironment(MultiEnvironment):
 
     async def set_slave_neighbors(self):
         '''Set neighbor environments for all the slave environments. Assumes
-        that the neighboring multi-environments are set for the managed
-        multi-environment.
+        that :attr:`neighbors` are set for this multi-environment.
         '''
         for i, elem in enumerate(self._slave_origins):
             o, addr = elem
@@ -498,8 +504,8 @@ class GridMultiEnvironment(MultiEnvironment):
 
     async def populate(self, agent_cls, *args, **kwargs):
         '''Populate all the slave grid environments with agents. Assumes that
-        no agents have been spawned yet to the slave environment grids
-        (excluding the managers).
+        no agents have been spawned yet to the slave environment grids. This
+        excludes the slave environment managers as they are not in the grids.)
         '''
         n = self.gs[0] * self.gs[1]
         tasks = []
@@ -519,6 +525,11 @@ class GridMultiEnvManager(MultiEnvManager):
     async def set_origin(self, origin, mgr_addr):
         '''Set originating coordinates for :py:class:`GridEnvironment` which
         manager is in given address.
+
+        :param origin:
+            New origin of the grid environment, iterable with length 2.
+
+        :param str mgr_addr: Address of the manager agent
         '''
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_origin(origin)
@@ -527,6 +538,11 @@ class GridMultiEnvManager(MultiEnvManager):
     async def set_gs(self, gs, mgr_addr):
         '''Set grid size for :py:class:`GridEnvironment` which manager is in
         given address.
+
+        :param gs:
+            New grid size of the grid environment, iterable with length 2.
+
+        :param str mgr_addr: Address of the manager agent
         '''
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_gs(gs)
@@ -541,11 +557,23 @@ class GridMultiEnvManager(MultiEnvManager):
 
     @aiomas.expose
     async def get_xy_address(self, xy):
+        '''Get address of the agent in the environment with given coordinates.
+
+        This is a managing function for
+        :meth:`~creamas.grid.MultiEnvironment.get_xy_address`.
+
+        '''
         ret = await self.menv.get_xy_address(xy)
         return ret
 
     @aiomas.expose
     def get_xy_environment(self, xy):
+        '''Get environment (address of the manager of that environment) which
+        has agent with given coordinates.
+
+        This is a managing function for
+        :meth:`~creamas.grid.MultiEnvironment.get_xy_environment`.
+        '''
         return self.menv.get_xy_environment(xy)
 
     @aiomas.expose

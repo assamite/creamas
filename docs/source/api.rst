@@ -8,6 +8,7 @@ API Documentation
 	agents
 	mp
 	ds
+	grid
 	features
 	mappers
 	math
