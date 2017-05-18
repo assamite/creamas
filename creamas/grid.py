@@ -44,6 +44,10 @@ def _get_neighbor_xy(card, xy):
 
 class GridAgent(CreativeAgent):
     '''An agent living in a 2D-grid with four neighbors in cardinal directions.
+
+    The agent assumes that its environment is derived from
+    :class:`~creamas.grid.GridEnvironment`, and places itself into the grid
+    when it is initialized.
     '''
 
     def __init__(self, *args, **kwargs):
@@ -60,9 +64,8 @@ class GridAgent(CreativeAgent):
 
     @property
     def neighbors(self):
-        '''Map of neighboring agents in cardinal directions: N, E, S, W.
-
-        These are the *addresses* of the neighboring agents.
+        '''Map of neighboring agent addresses in cardinal
+        directions: N, E, S, W.
         '''
         return self._neighbors
 
@@ -70,11 +73,16 @@ class GridAgent(CreativeAgent):
         '''Send message *msg* to the neighboring agent in the *card*
         cardinal direction.
 
-        Fails silently if there is no neighbor in the given cardinal direction.
-
         :param str card: 'N', 'E', 'S', or 'W'.
-
+        :param msg: Message to the agent.
         :returns: Response from the agent
+
+        The method calls the neighboring agent's :meth:`rcv` with the message
+        and returns any value returned by that agent.
+
+        This method will fail silently if there is no neighbor agent in the
+        given cardinal direction.
+
         '''
         addr = self.neighbors[card]
         if addr is None:
@@ -90,6 +98,10 @@ class GridAgent(CreativeAgent):
     @aiomas.expose
     async def rcv(self, msg):
         '''Receive and handle message coming from another agent.
+
+        This method is called from :meth:`send`.
+
+        The base implementation does nothing, override in a subclass.
         '''
         pass
 
@@ -101,9 +113,11 @@ class GridAgent(CreativeAgent):
 
 
 class GridEnvironment(Environment):
-    '''Environment where agents reside in a 2D-grid. Each agent is connected to
-    neighbors in cardinal directions. Grid environments can be horizontally
-    stacked with :py:class:`GridMultiEnvironment`.
+    '''Environment where agents reside in a 2D-grid.
+
+    Each agent is connected to neighbors in cardinal directions: N, E, S, W.
+    Grid environments can be horizontally stacked with
+    :py:class:`GridMultiEnvironment`.
     '''
     def __init__(self, base_url, clock, connect_kwargs, origin=None, gs=None):
         super().__init__(base_url, clock, connect_kwargs)
@@ -331,12 +345,12 @@ class GridEnvManager(EnvManager):
         correctly set also neighboring agents for agents on the edge of the
         grid.
 
-        This function assumes that::
+        This function assumes that:
 
             * Grid is full, i.e. it has maximum number of agents.
             * All the (possible) neighboring grids have been initialized and
               have the maximum number of agents. That is, if managed grid's
-              neighbor map still points to None, this grid is assumed to be
+              neighbor map still points to *None*, this grid is assumed to be
               in the edge of the super-grid containing multiple
               :py:class:`GridEnvironment`s.
         '''
@@ -346,8 +360,12 @@ class GridEnvManager(EnvManager):
 class GridMultiEnvironment(MultiEnvironment):
     '''Multi-environment which stacks its slave :py:class:`GridEnvironment`s
     horizontally.
-    '''
 
+    .. note:: 
+
+        The manager agents for the slave environments will not be part of
+        :attr:`grid` in the slave environments.
+    '''
     def __init__(self, *args, **kwargs):
         self._gs = kwargs.pop('grid_size')
         self._origin = kwargs.pop('origin')
