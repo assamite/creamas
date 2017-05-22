@@ -44,12 +44,52 @@ evaluates them. A lot of the current functionality is geared towards this goal.
 	<http://aiomas.readthedocs.org/en/latest/>`_ if you do not need any of
 	the additional functionality provided by Creamas.
 
-Exchanging artifacts and information about them is one of the main tasks of
-the agents. An agent can ask other agent's opinions about its own
+Communication Between the Agents
+--------------------------------
+
+Communication between the agents in one of the key interests in multi-agent systems.
+In Creamas, agents can expose their own functions as services to other agents by using
+:func:`expose` decorator from *aiomas* library. An agent wishing to communicate
+with another agent connects to the remote agent (to this end they have to know the other
+agent's (tcp) address) and calls the exposed function remotely. Consider the
+following hypothetical :meth:`service`-method an agent **A** has::
+
+	@aiomas.expose
+	def service(self, param):
+		# do something with param
+		# ...
+		return value
+
+Another agent, agent **B**, knowing that the agent **A**'s address is ``addr``
+can then use **A**'s ``service`` method by connecting to agent **A** through
+its environment. ::
+
+	async def client(self, my_param):
+		remote_agent_A = await self.env.connect(addr)
+		value = await remote_agent_A.service(my_param)
+		# do something with the value
+
+Importantly, the agents do not have to reside in the same environment or even in
+the same machine, i.e. you can connect to any agent or environment as long as
+you know the address for the specific agent in that environment. However, the
+remote agent and its environment have to be implemented using classes derived
+from *aiomas* library, like Creamas agent classes and environments do.
+
+.. note::
+
+	Connecting to an agent and calling an exposed function are done
+	asynchronously using ``await`` keyword before the function call. Any method
+	using ``await`` has to have ``async`` keyword at the start of its function
+	definition.
+
+Evaluating Artifacts
+--------------------
+
+Exchanging artifacts, and information about them, is an eminent functionality for
+the agents in Creamas. An agent can ask other agent's opinions about its own
 artifacts or other artifacts it has seen. This allows the agent to accumulate
-knowledge about the preferences of other agents, which may alter the agent's
-own behavior. The basic interagent communication requires the agent to know the
-other agent's (tcp) address.
+knowledge about the artifact preferences of other agents, which may alter the agent's
+own behavior.
 
 .. code-block:: python
 

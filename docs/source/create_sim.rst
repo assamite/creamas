@@ -21,12 +21,16 @@ Creating simple iterative simulation is made easy with
 
 	from mymodule import MyAgent
 	from creamas.core.simulation import Simulation
-	
+
+	env_kwargs={'addr': ('localhost', 5555)}
 	agent_kwargs = {'foo': 'bar', 'Cthulhu': 'rises'}
 	
 	# Create initial simulation with default parameters using MyAgents-class
 	# and passing agent_kwargs to each agent at initialization time.
-	sim = Simulation.create(agent_cls = MyAgent, agent_kwargs=agent_kwargs, n_agents=20)
+	sim = Simulation.create(env_kwargs=env_kwargs,
+	                        agent_cls=MyAgent,
+	                        agent_kwargs=agent_kwargs,
+	                        n_agents=20)
 	
 	# Advance simulation by single step
 	sim.step()
@@ -43,14 +47,18 @@ Creating simple iterative simulation is made easy with
 
 	from mymodule import MyAgent, CthulhuAgent
 	from.creamas.core.simulation import Simulation
-	
+
+	env_kwargs={'addr': ('localhost', 5555)}
 	myagent_kwargs = {'foo': 'bar', 'Cthulhu': 'rises'}
 	cthulhu_kwargs = {"R'lyeh": 'sunken'}
 	agent_kwargs=[myagent_kwargs,cthulhu_kwargs]
 	agent_cls = [MyAgent, CthulhuAgent]
 	n_agents = [10, 1]
 	
-	sim = Simulation.create(agent_cls=agent_cls, n_agents=n_agents,agent_kwargs=agent_kwargs)
+	sim = Simulation.create(env_kwargs=env_kwargs,
+	                        agent_cls=agent_cls,
+	                        n_agents=n_agents,
+	                        agent_kwargs=agent_kwargs)
 
 2. You can create simulation with your own environment, which is automatically
    passed down to the agents at their initialization time.
@@ -61,9 +69,13 @@ Creating simple iterative simulation is made easy with
 	from myenv import InnsmouthEnvironment
 	from creamas.core.simulation import Simulation
 	
-	env_kwargs = {'weather': 'drizzle, slight wind', 'atmosphere': 'gloomy'}
+	env_kwargs = {'addr': ('localhost', 5555),
+	              'weather': 'drizzle, slight wind',
+	              'atmosphere': 'gloomy'}
 	
-	sim = Simulation.create(agent_cls=StarSpawnAgent,env_cls=InnsmouthEnvironment,env_kwargs=env_kwargs)
+	sim = Simulation.create(agent_cls=StarSpawnAgent
+	                        env_cls=InnsmouthEnvironment,
+	                        env_kwargs=env_kwargs)
 
 Complex Simulation Setups
 -------------------------
@@ -79,7 +91,7 @@ fully initialized the environment, you can then pass it to the
 	from creamas.core.enviroment import Environment
 	from creamas.core.simulation import Simulation
 
-	env = Environment()
+	env = Environment.create(('localhost', 5555))
 	for i in range(10):
 
 		# do some complex calculation
