@@ -399,8 +399,8 @@ class GridMultiEnvironment(MultiEnvironment):
         cur_x = self.origin[0]
         for addr in self.addrs:
             new_origin = (cur_x, self.origin[1])
-            await self.manager.set_origin(addr, new_origin)
-            await self.manager.set_gs(addr, self._gs)
+            await self.set_origin(addr, new_origin)
+            await self.set_gs(addr, self._gs)
             self._slave_origins.append((new_origin, addr))
             new_x = cur_x + self.gs[0]
             cur_x = new_x
@@ -418,9 +418,17 @@ class GridMultiEnvironment(MultiEnvironment):
         '''
         return self._gs
 
+    async def set_gs(self, addr, gs):
+        r_agent = await self.env.connect(addr)
+        return await r_agent.set_gs(gs)
+
     async def get_gs(self, addr):
         r_agent = await self.env.connect(addr)
         return await r_agent.get_gs()
+
+    async def set_origin(self, addr, origin):
+        r_agent = await self.env.connect(addr)
+        return await r_agent.set_origin(origin)
 
     async def get_origin(self, addr):
         r_agent = await self.env.connect(addr)

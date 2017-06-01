@@ -206,16 +206,19 @@ class DistributedEnvironment():
         '''
         return await self.env.connect(*args, **kwargs)
 
-    async def wait_nodes(self, timeout):
-        '''Wait until all nodes are ready or timeout expires. Should be called
-        after :meth:`spawn_nodes`.
-
-        Node is assumed ready when its managers :py:meth:`is_ready`-method
-        returns True.
+    async def wait_nodes(self, timeout, check_ready=True):
+        '''Wait until all nodes are online (their managers accept connections)
+        or timeout expires. Should be called after :meth:`spawn_nodes`.
 
         :param int timeout:
             Timeout (in seconds) after which the method will return even though
-            all the nodes are not ready yet.
+            all the nodes are not online yet.
+
+        :param bool check_ready:
+            If ``True`` also checks if each node environment is ready.
+
+        Node is assumed ready when its manager's :meth:`is_ready`-method
+        returns ``True``.
 
         .. seealso::
 
@@ -237,7 +240,9 @@ class DistributedEnvironment():
                 if addr not in online:
                     try:
                         r_manager = await self.env.connect(addr, timeout=1)
-                        ready = await r_manager.is_ready()
+                        ready = True
+                        if check_ready:
+                            ready = await r_manager.is_ready()
                         if ready:
                             online.append(addr)
                             self.logger.info("Node {}/{} ready: {}"

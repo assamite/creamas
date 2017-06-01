@@ -552,12 +552,6 @@ class MultiEnvironment():
         '''
         return self._env
 
-    async def _get_agents(self, manager_addr, addr=True, agent_cls=None):
-        remote_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
-        agents = await remote_manager.get_agents(addr=addr,
-                                                 agent_cls=agent_cls)
-        return agents
-
     def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         '''Get agents from the slave environments.
 
@@ -588,9 +582,14 @@ class MultiEnvironment():
             list if the agent sets in the slave environments are not bound to
             change.
         '''
+        async def _get_agents(self, mgr_addr, addr=True, agent_cls=None):
+            r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
+            agents = await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
+            return agents
+
         tasks = []
         for r_addr in self.addrs:
-            t = self._get_agents(r_addr, addr=addr, agent_cls=agent_cls)
+            t = _get_agents(r_addr, addr=addr, agent_cls=agent_cls)
             tasks.append(asyncio.ensure_future(t))
         if as_coro:
             return util.wait_tasks(tasks)
@@ -664,15 +663,19 @@ class MultiEnvironment():
                 return False
         return True
 
-    async def wait_slaves(self, timeout):
-        '''Wait until all slaves are ready or timeout expires.
-
-        Slave environment is assumed to be ready when its manager's
-        :py:meth:`is_ready`-method returns True.
+    async def wait_slaves(self, timeout, check_ready=False):
+        '''Wait until all slaves are online (their managers accept connections)
+        or timeout expires.
 
         :param int timeout:
             Timeout (in seconds) after which the method will return even though
-            all the nodes are not ready yet.
+            all the nodes are not online yet.
+
+        :param bool check_ready:
+            If ``True`` also checks if each slave environment is ready.
+
+        Slave environment is assumed to be ready when its manager's
+        :meth:`is_ready`-method returns ``True``.
 
         .. seealso::
 
@@ -694,7 +697,9 @@ class MultiEnvironment():
                 if addr not in online:
                     try:
                         r_manager = await self.env.connect(addr, timeout=1)
-                        ready = await r_manager.is_ready()
+                        ready = True
+                        if check_ready:
+                            ready = await r_manager.is_ready()
                         if ready:
                             online.append(addr)
                             self._log(logging.INFO, "Slave {}/{} ready: {}"
@@ -756,11 +761,6 @@ class MultiEnvironment():
         ret = await r_agent.act()
         return ret
 
-    async def _trigger_slave(self, slave_mgr_addr, *args, **kwargs):
-        r_manager = await self.env.connect(slave_mgr_addr, timeout=TIMEOUT)
-        ret = await r_manager.trigger_all(*args, **kwargs)
-        return ret
-
     async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the slave environments to :meth:`act`
         asynchronously.
@@ -773,10 +773,14 @@ class MultiEnvironment():
             By design, the manager agents in each slave environment, i.e.
             :attr:`manager`, are excluded from acting.
         '''
+        async def _trigger_slave(self, mgr_addr, *args, **kwargs):
+            r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
+            ret = await r_manager.trigger_all(*args, **kwargs)
+            return ret
+
         tasks = []
         for addr in self.addrs:
-            task = asyncio.ensure_future(self._trigger_slave
-                                         (addr, *args, **kwargs))
+            task = asyncio.ensure_future(_trigger_slave(addr, *args, **kwargs))
             tasks.append(task)
         rets = await asyncio.gather(*tasks)
         rets = list(itertools.chain(*rets))
@@ -815,20 +819,16 @@ class MultiEnvironment():
     def clear_candidates(self):
         '''Remove current candidates from the environment.
         '''
+        async def _clear_candidates(self, manager_addr):
+            r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
+            ret = await r_manager.clear_candidates()
+            return ret
+
         self._candidates = []
         tasks = []
         for addr in self._manager_addrs:
-            tasks.append(asyncio.ensure_future(self._clear_candidates(addr)))
+            tasks.append(asyncio.ensure_future(_clear_candidates(addr)))
         aiomas.run(until=asyncio.gather(*tasks))
-
-    async def _clear_candidates(self, manager_addr):
-        r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
-        ret = await r_manager.clear_candidates()
-        return ret
-
-    async def _create_connections(self, r_addr, connection_map):
-        r_manager = await self.env.connect(r_addr)
-        return await r_manager.create_connections(connection_map)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -847,6 +847,10 @@ class MultiEnvironment():
         environment. Only the connections from the agents that are in the slave
         environments are created.
         '''
+        async def _create_conns(self, r_addr, connection_map):
+            r_manager = await self.env.connect(r_addr)
+            return await r_manager.create_connections(connection_map)
+
         tasks = []
         mapped_addrs = util.addrs2managers(list(connection_map.keys()))
         for m_addr, addrs in mapped_addrs.items():
@@ -854,17 +858,12 @@ class MultiEnvironment():
                 cm = {}
                 for ad in addrs:
                     cm[ad] = connection_map[ad]
-                task = asyncio.ensure_future(self._create_connections(m_addr,
-                                                                      cm))
+                task = asyncio.ensure_future(_create_conns(m_addr, cm))
                 tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
         else:
             return aiomas.run(util.wait_tasks(tasks))
-
-    async def _get_connections(self, r_addr, attitudes):
-        r_manager = await self.env.connect(r_addr)
-        return await r_manager.get_connections(attitudes)
 
     def get_connections(self, attitudes=True, as_coro=False):
         '''Return connections from all the agents in the slave environments.
@@ -880,10 +879,13 @@ class MultiEnvironment():
 
             :meth:`creamas.core.environment.Environment.get_connections`
         '''
+        async def _get_connections(self, r_addr, attitudes):
+            r_manager = await self.env.connect(r_addr)
+            return await r_manager.get_connections(attitudes)
+
         tasks = []
         for m_addr in self.addrs:
-            task = asyncio.ensure_future(self._get_connections
-                                         (m_addr, attitudes))
+            task = asyncio.ensure_future(_get_connections(m_addr, attitudes))
             tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
@@ -916,11 +918,6 @@ class MultiEnvironment():
         self._log(logging.DEBUG, "CANDIDATES appended:'{}'"
                   .format(artifact))
 
-    async def _validate_candidates(self, addr):
-        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        vc = remote_manager.validate_candidates(self.candidates)
-        return vc
-
     def validate_candidates(self):
         '''Validate current candidates in the environment by pruning candidates
         that are not validated at least by one agent, i.e. they are vetoed.
@@ -928,10 +925,15 @@ class MultiEnvironment():
         In larger societies this method might be costly, as it calls each
         agents' ``validate_candidates``-method.
         '''
+        async def _validate_candidates(self, addr):
+            remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
+            vc = remote_manager.validate_candidates(self.candidates)
+            return vc
+
         valid_candidates = set(self.candidates)
         tasks = []
         for a in self._manager_addrs:
-            tasks.append(self._validate_candidates(a))
+            tasks.append(_validate_candidates(a))
         ret = aiomas.run(until=asyncio.gather(*tasks))
         for r in ret:
             result = yield from r
