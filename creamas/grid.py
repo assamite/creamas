@@ -124,15 +124,11 @@ class GridEnvironment(Environment):
     Grid environments can be horizontally stacked with
     :py:class:`GridMultiEnvironment`.
     '''
-    def __init__(self, base_url, clock, connect_kwargs, origin=None, gs=None):
+    def __init__(self, base_url, clock, connect_kwargs):
         super().__init__(base_url, clock, connect_kwargs)
         self._gs = (0, 0)
         self._grid = []
-        if gs is not None:
-            self.gs = gs
         self._origin = (0, 0)
-        if origin is not None:
-            self.origin = origin
         self._neighbors = {'N': None, 'E': None, 'S': None, 'W': None}
 
     @property
@@ -330,10 +326,18 @@ class GridEnvManager(EnvManager):
         self.env.origin = origin
 
     @aiomas.expose
+    def get_origin(self):
+        return self.env.origin
+
+    @aiomas.expose
     def set_gs(self, gs):
         '''Set grid size for the managed environment.
         '''
         self.env.gs = gs
+
+    @aiomas.expose
+    def get_gs(self):
+        return self.env.gs
 
     @aiomas.expose
     async def set_grid_neighbor(self, card, addr):
@@ -367,6 +371,9 @@ class GridMultiEnvironment(MultiEnvironment):
     '''Multi-environment which stacks its slave :py:class:`GridEnvironment`
     instances horizontally.
 
+    Call :meth:`creamas.grid.GridMultiEnvironment.set_slave_params` immediately
+    after initializing :class:`GridMultiEnvironment`!
+
     .. note::
 
         The manager agents for the slave environments will not be part of
@@ -376,20 +383,24 @@ class GridMultiEnvironment(MultiEnvironment):
     def __init__(self, *args, **kwargs):
         self._gs = kwargs.pop('grid_size')
         self._origin = kwargs.pop('origin')
+        self._n_slaves = len(kwargs['slave_addrs'])
         super().__init__(*args, **kwargs)
         self._neighbors = {'N': None, 'E': None, 'S': None, 'W': None}
-        self._n_slaves = len(self.addrs)
         self._end_coord = (self.origin[0] + (self.gs[0] * self._n_slaves) - 1,
                            self.origin[1] + self.gs[1] - 1)
-        aiomas.run(until=self._set_slave_params())
 
-    async def _set_slave_params(self):
+    async def set_slave_params(self):
+        '''Set origin and grid size for each slave environment.
+
+        This method needs to be called before slave environments are populated
+        and agents' and slave environments' neighbors are set.
+        '''
         self._slave_origins = []
-        cur_x = self._origin[0]
+        cur_x = self.origin[0]
         for addr in self.addrs:
-            new_origin = [cur_x, self._origin[1]]
-            await self.manager.set_origin(new_origin, addr)
-            await self.manager.set_gs(self.gs, addr)
+            new_origin = (cur_x, self.origin[1])
+            await self.manager.set_origin(addr, new_origin)
+            await self.manager.set_gs(addr, self._gs)
             self._slave_origins.append((new_origin, addr))
             new_x = cur_x + self.gs[0]
             cur_x = new_x
@@ -406,6 +417,14 @@ class GridMultiEnvironment(MultiEnvironment):
         '''Grid size for each slave environment.
         '''
         return self._gs
+
+    async def get_gs(self, addr):
+        r_agent = await self.env.connect(addr)
+        return await r_agent.get_gs()
+
+    async def get_origin(self, addr):
+        r_agent = await self.env.connect(addr)
+        return await r_agent.get_origin()
 
     @property
     def neighbors(self):
@@ -514,7 +533,7 @@ class GridMultiEnvironment(MultiEnvironment):
                                                               n, *args,
                                                               **kwargs))
             tasks.append(task)
-        rets = asyncio.gather(*tasks)
+        rets = await asyncio.gather(*tasks)
         return rets
 
 
@@ -522,27 +541,27 @@ class GridMultiEnvManager(MultiEnvManager):
     '''Manager agent for :py:class:`GridMultiEnvironment`.
     '''
     @aiomas.expose
-    async def set_origin(self, origin, mgr_addr):
+    async def set_origin(self, mgr_addr, origin):
         '''Set originating coordinates for :py:class:`GridEnvironment` which
         manager is in given address.
 
+        :param str mgr_addr: Address of the manager agent
+
         :param origin:
             New origin of the grid environment, iterable with length 2.
-
-        :param str mgr_addr: Address of the manager agent
         '''
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_origin(origin)
 
     @aiomas.expose
-    async def set_gs(self, gs, mgr_addr):
+    async def set_gs(self, mgr_addr, gs):
         '''Set grid size for :py:class:`GridEnvironment` which manager is in
         given address.
 
+        :param str mgr_addr: Address of the manager agent
+
         :param gs:
             New grid size of the grid environment, iterable with length 2.
-
-        :param str mgr_addr: Address of the manager agent
         '''
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_gs(gs)
