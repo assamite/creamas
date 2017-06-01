@@ -588,8 +588,8 @@ class MultiEnvironment():
             return agents
 
         tasks = []
-        for r_addr in self.addrs:
-            t = _get_agents(r_addr, addr=addr, agent_cls=agent_cls)
+        for mgr_addr in self.addrs:
+            t = _get_agents(mgr_addr, addr=addr, agent_cls=agent_cls)
             tasks.append(asyncio.ensure_future(t))
         if as_coro:
             return util.wait_tasks(tasks)
@@ -775,13 +775,12 @@ class MultiEnvironment():
         '''
         async def _trigger_slave(mgr_addr, *args, **kwargs):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
-            ret = await r_manager.trigger_all(*args, **kwargs)
-            return ret
+            return await r_manager.trigger_all(*args, **kwargs)
 
         tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(_trigger_slave(addr, *args, **kwargs))
-            tasks.append(task)
+        for mgr_addr in self.addrs:
+            task = _trigger_slave(mgr_addr, *args, **kwargs)
+            tasks.append(asyncio.ensure_future(task))
         rets = await asyncio.gather(*tasks)
         rets = list(itertools.chain(*rets))
         return rets
