@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinxcontrib.asyncio',
+    'sphinx.ext.intersphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -112,6 +113,9 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+intersphinx_mapping = {'aiomas': ('http://aiomas.readthedocs.io/en/1.0.3/', None),
+                       'networkx': ('http://networkx.readthedocs.io/en/networkx-1.11/', None)}
 
 
 # -- Options for HTML output ----------------------------------------------

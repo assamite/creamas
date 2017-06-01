@@ -14,6 +14,7 @@ import sys
 from creamas import Environment
 
 from creamas.grid import GridMultiEnvironment, GridEnvironment, GridEnvManager, GridMultiEnvManager
+from creamas.ds import run_node
 import utils
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -79,16 +80,6 @@ def populate_menv(menv, agent_cls_name, log_folder):
     loop.run_until_complete(menv.populate(agent_cls_name, n_agents,
                                           log_folder=log_folder))
     logger.info("Populating complete.")
-
-
-async def run_node(menv, log_folder):
-    try:
-        await menv.manager.stop_received
-    except KeyboardInterrupt:
-        logger.info('Execution interrupted by user.')
-    finally:
-        ret = await menv.destroy(log_folder, as_coro=True)
-        return ret
 
 
 def get_slave_addrs(mgr_addr, N):
@@ -161,6 +152,7 @@ if __name__ == "__main__":
     loop.run_until_complete(menv.set_host_managers())
     if agent_cls is not None:
         populate_menv(menv, agent_cls, log_folder)
+    loop.run_until_complete(menv.wait_slaves(30))
 
     # Run this node until its manager's stop-service is called.
     ret = loop.run_until_complete(run_node(menv, log_folder))

@@ -7,7 +7,6 @@ Agent module holds **CreativeAgent** implementation, a subclass of
 creative agents.
 '''
 import logging
-import operator
 from random import choice
 import re
 
@@ -53,15 +52,11 @@ class CreativeAgent(aiomas.Agent):
         Attitude towards each agent in **connections**, in [-1,1]
 
     :ivar str ~creamas.core.agent.CreativeAgent.name:
-        Name of the agent. Defaults to address of the agent.
-
-    :ivar ~creamas.core.agent.CreativeAgent.age:
-        Age of the agent
+        Name of the agent. Defaults to the address of the agent.
     '''
     def __init__(self, environment, resources=0, name=None, log_folder=None,
                  log_level=logging.DEBUG):
         super().__init__(environment)
-        self._age = 0
         self._env = environment
         self._max_res = resources
         self._cur_res = resources
@@ -78,29 +73,31 @@ class CreativeAgent(aiomas.Agent):
             self.__name = self.addr
 
         if type(log_folder) is str:
-            self.logger = ObjectLogger(self, log_folder, add_name=True,
-                                       init=True, log_level=log_level)
+            self._logger = ObjectLogger(self, log_folder, add_name=True,
+                                        init=True, log_level=log_level)
         else:
-            self.logger = None
-
-    @property
-    def age(self):
-        '''Age of the agent.'''
-        return self._age
-
-    @age.setter
-    def age(self, age):
-        self._age = age
+            self._logger = None
 
     @property
     def name(self):
-        '''Human readable name of the agent. The agent should not change its
+        '''Name of the agent. The agent should not change its
         name during its lifetime.'''
         return self.__name
 
     @name.setter
     def name(self, name):
         self.__name = name
+
+    @property
+    def logger(self):
+        '''Logger of the agent. Should be derived from
+        :class:`~creamas.logging.ObjectLogger`.
+        '''
+        return self._logger
+
+    @logger.setter
+    def logger(self, l):
+        self._logger = l
 
     def sanitized_name(self):
         '''Sanitized name of the agent, used for file and directory creation.
@@ -117,7 +114,7 @@ class CreativeAgent(aiomas.Agent):
     @property
     def R(self):
         '''Rules agent uses to evaluate artifacts. Each rule in **R** is
-        expected to be a callable with single parameter, the artifact to be
+        expected to be a callable with a single parameter, the artifact to be
         evaluated. Callable should return a float in [-1,1]; where 1 means that
         rule is very prominent in the artifact; 0 means that there is none of
         that rule in the artifact; -1 means that the artifact shows
@@ -174,12 +171,12 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def connections(self):
-        '''Addresses of the other agents the agent is aware of.'''
+        '''Addresses of known other agents in the society/simulation.'''
         return self._connections
 
     @property
     def attitudes(self):
-        '''Attitudes towards agents in **connections**.'''
+        '''Attitudes towards agents in :attr:`connections`.'''
         return self._attitudes
 
     def qualname(self):
@@ -201,7 +198,6 @@ class CreativeAgent(aiomas.Agent):
         '''Set attitude towards agent. If agent is not in **connections**, adds
         it.
         '''
-        assert (attitude >= -1.0 and attitude <= 1.0)
         try:
             ind = self._connections.index(addr)
             self._attitudes[ind] = attitude
@@ -257,9 +253,8 @@ class CreativeAgent(aiomas.Agent):
         :returns: true if rule was successfully added, otherwise false
         :rtype bool:
         '''
-        if not (issubclass(rule.__class__, Rule) or
-                issubclass(rule.__class__, RuleLeaf)):
-            raise TypeError("Rule to add ({}) is not subclass of {} or {}."
+        if not issubclass(rule.__class__, (Rule, RuleLeaf)):
+            raise TypeError("Rule to add ({}) must be derived from {} or {}."
                             .format(rule.__class__, Rule, RuleLeaf))
         if rule not in self._R:
             self._R.append(rule)
@@ -288,6 +283,7 @@ class CreativeAgent(aiomas.Agent):
         except:
             return False
 
+    @aiomas.expose
     def add_connection(self, addr, attitude=0.0):
         '''Add an agent with given address to current :attr:`connections` with
         given initial attitude.
@@ -304,6 +300,19 @@ class CreativeAgent(aiomas.Agent):
             return True
         return False
 
+    @aiomas.expose
+    def add_connections(self, conns):
+        '''Add agents from *conns* to :attr:`connections`.
+
+        :param list conns: A list of (addr, attitude)-tuples
+        '''
+        rets = []
+        for addr, att in conns:
+            r = self.add_connection(addr, att)
+            rets.append(r)
+        return rets
+
+    @aiomas.expose
     def remove_connection(self, addr):
         '''Remove agent with given address from current connections.'''
         try:
@@ -314,12 +323,27 @@ class CreativeAgent(aiomas.Agent):
         except:
             return False
 
+    @aiomas.expose
+    def get_connections(self, attitudes=False):
+        '''Get agent's current connections.
+
+        :param bool attitudes:
+            If ``True``, returns a list of (address, attitude)-tuples,
+            otherwise returns a list of addresses.
+
+        :returns: A list of connections or (connection, attitude)-tuples.
+        '''
+        if attitudes:
+            return list(zip(self._connections, self._attitudes))
+        return self._connections
+
     async def connect(self, addr):
         '''Connect to agent in given address using the agent's environment.
 
-        This is a shortcut to ``agent.env.connect(addr)``.
+        This is a shortcut to
+        :meth:`~creamas.core.enviroment.Environment.connect`.
 
-        :returns: :class:`Proxy` object for the connected agent.
+        :returns: :class:`aiomas.Proxy` object for the connected agent.
         '''
         remote_agent = await self.env.connect(addr)
         return remote_agent
@@ -327,7 +351,7 @@ class CreativeAgent(aiomas.Agent):
     async def random_connection(self):
         '''Connect to random agent from current :attr:`connections`.
 
-        :returns: :class:`Proxy` object for the connected agent.
+        :returns: :class:`aiomas.Proxy` object for the connected agent.
         '''
         addr = choice(self._connections)
         remote_agent = await self.env.connect(addr)
@@ -346,6 +370,7 @@ class CreativeAgent(aiomas.Agent):
         '''Refill agent's resources to maximum.'''
         self._cur_res = self._max_res
 
+    @aiomas.expose
     def evaluate(self, artifact):
         r'''Evaluate artifact with agent's current rules and weights.
 
@@ -362,7 +387,7 @@ class CreativeAgent(aiomas.Agent):
         :rtype:
             tuple
 
-        Actual evaluation formula is:
+        Actual evaluation formula in this basic implementation is:
 
         .. math::
 
@@ -387,15 +412,22 @@ class CreativeAgent(aiomas.Agent):
         return s / w, None
 
     async def ask_opinion(self, addr, artifact):
-        '''Ask agent's opinion about an artifact.
-
-        The artifact object should be serializable by the environment.
+        '''Ask an agent's opinion about an artifact.
 
         :param str addr: Address of the agent which opinion is asked
         :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
         :param object artifact: artifact to be evaluated
         :returns: agent's evaluation of the artifact
         :rtype: float
+
+        This is a shortcut to::
+
+            remote_agent = await self.env.connect(addr)
+            opinion = await remote_agent.evaluate(artifact)
+
+        .. note::
+
+            The artifact object should be serializable by the environment.
         '''
         remote_agent = await self.env.connect(addr)
         ret = await remote_agent.evaluate(artifact)
@@ -411,55 +443,6 @@ class CreativeAgent(aiomas.Agent):
         :raises NotImplementedError: If not overridden in subclass.
         '''
         raise NotImplementedError('Override in subclass.')
-
-    def validate(self, candidates):
-        '''Validate a list of candidate artifacts.
-
-        Candidate validation should prune unwanted artifacts from the overall
-        candidate set. Agent can use its own reasoning to validate the
-        given candidates. The method should return a subset of the given
-        candidates list containing the validated artifacts (i.e. the
-        artifacts that are not pruned).
-
-        .. note::
-            This basic implementation returns the given candidate list as is.
-            Override this function in the subclass for the appropriate
-            validation procedure.
-
-        :param candidates: A list of candidate artifacts
-        :returns: The validated artifacts, a subset of given candidates
-        '''
-        return candidates
-
-    @aiomas.expose
-    def vote(self, candidates):
-        '''Rank artifact candidates.
-
-        The voting is needed for the agents living in societies using
-        social decision making. The function should return a sorted list
-        of (candidate, evaluation)-tuples. Depending on the social choice
-        function used, the evaluation might be omitted from the actual decision
-        making, or only a number of (the highest ranking) candidates may be
-        used.
-
-        This basic implementation ranks candidates based on
-        :meth:`~creamas.core.agent.CreativeAgent.evaluate`.
-
-        :param candidates:
-            list of :py:class:`~creamas.core.artifact.Artifact` objects to be
-            ranked
-
-        :returns:
-            Ordered list of (candidate, evaluation)-tuples
-        '''
-        ranks = [(c, self.evaluate(c)[0]) for c in candidates]
-        ranks.sort(key=operator.itemgetter(1), reverse=True)
-        return ranks
-
-    @aiomas.expose
-    async def get_older(self):
-        '''Age agent by one simulation step.'''
-        self._age = self._age + 1
 
     def _log(self, level, msg):
         if self.logger is not None:

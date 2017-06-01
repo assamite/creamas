@@ -16,7 +16,7 @@ make the code substantially faster to run on machines with several cores.
 .. note::
 
     This example is research code and provided as is. Therefore, the quality
-    of the code and its documentation is insufficient.
+    of the code is not the great and its documentation is insufficient.
 
 '''
 import os
@@ -31,13 +31,14 @@ import aiomas
 import numpy as np
 from scipy import misc
 
-from creamas.core import CreativeAgent, Artifact
+from creamas import Artifact
 from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
 from creamas.math import gaus_pdf
+from creamas.vote import VoteAgent
 
 from spiro import give_dots, give_dots_yield, spiro_image
 
-class SpiroAgent(CreativeAgent):
+class SpiroAgent(VoteAgent):
     '''Agent that creates spirographs and evaluates them with short term memory
     (``STMemory``) learned from previously seen spirographs.
     '''
@@ -128,6 +129,7 @@ class SpiroAgent(CreativeAgent):
         self.jump = jump
         self.move_radius = move_radius
         self.arg_history = []
+        self.age = 0
 
     def create(self, r, r_, R=200):
         '''Create new spirograph image with given arguments. Returned image is
@@ -219,6 +221,7 @@ class SpiroAgent(CreativeAgent):
         See Simulation and CreativeAgent documentation for details.
         '''
         # Learn from domain artifacts.
+        self.age += 1
         self.added_last = False
         r = await self.learn_from_domain(method=self.env_learning_method,
                                          amount=self.env_learning_amount)
@@ -233,7 +236,7 @@ class SpiroAgent(CreativeAgent):
         self.add_artifact(artifact)
         if val >= self._own_threshold:
             artifact.self_criticism = 'pass'
-            # Train SOM with the invented artifact
+            # Learn the invented artifact to the short term memory.
             self.learn(artifact, self.teaching_iterations)
             # Save images if logger is defined
             # Add created artifact to voting candidates in the environment
@@ -627,7 +630,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         valid_line = ax2.plot(vxs, self.valid_cand, color='cornflowerblue',
                               marker="x", linestyle="")
         ax2.set_ylabel('valid candidates after veto', color='cornflowerblue')
-        a = self.get_agents(address=False)[0]
+        a = self.get_agents(addr=False)[0]
 
         if self.logger is not None:
             imname = os.path.join(self.logger.folder, 'env_a{}_i{}_v{}.png'

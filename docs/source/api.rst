@@ -9,6 +9,7 @@ API Documentation
 	mp
 	ds
 	grid
+	nx
 	features
 	mappers
 	math

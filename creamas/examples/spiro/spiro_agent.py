@@ -27,13 +27,13 @@ import operator
 import numpy as np
 from scipy import ndimage, misc
 
-from creamas.core import CreativeAgent, Artifact
-from creamas.core.environment import Environment
+from creamas import Environment, Artifact
 from creamas.math import gaus_pdf
+from creamas.vote import VoteAgent
 
 from spiro import give_dots, give_dots_yield, spiro_image
 
-class SpiroAgent(CreativeAgent):
+class SpiroAgent(VoteAgent):
     '''Agent that creates spirographs and evaluates them with short term memory
     (``STMemory``) learned from previously seen spirographs.
     '''
@@ -124,6 +124,7 @@ class SpiroAgent(CreativeAgent):
         self.jump = jump
         self.move_radius = move_radius
         self.arg_history = []
+        self.age = 0
 
     def create(self, r, r_, R=200):
         '''Create new spirograph image with given arguments. Returned image is
@@ -214,6 +215,7 @@ class SpiroAgent(CreativeAgent):
         See Simulation and CreativeAgent documentation for details.
         '''
         # Learn from domain artifacts.
+        self.age += 1
         self.added_last = False
         self.learn_from_domain(method=self.env_learning_method,
                                amount=self.env_learning_amount)
@@ -476,7 +478,7 @@ class SpiroEnvironment(Environment):
             accepted = True if v >= threshold else False
             a.accepted = accepted
             self.add_artifact(a)
-            for agent in self.get_agents(address=False):
+            for agent in self.get_agents(addr=False):
                 agent.domain_artifact_added(a)
 
         self.clear_candidates()
@@ -583,7 +585,7 @@ class SpiroEnvironment(Environment):
         valid_line = ax2.plot(vxs, self.valid_cand, color='cornflowerblue',
                               marker="x", linestyle="")
         ax2.set_ylabel('valid candidates after veto', color='cornflowerblue')
-        a = self.get_agents(address=False)[0]
+        a = self.get_agents(addr=False)[0]
         agent_vars = "{}{}_last={}_stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_mean={}_amean={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
             a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius,
@@ -608,7 +610,7 @@ class SpiroEnvironment(Environment):
 
         x = []
         y = []
-        for a in self.get_agents(address=False):
+        for a in self.get_agents(addr=False):
             args = a.arg_history
             x = x + [e[0] for e in args]
             y = y + [e[1] for e in args]
@@ -616,7 +618,7 @@ class SpiroEnvironment(Environment):
 
         x = []
         y = []
-        for a in self.get_agents(address=False):
+        for a in self.get_agents(addr=False):
             arts = a.A
             for ar in arts:
                 if ar.self_criticism == 'pass':
@@ -641,7 +643,7 @@ class SpiroEnvironment(Environment):
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
         ax.set_title(title)
 
-        a = self.get_agents(address=False)[0]
+        a = self.get_agents(addr=False)[0]
         agent_vars = "{}{}_last={}, stmem=list{}_veto={}_sc={}_jump={}_sw={}_mr={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add, a.stmem.length,
             a._novelty_threshold, a._own_threshold, a.jump, a.search_width, a.move_radius)
@@ -658,13 +660,13 @@ class SpiroEnvironment(Environment):
 
     def destroy(self, folder):
         ameans = []
-        for a in self.get_agents(address=False):
+        for a in self.get_agents(addr=False):
             md = a.close(folder=folder)
             ameans.append(md)
         amin = min(ameans)
         amax = max(ameans)
         amean = np.mean(ameans)
-        a = self.get_agents(address=False)[0]
+        a = self.get_agents(addr=False)[0]
         ret = self.save_info(folder, [amin, amax, amean])
         agent_vars = "{}{}_last={}_veto={}_sc={}_jump={}_stmem=list{}_sw={}_mr={}_maxN".format(
             a.env_learning_method, a.env_learning_amount, a.env_learn_on_add,

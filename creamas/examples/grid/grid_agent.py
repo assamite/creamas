@@ -22,4 +22,5 @@ class ExampleGridAgent(GridAgent):
     @aiomas.expose
     async def act(self, *args, **kwargs):
         card = random.choice(['N', 'S', 'E', 'W'])
-        rcv = await self.send(card, "Message from {}".format(self.addr))
+        ret = await self.send(card, "Message from {}".format(self.addr))
+        return ret

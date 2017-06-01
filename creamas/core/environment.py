@@ -36,13 +36,13 @@ class Environment(Container):
         self._log_folder = None
         self._artifacts = []
         self._candidates = []
-        self._name = 'env@{}'.format(base_url)
+        self._name = base_url
 
         # Try setting the process name to easily recognize the spawned
         # environments with 'ps -x' or 'top'
         try:
             import setproctitle as spt
-            spt.setproctitle('Creamas: {}({})'.format(type(self), base_url))
+            spt.setproctitle('Creamas: {}'.format(str(self)))
         except:
             pass
 
@@ -50,15 +50,6 @@ class Environment(Container):
     def name(self):
         '''Name of the environment.'''
         return self._name
-
-    @property
-    def age(self):
-        '''Age of the environment.'''
-        return self._age
-
-    @age.setter
-    def age(self, _age):
-        self._age = _age
 
     @property
     def artifacts(self):
@@ -71,6 +62,16 @@ class Environment(Container):
         determine which candidate(s) are added to **artifacts**.
         '''
         return self._candidates
+
+    @property
+    def age(self):
+        '''Age of the environment.
+        '''
+        return self._age
+
+    @age.setter
+    def age(self, a):
+        self._age = a
 
     @property
     def logger(self):
@@ -92,32 +93,39 @@ class Environment(Container):
         self._logger = ObjectLogger(self, _log_folder, add_name=True,
                                     init=True)
 
-    def get_agents(self, address=True, agent_cls=None, exclude_manager=False):
+    def get_agents(self, addr=True, agent_cls=None, include_manager=False):
         '''Get agents in the environment.
 
-        :param bool address: If true, returns only addresses of the agents.
+        :param bool addr: If ``True``, returns only addresses of the agents.
         :param agent_cls:
             Optional, if specified returns only agents belonging to that
             particular class.
 
-        :param bool exclude_manager:
-            If True, excludes the environment's manager, i.e. the agent in the
-            address ``tcp://environment-host:port/0``, from the returned
-            list.
+        :param bool include_manager:
+            If `True``` includes the environment's manager, i.e. the agent in
+            the address ``tcp://environment-host:port/0``, to the returned
+            list if the environment has attribute :attr:`manager`. If
+            environment does not have :attr:`manager`, then the parameter does
+            nothing.
 
         :returns: A list of agents in the environment.
         :rtype: list
+
+        .. note::
+            By design, manager agents are excluded from the returned lists of
+            agents by default.
         '''
         agents = list(self.agents.dict.values())
-        if exclude_manager:
-            agents = [a for a in agents if a.addr.rsplit('/', 1)[1] != '0']
+        if hasattr(self, 'manager') and self.manager is not None:
+            if not include_manager:
+                agents = [a for a in agents if a.addr.rsplit('/', 1)[1] != '0']
         if agent_cls is not None:
             agents = [a for a in agents if type(a) is agent_cls]
-        if address:
+        if addr:
             agents = [agent.addr for agent in agents]
         return agents
 
-    async def trigger_act(self, addr=None, agent=None):
+    async def trigger_act(self, *args, addr=None, agent=None, **kwargs):
         '''Trigger agent to act.
 
         If *agent* is None, then looks the agent by the address.
@@ -125,30 +133,33 @@ class Environment(Container):
         :raises ValueError: if both *agent* and *addr* are None.
         '''
         if agent is None and addr is None:
-            raise ValueError("Either addr or agent has to be defined.")
+            raise TypeError("Either addr or agent has to be defined.")
         if agent is None:
-            for a in self.get_agents(address=False):
+            for a in self.get_agents(addr=False):
                 if addr == a.addr:
                     agent = a
         self._log(logging.DEBUG, "Triggering agent in {}".format(agent.addr))
-        await agent.get_older()
-        ret = await agent.act()
+        ret = await agent.act(*args, **kwargs)
         return ret
 
-    async def trigger_all(self, exclude_manager=False):
+    async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in the environment to act asynchronously.
 
-        :param bool exclude_manager:
-            If True, excludes the first agent (i.e. the manager agent) in the
-            environment from acting.
+        :returns: A list of agents' :meth:`act` return values.
+
+        Given arguments and keyword arguments are passed down to each agent's
+        :meth:`creamas.core.agent.CreativeAgent.act`.
+
+        .. note::
+
+            By design, the environment's manager agent, i.e. if the environment
+            has :attr:`manager`, is excluded from acting.
         '''
         tasks = []
-        for a in self.get_agents(address=False):
-            if exclude_manager and a.addr.rsplit("/", 1)[1] == '0':
-                continue
-            else:
-                task = asyncio.ensure_future(self.trigger_act(agent=a))
-                tasks.append(task)
+        for a in self.get_agents(addr=False, include_manager=False):
+            task = asyncio.ensure_future(self.trigger_act
+                                         (*args, agent=a, **kwargs))
+            tasks.append(task)
         rets = await asyncio.gather(*tasks)
         return rets
 
@@ -190,12 +201,58 @@ class Environment(Container):
             raise TypeError("Argument 'n' must be of type int.")
         if n <= 0:
             raise ValueError("Argument 'n' must be greater than zero.")
-        for a in self.get_agents(address=False):
-            others = self.get_agents(address=False)[:]
+        for a in self.get_agents(addr=False):
+            others = self.get_agents(addr=False)[:]
             others.remove(a)
             shuffle(others)
             for r_agent in others[:n]:
                 a.add_connection(r_agent)
+
+    def create_connections(self, connection_map):
+        '''Create agent connections from a given connection map.
+
+        :param dict connection_map:
+            A map of connections to be created. Dictionary where keys are
+            agent addresses and values are lists of (addr, attitude)-tuples
+            suitable for
+            :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
+
+        The connection map can also include agents that are not in this
+        environment. Only the connections for the agents that are in the
+        environment are created.
+        '''
+        agents = self.get_agents(addr=False)
+        rets = []
+        for a in agents:
+            if a.addr in connection_map:
+                r = a.add_connections(connection_map[a.addr])
+                rets.append(r)
+        return rets
+
+    def get_connections(self, attitudes=True):
+        '''Return connections from all the agents in the environment.
+
+        :param bool attitudes:
+            If ``True`` return also attitudes towards the agents.
+
+        :returns:
+            A list of ``(addr, connections)``-tuples, where ``connections`` is
+            a list of addresses agent in ``addr`` is connected to. If
+            ``attitudes`` parameter is ``True``, then the ``connections``
+            list contains tuples of ``(nb_addr, attitude)``-pairs .
+
+        :rtype: dict
+
+        .. note::
+
+            By design, potential manager agent is excluded from the returned
+            list.
+        '''
+        connections = []
+        for a in self.get_agents(addr=False):
+            c = (a.addr, a.get_connections(attitudes=attitudes))
+            connections.append(c)
+        return connections
 
     def get_random_agent(self, agent):
         '''Return random agent that is not the same as agent given as
@@ -206,9 +263,9 @@ class Environment(Container):
         :returns: random, non-connected, agent from the environment
         :rtype: :py:class:`~creamas.core.agent.CreativeAgent`
         '''
-        r_agent = choice(self.get_agents(address=False))
+        r_agent = choice(self.get_agents(addr=False))
         while r_agent.addr == agent.addr:
-            r_agent = choice(self.get_agents(address=False))
+            r_agent = choice(self.get_agents(addr=False))
         return r_agent
 
     def add_artifact(self, artifact):
@@ -222,7 +279,7 @@ class Environment(Container):
                   .format(artifact, len(self.artifacts)))
 
     async def get_artifacts(self, agent=None):
-        '''Get artifacts published to the environment.
+        '''Return artifacts published to the environment.
 
         :param agent:
             If not ``None``, then returns only artifacts created by the agent.
@@ -234,7 +291,7 @@ class Environment(Container):
         environment in a :class:`~creamas.mp.MultiEnvironment`, then the
         manager's :meth:`~creamas.mp.EnvManager.get_artifacts` is called.
         '''
-        if hasattr(self, 'manager'):
+        if hasattr(self, 'manager') and self.manager is not None:
             artifacts = await self.manager.get_artifacts()
         else:
             artifacts = self.artifacts
@@ -257,7 +314,7 @@ class Environment(Container):
         agents' :meth:`validate`.
         '''
         valid_candidates = set(self.candidates)
-        for a in self.get_agents(address=False):
+        for a in self.get_agents(addr=False):
             vc = set(a.validate(self.candidates))
             valid_candidates = valid_candidates.intersection(vc)
 
@@ -268,7 +325,7 @@ class Environment(Container):
 
     def _gather_votes(self):
         votes = []
-        for a in self.get_agents(address=False):
+        for a in self.get_agents(addr=False):
             vote = a.vote(candidates=self.candidates)
             votes.append(vote)
         return votes
@@ -427,7 +484,7 @@ class Environment(Container):
         '''
         async def _destroy(folder):
             ret = self.save_info(folder)
-            for a in self.get_agents(address=False):
+            for a in self.get_agents(addr=False):
                 a.close(folder=folder)
             await self.shutdown(as_coro=True)
             return ret
@@ -438,3 +495,9 @@ class Environment(Container):
             loop = asyncio.get_event_loop()
             ret = loop.run_until_complete(_destroy(folder))
             return ret
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, self.name)

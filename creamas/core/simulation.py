@@ -167,7 +167,7 @@ class Simulation():
         self._order = order
 
     def _get_order_agents(self):
-        agents = self.env.get_agents(address=True)
+        agents = self.env.get_agents(addr=True)
         if self.order == 'alphabetical':
             return sorted(agents)
         shuffle(agents)
@@ -269,8 +269,8 @@ class Simulation():
         '''End simulation and destroy the current simulation environment.'''
         ret = self.env.destroy(folder=folder)
         self._end_time = time.time()
-        self._log(logging.INFO, "Simulation run with {} steps took {:.3f}s to "
-                  "complete, while actual processing time was {:.3f}s."
+        self._log(logging.DEBUG, "Simulation run with {} steps took {:.3f}s to"
+                  " complete, while actual processing time was {:.3f}s."
                   .format(self.age, self._end_time - self._start_time,
                           self._processing_time))
         return ret

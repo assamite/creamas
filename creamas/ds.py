@@ -13,7 +13,6 @@ on computing clusters or other distributed systems.
     by default as a dependency.
 '''
 import asyncio
-import itertools
 import logging
 import multiprocessing
 import time
@@ -22,6 +21,7 @@ import traceback
 import aiomas
 import asyncssh
 from creamas import Environment
+from creamas import util
 
 
 async def ssh_exec(server, cmd, **ssh_kwargs):
@@ -69,10 +69,13 @@ def ssh_exec_in_new_loop(server, cmd, **ssh_kwargs):
 
 async def run_node(menv, log_folder):
     '''Run :class:`~creamas.mp.MultiEnvironment` until its manager's
-    :meth:`~creamas.mp.MultiEnvManager.stop` is called.
+    :meth:`~aiomas.subproc.Manager.stop` is called.
 
     :param menv: :class:`~creamas.mp.MultiEnvironment` to wait for.
-    :param str log_folder: Logging folder to be used when ``stop`` is called.
+    :param str log_folder:
+        Logging folder to be passed down to
+        :meth:`~creamas.mp.MultiEnvironment.destroy` after :meth:`stop` is
+        called.
 
     This method will block the current thread until the manager's
     :meth:`~creamas.mp.MultiEnvManager.stop` is called. After the stop-message
@@ -84,7 +87,7 @@ async def run_node(menv, log_folder):
     script will block the script's further execution until the simulation has
     run its course and the nodes need to be destroyed.
     Calling :meth:`~creamas.ds.DistributedEnvironment.destroy` will
-    automatically call each node manager's stop-method and therefore release
+    automatically call each node manager's :meth:`stop` and therefore release
     the script.
     '''
     try:
@@ -198,6 +201,11 @@ class DistributedEnvironment():
         '''
         return self._manager_addrs
 
+    async def connect(self, *args, **kwargs):
+        '''Shortcut to ``self.env.connect``
+        '''
+        return await self.env.connect(*args, **kwargs)
+
     async def wait_nodes(self, timeout):
         '''Wait until all nodes are ready or timeout expires. Should be called
         after :meth:`spawn_nodes`.
@@ -300,19 +308,27 @@ class DistributedEnvironment():
         '''
         raise NotImplementedError()
 
-    async def _trigger_node(self, addr):
+    async def _trigger_node(self, addr, *args, **kwargs):
         '''Trigger all agents in a node managed by the agent in
         *addr* to act.
         '''
         r_manager = await self.env.connect(addr)
-        ret = await r_manager.trigger_all()
+        ret = await r_manager.trigger_all(*args, **kwargs)
         return ret
 
-    async def trigger_all(self):
+    async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the nodes to act asynchronously.
 
         This method makes a connection to each manager in *addrs*
         and asynchronously executes :meth:`trigger_all` in all of them.
+
+        Given arguments and keyword arguments are passed down to each agent's
+        :meth:`creamas.core.agent.CreativeAgent.act`.
+
+        .. note::
+
+            By design, the manager agents in each environment, i.e.
+            :attr:`manager`, are excluded from acting.
 
         .. seealso::
 
@@ -322,10 +338,11 @@ class DistributedEnvironment():
         '''
         tasks = []
         for addr in self.addrs:
-            task = asyncio.ensure_future(self._trigger_node(addr))
+            task = asyncio.ensure_future(self._trigger_node
+                                         (addr, *args, **kwargs))
             tasks.append(task)
-        ret = await asyncio.gather(*tasks)
-        return ret
+        rets = await asyncio.gather(*tasks)
+        return rets
 
     async def stop_nodes(self, timeout=1):
         '''Stop all the nodes by sending a stop-message to their managers.
@@ -360,7 +377,7 @@ class DistributedEnvironment():
         agents = await r_manager.get_agents(address, agent_cls)
         return agents
 
-    async def get_agents(self, address=True, agent_cls=None):
+    def get_agents(self, address=True, agent_cls=None, as_coro=False):
         '''Return all the relevant agents from all the nodes.
 
         The method excludes all the manager agents from the returned list.
@@ -377,6 +394,62 @@ class DistributedEnvironment():
                                                           address,
                                                           agent_cls))
             tasks.append(task)
-        rets = await asyncio.gather(*tasks)
-        agents = list(itertools.chain(*rets))
-        return agents
+        if as_coro:
+            return util.wait_tasks(tasks)
+        else:
+            return aiomas.run(util.wait_tasks(tasks))
+
+    async def _create_connections(self, m_addr, connection_map):
+        r_manager = await self.env.connect(m_addr)
+        return await r_manager.create_connections(connection_map)
+
+    def create_connections(self, connection_map, as_coro=False):
+        '''Create agent connections from the given connection map.
+
+        :param dict connection_map:
+            A map of connections to be created. Dictionary where keys are
+            agent addresses and values are lists of (addr, attitude)-tuples
+            suitable for
+            :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
+
+        The connection map is passed as is to all the node managers which then
+        take care of creating connections in their slave environments.
+        '''
+        tasks = []
+        for m_addr in self.addrs:
+            task = self.ensure_future(self._create_connections(m_addr,
+                                                               connection_map))
+            tasks.append(task)
+        if as_coro:
+            return util.wait_tasks(tasks)
+        else:
+            return aiomas.run(util.wait_tasks(tasks))
+
+    async def _get_connections(self, r_addr, attitudes):
+        r_manager = await self.env.connect(r_addr)
+        return await r_manager.get_connections(attitudes)
+
+    def get_connections(self, attitudes, as_coro=False):
+        '''Return connections from all the agents in the node environments.
+
+        :param bool attitudes:
+            If ``True``, returns also the attitudes for each connection.
+
+        :param bool as_coro:
+            If ``True`` returns a coroutine, otherwise runs the asynchronous
+            calls to the node environment managers in the event loop.
+
+        .. seealso::
+
+            :meth:`creamas.core.environment.Environment.get_connections`
+            :meth:`creamas.mp.MultiEnvironment.get_connections`
+        '''
+        tasks = []
+        for m_addr in self.addrs:
+            task = asyncio.ensure_future(self._get_connections
+                                         (m_addr, attitudes))
+            tasks.append(task)
+        if as_coro:
+            return util.wait_tasks(tasks)
+        else:
+            return aiomas.run(util.wait_tasks(tasks))

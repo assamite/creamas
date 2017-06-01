@@ -32,8 +32,8 @@ initialization parameter.
 	a2 = CreativeAgent(env)
 
 The fundamental design principle guiding the development of Creamas is that
-each agent creates artifacts (:class:`~creamas.Artifact`) in some domain(s) and
-evaluates them. A lot of the current functionality is geared towards this goal.
+agents create artifacts (:class:`~creamas.Artifact`) in some domain(s) and
+evaluate them. A lot of the current functionality is geared towards this goal.
 
 .. note::
 
@@ -50,9 +50,16 @@ Communication Between the Agents
 Communication between the agents in one of the key interests in multi-agent systems.
 In Creamas, agents can expose their own functions as services to other agents by using
 :func:`expose` decorator from *aiomas* library. An agent wishing to communicate
-with another agent connects to the remote agent (to this end they have to know the other
-agent's (tcp) address) and calls the exposed function remotely. Consider the
-following hypothetical :meth:`service`-method an agent **A** has::
+with another agent connects to the remote agent and calls the exposed function
+remotely. To this end they have to know the other agent's (tcp) address.
+
+.. note::
+
+	Agents derived from :class:`~creamas.core.agent.CreativeAgent` are
+	supposed to store addresses of known other agents in their
+	:attr:`~creamas.core.agent.CreativeAgent.connections`.
+
+Consider a following hypothetical :meth:`service`-method an agent **A** has::
 
 	@aiomas.expose
 	def service(self, param):
@@ -71,7 +78,7 @@ its environment. ::
 
 Importantly, the agents do not have to reside in the same environment or even in
 the same machine, i.e. you can connect to any agent or environment as long as
-you know the address for the specific agent in that environment. However, the
+you know the address of the specific agent in the environment. However, the
 remote agent and its environment have to be implemented using classes derived
 from *aiomas* library, like Creamas agent classes and environments do.
 
@@ -82,14 +89,30 @@ from *aiomas* library, like Creamas agent classes and environments do.
 	using ``await`` has to have ``async`` keyword at the start of its function
 	definition.
 
+Creating and Analyzing Agent Connections
+........................................
+
+Studying varying social network structures in creative agent systems is one of
+the main purposes Creamas exists. To generate agent connections and to analyze
+them, Creamas has some built-in support for integration with
+`NetworkX <http://networkx.readthedocs.io/en/stable/>`_ graph library.
+These functionalities are found from :mod:`creamas.nx` module. The main
+functions are :func:`~creamas.nx.connections_from_graph` and
+:func:`~creamas.nx.graph_from_connections`. They allow priming agent-to-agent
+connections with varying properties and analyzing them easily using NetworkX
+graph structures.
+
 Evaluating Artifacts
---------------------
+....................
 
 Exchanging artifacts, and information about them, is an eminent functionality for
-the agents in Creamas. An agent can ask other agent's opinions about its own
+agents in Creamas. An agent can ask other agent's opinions about its own
 artifacts or other artifacts it has seen. This allows the agent to accumulate
 knowledge about the artifact preferences of other agents, which may alter the agent's
 own behavior.
+
+Method :func:`~creamas.core.agent.CreativeAgent.ask_opinion` offers
+a shortcut to ask an opinion about an artifact from a remote agent.
 
 .. code-block:: python
 
@@ -101,9 +124,10 @@ own behavior.
 	# first evaluate it yourself
 	ev = a1.evaluate(ar)
 	# ask other agent's opinion (evaluation) of it
-	ret = a1.ask_opinion(a2.addr, ar)
+	remote_addr = a1.connections[0]
+	ret = a1.ask_opinion(remote_addr, ar)
 	# get a1's current attitude towards a2
-	att = a1.get_attitude(a2.addr)
+	att = a1.get_attitude(remote_addr)
 	# get difference between evaluations
 	diff = abs(ev - ret)
 	# if evaluations are very similar, become friendlier with the agent
@@ -132,11 +156,11 @@ effect on the overall rule's evaluation. In its most basic form rule has one
 feature and its mapper, but agents are encouraged to merge existing rules
 together, or add new features to them in order to make them more expressive.
 
-Simulation
-----------
+Iterative Simulation
+--------------------
 
-Creamas provides an easy to use simulation creator which can be used to execute
-agents :meth:`act` to run the environment in an iterative manner. See
+Creamas provides an easy to use :class:`~creamas.core.simulation.Simulation`
+which can be used to run iterative simulations using :meth:`act`. See
 :doc:`create_sim` for details.
 
 Support for Multiple Cores and Distributed Systems

@@ -30,7 +30,7 @@ class SimulationTestCase(unittest.TestCase):
         self.assertEqual(sim.name, 'sim')
         self.assertEqual(env.__class__, Environment,
                          'env class is not expected')
-        agents = sim.env.get_agents(address=False)
+        agents = sim.env.get_agents(addr=False)
         a = agents[0]
         self.assertEqual(a.__class__, CreativeAgent,
                          'Agent class is not expected')
@@ -53,7 +53,7 @@ class SimulationTestCase(unittest.TestCase):
         # Both get_agents get created right amount
         n_ca = 0
         n_da = 0
-        for a in sim.env.get_agents(address=False):
+        for a in sim.env.get_agents(addr=False):
             if a.__class__ == CreativeAgent:
                 n_ca += 1
             if a.__class__ == DummyAgent:
