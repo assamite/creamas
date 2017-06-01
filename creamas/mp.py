@@ -582,7 +582,7 @@ class MultiEnvironment():
             list if the agent sets in the slave environments are not bound to
             change.
         '''
-        async def _get_agents(self, mgr_addr, addr=True, agent_cls=None):
+        async def _get_agents(mgr_addr, addr=True, agent_cls=None):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
             agents = await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
             return agents
@@ -773,7 +773,7 @@ class MultiEnvironment():
             By design, the manager agents in each slave environment, i.e.
             :attr:`manager`, are excluded from acting.
         '''
-        async def _trigger_slave(self, mgr_addr, *args, **kwargs):
+        async def _trigger_slave(mgr_addr, *args, **kwargs):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
             ret = await r_manager.trigger_all(*args, **kwargs)
             return ret
@@ -819,7 +819,7 @@ class MultiEnvironment():
     def clear_candidates(self):
         '''Remove current candidates from the environment.
         '''
-        async def _clear_candidates(self, manager_addr):
+        async def _clear_candidates(manager_addr):
             r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
             ret = await r_manager.clear_candidates()
             return ret
@@ -847,7 +847,7 @@ class MultiEnvironment():
         environment. Only the connections from the agents that are in the slave
         environments are created.
         '''
-        async def _create_conns(self, r_addr, connection_map):
+        async def _create_conns(r_addr, connection_map):
             r_manager = await self.env.connect(r_addr)
             return await r_manager.create_connections(connection_map)
 
@@ -879,7 +879,7 @@ class MultiEnvironment():
 
             :meth:`creamas.core.environment.Environment.get_connections`
         '''
-        async def _get_connections(self, r_addr, attitudes):
+        async def _get_connections(r_addr, attitudes):
             r_manager = await self.env.connect(r_addr)
             return await r_manager.get_connections(attitudes)
 
@@ -925,7 +925,7 @@ class MultiEnvironment():
         In larger societies this method might be costly, as it calls each
         agents' ``validate_candidates``-method.
         '''
-        async def _validate_candidates(self, addr):
+        async def _validate_candidates(addr):
             remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
             vc = remote_manager.validate_candidates(self.candidates)
             return vc
