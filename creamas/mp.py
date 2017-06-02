@@ -114,8 +114,12 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def stop(self, folder=None):
-        '''Stop the managed environment, close all the agents and set
-        stop_received on this agent to True.
+        '''Close all the agents and set ``stop_received = True`` for this
+        agent.
+
+        .. seealso::
+
+            meth:`aiomas.subproc.Manager.stop`
         '''
         ret = self.env.save_info(folder)
         for a in self.get_agents(addr=False):
@@ -239,11 +243,13 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     async def spawn_n(self, agent_cls, n, *args, **kwargs):
-        '''Spawn *n* agents to the managed environment. This is a convenience
-        function so that one does not have to repeatedly make connections to
-        the environment to spawn multiple agents with the same parameters.
+        '''Spawn *n* agents to the managed environment.
 
-        See :py:meth:`~creamas.mp.EnvManager.spawn` for details.
+        This is a convenience function so that one does not have to repeatedly
+        make connections to the environment to spawn multiple agents with the
+        same parameters.
+
+        See :meth:`aiomas.subproc.Manager.spawn` for details.
         '''
         rets = []
         for _ in range(n):
@@ -757,37 +763,71 @@ class MultiEnvironment():
         return list(itertools.chain(*rets))
 
     async def _get_smallest_env(self):
-        '''Get address for the environment with smallest amount of agents.
+        '''Get address of the slave environment with the smallest number of
+        agents.
         '''
         async def slave_task(mgr_addr, addr=True, agent_cls=None):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
             return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
 
-        agents = await slave_task(self._manager_addrs[0])
+        agents = await slave_task(self.addrs[0])
         ns = len(agents)
-        saddr = self._manager_addrs[0]
-        for i, addr in enumerate(self._manager_addrs[1:]):
+        saddr = self.addrs[0]
+        for i, addr in enumerate(self.addrs[1:]):
             agents = await slave_task(addr)
             n = len(agents)
             if n < ns:
                 ns = n
-                saddr = self._manager_addrs[i + 1]
+                saddr = self.addrs[i + 1]
         return saddr
 
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
-        '''Spawn a new agent.
+        '''Spawn a new agent in a slave environment.
 
-        If *addr* is None, spawns the agent in the slave environment with
-        currently smallest number of agents.
+        :param str agent_cls:
+            `qualname`` of a class derived from :class:`~creamas.CreativeAgent`.
+            That is, the name should be in the form ``pkg.mod:cls``, e.g.
+            ``creamas.core.agent:CreativeAgent``.
+        :param str addr:
+            Optional. Address for the slave enviroment's manager. 
+            If :attr:`addr` is None, spawns the agent in the slave environment
+            with currently smallest number of agents.
 
-        :param agent_cls: Subclass of :py:class:`~CreativeAgent`
-        :param addr: Address for the slave enviroment's manager, if specified.
-        :returns: Proxy and address for the created agent.
+        :returns: :class:`aiomas.rpc.Proxy` and address for the created agent.
+
+        The ``*args`` and ``**kwargs`` are passed down to the agent's
+        :meth:`__init__`.
         '''
         if addr is None:
             addr = await self._get_smallest_env()
         r_manager = await self.env.connect(addr)
         proxy, r_addr = await r_manager.spawn(agent_cls, *args, **kwargs)
+        return proxy, r_addr
+
+    async def spawn_n(self, agent_cls, n, *args, addr=None, **kwargs):
+        '''Same as :meth:`~creamas.mp.MultiEnvironment.spawn`, but allows
+        spawning multiple agents with the same initialization parameters
+        simultaneously into **one** slave environment.
+
+        :param str agent_cls:
+            `qualname`` of a class derived from :class:`~creamas.CreativeAgent`.
+            That is, the name should be in the form ``pkg.mod:cls``, e.g.
+            ``creamas.core.agent:CreativeAgent``.
+        :param int n: Number of agents to spawn
+        :param str addr:
+            Optional. Address for the slave enviroment's manager. 
+            If :attr:`addr` is None, spawns the agents in the slave environment
+            with currently smallest number of agents.
+
+        :returns: :class:`aiomas.rpc.Proxy` and address for the created agent.
+
+        The ``*args`` and ``**kwargs`` are passed down to each agent's
+        :meth:`__init__`.
+        ''' 
+        if addr is None:
+            addr = await self._get_smallest_env()
+        r_manager = await self.env.connect(addr)
+        proxy, r_addr = await r_manager.spawn_n(agent_cls, n, *args, **kwargs)
         return proxy, r_addr
 
     def clear_candidates(self):
