@@ -654,7 +654,7 @@ class MultiEnvironment():
             try:
                 # We have a short timeout, because this is likely to be polled
                 # consecutively until the slaves are ready.
-                r_manager = await self.env.connect(addr, timeout=1)
+                r_manager = await self.env.connect(addr, timeout=0.5)
                 ready = await r_manager.is_ready()
                 if not ready:
                     return False
@@ -695,7 +695,7 @@ class MultiEnvironment():
                     return False
                 if addr not in online:
                     try:
-                        r_manager = await self.env.connect(addr, timeout=1)
+                        r_manager = await self.env.connect(addr, timeout=0.5)
                         ready = True
                         if check_ready:
                             ready = await r_manager.is_ready()
@@ -749,21 +749,18 @@ class MultiEnvironment():
         '''Trigger agent in *addr* to act.
 
         This method is very inefficient if used repeatedly for a large number
-        of agents.
+        of agents in different slave environments.
 
         .. seealso::
 
             :py:meth:`creamas.mp.MultiEnvironment.trigger_all`
         '''
         r_agent = await self.env.connect(addr, timeout=TIMEOUT)
-        await r_agent.get_older()
-        ret = await r_agent.act()
-        return ret
+        return await r_agent.act()
 
-    async def _trigger_slave(self, mgr_addr, *args, **kwargs):
-        r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
-        ret = await r_manager.trigger_all(*args, **kwargs)
-        return ret
+    async def _trigger_slave(self, addr, *args, **kwargs):
+        r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+        return await r_manager.trigger_all(*args, **kwargs)
 
     async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the slave environments to :meth:`act`
@@ -779,9 +776,8 @@ class MultiEnvironment():
         '''
         tasks = []
         for addr in self.addrs:
-            task = asyncio.ensure_future(self._trigger_slave(addr, *args,
-                                                             **kwargs))
-            tasks.append(task)
+            task = self._trigger_slave(addr, *args, **kwargs)
+            tasks.append(asyncio.ensure_future(task))
         rets = await asyncio.gather(*tasks)
         rets = list(itertools.chain(*rets))
         return rets

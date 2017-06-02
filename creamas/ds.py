@@ -318,8 +318,7 @@ class DistributedEnvironment():
         *addr* to act.
         '''
         r_manager = await self.env.connect(addr)
-        ret = await r_manager.trigger_all(*args, **kwargs)
-        return ret
+        return await r_manager.trigger_all(*args, **kwargs)
 
     async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the nodes to act asynchronously.
