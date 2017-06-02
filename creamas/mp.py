@@ -733,10 +733,6 @@ class MultiEnvironment():
         r_agent = await self.env.connect(addr, timeout=TIMEOUT)
         return await r_agent.act()
 
-    async def _trigger_slave(self, addr, *args, **kwargs):
-        r_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        return await r_manager.trigger_all(*args, **kwargs)
-
     async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the slave environments to :meth:`act`
         asynchronously.
@@ -749,10 +745,14 @@ class MultiEnvironment():
             By design, the manager agents in each slave environment, i.e.
             :attr:`manager`, are excluded from acting.
         '''
+        async def slave_task(addr, *args, **kwargs):
+            r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+            return await r_manager.trigger_all(*args, **kwargs)
+
         tasks = []
         for addr in self.addrs:
-            task = self._trigger_slave(addr, *args, **kwargs)
-            tasks.append(asyncio.ensure_future(task))
+            task = asyncio.ensure_future(slave_task(addr, *args, **kwargs))
+            tasks.append(task)
         rets = await asyncio.gather(*tasks)
         return list(itertools.chain(*rets))
 
