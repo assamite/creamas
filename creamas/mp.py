@@ -759,11 +759,15 @@ class MultiEnvironment():
     async def _get_smallest_env(self):
         '''Get address for the environment with smallest amount of agents.
         '''
-        agents = await self._get_agents(self._manager_addrs[0])
+        async def slave_task(mgr_addr, addr=True, agent_cls=None):
+            r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
+            return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
+
+        agents = await slave_task(self._manager_addrs[0])
         ns = len(agents)
         saddr = self._manager_addrs[0]
         for i, addr in enumerate(self._manager_addrs[1:]):
-            agents = await self._get_agents(addr)
+            agents = await slave_task(addr)
             n = len(agents)
             if n < ns:
                 ns = n
