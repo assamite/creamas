@@ -527,10 +527,6 @@ class MultiEnvironment():
         '''
         return self._env
 
-    async def _get_agents(self, mgr_addr, addr=True, agent_cls=None):
-        r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
-        return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
-
     def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         '''Get agents from the slave environments.
 
@@ -561,10 +557,14 @@ class MultiEnvironment():
             list if the agent sets in the slave environments are not bound to
             change.
         '''
+        async def slave_task(mgr_addr, addr=True, agent_cls=None):
+            r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
+            return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
+
         tasks = []
         for r_addr in self.addrs:
-            t = self._get_agents(r_addr, addr=addr, agent_cls=agent_cls)
-            tasks.append(asyncio.ensure_future(t))
+            task = slave_task(r_addr, addr=addr, agent_cls=agent_cls)
+            tasks.append(asyncio.ensure_future(task))
         if as_coro:
             return util.wait_tasks(tasks)
         else:
@@ -786,23 +786,18 @@ class MultiEnvironment():
         proxy, r_addr = await r_manager.spawn(agent_cls, *args, **kwargs)
         return proxy, r_addr
 
-    async def _clear_candidates(self, manager_addr):
-        r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
-        ret = await r_manager.clear_candidates()
-        return ret
-
     def clear_candidates(self):
         '''Remove current candidates from the environment.
         '''
+        async def slave_task(addr):
+            r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+            return await r_manager.clear_candidates()
+
         self._candidates = []
         tasks = []
         for addr in self._manager_addrs:
-            tasks.append(asyncio.ensure_future(self._clear_candidates(addr)))
+            tasks.append(asyncio.ensure_future(slave_task(addr)))
         aiomas.run(until=asyncio.gather(*tasks))
-
-    async def _create_conns(self, r_addr, connection_map):
-        r_manager = await self.env.connect(r_addr)
-        return await r_manager.create_connections(connection_map)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -821,6 +816,10 @@ class MultiEnvironment():
         environment. Only the connections from the agents that are in the slave
         environments are created.
         '''
+        async def slave_task(addr, connection_map):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.create_connections(connection_map)
+
         tasks = []
         mapped_addrs = util.addrs2managers(list(connection_map.keys()))
         for m_addr, addrs in mapped_addrs.items():
@@ -828,16 +827,12 @@ class MultiEnvironment():
                 cm = {}
                 for ad in addrs:
                     cm[ad] = connection_map[ad]
-                task = asyncio.ensure_future(self._create_conns(m_addr, cm))
+                task = asyncio.ensure_future(slave_task(m_addr, cm))
                 tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
         else:
             return aiomas.run(util.wait_tasks(tasks))
-
-    async def _get_conns(self, r_addr, attitudes):
-        r_manager = await self.env.connect(r_addr)
-        return await r_manager.get_connections(attitudes)
 
     def get_connections(self, attitudes=True, as_coro=False):
         '''Return connections from all the agents in the slave environments.
@@ -853,9 +848,13 @@ class MultiEnvironment():
 
             :meth:`creamas.core.environment.Environment.get_connections`
         '''
+        async def slave_task(addr, attitudes):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.get_connections(attitudes)
+
         tasks = []
         for m_addr in self.addrs:
-            task = asyncio.ensure_future(self._get_conns(m_addr, attitudes))
+            task = asyncio.ensure_future(slave_task(m_addr, attitudes))
             tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
@@ -888,11 +887,6 @@ class MultiEnvironment():
         self._log(logging.DEBUG, "CANDIDATES appended:'{}'"
                   .format(artifact))
 
-    async def _validate_candidates(self, addr):
-        remote_manager = await self.env.connect(addr, timeout=TIMEOUT)
-        vc = remote_manager.validate_candidates(self.candidates)
-        return vc
-
     def validate_candidates(self):
         '''Validate current candidates in the environment by pruning candidates
         that are not validated at least by one agent, i.e. they are vetoed.
@@ -900,10 +894,14 @@ class MultiEnvironment():
         In larger societies this method might be costly, as it calls each
         agents' ``validate_candidates``-method.
         '''
+        async def slave_task(addr):
+            r_manager = await self.env.connect(addr, timeout=TIMEOUT)
+            return await r_manager.validate_candidates(self.candidates)
+
         valid_candidates = set(self.candidates)
         tasks = []
         for a in self._manager_addrs:
-            tasks.append(self._validate_candidates(a))
+            tasks.append(slave_task(a))
         ret = aiomas.run(until=asyncio.gather(*tasks))
         for r in ret:
             result = yield from r
