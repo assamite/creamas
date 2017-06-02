@@ -785,11 +785,11 @@ class MultiEnvironment():
         '''Spawn a new agent in a slave environment.
 
         :param str agent_cls:
-            `qualname`` of a class derived from :class:`~creamas.CreativeAgent`.
+            `qualname`` of the agent class.
             That is, the name should be in the form ``pkg.mod:cls``, e.g.
             ``creamas.core.agent:CreativeAgent``.
         :param str addr:
-            Optional. Address for the slave enviroment's manager. 
+            Optional. Address for the slave enviroment's manager.
             If :attr:`addr` is None, spawns the agent in the slave environment
             with currently smallest number of agents.
 
@@ -810,12 +810,12 @@ class MultiEnvironment():
         simultaneously into **one** slave environment.
 
         :param str agent_cls:
-            `qualname`` of a class derived from :class:`~creamas.CreativeAgent`.
+            `qualname`` of the agent class.
             That is, the name should be in the form ``pkg.mod:cls``, e.g.
             ``creamas.core.agent:CreativeAgent``.
         :param int n: Number of agents to spawn
         :param str addr:
-            Optional. Address for the slave enviroment's manager. 
+            Optional. Address for the slave enviroment's manager.
             If :attr:`addr` is None, spawns the agents in the slave environment
             with currently smallest number of agents.
 
@@ -823,7 +823,7 @@ class MultiEnvironment():
 
         The ``*args`` and ``**kwargs`` are passed down to each agent's
         :meth:`__init__`.
-        ''' 
+        '''
         if addr is None:
             addr = await self._get_smallest_env()
         r_manager = await self.env.connect(addr)
