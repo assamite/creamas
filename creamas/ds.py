@@ -114,14 +114,14 @@ class DistributedEnvironment():
 
     After all the nodes are ready and prepared, the environment can be used
     to run an iterative (asynchronous) simulation using
-    :py:meth:`DistributedEnvironment.trigger_all` which calls
-    :py:meth:`~creamas.mp.MultiEnvManager.trigger_all` for each node's manager.
+    :meth:`DistributedEnvironment.trigger_all` which calls
+    :meth:`~creamas.mp.MultiEnvManager.trigger_all` for each node's manager.
 
     .. warning::
         To free the resources on each node, it is crucial to call
-        :py:meth:`DistributedEnvironment.destroy` after the simulation has been
-        done. Otherwise, some rogue processes are likely to be left unattended
-        on the external nodes.
+        :meth:`creamas.ds.DistributedEnvironment.destroy` after the simulation
+        has been done. Otherwise, some rogue processes are likely to be left
+        unattended on the external nodes.
 
     The intended order of usage is as follows::
 
@@ -131,7 +131,8 @@ class DistributedEnvironment():
         pool, r = ds.spawn_nodes(spawn_cmd)
         timeout = 30
         loop = asyncio.get_event_loop()
-        nodes_ready = loop.run_until_complete(ds.wait_nodes(timeout))
+        task = ds.wait_nodes(timeout, check_ready=True)
+        nodes_ready = loop.run_until_complete(task)
         if nodes_ready:
             # All nodes are ready so we can do additional preparation
             loop.run_until_complete(ds.prepare_nodes())
