@@ -13,6 +13,7 @@ on computing clusters or other distributed systems.
     by default as a dependency.
 '''
 import asyncio
+import itertools
 import logging
 import multiprocessing
 import time
@@ -346,7 +347,7 @@ class DistributedEnvironment():
                                          (addr, *args, **kwargs))
             tasks.append(task)
         rets = await asyncio.gather(*tasks)
-        return rets
+        return list(itertools.chain(*rets))
 
     async def stop_nodes(self, timeout=1):
         '''Stop all the nodes by sending a stop-message to their managers.

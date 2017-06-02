@@ -339,29 +339,6 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return await self.menv.get_agents(addr=addr, agent_cls=agent_cls)
 
     @aiomas.expose
-    async def get_slave_agents(self, manager_addr, addr=True, agent_cls=None):
-        '''Get agents in the specified manager's environment.
-
-        :param str manager_addr: Address of the environment's manager
-
-        :param bool addr:
-            Return only the addresses of the agents, not proxies.
-
-        :param agent_cls:
-            If specified, return only the agents that are members of the class.
-
-        .. seealso::
-
-            :meth:`creamas.environment.Environment.get_agents`
-            :meth:`creamas.mp.EnvManager.get_agents`,
-            :meth:`creamas.mp.MultiEnvironment.get_agents`
-        '''
-        r_manager = await self.env.connect(manager_addr, timeout=TIMEOUT)
-        agents = await r_manager.get_agents(addr=addr,
-                                            agent_cls=agent_cls)
-        return agents
-
-    @aiomas.expose
     async def create_connections(self, connection_map):
         '''Create connections for agents in the multi-environment.
 
@@ -409,8 +386,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         This is a managing function for
         :py:meth:`~creamas.mp.MultiEnvironment.trigger_all`.
         '''
-        rets = await self.menv.trigger_all(*args, **kwargs)
-        return rets
+        return await self.menv.trigger_all(*args, **kwargs)
 
     @aiomas.expose
     async def is_ready(self):
@@ -432,7 +408,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         '''Managing function for
         :meth:`~creamas.mp.MultiEnvironment.add_candidate`.
         '''
-        self.menv.add_candidate(artifact)
+        return self.menv.add_candidate(artifact)
 
     @aiomas.expose
     def get_votes(self, candidates):
@@ -448,8 +424,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         '''Managing function for
         :meth:`~creamas.mp.MultiEnvironment.clear_candidates`.
         '''
-        ret = await self.menv.clear_candidates()
-        return ret
+        return await self.menv.clear_candidates()
 
     @aiomas.expose
     async def get_artifacts(self):
@@ -779,8 +754,7 @@ class MultiEnvironment():
             task = self._trigger_slave(addr, *args, **kwargs)
             tasks.append(asyncio.ensure_future(task))
         rets = await asyncio.gather(*tasks)
-        rets = list(itertools.chain(*rets))
-        return rets
+        return list(itertools.chain(*rets))
 
     async def _get_smallest_env(self):
         '''Get address for the environment with smallest amount of agents.
