@@ -314,13 +314,6 @@ class DistributedEnvironment():
         '''
         raise NotImplementedError()
 
-    async def _trigger_node(self, addr, *args, **kwargs):
-        '''Trigger all agents in a node managed by the agent in
-        *addr* to act.
-        '''
-        r_manager = await self.env.connect(addr)
-        return await r_manager.trigger_all(*args, **kwargs)
-
     async def trigger_all(self, *args, **kwargs):
         '''Trigger all agents in all the nodes to act asynchronously.
 
@@ -341,10 +334,13 @@ class DistributedEnvironment():
             :py:meth:`creamas.mp.MultiEnvironment.trigger_all`,
             :py:meth:`creamas.mp.MultiEnvManager.trigger_all`
         '''
+        async def slave_task(addr, *args, **kwargs):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.trigger_all(*args, **kwargs)
+
         tasks = []
         for addr in self.addrs:
-            task = asyncio.ensure_future(self._trigger_node
-                                         (addr, *args, **kwargs))
+            task = asyncio.ensure_future(slave_task(addr, *args, **kwargs))
             tasks.append(task)
         rets = await asyncio.gather(*tasks)
         return list(itertools.chain(*rets))
@@ -377,12 +373,7 @@ class DistributedEnvironment():
         self._pool.join()
         self.env.shutdown()
 
-    async def _get_agents(self, addr, address=True, agent_cls=None):
-        r_manager = await self.env.connect(addr)
-        agents = await r_manager.get_agents(address, agent_cls)
-        return agents
-
-    def get_agents(self, address=True, agent_cls=None, as_coro=False):
+    def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         '''Return all the relevant agents from all the nodes.
 
         The method excludes all the manager agents from the returned list.
@@ -393,20 +384,18 @@ class DistributedEnvironment():
             :meth:`creamas.mp.MultiEnvironment.get_agents`,
             :meth:`creamas.mp.MultiEnvManager.get_agents`
         '''
+        async def slave_task(r_addr, addr=True, agent_cls=None):
+            r_manager = await self.env.connect(r_addr)
+            return await r_manager.get_agents(addr, agent_cls)
+
         tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(self._get_agents(addr,
-                                                          address,
-                                                          agent_cls))
+        for r_addr in self.addrs:
+            task = asyncio.ensure_future(slave_task(r_addr, addr, agent_cls))
             tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
         else:
             return aiomas.run(util.wait_tasks(tasks))
-
-    async def _create_connections(self, m_addr, connection_map):
-        r_manager = await self.env.connect(m_addr)
-        return await r_manager.create_connections(connection_map)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -420,19 +409,18 @@ class DistributedEnvironment():
         The connection map is passed as is to all the node managers which then
         take care of creating connections in their slave environments.
         '''
+        async def slave_task(addr, connection_map):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.create_connections(connection_map)
+
         tasks = []
-        for m_addr in self.addrs:
-            task = self.ensure_future(self._create_connections(m_addr,
-                                                               connection_map))
+        for addr in self.addrs:
+            task = self.ensure_future(slave_task(addr, connection_map))
             tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
         else:
             return aiomas.run(util.wait_tasks(tasks))
-
-    async def _get_connections(self, r_addr, attitudes):
-        r_manager = await self.env.connect(r_addr)
-        return await r_manager.get_connections(attitudes)
 
     def get_connections(self, attitudes, as_coro=False):
         '''Return connections from all the agents in the node environments.
@@ -449,10 +437,13 @@ class DistributedEnvironment():
             :meth:`creamas.core.environment.Environment.get_connections`
             :meth:`creamas.mp.MultiEnvironment.get_connections`
         '''
+        async def slave_task(addr, attitudes):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.get_connections(attitudes)
+
         tasks = []
-        for m_addr in self.addrs:
-            task = asyncio.ensure_future(self._get_connections
-                                         (m_addr, attitudes))
+        for addr in self.addrs:
+            task = asyncio.ensure_future(slave_task(addr, attitudes))
             tasks.append(task)
         if as_coro:
             return util.wait_tasks(tasks)
