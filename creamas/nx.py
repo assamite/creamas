@@ -8,11 +8,10 @@ Functions to create agent connections from
 
 .. note::
 
-    NetworkX has to installed in order for the functions in this module to
-    work. It is not installed as a default requirement.
+    NetworkX has to be installed in order for the functions in this module to
+    work. It is not installed as a default dependency.
 
     Use, e.g. ``pip install networkx``
-
 '''
 from networkx import Graph, DiGraph
 
