@@ -13,7 +13,6 @@ on computing clusters or other distributed systems.
     by default as a dependency.
 '''
 import asyncio
-import itertools
 import logging
 import multiprocessing
 import time
@@ -22,7 +21,7 @@ import traceback
 import aiomas
 import asyncssh
 from creamas import Environment
-from creamas import util
+from creamas.util import run_or_coro, create_tasks
 
 
 async def ssh_exec(server, cmd, **ssh_kwargs):
@@ -339,12 +338,7 @@ class DistributedEnvironment():
             r_manager = await self.env.connect(addr)
             return await r_manager.trigger_all(*args, **kwargs)
 
-        tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(slave_task(addr, *args, **kwargs))
-            tasks.append(task)
-        rets = await asyncio.gather(*tasks)
-        return list(itertools.chain(*rets))
+        return await create_tasks(slave_task, self.addrs, *args, **kwargs)
 
     async def stop_nodes(self, timeout=1):
         '''Stop all the nodes by sending a stop-message to their managers.
@@ -389,14 +383,8 @@ class DistributedEnvironment():
             r_manager = await self.env.connect(r_addr)
             return await r_manager.get_agents(addr, agent_cls)
 
-        tasks = []
-        for r_addr in self.addrs:
-            task = asyncio.ensure_future(slave_task(r_addr, addr, agent_cls))
-            tasks.append(task)
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        tasks = create_tasks(slave_task, self.addrs, addr, agent_cls)
+        return run_or_coro(tasks, as_coro)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -414,14 +402,8 @@ class DistributedEnvironment():
             r_manager = await self.env.connect(addr)
             return await r_manager.create_connections(connection_map)
 
-        tasks = []
-        for addr in self.addrs:
-            task = self.ensure_future(slave_task(addr, connection_map))
-            tasks.append(task)
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        tasks = create_tasks(slave_task, self.addrs, connection_map)
+        return run_or_coro(tasks, as_coro)
 
     def get_connections(self, attitudes, as_coro=False):
         '''Return connections from all the agents in the node environments.
@@ -442,11 +424,5 @@ class DistributedEnvironment():
             r_manager = await self.env.connect(addr)
             return await r_manager.get_connections(attitudes)
 
-        tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(slave_task(addr, attitudes))
-            tasks.append(task)
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        tasks = create_tasks(slave_task, self.addrs, attitudes)
+        return run_or_coro(tasks, as_coro)

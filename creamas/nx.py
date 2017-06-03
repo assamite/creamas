@@ -5,12 +5,16 @@
 
 Functions to create agent connections from
 `NetworkX <https://networkx.github.io/>`_ graph structures and vice versa.
+
+.. note::
+
+    NetworkX has to installed in order for the functions in this module to
+    work. It is not installed as a default requirement.
+
+    Use, e.g. ``pip install networkx``
 '''
 from networkx import Graph, DiGraph
 
-from creamas import Environment
-from creamas.mp import MultiEnvironment
-from creamas.ds import DistributedEnvironment
 from creamas.util import sort_addrs
 
 
@@ -19,8 +23,8 @@ def connections_from_graph(env, G, weight_key=None):
     NetworkX graph structure.
 
     :param env:
-        Environment where the agents live. The environment must be derived from
-        :class:`~creamas.core.environment.Environment`,
+        Environment where the agents live. The environment should be derived
+        from :class:`~creamas.core.environment.Environment`,
         :class:`~creamas.mp.MultiEnvironment` or
         :class:`~creamas.ds.DistributedEnvironment`.
 
@@ -58,11 +62,8 @@ def connections_from_graph(env, G, weight_key=None):
     if not issubclass(G.__class__, (Graph, DiGraph)):
         raise TypeError("Graph structure must be derived from Networkx's "
                         "Graph or DiGraph.")
-    if not issubclass(env.__class__, (Environment,
-                                      MultiEnvironment,
-                                      DistributedEnvironment)):
-        raise TypeError("Parameter 'env' must be derived from Environment, "
-                        "MultiEnvironment or DistributedEnvironment.")
+    if not hasattr(env, 'get_agents'):
+        raise TypeError("Parameter 'env' must have get_agents.")
 
     addrs = env.get_agents(addr=True)
     if len(addrs) != len(G):

@@ -10,6 +10,7 @@ API Documentation
 	ds
 	grid
 	nx
+	util
 	features
 	mappers
 	math

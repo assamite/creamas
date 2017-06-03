@@ -22,7 +22,6 @@ import logging
 import multiprocessing
 import operator
 import time
-import itertools
 
 from collections import Counter
 from random import shuffle
@@ -33,6 +32,7 @@ from aiomas.agent import _get_base_url
 from creamas.logging import ObjectLogger
 from creamas.core.environment import Environment
 from creamas import util
+from creamas.util import run, run_or_coro, create_tasks
 
 
 logger = logging.getLogger(__name__)
@@ -567,14 +567,8 @@ class MultiEnvironment():
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
             return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
 
-        tasks = []
-        for r_addr in self.addrs:
-            task = slave_task(r_addr, addr=addr, agent_cls=agent_cls)
-            tasks.append(asyncio.ensure_future(task))
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        tasks = create_tasks(slave_task, self.addrs, addr, agent_cls)
+        return run_or_coro(tasks, as_coro)
 
     @property
     def addrs(self):
@@ -627,20 +621,23 @@ class MultiEnvironment():
 
             :py:meth:`creamas.core.environment.Environment.is_ready`
         '''
-        if not self.env.is_ready():
-            return False
-        if not self.check_ready():
-            return False
-        for addr in self.addrs:
+        async def slave_task(addr, timeout):
             try:
-                # We have a short timeout, because this is likely to be polled
-                # consecutively until the slaves are ready.
-                r_manager = await self.env.connect(addr, timeout=0.5)
+                r_manager = await self.env.connect(addr, timeout=timeout)
                 ready = await r_manager.is_ready()
                 if not ready:
                     return False
             except:
                 return False
+            return True
+
+        if not self.env.is_ready():
+            return False
+        if not self.check_ready():
+            return False
+        rets = await create_tasks(slave_task, self.addrs, 0.5)
+        if not all(rets):
+            return False
         return True
 
     async def wait_slaves(self, timeout, check_ready=False):
@@ -720,11 +717,7 @@ class MultiEnvironment():
         of :class:`~creamas.mp.MultiEnvManager` or its subclass if this method
         is called.
         '''
-        tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(self.set_host_manager(addr, timeout))
-            tasks.append(task)
-        await asyncio.gather(*tasks)
+        return await create_tasks(self.set_host_manager, self.addrs, timeout)
 
     async def trigger_act(self, addr):
         '''Trigger agent in *addr* to act.
@@ -755,31 +748,19 @@ class MultiEnvironment():
             r_manager = await self.env.connect(addr, timeout=TIMEOUT)
             return await r_manager.trigger_all(*args, **kwargs)
 
-        tasks = []
-        for addr in self.addrs:
-            task = asyncio.ensure_future(slave_task(addr, *args, **kwargs))
-            tasks.append(task)
-        rets = await asyncio.gather(*tasks)
-        return list(itertools.chain(*rets))
+        return await create_tasks(slave_task, self.addrs, *args, **kwargs)
 
     async def _get_smallest_env(self):
-        '''Get address of the slave environment with the smallest number of
-        agents.
+        '''Get address of the slave environment manager with the smallest
+        number of agents.
         '''
-        async def slave_task(mgr_addr, addr=True, agent_cls=None):
+        async def slave_task(mgr_addr):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
-            return await r_manager.get_agents(addr=addr, agent_cls=agent_cls)
+            ret = await r_manager.get_agents(addr=True)
+            return (mgr_addr, len(ret))
 
-        agents = await slave_task(self.addrs[0])
-        ns = len(agents)
-        saddr = self.addrs[0]
-        for i, addr in enumerate(self.addrs[1:]):
-            agents = await slave_task(addr)
-            n = len(agents)
-            if n < ns:
-                ns = n
-                saddr = self.addrs[i + 1]
-        return saddr
+        sizes = await create_tasks(slave_task, self.addrs, flatten=False)
+        return sorted(sizes, key=lambda x: x[1])[0][0]
 
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
         '''Spawn a new agent in a slave environment.
@@ -797,6 +778,11 @@ class MultiEnvironment():
 
         The ``*args`` and ``**kwargs`` are passed down to the agent's
         :meth:`__init__`.
+
+        ..note::
+
+            Use :meth:`~creamas.mp.MultiEnvironment.spawn_n` to spawn large
+            number of agents with identical initialization parameters.
         '''
         if addr is None:
             addr = await self._get_smallest_env()
@@ -819,7 +805,9 @@ class MultiEnvironment():
             If :attr:`addr` is None, spawns the agents in the slave environment
             with currently smallest number of agents.
 
-        :returns: :class:`aiomas.rpc.Proxy` and address for the created agent.
+        :returns:
+            A list of (:class:`aiomas.rpc.Proxy`, address)-tuples for the
+            spawned agents.
 
         The ``*args`` and ``**kwargs`` are passed down to each agent's
         :meth:`__init__`.
@@ -827,8 +815,7 @@ class MultiEnvironment():
         if addr is None:
             addr = await self._get_smallest_env()
         r_manager = await self.env.connect(addr)
-        proxy, r_addr = await r_manager.spawn_n(agent_cls, n, *args, **kwargs)
-        return proxy, r_addr
+        return await r_manager.spawn_n(agent_cls, n, *args, **kwargs)
 
     def clear_candidates(self):
         '''Remove current candidates from the environment.
@@ -838,10 +825,8 @@ class MultiEnvironment():
             return await r_manager.clear_candidates()
 
         self._candidates = []
-        tasks = []
-        for addr in self._manager_addrs:
-            tasks.append(asyncio.ensure_future(slave_task(addr)))
-        aiomas.run(until=asyncio.gather(*tasks))
+        created_tasks = create_tasks(slave_task, self.addrs)
+        run(created_tasks)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -873,10 +858,7 @@ class MultiEnvironment():
                     cm[ad] = connection_map[ad]
                 task = asyncio.ensure_future(slave_task(m_addr, cm))
                 tasks.append(task)
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        return run_or_coro(util.wait_tasks(tasks), as_coro)
 
     def get_connections(self, attitudes=True, as_coro=False):
         '''Return connections from all the agents in the slave environments.
@@ -896,14 +878,8 @@ class MultiEnvironment():
             r_manager = await self.env.connect(addr)
             return await r_manager.get_connections(attitudes)
 
-        tasks = []
-        for m_addr in self.addrs:
-            task = asyncio.ensure_future(slave_task(m_addr, attitudes))
-            tasks.append(task)
-        if as_coro:
-            return util.wait_tasks(tasks)
-        else:
-            return aiomas.run(util.wait_tasks(tasks))
+        tasks = create_tasks(slave_task, self.addrs, attitudes)
+        return run_or_coro(tasks, as_coro)
 
     def add_artifact(self, artifact):
         '''Add artifact with given framing to the environment.
@@ -943,10 +919,7 @@ class MultiEnvironment():
             return await r_manager.validate_candidates(self.candidates)
 
         valid_candidates = set(self.candidates)
-        tasks = []
-        for a in self._manager_addrs:
-            tasks.append(slave_task(a))
-        ret = aiomas.run(until=asyncio.gather(*tasks))
+        ret = run(create_tasks(slave_task, self.addrs))
         for r in ret:
             result = yield from r
             vc = set(result)
@@ -971,16 +944,7 @@ class MultiEnvironment():
         return votes
 
     def _gather_votes(self):
-        tasks = []
-        for addr in self.addrs:
-            t = asyncio.ensure_future(self.get_votes(addr, self.candidates))
-            tasks.append(t)
-
-        ret = aiomas.run(until=asyncio.gather(*tasks))
-        votes = []
-        for r in ret:
-            votes.extend(r)
-        return votes
+        return run(create_tasks(self.get_votes, self.addrs, self.candidates))
 
     def perform_voting(self, method='IRV', accepted=1):
         '''Perform voting to decide the ordering of the current candidates.
