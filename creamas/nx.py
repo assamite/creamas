@@ -12,6 +12,7 @@ Functions to create agent connections from
     work. It is not installed as a default requirement.
 
     Use, e.g. ``pip install networkx``
+
 '''
 from networkx import Graph, DiGraph
 
