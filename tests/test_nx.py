@@ -1,21 +1,17 @@
 '''
-Tests for creamas.nx-module.
-'''
-'''
-.. :py:module:: test_agent
+.. :py:module:: test_nx
     :platform: Unix
 
-Tests for agent module.
+Tests for creamas.nx-module.
 '''
 import asyncio
 import unittest
 
-import aiomas
 import networkx
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
+from creamas.mp import MultiEnvironment, EnvManager
 from creamas.nx import connections_from_graph, graph_from_connections
 from creamas.util import run
 
