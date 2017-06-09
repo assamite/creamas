@@ -21,9 +21,12 @@ import socket
 import time
 import traceback
 
+import aiomas
 import asyncssh
 
+from creamas import Environment
 from creamas.ds import DistributedEnvironment
+from creamas.util import run
 import ukko
 import utils
 
@@ -51,8 +54,8 @@ class DistributedGridEnvironment(DistributedEnvironment):
 
     For basic usage, refer to :py:class:`DistributedEnvironment`.
     '''
-    def __init__(self, host, port, nodes, ngs, n_slaves, gs, agent_cls, 
-                 folder, logger=None):
+    def __init__(self, addr, nodes, ngs, n_slaves, gs, agent_cls, 
+                 folder, logger=None, **env_kwargs):
         '''
         :param host:
             Host of the grand managing environment (this node).
@@ -89,7 +92,8 @@ class DistributedGridEnvironment(DistributedEnvironment):
         :param str folder:
             Relative path to the logging folder, where the logs are saved.
         '''
-        super().__init__(host, port, nodes, logger)
+        super().__init__(addr, nodes, env_cls=Environment, mgr_cls=None,
+                         logger=logger, **env_kwargs)
         self._n_slaves = n_slaves
         self._gs = gs
         self._agent_cls = agent_cls
@@ -267,22 +271,25 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
     nodes = ukko.get_nodes(n_nodes, exclude=[HOST], loop=loop)
     logger.info("Using Ukko-nodes: {}".format(" ".join(nodes)))
+    addr = (HOST, port)
+    env_kwargs = {'codec': aiomas.MsgPack}
 
-    dgs = DistributedGridEnvironment(HOST, port, nodes, ngs, n_slaves, gs,
-                                     agent_cls, folder, logger=logger)
+    dgs = DistributedGridEnvironment(addr, nodes, ngs, n_slaves, gs,
+                                     agent_cls, folder, logger=logger,
+                                     **env_kwargs)
     dgs.save_manager_addrs(MGR_FILE)
     loop = asyncio.get_event_loop()
     timeout = 30
-    nodes_ready = loop.run_until_complete(dgs.wait_nodes(timeout))
+    nodes_ready = run(dgs.wait_nodes(timeout))
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")
-        loop.run_until_complete(dgs.prepare_nodes())
+        run(dgs.prepare_nodes())
         logger.info("Nodes prepared.")
 
         for i in range(0, steps):
             t = time.time()
             logger.info("***** Step {}/{} *****".format(i+1, steps))
-            loop.run_until_complete(dgs.trigger_all())
+            run(dgs.trigger_all())
             logger.info("Iteration completed in {} seconds"
                         .format(time.time() - t))
         logger.info("Simulation iterations finished. Destroying the main "
