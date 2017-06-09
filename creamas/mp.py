@@ -599,7 +599,7 @@ class MultiEnvironment():
             return False
         return True
 
-    def spawn_slaves(self, slave_addrs, slave_env_cls, slave_mgr_cls,
+    async def spawn_slaves(self, slave_addrs, slave_env_cls, slave_mgr_cls,
                      slave_kwargs=None):
         '''Spawn slave environments.
 
