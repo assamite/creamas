@@ -656,7 +656,7 @@ class MultiEnvironment():
                     return False
                 if addr not in online:
                     try:
-                        r_manager = await self.env.connect(addr, 0.1)
+                        r_manager = await self.env.connect(addr, timeout)
                         ready = True
                         if check_ready:
                             ready = await r_manager.is_ready()
