@@ -101,7 +101,6 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self._ngs = ngs
         self.grid = self._make_node_grid(ngs, self.addrs)
         self.cmds = self._build_cmds(port, n_slaves, gs, agent_cls, folder)
-        self.spawn_nodes(self.cmds, known_hosts=None)
 
     def _make_node_grid(self, ngs, manager_addrs):
         assert ngs[0]*ngs[1] == len(manager_addrs)
@@ -278,9 +277,9 @@ if __name__ == "__main__":
                                      agent_cls, folder, logger=logger,
                                      **env_kwargs)
     dgs.save_manager_addrs(MGR_FILE)
-    loop = asyncio.get_event_loop()
+    run(dgs.spawn_slaves(dgs.cmds, known_hosts=None))
     timeout = 30
-    nodes_ready = run(dgs.wait_nodes(timeout))
+    nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")
         run(dgs.prepare_nodes())

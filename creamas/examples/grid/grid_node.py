@@ -148,11 +148,11 @@ if __name__ == "__main__":
                 " log={} agent_cls={}"
                 .format(addr, args.n_slaves, origin, gs, log_folder, agent_cls))
     menv = create_grid_menv(addr, addrs, gs, origin, logger=None)
-    run(menv.wait_slaves(5, check_ready=False))
+    run(menv.wait_slaves(10, check_ready=False))
     run(menv.set_slave_params())
     if agent_cls is not None:
         populate_menv(menv, agent_cls, log_folder)
-    run(menv.wait_slaves(5, check_ready=True))
+    run(menv.wait_slaves(10, check_ready=True))
     run(menv.set_host_managers())
 
     # Run this node until its manager's stop-service is called.
