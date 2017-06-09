@@ -600,7 +600,7 @@ class MultiEnvironment():
         return True
 
     async def spawn_slaves(self, slave_addrs, slave_env_cls, slave_mgr_cls,
-                     slave_kwargs=None):
+                           slave_kwargs=None):
         '''Spawn slave environments.
 
         :param slave_addrs:
