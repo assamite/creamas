@@ -45,7 +45,7 @@ SPAWN_CMD = "python {cmd} -p {port} -s {n_slaves} -o {origin} -gs {grid_size}"
 
 logger = logging.getLogger(__name__)
 
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 MGR_FILE = 'mgr_addrs.txt'
 
 
