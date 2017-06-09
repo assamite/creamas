@@ -92,7 +92,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
         :param str folder:
             Relative path to the logging folder, where the logs are saved.
         '''
-        super().__init__(addr, nodes, env_cls=Environment, mgr_cls=None,
+        super().__init__(addr, Environment, nodes, mgr_cls=None,
                          logger=logger, **env_kwargs)
         self._n_slaves = n_slaves
         self._gs = gs
