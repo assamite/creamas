@@ -40,11 +40,11 @@ class NXTestCase(unittest.TestCase):
     def test_nx_menv(self):
         self.menv = MultiEnvironment(('localhost', 5556),
                                      env_cls=Environment,
-                                     mgr_cls=None,
-                                     slave_addrs=[('localhost', 5557),
-                                                  ('localhost', 5558)],
+                                     mgr_cls=None)
+        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5557),
+                                                ('localhost', 5558)],
                                      slave_env_cls=Environment,
-                                     slave_mgr_cls=EnvManager)
+                                     slave_mgr_cls=EnvManager))
         run(self.menv.wait_slaves(5, check_ready=True))
 
         n_agents = 160

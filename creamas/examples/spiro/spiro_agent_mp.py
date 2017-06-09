@@ -35,6 +35,8 @@ from creamas import Artifact
 from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
 from creamas.math import gaus_pdf
 from creamas.vote import VoteAgent
+from creamas.logging import ObjectLogger
+from creamas.util import run
 
 from spiro import give_dots, give_dots_yield, spiro_image
 
@@ -585,7 +587,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         ax.set_xticklabels(labels)
         plt.xticks(rotation=90)
 
-        if self.logger is not None:
+        if self.logger is not None and self.logger.folder is not None:
             imname = os.path.join(self.logger.folder, 'env_a#_a{}_i{}_v{}'
                                   .format(len(self.get_agents()), self.age,
                                           self.voting_method))
@@ -632,7 +634,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         ax2.set_ylabel('valid candidates after veto', color='cornflowerblue')
         a = self.get_agents(addr=False)[0]
 
-        if self.logger is not None:
+        if self.logger is not None and self.logger.folder is not None:
             imname = os.path.join(self.logger.folder, 'env_a{}_i{}_v{}.png'
                                   .format(len(self.get_agents()), self.age,
                                           self.voting_method))
@@ -685,7 +687,7 @@ class SpiroMultiEnvironment(MultiEnvironment):
         ax.set_title(title)
         plt.tight_layout(rect=(0,0,0.8,1))
 
-        if self.logger is not None:
+        if self.logger is not None and self.logger.folder is not None:
             imname = os.path.join(self.logger.folder, 'arts_a{}_i{}_v{}.png'
                                   .format(len(self.get_agents()), self.age,
                                           self.voting_method))
@@ -699,14 +701,13 @@ class SpiroMultiEnvironment(MultiEnvironment):
         '''
         ameans = [(0, 0, 0) for _ in range(3)]
         ret = [self.save_info(folder, ameans)]
-        rets = aiomas.run(until=self._destroy_slaves(folder))
-        rets = ret + rets
+        aiomas.run(until=self.stop_slaves(folder))
         # Close and join the process pool nicely.
         self._pool.close()
         self._pool.terminate()
         self._pool.join()
         self._env.shutdown()
-        return rets
+        return ret
 
 
 class STMemory():
@@ -759,18 +760,26 @@ if __name__ == "__main__":
              ]
 
     log_folder = None
+    env_kwargs = {'extra_serializers': [get_spiro_ser], 'codec': aiomas.MsgPack}
+    if log_folder is not None:
+        logger = ObjectLogger(log_folder=log_folder, init=True,
+                              log_level=logging.INFO)
+    else:
+        logger = None
     menv = SpiroMultiEnvironment(addr, env_cls=Environment,
-                                mgr_cls=SpiroMultiEnvManager,
+                                 mgr_cls=SpiroMultiEnvManager,
+                                 logger=logger,
+                                 **env_kwargs)
+    #menv.log_folder = log_folder
+    loop = asyncio.get_event_loop()
+    slave_kwargs = [{'extra_serializers': [get_spiro_ser], 'codec': aiomas.MsgPack} for _ in range(len(addrs))]
+    ret = run(menv.spawn_slaves(slave_addrs=addrs,
                                 slave_env_cls=Environment,
                                 slave_mgr_cls=SpiroEnvManager,
-                                slave_addrs=addrs, log_folder=log_folder,
-                                log_level=logging.INFO,
-                                extra_ser=[get_spiro_ser])
-    menv.log_folder = log_folder
-    loop = asyncio.get_event_loop()
-    ret = loop.run_until_complete(menv.set_host_managers())
-    ret = loop.run_until_complete(menv.wait_slaves(30))
-    ret = loop.run_until_complete(menv.is_ready())
+                                slave_kwargs=slave_kwargs))
+    ret = run(menv.wait_slaves(30))
+    ret = run(menv.set_host_managers())
+    ret = run(menv.is_ready())
     print(ret)
     for _ in range(64):
         ret = aiomas.run(until=menv.spawn('spiro_agent_mp:SpiroAgent',

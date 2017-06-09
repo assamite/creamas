@@ -52,4 +52,4 @@ class LoggingTestCase(unittest.TestCase):
         dum.test_before()
         with open(dum.logger.get_file('baz')) as f:
             msg = f.read()
-        self.assertEqual(msg, '0\tf\to\to\n')
+        self.assertEqual(msg, 'f\to\to\n')

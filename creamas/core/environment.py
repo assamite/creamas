@@ -21,6 +21,7 @@ from random import choice, shuffle
 from aiomas import Container
 
 from creamas.logging import ObjectLogger
+from creamas.util import run_or_coro
 
 
 __all__ = ['Environment']
@@ -489,12 +490,7 @@ class Environment(Container):
             await self.shutdown(as_coro=True)
             return ret
 
-        if as_coro:
-            return _destroy(folder)
-        else:
-            loop = asyncio.get_event_loop()
-            ret = loop.run_until_complete(_destroy(folder))
-            return ret
+        return run_or_coro(_destroy(folder), as_coro)
 
     def __str__(self):
         return self.__repr__()

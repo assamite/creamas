@@ -383,9 +383,12 @@ class GridMultiEnvironment(MultiEnvironment):
     def __init__(self, *args, **kwargs):
         self._gs = kwargs.pop('grid_size')
         self._origin = kwargs.pop('origin')
-        self._n_slaves = len(kwargs['slave_addrs'])
         super().__init__(*args, **kwargs)
         self._neighbors = {'N': None, 'E': None, 'S': None, 'W': None}
+
+    async def spawn_slaves(self, *args, **kwargs):
+        await super().spawn_slaves(*args, **kwargs)
+        self._n_slaves = len(kwargs['slave_addrs'])
         self._end_coord = (self.origin[0] + (self.gs[0] * self._n_slaves) - 1,
                            self.origin[1] + self.gs[1] - 1)
 

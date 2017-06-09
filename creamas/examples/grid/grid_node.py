@@ -11,10 +11,12 @@ import socket
 import os
 import sys
 
-from creamas import Environment
+import aiomas
 
+from creamas import Environment
 from creamas.grid import GridMultiEnvironment, GridEnvironment, GridEnvManager, GridMultiEnvManager
 from creamas.ds import run_node
+from creamas.util import run
 import utils
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -30,7 +32,7 @@ if HOST.startswith('ukko'):
 LOG_LEVEL = logging.INFO
 logger = logging.getLogger(__name__)
 
-def create_grid_menv(addr, slave_addrs, grid_size, origin, log_folder=None,
+def create_grid_menv(addr, slave_addrs, grid_size, origin, logger=logger,
                      extra_ser=None):
     '''
     :param addr: Address of the multi-environment
@@ -39,9 +41,8 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, log_folder=None,
     :param origin:
         Origin of the multi-environment (slave envs are stacked horizontally).
 
-    :param log_folder:
-        Root logging folder for the multi-environment. Passed to slave
-        environments.
+    :param logger:
+        Root logger for the multi-environment.
 
     :param extra_ser:
         Extra serializers for the environments (used to communicate arbitrary
@@ -49,19 +50,20 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, log_folder=None,
 
     :returns: Instance of :py:class:`GridMultiEnvironment`
     '''
-    name = "menv_{}_{}".format(origin[0], origin[1])
-    menv = GridMultiEnvironment(addr, env_cls=Environment,
+    env_kwargs = {'codec': aiomas.MsgPack, 'extra_serializers': extra_ser}
+    menv = GridMultiEnvironment(addr,
+                                env_cls=Environment,
                                 mgr_cls=GridMultiEnvManager,
-                                slave_env_cls=GridEnvironment,
-                                slave_mgr_cls=GridEnvManager,
-                                slave_addrs=slave_addrs,
-                                log_folder=log_folder,
-                                log_level=logging.INFO,
+                                logger=logger,
                                 grid_size=grid_size,
                                 origin=origin,
-                                extra_ser=extra_ser,
-                                name=name)
-    menv.log_folder = log_folder
+                                **env_kwargs)
+    slave_kwargs = [{'codec': aiomas.MsgPack, 'extra_serializers': extra_ser}
+                    for _ in range(len(slave_addrs))]
+    run(menv.spawn_slaves(slave_addrs=slave_addrs,
+                          slave_env_cls=GridEnvironment,
+                          slave_mgr_cls=GridEnvManager,
+                          slave_kwargs=slave_kwargs))
     return menv
 
 
@@ -75,10 +77,8 @@ def populate_menv(menv, agent_cls_name, log_folder):
     gs = menv.gs
     n_agents = gs[0] * gs[1]
     n_slaves = len(menv.addrs)
-    loop = asyncio.get_event_loop()
     logger.info("Populating {} with {} agents".format(HOST, n_agents*n_slaves))
-    loop.run_until_complete(menv.populate(agent_cls_name, n_agents,
-                                          log_folder=log_folder))
+    run(menv.populate(agent_cls_name, n_agents, log_folder=log_folder))
     logger.info("Populating complete.")
 
 
@@ -147,14 +147,13 @@ if __name__ == "__main__":
     logger.info("Spawning grid node with addr={} slaves={} origin={} gs={}"
                 " log={} agent_cls={}"
                 .format(addr, args.n_slaves, origin, gs, log_folder, agent_cls))
-    menv = create_grid_menv(addr, addrs, gs, origin, log_folder)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(menv.wait_slaves(5, check_ready=False))
-    loop.run_until_complete(menv.set_slave_params())
+    menv = create_grid_menv(addr, addrs, gs, origin, logger=None)
+    run(menv.wait_slaves(5, check_ready=False))
+    run(menv.set_slave_params())
     if agent_cls is not None:
         populate_menv(menv, agent_cls, log_folder)
-    loop.run_until_complete(menv.wait_slaves(5, check_ready=True))
-    loop.run_until_complete(menv.set_host_managers())
+    run(menv.wait_slaves(5, check_ready=True))
+    run(menv.set_host_managers())
 
     # Run this node until its manager's stop-service is called.
-    ret = loop.run_until_complete(run_node(menv, log_folder))
+    ret = run(run_node(menv, log_folder))

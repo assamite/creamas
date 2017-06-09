@@ -25,13 +25,13 @@ class MenvTestCase(unittest.TestCase):
     def setUp(self):
         self.menv = MultiEnvironment(('localhost', 5555),
                                      env_cls=Environment,
-                                     mgr_cls=MultiEnvManager,
-                                     slave_addrs=[('localhost', 5556),
-                                                  ('localhost', 5557),
-                                                  ('localhost', 5558),
-                                                  ('localhost', 5559)],
-                                     slave_env_cls=Environment,
-                                     slave_mgr_cls=EnvManager)
+                                     mgr_cls=MultiEnvManager)
+        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5556),
+                                                ('localhost', 5557),
+                                                ('localhost', 5558),
+                                                ('localhost', 5559)],
+                                   slave_env_cls=Environment,
+                                   slave_mgr_cls=EnvManager))
         run(self.menv.wait_slaves(5, check_ready=True))
         self.loop = asyncio.get_event_loop()
 
@@ -73,13 +73,15 @@ class MenvTestCase(unittest.TestCase):
             for port, addrs in values.items():
                 self.assertEqual(len(addrs), 10)
 
+        # Test spawn_n
         n_agents2 = 10
         run(self.menv.spawn_n('test_mp:MenvTestAgent', n_agents2))
         agents = self.menv.get_agents(addr=True)
         self.assertEqual(len(agents), n_agents + n_agents2)
 
-        # Test that triggerl
-        args = ('plop', 10)
+        # Test that trigger all passes args and kwargs down to all agents and
+        # returns a value for each agent in the environment.
+        args = ['plop', 10]
         kwargs = {'foo': 'bar', 'yep': 2}
         ret = run(self.menv.trigger_all(*args, **kwargs))
         self.assertEqual(len(ret), n_agents + n_agents2)
@@ -87,3 +89,4 @@ class MenvTestCase(unittest.TestCase):
             c_args, c_kwargs = r
             self.assertEqual(args, c_args)
             self.assertEqual(kwargs, c_kwargs)
+

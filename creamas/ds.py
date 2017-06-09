@@ -14,15 +14,12 @@ on computing clusters or other distributed systems.
 
 '''
 import asyncio
-import logging
 import multiprocessing
-import time
 import traceback
 
-import aiomas
 import asyncssh
-from creamas import Environment
 from creamas.util import run_or_coro, create_tasks
+from creamas.mp import MultiEnvironment
 
 
 async def ssh_exec(server, cmd, **ssh_kwargs):
@@ -100,11 +97,11 @@ async def run_node(menv, log_folder):
         return ret
 
 
-class DistributedEnvironment():
+class DistributedEnvironment(MultiEnvironment):
     '''Distributed environment which manages several nodes containing
-    multi-environments.
+    multi-environments, a subclass of :class:`~creamas.mp.MultiEnvironment`.
 
-    This environment is used to spawn the multi-environments on the different
+    This environment spawns its slave multi-environments on the different
     servers (nodes) using SSH-connections. The spawning process assumes that
     the user can make a SSH-connection without login credentials to each
     node. The environment can then be used to wait until all the nodes are
@@ -143,35 +140,37 @@ class DistributedEnvironment():
         # Destroy the simulation afterwards to free the resources on each node.
         ds.destroy()
     '''
-    def __init__(self, host, port, nodes, logger=None):
+    def __init__(self, addr, env_cls, nodes, mgr_cls=None, name=None,
+                 logger=None, **env_kwargs):
         '''
-        :param host:
-            Host of the *env* property (this node). The host should not be
-            present in *nodes*.
+        :param addr:
+            ``(HOST, PORT)`` address for the *env* property (this node). The
+            ``host`` should not be present in *nodes*.
 
-        :param port:
-            Port for the managing environments on each node (incl. this node),
-            e.g. 5555. This port is not checked for availability before the
-            node environments are spawned.
+        :param env_cls:
+            Class for the master environment, used to make connections to the
+            slave environments. Must be a subclass of
+            :py:class:`~creamas.core.environment.Environment`.
+
+        :param mgr_cls:
+            Class for the master environment's manager.
+
+        :param str name: Name of the environment. Will be shown in logs.
 
         :param nodes:
-            List of nodes (servers) which are used to host the
-            multi-environments. Each node should allow SSH-connections without
-            login credentials.
+            List of nodes (servers) which are used to host the slave
+            multi-environments. See
+            :meth:`~creamas.ds.DistributedEnvironment.spawn_slaves`.
 
         :param logger:
             Optional logger for this simulation.
         '''
+        super.__init__(addr, env_cls, mgr_cls=mgr_cls, name=name,
+                       logger=logger, **env_kwargs)
         self._nodes = nodes
-        self.port = port
-        self.addr = (host, port)
-        self._env = Environment.create(self.addr, codec=aiomas.MsgPack)
+        self.port = addr[1]
+        self.addr = addr
         self._manager_addrs = self._make_manager_addrs()
-        if logger is None:
-            self.logger = logging.getLogger(__name__)
-            self.logger.addHandler(logging.NullHandler())
-        else:
-            self.logger = logger
 
     @property
     def nodes(self):
@@ -181,16 +180,6 @@ class DistributedEnvironment():
         unexpected behavior.
         '''
         return self._nodes
-
-    @property
-    def env(self):
-        '''Environment used to communicate with node managers.
-
-        The environment does not hold any agents by default, but it is easy to
-        create a manager for it on your own, if the node managers need to
-        be able to communicate back to this environment.
-        '''
-        return self._env
 
     @property
     def addrs(self):
@@ -203,60 +192,6 @@ class DistributedEnvironment():
         '''
         return self._manager_addrs
 
-    async def connect(self, *args, **kwargs):
-        '''Shortcut to ``self.env.connect``
-        '''
-        return await self.env.connect(*args, **kwargs)
-
-    async def wait_nodes(self, timeout, check_ready=True):
-        '''Wait until all nodes are online (their managers accept connections)
-        or timeout expires. Should be called after :meth:`spawn_nodes`.
-
-        :param int timeout:
-            Timeout (in seconds) after which the method will return even though
-            all the nodes are not online yet.
-
-        :param bool check_ready:
-            If ``True`` also checks if each node environment is ready.
-
-        Node is assumed ready when its manager's :meth:`is_ready`-method
-        returns ``True``.
-
-        .. seealso::
-
-            :meth:`creamas.core.environment.Environment.is_ready`,
-            :meth:`creamas.mp.MultiEnvironment.is_ready`,
-            :meth:`creamas.mp.EnvManager.is_ready`,
-            :meth:`creamas.mp.MultiEnvManager.is_ready`
-
-        '''
-        self.logger.info("Waiting for nodes to become ready...")
-        t = time.time()
-        online = []
-        while len(online) < len(self.addrs):
-            for addr in self.addrs:
-                if time.time() - t > timeout:
-                    self.logger.info("Timeout while waiting for the nodes to "
-                                     "become online.")
-                    return False
-                if addr not in online:
-                    try:
-                        r_manager = await self.env.connect(addr, timeout=1)
-                        ready = True
-                        if check_ready:
-                            ready = await r_manager.is_ready()
-                        if ready:
-                            online.append(addr)
-                            self.logger.info("Node {}/{} ready: {}"
-                                             .format(len(online),
-                                                     len(self.addrs),
-                                                     addr))
-                    except:
-                        pass
-        self.logger.info("All nodes ready in {} seconds!"
-                         .format(time.time() - t))
-        return True
-
     def _make_manager_addrs(self):
         manager_addrs = []
         for node in self.nodes:
@@ -265,7 +200,20 @@ class DistributedEnvironment():
 
         return manager_addrs
 
+    async def wait_nodes(self, timeout, check_ready=True):
+        '''Wait until all nodes are online (their managers accept connections)
+        or timeout expires. Should be called after :meth:`spawn_nodes`.
+
+        This is an alias for :meth:`~creamas.mp.MultiEnvironment.wait_slaves`.
+        '''
+        return await self.wait_slaves(timeout, check_ready=check_ready)
+
     def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
+        '''An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.
+        '''
+        return self.spawn_slaves(spawn_cmd, **ssh_kwargs)
+
+    def spawn_slaves(self, spawn_cmd, **ssh_kwargs):
         '''Spawn multi-environments on the nodes through SSH-connections.
 
         :param spawn_cmd:
@@ -308,84 +256,12 @@ class DistributedEnvironment():
 
     async def prepare_nodes(self, *args, **kwargs):
         '''Prepare nodes (and slave environments and agents) so that they are
-        ready for the simulation. Should be called after :meth:`wait_nodes`.
+        ready. Should be called after :meth:`wait_nodes`.
 
         .. note::
             Override in the subclass for the intended functionality.
         '''
         raise NotImplementedError()
-
-    async def trigger_all(self, *args, **kwargs):
-        '''Trigger all agents in all the nodes to act asynchronously.
-
-        This method makes a connection to each manager in *addrs*
-        and asynchronously executes :meth:`trigger_all` in all of them.
-
-        Given arguments and keyword arguments are passed down to each agent's
-        :meth:`creamas.core.agent.CreativeAgent.act`.
-
-        .. note::
-
-            By design, the manager agents in each environment, i.e.
-            :attr:`manager`, are excluded from acting.
-
-        .. seealso::
-
-            :py:meth:`creamas.core.environment.Environment.trigger_all`,
-            :py:meth:`creamas.mp.MultiEnvironment.trigger_all`,
-            :py:meth:`creamas.mp.MultiEnvManager.trigger_all`
-        '''
-        async def slave_task(addr, *args, **kwargs):
-            r_manager = await self.env.connect(addr)
-            return await r_manager.trigger_all(*args, **kwargs)
-
-        return await create_tasks(slave_task, self.addrs, *args, **kwargs)
-
-    async def stop_nodes(self, timeout=1):
-        '''Stop all the nodes by sending a stop-message to their managers.
-
-        :param int timeout:
-            Timeout for connecting to each manager. If a connection can not
-            be made before the timeout expires, the resulting error for that
-            particular manager is logged, but the stopping of other managers
-            is not halted.
-        '''
-        for addr in self.addrs:
-            try:
-                r_manager = await self.env.connect(addr, timeout=timeout)
-                await r_manager.stop()
-            except:
-                self.logger.info("Could not stop {}".format(addr))
-
-    def destroy(self):
-        '''Destroy the simulation.
-
-        Stop the nodes and free other resources associated with the simulation.
-        '''
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.stop_nodes())
-        self._pool.close()
-        self._pool.terminate()
-        self._pool.join()
-        self.env.shutdown()
-
-    def get_agents(self, addr=True, agent_cls=None, as_coro=False):
-        '''Return all the relevant agents from all the nodes.
-
-        The method excludes all the manager agents from the returned list.
-
-        .. seealso::
-
-            :meth:`creamas.Environment.get_agents`,
-            :meth:`creamas.mp.MultiEnvironment.get_agents`,
-            :meth:`creamas.mp.MultiEnvManager.get_agents`
-        '''
-        async def slave_task(r_addr, addr=True, agent_cls=None):
-            r_manager = await self.env.connect(r_addr)
-            return await r_manager.get_agents(addr, agent_cls)
-
-        tasks = create_tasks(slave_task, self.addrs, addr, agent_cls)
-        return run_or_coro(tasks, as_coro)
 
     def create_connections(self, connection_map, as_coro=False):
         '''Create agent connections from the given connection map.
@@ -404,26 +280,4 @@ class DistributedEnvironment():
             return await r_manager.create_connections(connection_map)
 
         tasks = create_tasks(slave_task, self.addrs, connection_map)
-        return run_or_coro(tasks, as_coro)
-
-    def get_connections(self, attitudes, as_coro=False):
-        '''Return connections from all the agents in the node environments.
-
-        :param bool attitudes:
-            If ``True``, returns also the attitudes for each connection.
-
-        :param bool as_coro:
-            If ``True`` returns a coroutine, otherwise runs the asynchronous
-            calls to the node environment managers in the event loop.
-
-        .. seealso::
-
-            :meth:`creamas.core.environment.Environment.get_connections`
-            :meth:`creamas.mp.MultiEnvironment.get_connections`
-        '''
-        async def slave_task(addr, attitudes):
-            r_manager = await self.env.connect(addr)
-            return await r_manager.get_connections(attitudes)
-
-        tasks = create_tasks(slave_task, self.addrs, attitudes)
         return run_or_coro(tasks, as_coro)

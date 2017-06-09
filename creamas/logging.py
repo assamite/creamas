@@ -17,7 +17,7 @@ def log_before(attr, level=logging.DEBUG):
     '''Decorator to log attribute's value(s) before function call.
 
     Implementation allows usage only for methods belonging to class. The class
-    instance needs to have **logger** attribute that is subclass of
+    instance needs to have a :attr:`logger` that is derived from
     :py:class:`~creamas.logging.ObjectLogger`.
 
     :param int level: logging level
@@ -38,7 +38,8 @@ def log_after(attr, level=logging.DEBUG):
     '''Decorator to log attribute's value(s) after function call.
 
     Implementation allows usage only for methods belonging to class. The class
-    instance needs to have **logger** variable set.
+    instance needs to have a :attr:`logger` that is derived from
+    :py:class:`~creamas.logging.ObjectLogger`.
 
     :param int level: logging level
     :param str attr: name of the class instance's parameter to be logged
@@ -56,14 +57,15 @@ def log_after(attr, level=logging.DEBUG):
 
 
 class ObjectLogger():
-    '''Base logger for objects. *Not* a subclass of base logger.
+    '''Base logger for Creamas objects. *Not* a subclass of
+    :class:`logging.Logger`.
 
     Generates one file for each attribute to be logged.
     '''
     def __init__(self, obj, folder, add_name=False, init=True,
                  log_level=logging.DEBUG):
         '''Create new logger instance for *obj* in *folder*. If *add_name*
-        is True, creates subfolder carrying :py:attr:`obj.name` to *folder*.
+        is ``True``, creates subfolder carrying :attr:`obj.name` to *folder*.
         If *init* is true, sets logger's level to *log_level* and adds basic
         *StreamHandler* to the logger.
         '''
@@ -128,19 +130,22 @@ class ObjectLogger():
         self.logger.log(level, "{}: {}".format(self.obj.name, msg))
         sys.stdout.flush()
 
-    def write(self, attr_name, prefix='age'):
-        '''Write attribute's value to file.
+    def write(self, attr_name, prefix=None):
+        '''Write attribute's value to a file.
 
         :param str attr_name:
-            attribute's name to be logged
+            Attribute's name to be logged
 
         :param str prefix:
-            attribute's name that is prefixed to logging message, defaults to
-            *age*.
+            Optional. Attribute's name that is prefixed to logging message,
+            defaults to ``None``.
 
         :returns: message written to file
         :rtype: str
         '''
+        if self._folder is None:
+            return
+
         separator = "\t"
         attr = getattr(self.obj, attr_name)
         if hasattr(attr, '__iter__'):
