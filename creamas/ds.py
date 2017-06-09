@@ -208,12 +208,12 @@ class DistributedEnvironment(MultiEnvironment):
         '''
         return await self.wait_slaves(timeout, check_ready=check_ready)
 
-    def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
+    async def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
         '''An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.
         '''
-        return self.spawn_slaves(spawn_cmd, **ssh_kwargs)
+        return await self.spawn_slaves(spawn_cmd, **ssh_kwargs)
 
-    def spawn_slaves(self, spawn_cmd, **ssh_kwargs):
+    async def spawn_slaves(self, spawn_cmd, **ssh_kwargs):
         '''Spawn multi-environments on the nodes through SSH-connections.
 
         :param spawn_cmd:
