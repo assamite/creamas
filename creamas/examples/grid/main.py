@@ -278,10 +278,11 @@ if __name__ == "__main__":
                                      **env_kwargs)
     dgs.save_manager_addrs(MGR_FILE)
     run(dgs.spawn_nodes(dgs.cmds, known_hosts=None))
-    timeout = 30
+    timeout = 10
     print("waiting.")
-    nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
+    nodes_ready = run(dgs.wait_slaves(timeout, check_ready=False))
     print("plap")
+    nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")
         run(dgs.prepare_nodes())
