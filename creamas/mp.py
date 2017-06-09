@@ -416,8 +416,8 @@ class MultiEnvironment():
         n_slaves = 2
         slave_kwargs = [{'codec': aiomas.MsgPack} for _ in range(n_slaves)]
         # Spawn the actual slave environments
-        run(menv.spawn_slaves(slave_addrs, slave_env_cls,
-                              slave_mgr_cls, slave_kwargs))
+        menv.spawn_slaves(slave_addrs, slave_env_cls,
+                          slave_mgr_cls, slave_kwargs)
         # Wait that all the slaves are ready, if you need to do some other
         # preparation before environments' return True for is_ready, then
         # change check_ready=False
@@ -599,8 +599,8 @@ class MultiEnvironment():
             return False
         return True
 
-    async def spawn_slaves(self, slave_addrs, slave_env_cls, slave_mgr_cls,
-                           slave_kwargs=None):
+    def spawn_slaves(self, slave_addrs, slave_env_cls, slave_mgr_cls,
+                     slave_kwargs=None):
         '''Spawn slave environments.
 
         :param slave_addrs:

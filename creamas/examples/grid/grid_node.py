@@ -60,10 +60,10 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, logger=logger,
                                 **env_kwargs)
     slave_kwargs = [{'codec': aiomas.MsgPack, 'extra_serializers': extra_ser}
                     for _ in range(len(slave_addrs))]
-    run(menv.spawn_slaves(slave_addrs=slave_addrs,
-                          slave_env_cls=GridEnvironment,
-                          slave_mgr_cls=GridEnvManager,
-                          slave_kwargs=slave_kwargs))
+    menv.spawn_slaves(slave_addrs=slave_addrs,
+                      slave_env_cls=GridEnvironment,
+                      slave_mgr_cls=GridEnvManager,
+                      slave_kwargs=slave_kwargs)
     return menv
 
 

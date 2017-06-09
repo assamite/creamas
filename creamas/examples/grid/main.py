@@ -277,7 +277,7 @@ if __name__ == "__main__":
                                      agent_cls, folder, logger=logger,
                                      **env_kwargs)
     dgs.save_manager_addrs(MGR_FILE)
-    run(dgs.spawn_slaves(dgs.cmds, known_hosts=None))
+    dgs.spawn_nodes(dgs.cmds, known_hosts=None)
     timeout = 30
     nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
     if nodes_ready:

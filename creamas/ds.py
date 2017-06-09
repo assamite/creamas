@@ -166,7 +166,7 @@ class DistributedEnvironment(MultiEnvironment):
             Optional logger for this simulation.
         '''
         super().__init__(addr, env_cls, mgr_cls=mgr_cls, name=name,
-                       logger=logger, **env_kwargs)
+                         logger=logger, **env_kwargs)
         self._nodes = nodes
         self.port = addr[1]
         self.addr = addr

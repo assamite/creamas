@@ -26,12 +26,12 @@ class MenvTestCase(unittest.TestCase):
         self.menv = MultiEnvironment(('localhost', 5555),
                                      env_cls=Environment,
                                      mgr_cls=MultiEnvManager)
-        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5556),
-                                                ('localhost', 5557),
-                                                ('localhost', 5558),
-                                                ('localhost', 5559)],
-                                   slave_env_cls=Environment,
-                                   slave_mgr_cls=EnvManager))
+        self.menv.spawn_slaves(slave_addrs=[('localhost', 5556),
+                                            ('localhost', 5557),
+                                            ('localhost', 5558),
+                                            ('localhost', 5559)],
+                               slave_env_cls=Environment,
+                               slave_mgr_cls=EnvManager)
         run(self.menv.wait_slaves(5, check_ready=True))
         self.loop = asyncio.get_event_loop()
 
