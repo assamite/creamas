@@ -281,6 +281,7 @@ if __name__ == "__main__":
     timeout = 30
     print("waiting.")
     nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
+    print("plap")
     if nodes_ready:
         logger.info("Preparing nodes for the simulation.")
         run(dgs.prepare_nodes())

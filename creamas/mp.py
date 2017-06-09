@@ -646,17 +646,17 @@ class MultiEnvironment():
         status = 'ready' if check_ready else 'online'
         self._log(logging.DEBUG,
                   "Waiting for slaves to become {}...".format(status))
-        t = time.time()
+        t = time.monotonic()
         online = []
         while len(online) < len(self.addrs):
             for addr in self.addrs:
-                if time.time() - t > timeout:
+                if time.monotonic() - t > timeout:
                     self._log(logging.DEBUG, "Timeout while waiting for the "
                               "slaves to become {}.".format(status))
                     return False
                 if addr not in online:
                     try:
-                        r_manager = await self.env.connect(addr, timeout=0.5)
+                        r_manager = await self.env.connect(addr, 0.1)
                         ready = True
                         if check_ready:
                             ready = await r_manager.is_ready()
@@ -669,8 +669,9 @@ class MultiEnvironment():
                                               addr))
                     except:
                         pass
+            asyncio.sleep(0.5)
         self._log(logging.DEBUG, "All slaves {} in {} seconds!"
-                  .format(status, time.time() - t))
+                  .format(status, time.monotonic() - t))
         return True
 
     def _get_log_folders(self, log_folder, addrs):
