@@ -19,4 +19,6 @@ exclude_lines =
 
 omit =
 	creamas/examples/*
+	creamas/ds.py
+	creamas/mp.py
 	creamas/agents.py
