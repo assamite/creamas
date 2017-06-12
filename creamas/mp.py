@@ -29,7 +29,6 @@ from random import shuffle
 import aiomas
 from aiomas.agent import _get_base_url
 
-from creamas.logging import ObjectLogger
 from creamas.core.environment import Environment
 from creamas import util
 from creamas.util import run, run_or_coro, create_tasks

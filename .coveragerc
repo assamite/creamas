@@ -18,5 +18,5 @@ exclude_lines =
     if __name__ == .__main__.:
 
 omit =
-		creamas/examples/*
-		creamas/agents.py
+	creamas/examples/*
+	creamas/agents.py
