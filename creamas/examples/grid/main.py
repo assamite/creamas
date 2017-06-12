@@ -123,7 +123,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
             for j in range(len(self.grid[0])):
                 k = i*len(self.grid[0]) + j
                 co = [orig[0] + (gs[0] * i * n_slaves), orig[1] + (gs[1] * j)]
-                cmd = _build_spawn_cmd(CMD_PREFIX, 'grid_node.py', port,
+                cmd = _build_spawn_cmd(CMD_PREFIX, 'spawn_test_node.py', port,
                                        n_slaves, gs, co, agent_cls, folder)
                 cmds.append(cmd)
         return cmds
@@ -269,6 +269,7 @@ if __name__ == "__main__":
     if HOST.startswith('ukko'):
         loop = asyncio.get_event_loop()
     nodes = ukko.get_nodes(n_nodes, exclude=[HOST], loop=loop)
+    nodes = [(n, 22) for n in nodes]
     logger.info("Using Ukko-nodes: {}".format(" ".join(nodes)))
     addr = (HOST, port)
     env_kwargs = {'codec': aiomas.MsgPack}

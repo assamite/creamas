@@ -98,7 +98,7 @@ class EnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    def get_agents(self, addr=True, agent_cls=None):
+    def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         '''Get agents from the managed environment.
 
         This is a managing function for the
@@ -278,8 +278,15 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
         This is a managing function for
         :meth:`~creamas.mp.MultiEnvironment.spawn`.
+
+        .. note::
+
+            Since :class:`aiomas.rpc.Proxy` objects do not seem to handle
+            (re)serialization, only the address of the spawned agent is
+            returned.
         '''
-        return await self.menv.spawn(agent_cls, *args, addr=addr, **kwargs)
+        _, addr = await self.menv.spawn(agent_cls, *args, addr=addr, **kwargs)
+        return addr
 
     @aiomas.expose
     async def spawn_n(self, agent_cls, n, *args, addr=None, **kwargs):
@@ -288,18 +295,36 @@ class MultiEnvManager(aiomas.subproc.Manager):
 
         This is a managing function for
         :meth:`~creamas.mp.MultiEnvironment.spawn_n`.
+
+        .. note::
+
+            Since :class:`aiomas.rpc.Proxy` objects do not seem to handle
+            (re)serialization, only the addresses of the spawned agents are
+            returned.
         '''
-        return await self.menv.spawn_n(agent_cls, n, *args, addr=addr,
-                                       **kwargs)
+        ret = await self.menv.spawn_n(agent_cls, n, *args, addr=addr, **kwargs)
+        return [r[1] for r in ret]
 
     @aiomas.expose
     async def get_agents(self, addr=True, agent_cls=None):
-        '''Get all agents in all the slave environments.
+        '''Get addresses of all agents in all the slave environments.
 
         This is a managing function for
         :meth:`creamas.mp.MultiEnvironment.get_agents`.
+
+        .. note::
+
+            Since :class:`aiomas.rpc.Proxy` objects do not seem to handle
+            (re)serialization, ``addr`` and ``agent_cls`` parameters are
+            omitted from the call to underlying multi-environment's
+            :meth:`get_agents`.
+
+            If :class:`aiomas.rpc.Proxy` objects from all the agents are
+            needed, call each slave environment manager's :meth:`get_agents`
+            directly.
         '''
-        return await self.menv.get_agents(addr=addr, agent_cls=agent_cls)
+        return await self.menv.get_agents(addr=True, agent_cls=None,
+                                          as_coro=True)
 
     @aiomas.expose
     async def create_connections(self, connection_map):
@@ -317,7 +342,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         This is a managing function for
         :meth:`~creamas.mp.MultiEnvironment.get_connections`.
         '''
-        return await self.menv.get_connections(attitudes=attitudes)
+        return await self.menv.get_connections(attitudes=attitudes,
+                                               as_coro=True)
 
     @aiomas.expose
     def close(self, folder=None):
@@ -446,8 +472,7 @@ class MultiEnvironment():
         :param str name: Name of the environment. Will be shown in logs.
 
         :param logger:
-            Optional. Logger for the master environment. If ``None`` a logger
-            using ``__name__`` with :class:`NullHandler` is created.
+            Optional. Logger for the master environment.
         '''
         self._addr = addr
         self._env = env_cls.create(addr, **env_kwargs)
@@ -468,10 +493,7 @@ class MultiEnvironment():
         else:
             self._name = "{}:{}".format(addr[0], addr[1])
 
-        if logger is None:
-            self.logger = ObjectLogger(self, None)
-        else:
-            self.logger = logger
+        self._logger = logger
 
     def __str__(self):
         return self.__repr__()
@@ -540,6 +562,13 @@ class MultiEnvironment():
         '''This multi-environment's master manager.
         '''
         return self._manager
+
+    @property
+    def logger(self):
+        '''Logger for the environment. Logger should have at least
+        :meth:`log` method which takes two arguments: log level and message.
+        '''
+        return self._logger
 
     @property
     def artifacts(self):
@@ -764,7 +793,7 @@ class MultiEnvironment():
         The ``*args`` and ``**kwargs`` are passed down to the agent's
         :meth:`__init__`.
 
-        ..note::
+        .. note::
 
             Use :meth:`~creamas.mp.MultiEnvironment.spawn_n` to spawn large
             number of agents with identical initialization parameters.
@@ -772,8 +801,7 @@ class MultiEnvironment():
         if addr is None:
             addr = await self._get_smallest_env()
         r_manager = await self.env.connect(addr)
-        proxy, r_addr = await r_manager.spawn(agent_cls, *args, **kwargs)
-        return proxy, r_addr
+        return await r_manager.spawn(agent_cls, *args, **kwargs)
 
     async def spawn_n(self, agent_cls, n, *args, addr=None, **kwargs):
         '''Same as :meth:`~creamas.mp.MultiEnvironment.spawn`, but allows
@@ -782,7 +810,7 @@ class MultiEnvironment():
 
         :param str agent_cls:
             ``qualname`` of the agent class. That is, the name should be in the
-            form of``pkg.mod:cls``, e.g. ``creamas.core.agent:CreativeAgent``.
+            form of ``pkg.mod:cls``, e.g. ``creamas.core.agent:CreativeAgent``.
         :param int n: Number of agents to spawn
         :param str addr:
             Optional. Address for the slave enviroment's manager.
@@ -1108,7 +1136,7 @@ class MultiEnvironment():
         return run_or_coro(_destroy(folder), as_coro)
 
 
-def spawn_container(addr=('localhost', 5555), env_cls=Environment,
+def spawn_container(addr, env_cls=Environment,
                     mgr_cls=EnvManager, set_seed=True, *args, **kwargs):
     '''Spawn a new environment in a given address as a coroutine.
 
@@ -1140,7 +1168,7 @@ def spawn_container(addr=('localhost', 5555), env_cls=Environment,
     loop.run_until_complete(task)
 
 
-def spawn_containers(addrs=[('localhost', 5555)], env_cls=Environment,
+def spawn_containers(addrs, env_cls=Environment,
                      env_params=None,
                      mgr_cls=EnvManager, *args, **kwargs):
     '''Spawn environments in a multiprocessing :class:`multiprocessing.Pool`.

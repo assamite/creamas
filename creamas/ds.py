@@ -158,8 +158,9 @@ class DistributedEnvironment(MultiEnvironment):
         :param str name: Name of the environment. Will be shown in logs.
 
         :param nodes:
-            List of nodes (servers) which are used to host the slave
-            multi-environments. See
+            List of (server, port)-tuples which are used to make host the slave
+            multi-environments. The port is the port for the SSH connection,
+            default SSH-port is 22. See also
             :meth:`~creamas.ds.DistributedEnvironment.spawn_slaves`.
 
         :param logger:
@@ -170,7 +171,6 @@ class DistributedEnvironment(MultiEnvironment):
         self._nodes = nodes
         self.port = addr[1]
         self.addr = addr
-        self._manager_addrs = self._make_manager_addrs()
 
     @property
     def nodes(self):
@@ -183,22 +183,14 @@ class DistributedEnvironment(MultiEnvironment):
 
     @property
     def addrs(self):
-        '''Addresses of node managers.
+        '''Addresses of the node managers.
 
-        These addresses are derived from *nodes* and *port* parameters
-        given at the initialization time, and are used to communicate tasks
+        These addresses are derived from *nodes* and *ports* parameters
+        given in :meth:`spawn_slaves`, and are used to communicate tasks
         (trigger agents) to the nodes. Each manager is assumed to be the
         first agent in its own managed environment.
         '''
         return self._manager_addrs
-
-    def _make_manager_addrs(self):
-        manager_addrs = []
-        for node in self.nodes:
-            addr = "tcp://{}:{}/0".format(node, self.port)
-            manager_addrs.append(addr)
-
-        return manager_addrs
 
     async def wait_nodes(self, timeout, check_ready=True):
         '''Wait until all nodes are online (their managers accept connections)
@@ -208,18 +200,26 @@ class DistributedEnvironment(MultiEnvironment):
         '''
         return await self.wait_slaves(timeout, check_ready=check_ready)
 
-    async def spawn_nodes(self, spawn_cmd, **ssh_kwargs):
+    async def spawn_nodes(self, spawn_cmd, ports=None, **ssh_kwargs):
         '''An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.
         '''
-        return await self.spawn_slaves(spawn_cmd, **ssh_kwargs)
+        return await self.spawn_slaves(spawn_cmd, ports=ports, **ssh_kwargs)
 
-    async def spawn_slaves(self, spawn_cmd, **ssh_kwargs):
+    async def spawn_slaves(self, spawn_cmd, ports=None, **ssh_kwargs):
         '''Spawn multi-environments on the nodes through SSH-connections.
 
         :param spawn_cmd:
             str or list, command(s) used to spawn the environment on each node.
             If *list*, it must contain one command for each node in
             :attr:`nodes`. If *str*, the same command is used for each node.
+
+        :param ports:
+            Optional. If not ``None`` must be a mapping from nodes
+            (``(server, port)``-tuples)to ports which are used for the spawned
+            multi-environments' master manager environments. If ``None``, then
+            the same port is used to derive the master manager addresses as was
+            used to initialize this distributed environment's managing
+            environment (port in :attr:`addr`).
 
         :param ssh_kwargs:
             Any additional SSH-connection arguments, as specified by
@@ -232,23 +232,24 @@ class DistributedEnvironment(MultiEnvironment):
         to spawn the multi-environments on the nodes. The SSH-connections in
         the pool are kept alive until the nodes are stopped, i.e. this
         distributed environment is destroyed.
-
-        .. warning::
-            The spawning process of the nodes assumes that the manager agent of
-            each multi-environment (on each node) is initialized in the port
-            given by the parameter *port* at the distributed environment's
-            initialization time.
         '''
         pool = multiprocessing.Pool(len(self.nodes))
         rets = []
         for i, node in enumerate(self.nodes):
+            server, server_port = node
+            port = ports[node] if ports is not None else self.port
+            mgr_addr = "tcp://{}:{}/0".format(server, port)
+            self._manager_addrs.append(mgr_addr)
             if type(spawn_cmd) in [list, tuple]:
                 cmd = spawn_cmd[i]
             else:
                 cmd = spawn_cmd
-            args = [node, cmd]
+            args = [server, cmd]
+            ssh_kwargs_cp = ssh_kwargs.copy()
+            ssh_kwargs_cp['port'] = server_port
+            print(args, ssh_kwargs_cp)
             ret = pool.apply_async(ssh_exec_in_new_loop, args=args,
-                                   kwds=ssh_kwargs)
+                                   kwds=ssh_kwargs_cp)
             rets.append(ret)
         self._pool = pool
         self._r = rets

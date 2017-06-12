@@ -1,5 +1,5 @@
 '''
-.. py:module:: grid_node
+.. py:module:: spawn_test_node
     :platform: Unix
 
 A script to spawn a new multiprocessing grid environment on an Ukko-node.
