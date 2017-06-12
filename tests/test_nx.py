@@ -45,7 +45,7 @@ class NXTestCase(unittest.TestCase):
                                                 ('localhost', 5558)],
                                    slave_env_cls=Environment,
                                    slave_mgr_cls=EnvManager))
-        run(self.menv.wait_slaves(5, check_ready=True))
+        run(self.menv.wait_slaves(15, check_ready=True))
 
         n_agents = 160
         G = networkx.fast_gnp_random_graph(n_agents, 0.4)
