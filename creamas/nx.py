@@ -4,7 +4,8 @@
     :platform: Unix
 
 Functions to create agent connections from
-`NetworkX <https://networkx.github.io/>`_ graph structures and vice versa.
+`NetworkX <https://networkx.github.io/>`_ graph structures and NetworkX graphs
+from agent connections.
 
 .. note::
 
@@ -12,6 +13,7 @@ Functions to create agent connections from
     work. It is not installed as a default dependency.
 
     Use, e.g. ``pip install networkx``
+
 '''
 from networkx import Graph, DiGraph
 

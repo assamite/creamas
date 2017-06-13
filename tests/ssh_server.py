@@ -2,11 +2,9 @@
 Utilities for testing ds-module.
 '''
 import subprocess
-import shlex
 import os
 
 import asyncio, asyncssh, crypt, sys
-
 
 
 passwords = {'guest': '',              # guest account with no password
@@ -44,10 +42,11 @@ class MySSHServerSession(asyncssh.SSHServerSession):
         return True
 
     def session_started(self):
-        self._chan.write('Executing command: {}\n'.format(self._command))
+        print("Sessions started! {}".format(self._command))
         ret = subprocess.run(args=[self._command], stdout=subprocess.PIPE, shell=True)
         str_ret = ret.stdout.decode('utf-8')
         self._chan.write(str_ret)
+        self._chan.flush()
 
     def data_received(self, data, datatype):
         print("Data received: {}".format(data))

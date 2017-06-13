@@ -12,7 +12,7 @@ import aiomas
 
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
-from creamas.ds import DistributedEnvironment
+from creamas.ds import DistributedEnvironment, ssh_exec
 from creamas.util import run
 
 from ssh_server import run_server
@@ -28,29 +28,35 @@ class DenvTestCase(unittest.TestCase):
     def setUp(self):
         self.loop = asyncio.get_event_loop()
         self.server_ports = [8022, 8023]
-        self.server_rets = []
-        for p in self.server_ports:
-            r = self.loop.run_in_executor(None, run_server, p)
-            self.server_rets.append(r)
-
         addr = ('localhost', 5550)
         nodes = [('localhost', p) for p in self.server_ports]
         self.denv = DistributedEnvironment(addr, Environment, nodes,
                                            codec=aiomas.MsgPack)
 
     def tearDown(self):
-        #self.loop.stop()
         self.denv.destroy(as_coro=False)
+
+    def test_ssh_conn(self):
+        self.loop.run_in_executor(None, run_server, 8024)
+        run(asyncio.sleep(1.0))
+        r = run(ssh_exec('localhost', 'echo Hello!', port=8024,
+                         username='test', password='test', known_hosts=None))
+        self.assertEqual(r.stdout, 'Hello!\n')
 
 
     def test_ds(self):
+        self.server_rets = []
+        for p in self.server_ports:
+            r = self.loop.run_in_executor(None, run_server, p)
+            self.server_rets.append(r)
+        run(asyncio.sleep(1.0))
         spawn_cmds = ['python spawn_test_node.py --port 5560',
                       'python spawn_test_node.py --port 5570']
 
         ports = {('localhost', 8022): 5560, ('localhost', 8023): 5570}
-        run(self.denv.spawn_slaves(spawn_cmds, ports=ports, known_hosts=None,
-                                   username='test', password='test'))
-        ret = run(self.denv.wait_slaves(5, check_ready=True))
+        run(self.denv.spawn_nodes(spawn_cmds, ports=ports, known_hosts=None,
+                                  username='test', password='test'))
+        ret = run(self.denv.wait_nodes(5, check_ready=True))
         self.assertTrue(ret)
         for _ in range(8):
             ret = run(self.denv.spawn_n('denv_agent:DenvTestAgent', 10))

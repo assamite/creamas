@@ -14,6 +14,7 @@ on computing clusters or other distributed systems.
 
 '''
 import asyncio
+import logging
 import multiprocessing
 import traceback
 
@@ -21,15 +22,19 @@ import asyncssh
 from creamas.mp import MultiEnvironment
 
 
-async def ssh_exec(server, cmd, **ssh_kwargs):
+logger = logging.getLogger(__name__)
+
+
+async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
     '''Execute a command on a given server using asynchronous SSH-connection.
 
-    The method does not propagate exceptions raised during the SSH-connection,
-    instead, the exceptions are caught and returned. The method will exit after
-    the first exception is raised.
+    The connection to the SSH-server is wrapped in :func:`asyncio.wait_for` and
+    given :attr:`timeout` is applied to it. If the server is not reachable
+    before timeout expires, :err:`asyncio.TimeoutError` is raised.
 
     :param str server: Address of the server
     :param str cmd: Command to be executed
+    :param int timeout: Timeout to connect to SSH-server.
 
     :param ssh_kwargs:
         Any additional SSH-connection arguments, as specified by
@@ -38,30 +43,23 @@ async def ssh_exec(server, cmd, **ssh_kwargs):
         details.
 
     :returns:
-        (closed SSH-connection, exception)-tuple, if no exceptions are caught,
-        the second value is *None*.
+        closed SSH-connection
     '''
-    ret = None
-    try:
-        # Setting known_hosts to None is an evil to do, but in this exercise we
-        # do not care about it.
-        conn = await asyncssh.connect(server, **ssh_kwargs)
-        ret = await conn.run(cmd)
-        conn.close()
-    except:
-        return (ret, traceback.format_exc())
-    return (ret, None)
+    conn = await asyncio.wait_for(asyncssh.connect(server, **ssh_kwargs),
+                                  timeout=timeout)
+    ret = await conn.run(cmd)
+    conn.close()
+    return ret
 
 
-def ssh_exec_in_new_loop(server, cmd, **ssh_kwargs):
+def ssh_exec_in_new_loop(server, cmd, timeout=10, **ssh_kwargs):
     '''Same as :func:`ssh_exec` but creates a new event loop and executes
     :func:`ssh_exec` in that event loop.
     '''
-    task = ssh_exec(server, cmd, **ssh_kwargs)
+    task = ssh_exec(server, cmd, timeout=timeout, **ssh_kwargs)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    ret = loop.run_until_complete(task)
-    return ret
+    return loop.run_until_complete(task)
 
 
 async def run_node(menv, log_folder):
@@ -124,7 +122,7 @@ class DistributedEnvironment(MultiEnvironment):
         ds = DistributedEnvironment(*args, **kwargs)
         # 'pool' holds the process pool for SSH-connections to nodes,
         # 'r' contains the (future) return values of the connections.
-        pool, r = ds.spawn_nodes(spawn_cmd)
+        run(ds.spawn_nodes(spawn_cmd))
         timeout = 30
         loop = asyncio.get_event_loop()
         task = ds.wait_nodes(timeout, check_ready=True)
@@ -246,12 +244,13 @@ class DistributedEnvironment(MultiEnvironment):
             args = [server, cmd]
             ssh_kwargs_cp = ssh_kwargs.copy()
             ssh_kwargs_cp['port'] = server_port
-            ret = pool.apply_async(ssh_exec_in_new_loop, args=args,
-                                   kwds=ssh_kwargs_cp)
+            ret = pool.apply_async(ssh_exec_in_new_loop,
+                                   args=args,
+                                   kwds=ssh_kwargs_cp,
+                                   error_callback=logger.warning)
             rets.append(ret)
         self._pool = pool
         self._r = rets
-        return pool, rets
 
     async def prepare_nodes(self, *args, **kwargs):
         '''Prepare nodes (and slave environments and agents) so that they are

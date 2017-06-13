@@ -298,9 +298,8 @@ class MultiEnvManager(aiomas.subproc.Manager):
         pass
 
     @aiomas.expose
-    async def set_host_manager(self, addr, timeout=5):
-        '''Set the multi-environment's manager (this agent) as a host manager
-        to the manager in *addr*.
+    async def set_as_host_manager(self, addr, timeout=5):
+        '''Set the this manager as a host manager for the manager in *addr*.
 
         This is a managing function for
         :py:meth:`~creamas.mp.MultiEnvironment.set_host_manager`.
@@ -347,18 +346,24 @@ class MultiEnvironment():
         from creamas.mp import EnvManager, MultiEnvironment
         from creamas.util import run
 
+        # Create the multi-environment and the environment used to connect to
+        # slave environments
         addr = ('localhost', 5555)
         env_cls = Environment
         env_kwargs = {'codec': aiomas.MsgPack}
         menv = MultiEnvironment(addr, env_cls, **env_kwargs)
+
+        # Define slave environments and their arguments
         slave_addrs = [('localhost', 5556), ('localhost', 5557)]
         slave_env_cls = Environment
         slave_mgr_cls = EnvManager
         n_slaves = 2
         slave_kwargs = [{'codec': aiomas.MsgPack} for _ in range(n_slaves)]
+
         # Spawn the actual slave environments
         menv.spawn_slaves(slave_addrs, slave_env_cls,
                           slave_mgr_cls, slave_kwargs)
+
         # Wait that all the slaves are ready, if you need to do some other
         # preparation before environments' return True for is_ready, then
         # change check_ready=False
@@ -369,6 +374,9 @@ class MultiEnvironment():
 
         # Trigger all agents to act
         run(menv.trigger_all())
+
+        # Destroy the environment to free the resources
+        menv.destroy(as_coro=False)
     '''
     def __init__(self, addr, env_cls, mgr_cls=None, name=None,
                  logger=None, **env_kwargs):
@@ -409,6 +417,8 @@ class MultiEnvironment():
             self._name = "{}:{}".format(addr[0], addr[1])
 
         self._logger = logger
+        self._pool = None
+        self._r = None
 
     def __str__(self):
         return self.__repr__()
@@ -651,8 +661,8 @@ class MultiEnvironment():
     async def trigger_act(self, addr):
         '''Trigger agent in *addr* to act.
 
-        This method is very inefficient if used repeatedly for a large number
-        of agents in different slave environments.
+        This method is quite inefficient if used repeatedly for a large number
+        of agents.
 
         .. seealso::
 
@@ -856,10 +866,12 @@ class MultiEnvironment():
         async def _destroy(folder):
             ret = self.save_info(folder)
             await self.stop_slaves()
-            # Close and join the process pool nicely.
-            self._pool.close()
-            self._pool.terminate()
-            self._pool.join()
+            # Terminate and join the process pool when we are destroyed.
+            # Do not wait for unfinished processed with pool.close(),
+            # the slaves should be anyway already stopped.
+            if self._pool is not None:
+                self._pool.terminate()
+                self._pool.join()
             await self._env.shutdown(as_coro=True)
             return ret
 
@@ -940,7 +952,10 @@ def spawn_containers(addrs, env_cls=Environment,
         else:
             k = kwargs.copy()
         k['addr'] = addr
-        ret = pool.apply_async(spawn_container, args=args, kwds=k)
+        ret = pool.apply_async(spawn_container,
+                               args=args,
+                               kwds=k,
+                               error_callback=logger.warning)
         r.append(ret)
     return pool, r
 
