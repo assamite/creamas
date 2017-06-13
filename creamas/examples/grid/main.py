@@ -99,7 +99,6 @@ class DistributedGridEnvironment(DistributedEnvironment):
         self._agent_cls = agent_cls
         self._log_folder = folder
         self._ngs = ngs
-        self.grid = self._make_node_grid(ngs, self.addrs)
         self.cmds = self._build_cmds(port, n_slaves, gs, agent_cls, folder)
 
     def _make_node_grid(self, ngs, manager_addrs):
@@ -119,11 +118,11 @@ class DistributedGridEnvironment(DistributedEnvironment):
     def _build_cmds(self, port, n_slaves, gs, agent_cls, folder):
         orig = (0,0)
         cmds = []
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[0])):
-                k = i*len(self.grid[0]) + j
+        for i in range(self._ngs[0]):
+            for j in range(self._ngs[1]):
+                k = i*self._ngs[1] + j
                 co = [orig[0] + (gs[0] * i * n_slaves), orig[1] + (gs[1] * j)]
-                cmd = _build_spawn_cmd(CMD_PREFIX, 'spawn_test_node.py', port,
+                cmd = _build_spawn_cmd(CMD_PREFIX, 'grid_node.py', port,
                                        n_slaves, gs, co, agent_cls, folder)
                 cmds.append(cmd)
         return cmds
@@ -270,7 +269,7 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
     nodes = ukko.get_nodes(n_nodes, exclude=[HOST], loop=loop)
     nodes = [(n, 22) for n in nodes]
-    logger.info("Using Ukko-nodes: {}".format(" ".join(nodes)))
+    logger.info("Using Ukko-nodes: {}".format(" ".join(["{}:{}".format(n[0], n[1]) for n in nodes])))
     addr = (HOST, port)
     env_kwargs = {'codec': aiomas.MsgPack}
 
@@ -279,6 +278,8 @@ if __name__ == "__main__":
                                      **env_kwargs)
     dgs.save_manager_addrs(MGR_FILE)
     run(dgs.spawn_nodes(dgs.cmds, known_hosts=None))
+    dgs.grid = dgs._make_node_grid(dgs._ngs, dgs.addrs)
+
     timeout = 30
     nodes_ready = run(dgs.wait_slaves(timeout, check_ready=True))
     if nodes_ready:
