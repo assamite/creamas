@@ -6,10 +6,11 @@ Creamas - Creative Multi-Agent Systems
     :alt: Build Status
     :scale: 100%
 
-.. image:: https://coveralls.io/repos/assamite/creamas/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/assamite/creamas?branch=master
-    :alt: Coverage
-    :scale: 100%
+..
+	.. image:: https://coveralls.io/repos/assamite/creamas/badge.svg?branch=master&service=github
+	    :target: https://coveralls.io/github/assamite/creamas?branch=master
+	    :alt: Coverage
+	    :scale: 100%
 
 .. image:: https://readthedocs.org/projects/creamas/badge/?version=latest
 	:target: http://creamas.readthedocs.io/en/latest/?badge=latest
