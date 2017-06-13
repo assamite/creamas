@@ -14,8 +14,6 @@ adding agents to their container.
 import asyncio
 
 import logging
-import operator
-from collections import Counter
 from random import choice, shuffle
 
 from aiomas import Container
@@ -218,9 +216,7 @@ class Environment(Container):
             suitable for
             :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
 
-        The connection map can also include agents that are not in this
-        environment. Only the connections for the agents that are in the
-        environment are created.
+        Only connections for agents in this environment are made.
         '''
         agents = self.get_agents(addr=False)
         rets = []
@@ -279,6 +275,15 @@ class Environment(Container):
         self._log(logging.DEBUG, "ARTIFACTS appended: '{}', length={}"
                   .format(artifact, len(self.artifacts)))
 
+    def add_artifacts(self, artifacts):
+        '''Add artifacts to :attr:`artifacts`.
+
+        :param artifacts:
+            list of :py:class:`~creamas.core.artifact.Artifact` objects
+        '''
+        for artifact in artifacts:
+            self.add_artifact(artifact)
+
     async def get_artifacts(self, agent=None):
         '''Return artifacts published to the environment.
 
@@ -299,166 +304,6 @@ class Environment(Container):
         if agent is not None:
             artifacts = [a for a in artifacts if agent.name == a.creator]
         return artifacts
-
-    def add_candidate(self, artifact):
-        '''Add candidate artifact to current candidates.
-        '''
-        self.candidates.append(artifact)
-        self._log(logging.DEBUG, "CANDIDATES appended:'{}'"
-                  .format(artifact))
-
-    def validate_candidates(self):
-        '''Validate current candidates in the environment by pruning candidates
-        that are not validated at least by one agent, i.e. they are vetoed.
-
-        In larger societies this method might be costly, as it calls each
-        agents' :meth:`validate`.
-        '''
-        valid_candidates = set(self.candidates)
-        for a in self.get_agents(addr=False):
-            vc = set(a.validate(self.candidates))
-            valid_candidates = valid_candidates.intersection(vc)
-
-        self._candidates = list(valid_candidates)
-        self._log(logging.DEBUG,
-                  "{} valid candidates after agents used veto."
-                  .format(len(self.candidates)))
-
-    def _gather_votes(self):
-        votes = []
-        for a in self.get_agents(addr=False):
-            vote = a.vote(candidates=self.candidates)
-            votes.append(vote)
-        return votes
-
-    def perform_voting(self, method='IRV', accepted=1):
-        '''Perform voting to decide the ordering of the current candidates.
-
-        Voting calls each agent's :func:`vote`-method, which might be costly in
-        larger societies.
-
-        :param str method:
-            Used voting method. One of the following:
-            IRV = instant run-off voting,
-            mean = best mean vote (requires cardinal ordering for votes),
-            best = best singular vote (requires cardinal ordering, returns only
-            one candidate),
-            least_worst = least worst singular vote,
-            random = selects random candidates
-
-        :param int accepted:
-            the number of returned candidates
-
-        :returns:
-            list of :py:class:`~creamas.core.artifact.Artifact` objects,
-            accepted artifacts. Some voting methods, e.g. mean, also return the
-            associated scores for each accepted artifact.
-
-        :rype: list
-        '''
-        if len(self.candidates) == 0:
-            self._log(logging.WARNING, "Could not perform voting because "
-                      "there are no candidates!")
-            return []
-        self._log(logging.DEBUG, "Voting from {} candidates with method: {}"
-                  .format(len(self.candidates), method))
-
-        votes = self._gather_votes()
-
-        if method == 'IRV':
-            ordering = self._vote_IRV(votes)
-            best = ordering[:min(accepted, len(ordering))]
-        if method == 'best':
-            best = [votes[0][0]]
-            for v in votes[1:]:
-                if v[0][1] > best[0][1]:
-                    best = [v[0]]
-        if method == 'least_worst':
-            best = [votes[0][-1]]
-            for v in votes[1:]:
-                if v[-1][1] > best[0][1]:
-                    best = [v[-1]]
-        if method == 'random':
-            rcands = list(self.candidates)
-            shuffle(rcands)
-            rcands = rcands[:min(accepted, len(rcands))]
-            best = [(i, 0.0) for i in rcands]
-        if method == 'mean':
-            best = self._vote_mean(votes, accepted)
-
-        return best
-
-    def add_artifacts(self, artifacts):
-        '''Add artifacts to **artifacts**.
-
-        :param artifacts:
-            list of :py:class:`~creamas.core.artifact.Artifact` objects
-        '''
-        for artifact in artifacts:
-            self.add_artifact(artifact)
-
-    def _remove_zeros(self, votes, fpl, cl, ranking):
-        '''Remove zeros in IRV voting.'''
-        for v in votes:
-            for r in v:
-                if r not in fpl:
-                    v.remove(r)
-        for c in cl:
-            if c not in fpl:
-                if c not in ranking:
-                    ranking.append((c, 0))
-
-    def _remove_last(self, votes, fpl, cl, ranking):
-        '''Remove last candidate in IRV voting.
-        '''
-        for v in votes:
-            for r in v:
-                if r == fpl[-1]:
-                    v.remove(r)
-        for c in cl:
-            if c == fpl[-1]:
-                if c not in ranking:
-                    ranking.append((c, len(ranking) + 1))
-
-    def _vote_IRV(self, votes):
-        '''Perform IRV voting based on votes.
-        '''
-        votes = [[e[0] for e in v] for v in votes]
-        f = lambda x: Counter(e[0] for e in x).most_common()
-        cl = list(self.candidates)
-        ranking = []
-        fp = f(votes)
-        fpl = [e[0] for e in fp]
-
-        while len(fpl) > 1:
-            self._remove_zeros(votes, fpl, cl, ranking)
-            self._remove_last(votes, fpl, cl, ranking)
-            cl = fpl[:-1]
-            fp = f(votes)
-            fpl = [e[0] for e in fp]
-
-        ranking.append((fpl[0], len(ranking) + 1))
-        ranking = list(reversed(ranking))
-        return ranking
-
-    def _vote_mean(self, votes, accepted):
-        '''Perform mean voting based on votes.
-        '''
-        sums = {str(candidate): [] for candidate in self.candidates}
-        for vote in votes:
-            for v in vote:
-                sums[str(v[0])].append(v[1])
-        for s in sums:
-            sums[s] = sum(sums[s]) / len(sums[s])
-        ordering = list(sums.items())
-        ordering.sort(key=operator.itemgetter(1), reverse=True)
-        best = ordering[:min(accepted, len(ordering))]
-        d = []
-        for e in best:
-            for c in self.candidates:
-                if str(c) == e[0]:
-                    d.append((c, e[1]))
-        return d
 
     def _log(self, level, msg):
         if self.logger is not None:

@@ -90,3 +90,12 @@ class MenvTestCase(unittest.TestCase):
             self.assertEqual(args, c_args)
             self.assertEqual(kwargs, c_kwargs)
 
+        # Test that creating connections from a graph work for
+        # multi-environments
+        import networkx
+        from creamas.nx import connections_from_graph, graph_from_connections
+        G = networkx.fast_gnp_random_graph(n_agents+n_agents2, 0.4)
+        connections_from_graph(self.menv, G)
+        G2 = graph_from_connections(self.menv, False)
+        self.assertEqual(len(G2), n_agents+n_agents2)
+        self.assertTrue(networkx.is_isomorphic(G, G2))

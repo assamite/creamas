@@ -2,7 +2,10 @@
 .. :py:module:: test_nx
     :platform: Unix
 
-Tests for creamas.nx-module.
+Basic test for creamas.nx-module.
+
+Multi-environment and distributed environment testing are done in their
+respective testing modules.
 '''
 import asyncio
 import unittest
@@ -36,26 +39,3 @@ class NXTestCase(unittest.TestCase):
         G2 = graph_from_connections(self.env, False)
         self.assertEqual(len(G2), n_agents)
         self.assertTrue(networkx.is_isomorphic(G, G2))
-
-    def test_nx_menv(self):
-        self.menv = MultiEnvironment(('localhost', 5556),
-                                     env_cls=Environment,
-                                     mgr_cls=None)
-        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5557),
-                                                ('localhost', 5558)],
-                                   slave_env_cls=Environment,
-                                   slave_mgr_cls=EnvManager))
-        run(self.menv.wait_slaves(15, check_ready=True))
-
-        n_agents = 160
-        G = networkx.fast_gnp_random_graph(n_agents, 0.4)
-        agents = []
-        for _ in range(n_agents):
-            agent = run(self.menv.spawn('creamas.core.agent:CreativeAgent'))
-            agents.append(agent)
-
-        connections_from_graph(self.menv, G)
-        G2 = graph_from_connections(self.menv, False)
-        self.assertEqual(len(G2), n_agents)
-        self.assertTrue(networkx.is_isomorphic(G, G2))
-        self.menv.destroy()

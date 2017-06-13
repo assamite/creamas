@@ -18,7 +18,6 @@ import multiprocessing
 import traceback
 
 import asyncssh
-from creamas.util import run_or_coro, create_tasks
 from creamas.mp import MultiEnvironment
 
 
@@ -214,8 +213,8 @@ class DistributedEnvironment(MultiEnvironment):
             :attr:`nodes`. If *str*, the same command is used for each node.
 
         :param ports:
-            Optional. If not ``None`` must be a mapping from nodes
-            (``(server, port)``-tuples)to ports which are used for the spawned
+            Optional. If not ``None``, must be a mapping from nodes
+            (``(server, port)``-tuples) to ports which are used for the spawned
             multi-environments' master manager environments. If ``None``, then
             the same port is used to derive the master manager addresses as was
             used to initialize this distributed environment's managing
@@ -263,22 +262,3 @@ class DistributedEnvironment(MultiEnvironment):
             Override in the subclass for the intended functionality.
         '''
         raise NotImplementedError()
-
-    def create_connections(self, connection_map, as_coro=False):
-        '''Create agent connections from the given connection map.
-
-        :param dict connection_map:
-            A map of connections to be created. Dictionary where keys are
-            agent addresses and values are lists of (addr, attitude)-tuples
-            suitable for
-            :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
-
-        The connection map is passed as is to all the node managers which then
-        take care of creating connections in their slave environments.
-        '''
-        async def slave_task(addr, connection_map):
-            r_manager = await self.env.connect(addr)
-            return await r_manager.create_connections(connection_map)
-
-        tasks = create_tasks(slave_task, self.addrs, connection_map)
-        return run_or_coro(tasks, as_coro)

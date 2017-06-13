@@ -56,11 +56,14 @@ class DenvTestCase(unittest.TestCase):
             ret = run(self.denv.spawn_n('denv_agent:DenvTestAgent', 10))
             self.assertEqual(len(ret), 10)
 
+        # Test that get_agents retrieves all the agents (excluding managers)
         ret = self.denv.get_agents()
         self.assertEqual(len(ret), 80)
         for r in ret:
             self.assertEqual(type(r), str)
 
+        # Test that trigger all is actually triggered for all agents and all
+        # agents get the args and kwargs
         args = (1, 'plaa')
         kwargs = {'yep': 2, 'foo': {}}
         rets = run(self.denv.trigger_all(*args, **kwargs))
@@ -68,3 +71,14 @@ class DenvTestCase(unittest.TestCase):
         for r in rets:
             self.assertEqual(r[0], args)
             self.assertEqual(r[1], kwargs)
+
+        n_agents = len(rets)
+        # Test that creating connections from a graph work for
+        # distributed environments
+        import networkx
+        from creamas.nx import connections_from_graph, graph_from_connections
+        G = networkx.fast_gnp_random_graph(n_agents, 0.4)
+        connections_from_graph(self.denv, G)
+        G2 = graph_from_connections(self.denv, False)
+        self.assertEqual(len(G2), n_agents)
+        self.assertTrue(networkx.is_isomorphic(G, G2))
