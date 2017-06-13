@@ -324,37 +324,6 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return await self.menv.is_ready()
 
     @aiomas.expose
-    async def get_candidates(self, addr):
-        '''Get candidates from the environment manager in *addr* manages.
-        '''
-        remote_manager = await self.env.connect(addr)
-        candidates = await remote_manager.candidates()
-        return candidates
-
-    @aiomas.expose
-    def add_candidate(self, artifact):
-        '''Managing function for
-        :meth:`~creamas.mp.MultiEnvironment.add_candidate`.
-        '''
-        return self.menv.add_candidate(artifact)
-
-    @aiomas.expose
-    def get_votes(self, candidates):
-        '''Gather votes for *candidates* from all the agents in the
-        slave environments.
-        '''
-        self.menv._candidates = candidates
-        votes = self.menv._gather_votes()
-        return votes
-
-    @aiomas.expose
-    async def clear_candidates(self):
-        '''Managing function for
-        :meth:`~creamas.mp.MultiEnvironment.clear_candidates`.
-        '''
-        return await self.menv.clear_candidates()
-
-    @aiomas.expose
     async def get_artifacts(self):
         '''Get all the artifacts from the multi-environment.
         '''

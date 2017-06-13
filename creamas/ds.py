@@ -246,7 +246,6 @@ class DistributedEnvironment(MultiEnvironment):
             args = [server, cmd]
             ssh_kwargs_cp = ssh_kwargs.copy()
             ssh_kwargs_cp['port'] = server_port
-            print(args, ssh_kwargs_cp)
             ret = pool.apply_async(ssh_exec_in_new_loop, args=args,
                                    kwds=ssh_kwargs_cp)
             rets.append(ret)
