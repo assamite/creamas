@@ -102,13 +102,14 @@ def graph_from_connections(env, directed=False):
         ``"attitude"`` key in the resulting graph for the edge is chosen
         randomly from the two values.
     '''
-    G = DiGraph if directed else Graph()
+    G = DiGraph() if directed else Graph()
     conn_list = env.get_connections(attitudes=True)
     for agent, conns in conn_list:
         ebunch = []
         for nb, att in conns:
             ebunch.append((agent, nb, {'attitude': att}))
-        G.add_edges_from(ebunch)
+        if len(ebunch) > 0:
+            G.add_edges_from(ebunch)
     return G
 
 
@@ -145,6 +146,6 @@ def _edges2conns(G, weight_key=None):
         if weight_key is None:
             cm[n[1]['addr']] = [(G.node[nb]['addr'], 0.0) for nb in G[n[0]]]
         else:
-            cm[n[1]['addr']] = [(G.node[nb]['addr'], G[n][nb][weight_key])
+            cm[n[1]['addr']] = [(G.node[nb]['addr'], G[n[0]][nb][weight_key])
                                 for nb in G[n[0]]]
     return cm
