@@ -328,6 +328,13 @@ class MultiEnvManager(aiomas.subproc.Manager):
         '''
         return self.menv.artifacts
 
+    @aiomas.expose
+    async def get_slave_managers(self):
+        '''Get addresses of the slave environment managers in this
+        multi-environment.
+        '''
+        return self.menv.get_slave_managers()
+
 
 class MultiEnvironment():
     '''Environment for utilizing multiple processes (and cores) on a single
@@ -798,6 +805,11 @@ class MultiEnvironment():
         tasks = create_tasks(slave_task, self.addrs, attitudes)
         return run_or_coro(tasks, as_coro)
 
+    def get_slave_managers(self):
+        '''Get addresses of all slave environment managers.
+        '''
+        return self.addrs
+
     def add_artifact(self, artifact):
         '''Add artifact to the environment.
 
@@ -960,8 +972,7 @@ def spawn_containers(addrs, env_cls=Environment,
     return pool, r
 
 
-@asyncio.coroutine
-def start(addr, env_cls, mgr_cls, *env_args, **env_kwargs):
+async def start(addr, env_cls, mgr_cls, *env_args, **env_kwargs):
     """`Coroutine
     <https://docs.python.org/3/library/asyncio-task.html#coroutine>`_ that
     starts an environment with :class:`mgr_cls` manager agent.
@@ -989,15 +1000,15 @@ def start(addr, env_cls, mgr_cls, *env_args, **env_kwargs):
     """
     env_kwargs.update(as_coro=True)
     log_folder = env_kwargs.get('log_folder', None)
-    env = yield from env_cls.create(addr, *env_args, **env_kwargs)
+    env = await env_cls.create(addr, *env_args, **env_kwargs)
     try:
         manager = mgr_cls(env)
         env.manager = manager
-        yield from manager.stop_received
+        await manager.stop_received
     except KeyboardInterrupt:
         logger.info('Execution interrupted by user')
     finally:
-        yield from env.destroy(folder=log_folder, as_coro=True)
+        await env.destroy(folder=log_folder, as_coro=True)
 
 
 def _set_random_seeds():

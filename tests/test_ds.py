@@ -62,6 +62,22 @@ class DenvTestCase(unittest.TestCase):
             ret = run(self.denv.spawn_n('denv_agent:DenvTestAgent', 10))
             self.assertEqual(len(ret), 10)
 
+        # Test that get_slave_managers returns all true slave manager addresses
+        # That is, the addresses of the "real" slave environment managers, not
+        # multi-environment managers.
+        managers = self.denv.get_slave_managers()
+        self.assertEqual(len(managers), 8)
+        expected_addrs = ['tcp://localhost:5561/0',
+                          'tcp://localhost:5562/0',
+                          'tcp://localhost:5563/0',
+                          'tcp://localhost:5564/0',
+                          'tcp://localhost:5571/0',
+                          'tcp://localhost:5572/0',
+                          'tcp://localhost:5573/0',
+                          'tcp://localhost:5574/0']
+        for maddr in managers:
+            self.assertIn(maddr, expected_addrs)
+
         # Test that get_agents retrieves all the agents (excluding managers)
         ret = self.denv.get_agents()
         self.assertEqual(len(ret), 80)

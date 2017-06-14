@@ -60,6 +60,15 @@ class MenvTestCase(unittest.TestCase):
         agents = self.menv.get_agents()
         self.assertEqual(len(agents), 0)
 
+        managers = self.menv.get_slave_managers()
+        self.assertEqual(len(managers), 4)
+        expected_addrs = ['tcp://localhost:5556/0',
+                          'tcp://localhost:5557/0',
+                          'tcp://localhost:5558/0',
+                          'tcp://localhost:5559/0']
+        for maddr in managers:
+            self.assertIn(maddr, expected_addrs)
+
         # Test spawn
         for _ in range(n_agents):
             run(self.menv.spawn('test_mp:MenvTestAgent'))

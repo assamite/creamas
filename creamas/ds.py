@@ -16,10 +16,11 @@ on computing clusters or other distributed systems.
 import asyncio
 import logging
 import multiprocessing
-import traceback
 
 import asyncssh
+
 from creamas.mp import MultiEnvironment
+from creamas.util import create_tasks, run_or_coro
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
 
     The connection to the SSH-server is wrapped in :func:`asyncio.wait_for` and
     given :attr:`timeout` is applied to it. If the server is not reachable
-    before timeout expires, :err:`asyncio.TimeoutError` is raised.
+    before timeout expires, :exc:`asyncio.TimeoutError` is raised.
 
     :param str server: Address of the server
     :param str cmd: Command to be executed
@@ -260,3 +261,23 @@ class DistributedEnvironment(MultiEnvironment):
             Override in the subclass for the intended functionality.
         '''
         raise NotImplementedError()
+
+    def get_slave_managers(self, as_coro=False):
+        '''Return all slave environment manager addresses.
+
+        :param bool as_coro:
+            If ``True`` returns awaitable coroutine, otherwise runs the calls
+            to the slave managers asynchoronously in the event loop.
+
+        This method returns the addresses of the true slave environment
+        managers, i.e. managers derived from :class:`~creamas.mp.EnvManager`,
+        not multi-environment managers. For example, if this node environment
+        has two nodes with four slave environments in each, then this method
+        returns 8 addresses.
+        '''
+        async def slave_task(addr):
+            r_manager = await self.env.connect(addr)
+            return await r_manager.get_slave_managers()
+
+        tasks = create_tasks(slave_task, self.addrs)
+        return run_or_coro(tasks, as_coro)

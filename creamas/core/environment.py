@@ -58,7 +58,7 @@ class Environment(Container):
     @property
     def candidates(self):
         '''Current artifact candidates, subject to e.g. agents voting to
-        determine which candidate(s) are added to **artifacts**.
+        determine which candidate(s) are added to :attr:`~artifacts`.
         '''
         return self._candidates
 
@@ -81,7 +81,7 @@ class Environment(Container):
     @property
     def log_folder(self):
         '''Logging folder for the environment. If set, will create
-        py:class::`creamas.logging.ObjectLogger` for that folder.
+        py:class:`creamas.logging.ObjectLogger` for that folder.
         '''
         return self._log_folder
 
