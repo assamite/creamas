@@ -107,12 +107,6 @@ class EnvManager(aiomas.subproc.Manager):
         self.env.log_folder = log_folder
 
     @aiomas.expose
-    def candidates(self):
-        '''Return candidates from the managed environment.
-        '''
-        return self.env.candidates
-
-    @aiomas.expose
     def artifacts(self):
         '''Return artifacts from the managed environment.
         '''
@@ -506,13 +500,6 @@ class MultiEnvironment():
     def artifacts(self):
         '''Published artifacts for all agents.'''
         return self._artifacts
-
-    @property
-    def candidates(self):
-        '''Current artifact candidates, subject to e.g. agents voting to
-        determine which candidate(s) are added to **artifacts**.
-        '''
-        return self._candidates
 
     async def connect(self, *args, **kwargs):
         '''Shortcut to ``self.env.connect``

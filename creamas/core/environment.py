@@ -56,13 +56,6 @@ class Environment(Container):
         return self._artifacts
 
     @property
-    def candidates(self):
-        '''Current artifact candidates, subject to e.g. agents voting to
-        determine which candidate(s) are added to :attr:`~artifacts`.
-        '''
-        return self._candidates
-
-    @property
     def age(self):
         '''Age of the environment.
         '''
@@ -161,11 +154,6 @@ class Environment(Container):
             tasks.append(task)
         rets = await asyncio.gather(*tasks)
         return rets
-
-    def clear_candidates(self):
-        '''Remove current candidates from the environment.
-        '''
-        self._candidates = []
 
     def is_ready(self):
         '''Check if the environment is fully initialized.

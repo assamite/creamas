@@ -42,7 +42,6 @@ class MenvTestCase(unittest.TestCase):
         n_agents = 40
 
         self.assertEqual(self.menv.artifacts, [])
-        self.assertEqual(self.menv.candidates, [])
         ready = run(self.menv.is_ready())
         self.assertEqual(ready, True)
 
