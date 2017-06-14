@@ -5,11 +5,11 @@ API Documentation
 	:maxdepth: 3
 	
 	core
-	agents
 	mp
 	ds
 	grid
 	nx
+	vote
 	util
 	features
 	mappers

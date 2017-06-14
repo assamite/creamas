@@ -32,7 +32,7 @@ class VoteAgent(CreativeAgent):
       Basic implementation orders the candidates using the agent's
       :meth:`evaluate` function.
     * :meth:`~creamas.vote.VoteAgent.add_candidate`: Add candidate artifact to
-      the agent's environment's list of current candidates. 
+      the agent's environment's list of current candidates.
     '''
 
     @aiomas.expose
@@ -332,7 +332,7 @@ class VoteOrganizer():
         '''Convenience function to gathering candidates and votes and
         performing voting using them.
 
-        :param bool validate: Validate gathered candidates before voting. 
+        :param bool validate: Validate gathered candidates before voting.
 
         :returns: Winner(s) of the vote.
         '''
@@ -370,7 +370,7 @@ class VoteOrganizer():
             accepted artifacts. Some voting methods, e.g. mean, also return the
             associated scores for each accepted artifact.
 
-        :rype: list
+        :rtype: list
         '''
         if votes is None:
             votes = self.votes
@@ -387,47 +387,35 @@ class VoteOrganizer():
             ordering = self._vote_IRV(votes)
             best = ordering[:min(accepted, len(ordering))]
         if method == 'best':
-            best = [votes[0][0]]
-            for v in votes[1:]:
-                if v[0][1] > best[0][1]:
-                    best = [v[0]]
+            best = self._vote_best(votes)
         if method == 'least_worst':
-            best = [votes[0][-1]]
-            for v in votes[1:]:
-                if v[-1][1] > best[0][1]:
-                    best = [v[-1]]
+            best = self._vote_least_worst(votes)
         if method == 'random':
-            rcands = list(self.candidates)
-            shuffle(rcands)
-            rcands = rcands[:min(accepted, len(rcands))]
-            best = [(i, 0.0) for i in rcands]
+            best = self._vote_random(votes, accepted)
         if method == 'mean':
             best = self._vote_mean(votes, accepted)
-
         return best
 
-    def _remove_zeros(self, votes, fpl, cl, ranking):
-        '''Remove zeros in IRV voting.'''
-        for v in votes:
-            for r in v:
-                if r not in fpl:
-                    v.remove(r)
-        for c in cl:
-            if c not in fpl:
-                if c not in ranking:
-                    ranking.append((c, 0))
+    def _vote_random(self, votes, accepted):
+        rcands = list(self.candidates)
+        shuffle(rcands)
+        rcands = rcands[:min(accepted, len(rcands))]
+        best = [(i, 0.0) for i in rcands]
+        return best
 
-    def _remove_last(self, votes, fpl, cl, ranking):
-        '''Remove last candidate in IRV voting.
-        '''
-        for v in votes:
-            for r in v:
-                if r == fpl[-1]:
-                    v.remove(r)
-        for c in cl:
-            if c == fpl[-1]:
-                if c not in ranking:
-                    ranking.append((c, len(ranking) + 1))
+    def _vote_least_worst(self, votes):
+        best = [votes[0][-1]]
+        for v in votes[1:]:
+            if v[-1][1] > best[0][1]:
+                best = [v[-1]]
+        return best
+
+    def _vote_best(self, votes):
+        best = [votes[0][0]]
+        for v in votes[1:]:
+            if v[0][1] > best[0][1]:
+                best = [v[0]]
+        return best
 
     def _vote_IRV(self, votes):
         '''Perform IRV voting based on votes.
@@ -468,6 +456,29 @@ class VoteOrganizer():
                 if str(c) == e[0]:
                     d.append((c, e[1]))
         return d
+
+    def _remove_zeros(self, votes, fpl, cl, ranking):
+        '''Remove zeros in IRV voting.'''
+        for v in votes:
+            for r in v:
+                if r not in fpl:
+                    v.remove(r)
+        for c in cl:
+            if c not in fpl:
+                if c not in ranking:
+                    ranking.append((c, 0))
+
+    def _remove_last(self, votes, fpl, cl, ranking):
+        '''Remove last candidate in IRV voting.
+        '''
+        for v in votes:
+            for r in v:
+                if r == fpl[-1]:
+                    v.remove(r)
+        for c in cl:
+            if c == fpl[-1]:
+                if c not in ranking:
+                    ranking.append((c, len(ranking) + 1))
 
     def _log(self, level, msg):
         if self.logger is not None:
