@@ -7,7 +7,7 @@ Implementations for voting and other social choice behaviors.
 Holds basic implementations for:
 
     * :class:`~creamas.vote.VoteAgent`: An agent implementing functions needed
-       for voting
+      for voting
     * :class:`~creamas.vote.VoteEnvironment`: An environment holding basic
       voting functionality.
     * :class:`~creamas.vote.VoteManager`: A manager agent for instances of
