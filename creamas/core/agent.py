@@ -185,8 +185,9 @@ class CreativeAgent(aiomas.Agent):
         return "{}:{}".format(self.__module__, self.__class__.__name__)
 
     def get_attitude(self, addr):
-        '''Get attitude towards agent in **connections**. If agent is not in
-        **connections**, returns None.
+        '''Return attitude towards agent with :attr:`addr`.
+
+        Returns ``None`` if agent is not in :attr:`connections`.
         '''
         try:
             ind = self._connections.index(addr)
@@ -195,8 +196,9 @@ class CreativeAgent(aiomas.Agent):
             return None
 
     def set_attitude(self, addr, attitude):
-        '''Set attitude towards agent. If agent is not in **connections**, adds
-        it.
+        '''Set attitude towards an agent with :attr:`addr`.
+
+        If agent is not in :attr:`connections`, adds it.
         '''
         try:
             ind = self._connections.index(addr)
@@ -205,8 +207,9 @@ class CreativeAgent(aiomas.Agent):
             self.add_connection(addr, attitude)
 
     def set_weight(self, rule, weight):
-        '''Set weight for rule in **R**, if rule is not in **R**, adds
-        it.
+        '''Set weight for rule in :attr:`R`.
+
+        Adds the rule if it is not in :attr:`R`.
         '''
         if not (issubclass(rule.__class__, Rule) or
                 issubclass(rule.__class__, RuleLeaf)):
@@ -232,11 +235,11 @@ class CreativeAgent(aiomas.Agent):
             return None
 
     def add_artifact(self, artifact):
-        '''Add artifact to **A**.
+        '''Add artifact to :attr:`A`.
 
         :raises TypeError:
-            If the artifact is not a member of
-            :class:`~creamas.core.artifact.Artifact` or its subclass.
+            If the artifact is not derived from
+            :class:`~creamas.core.artifact.Artifact`.
         '''
         if not issubclass(artifact.__class__, Artifact):
             raise TypeError("Artifact to add ({}) is not {}."
@@ -244,13 +247,13 @@ class CreativeAgent(aiomas.Agent):
         self._A.append(artifact)
 
     def add_rule(self, rule, weight):
-        '''Add rule to **R** with initial weight.
+        '''Add rule to :attr:`R` with initial weight.
 
         :param rule: rule to be added
         :type rule: `~creamas.core.rule.Rule`
         :param float weight: initial weight for the rule
         :raises TypeError: if rule is not subclass of :py:class:`Rule`
-        :returns: true if rule was successfully added, otherwise false
+        :returns: ``True`` if rule was successfully added, otherwise ``False``.
         :rtype bool:
         '''
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):
@@ -263,7 +266,8 @@ class CreativeAgent(aiomas.Agent):
         return False
 
     def remove_rule(self, rule):
-        '''Remove rule from **R** and its corresponding weight from **W**.
+        '''Remove rule from :attr:`R` and its corresponding weight from
+        :attr:`W`.
 
         :param rule: rule to remove
         :type rule: `~creamas.core.rule.Rule`
@@ -302,9 +306,9 @@ class CreativeAgent(aiomas.Agent):
 
     @aiomas.expose
     def add_connections(self, conns):
-        '''Add agents from *conns* to :attr:`connections`.
+        '''Add agents from :attr:`conns` to :attr:`connections`.
 
-        :param list conns: A list of (addr, attitude)-tuples
+        :param list conns: A list of ``(addr, attitude)``-tuples
         '''
         rets = []
         for addr, att in conns:
@@ -328,10 +332,9 @@ class CreativeAgent(aiomas.Agent):
         '''Get agent's current connections.
 
         :param bool attitudes:
-            If ``True``, returns a list of (address, attitude)-tuples,
-            otherwise returns a list of addresses.
+            If ``True``, returns also the attitudes towards each connection.
 
-        :returns: A list of connections or (connection, attitude)-tuples.
+        :returns: A list of addresses or ``(address, attitude)``-tuples.
         '''
         if attitudes:
             return list(zip(self._connections, self._attitudes))
@@ -375,14 +378,14 @@ class CreativeAgent(aiomas.Agent):
         r'''Evaluate artifact with agent's current rules and weights.
 
         :param artifact:
-            artifact to be evaluated
+            :class:`~creamas.core.artifact.Artifact` to be evaluated
 
         :type artifact:
             :py:class:`~creamas.core.artifact.Artifact`
 
         :returns:
-            agent's evaluation of the artifact, in [-1,1], and framing. In this
-            basic implementation framing is always *None*.
+            Agent's evaluation of the artifact, in [-1,1], and framing. In this
+            basic implementation framing is always ``None``.
 
         :rtype:
             tuple
@@ -441,6 +444,10 @@ class CreativeAgent(aiomas.Agent):
         is called for each agent on each iteration step of the simulation.
 
         :raises NotImplementedError: If not overridden in subclass.
+
+        .. seealso::
+
+            :meth:`~creamas.core.environment.Environment.trigger_all`
         '''
         raise NotImplementedError('Override in subclass.')
 

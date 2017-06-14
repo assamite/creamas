@@ -87,8 +87,11 @@ The communication between the master and the slave environment happens through
 	without adding some safe guards to the exposed functions.
 
 	Creamas is mainly developed to be a research tool to be used in closed
-	environments, and therefore does not offer protection for attacks of any
-	kind.
+	environments, and therefore is not particularly designed to offer protection
+	for any kinds of attacks. However, `aiomas <https://aiomas.readthedocs.io/en/latest/guides/tls.html>`_
+	has some built-in encryption support for, e.g., TSL. As Creamas'
+	:class:`~creamas.core.environment.Environment` is just a subclass of aiomas'
+	:class:`Container`, the TSL support from aiomas can be utilised in Creamas.
 
 Developing for Multiple Cores
 .............................
@@ -105,8 +108,12 @@ following initialization parameters to :class:`~creamas.mp.MultiEnvironment`:
 	  should not be needed if you are not using :class:`~creamas.mp.MultiEnvironment`
 	  as a part of :class:`~creamas.ds.DistributedEnvironment`
 
-	* **Slave addresses**: Addresses for the slave environments, the size of this
-	  list will define how many subprocesses are spawned.
+After the master environment has been created, the slave environments can be
+spawned using :meth:`~creamas.mp.MultiEnvironment.spawn_slaves`. It accepts
+at least the following arguments.
+
+	* **Slave addresses**: Addresses for the slave environments, the size of
+	  this list will define how many subprocesses are spawned.
 
 	* **Slave environment class**: Class for each slave environment inside the
 	  multiprocessing environment.
@@ -126,7 +133,7 @@ Support for Distributed Systems
 Support for distributed systems in Creamas is built around
 :class:`~creamas.ds.DistributedEnvironment`. Distributed environment is
 designed to be used with multiple (quite homogeneous) nodes which operate in
-a closed system [#f1]_ where each node can make **tcp** connections to ports in
+a closed system where each node can make **tcp** connections to ports in
 other nodes. Further on, it requires that it is located in a machine that is
 able to make SSH connections to the nodes.
 
@@ -159,7 +166,7 @@ Using a Distributed Environment
 Initialization of a distributed environment is done roughly in the following
 steps:
 
-	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with list of node
+	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with a list of node
 	   locations
 	2. Create node spawning terminal commands for each node, i.e. commands
 	   which start :class:`~creamas.mp.MultiEnvironment` on each node.
@@ -217,7 +224,3 @@ is called.
 
 See ``creamas/examples/grid/`` for an example implementation of a distributed
 agent environment.
-
-.. rubric:: Footnotes
-
-.. [#f1] Closed because the managers do not verify the messages sent to them by default.

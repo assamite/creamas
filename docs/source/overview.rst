@@ -137,31 +137,42 @@ a shortcut to ask an opinion about an artifact from a remote agent.
 	if diff > 0.8
 		a1.set_attitude(a2.addr, att - 0.1)
 
-Features, Mappers And Rules
----------------------------
+..
+	Features, Mappers And Rules
+	---------------------------
 
-.. warning::
-	Functionality in this section is not yet fully developed and tested.
+	.. warning::
+		Functionality in this section is not yet fully developed and tested.
 
-Agents can evaluate artifacts by extracting features from them. As features can
-have all kinds of outputs, they are paired with mappers. A mapper serves as a
-function from feature's outputs to the interval :math:`[-1, 1] \in \mathbb{R}`.
-Features are artifact domain depended, and shareable between agents.
-Mappers represent individual agent's preferences over possible feature
-values.
+	Agents can evaluate artifacts by extracting features from them. As features can
+	have all kinds of outputs, they are paired with mappers. A mapper serves as a
+	function from feature's outputs to the interval :math:`[-1, 1] \in \mathbb{R}`.
+	Features are artifact domain depended, and shareable between agents.
+	Mappers represent individual agent's preferences over possible feature
+	values.
 
-Rules combine a set of features, and their corresponding mappers, to a
-functional unit. Rules also have weight for each feature, which may inhibit its
-effect on the overall rule's evaluation. In its most basic form rule has one
-feature and its mapper, but agents are encouraged to merge existing rules
-together, or add new features to them in order to make them more expressive.
+	Rules combine a set of features, and their corresponding mappers, to a
+	functional unit. Rules also have weight for each feature, which may inhibit its
+	effect on the overall rule's evaluation. In its most basic form rule has one
+	feature and its mapper, but agents are encouraged to merge existing rules
+	together, or add new features to them in order to make them more expressive.
 
 Iterative Simulation
 --------------------
 
 Creamas provides an easy to use :class:`~creamas.core.simulation.Simulation`
-which can be used to run iterative simulations using :meth:`act`. See
-:doc:`create_sim` for details.
+which can be used to run iterative simulations using agents' :meth:`act`.
+Simulations can be created directly or they can be given an environment at
+initialization time. See :doc:`create_sim` for details.
+
+Voting and Other Social Choice Functions
+----------------------------------------
+
+Creamas offers some basic social choice/social decision making behavior for
+agents in the form of voting. Agents can publish their own artifacts as
+**candidates**. These candidates can then be collected and voted upon. Optionally,
+agents can validate each others candidates, i.e. exercise *veto* power on them,
+before voting takes place. See :doc:`vote` for details.
 
 Support for Multiple Cores and Distributed Systems
 ---------------------------------------------------

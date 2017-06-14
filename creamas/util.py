@@ -12,6 +12,21 @@ import re
 def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
     '''Create and schedule a set of asynchronous tasks.
 
+    The function creates the tasks using a given list of agent addresses and
+    wraps each of them in :func:`asyncio.ensure_future`. The ``*args`` and
+    ``**kwargs`` are passed down to :func:`task_coro` when creating tasks for
+    each address in :attr:`addrs`.
+
+    Usage example for a method in a class derived from
+    :class:`~creamas.mp.MultiEnvironment`::
+
+        async def my_method(self, *args, **kwargs):
+            async def task(addr, *args, **kwargs):
+                r_manager = await self.env.connect(addr)
+                return await r_manager.my_method(*args, **kwargs)
+
+            return await util.create_tasks(task, self.addrs, *args, **kwargs)
+
     :param task_coro:
         Coroutine which is used for each address in :attr:`addrs`. The
         coroutine should accept an agent address as the first parameter.
@@ -25,21 +40,6 @@ def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
     :returns:
         An awaitable coroutine which returns the results of tasks as a list or
         as a flattened list
-
-    The function creates the tasks using a given list of agent addresses and
-    wraps each of them in :func:`asyncio.ensure_future`. The ``*args`` and
-    ``**kwargs`` are passed down to :func:`task_coro` when creating tasks for
-    each address in :attr:`addrs`.
-
-    Usage example for a method in a class derived from
-    :class:`~creamas.mp.MultiEnvironment`::
-
-        async def my_method(self, *args, **kwargs):
-            async def coro(addr, *args, **kwargs):
-                r_manager = await self.env.connect(addr)
-                return await r_manager.my_method(*args, **kwargs)
-
-            return await util.create_tasks(coro, self.addrs, *args, **kwargs)
     '''
     tasks = []
     for agent_addr in addrs:
@@ -96,7 +96,7 @@ def run(task=None, loop=None):
         asyncio's base event loop.
 
     .. note::
-        This method has quite the same intent as :func:`aiomas.util.run`.
+        This method has the same intent as :func:`aiomas.util.run`.
     '''
     if loop is None:
         loop = asyncio.get_event_loop()
@@ -113,12 +113,7 @@ def _addr_key(addr):
 
 
 def sort_addrs(addrs):
-    '''Sort agent addresses.
-
-    :param list addrs: List of addresses to be sorted.
-
-    :returns:
-        List of addresses in a sorted order.
+    '''Return agent addresses in a sorted order.
 
     Agent addresses are sorted with following hierarchical criteria:
         1. by the host of an agent's environment
@@ -166,6 +161,11 @@ def sort_addrs(addrs):
          'tcp://bnode:18000/0',
          'tcp://bnode:18000/1',
          'tcp://bnode:18000/2']
+
+    :param list addrs: List of addresses to be sorted.
+
+    :returns:
+        List of addresses in a sorted order.
     '''
     return sorted(addrs, key=lambda x: _addr_key(x))
 
@@ -198,6 +198,10 @@ def get_manager(addr):
 
 def addrs2managers(addrs):
     '''Map agent addresses to their assumed managers.
+
+    .. seealso::
+
+        :func:`creamas.util.get_manager`
     '''
     mgrs = {}
     for addr in addrs:
