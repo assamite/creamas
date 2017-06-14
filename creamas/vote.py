@@ -2,10 +2,26 @@
 .. py:module:: vote
     :platform: Unix
 
-Implementations for agents able to vote from a set of candidate artifacts,
-:class:`~creamas.vote.VoteAgent` and a vote organizing class that can initiate
-and compute the results of votes in an environment,
-:class:`~creamas.vote.VoteOrganizer`.
+Implementations for voting and other social choice behaviors.
+
+Holds basic implementations for:
+
+    * :class:`~creamas.vote.VoteAgent`: An agent implementing functions needed
+       for voting
+    * :class:`~creamas.vote.VoteEnvironment`: An environment holding basic
+      voting functionality
+    * :class:`~creamas.vote.VoteManager`: A manager agent for instances of
+      :class:`~creamas.vote.VoteEnvironment` when they are slave environments
+      in multi- or distributed environments.
+    * :class:`~creamas.vote.VoteOrganizer`: A class which can initiate voting
+      and compute its results.
+
+It should be noted that only the "true" slave environments, i.e. environments
+derived from :class:`Environment` need to have voting behavior implemented
+(and appropriate voting managers). :class:`~creamas.vote.VoteOrganizer`
+communicates with the "true" slave environments directly without the need of
+the middle layer environments (multi-environments) or managers in the case of
+distributed systems.
 '''
 import logging
 import operator
@@ -87,6 +103,8 @@ class VoteAgent(CreativeAgent):
 
 
 class VoteEnvironment(Environment):
+    '''An environment implementing functionality needed for voting.
+    '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
