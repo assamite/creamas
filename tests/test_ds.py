@@ -6,7 +6,7 @@ Tests for creamas.ds-module.
 '''
 import asyncio
 import unittest
-import multiprocessing
+# import multiprocessing
 
 import aiomas
 
