@@ -115,7 +115,9 @@ pygments_style = 'sphinx'
 todo_include_todos = False
 
 intersphinx_mapping = {'aiomas': ('http://aiomas.readthedocs.io/en/1.0.3/', None),
-                       'networkx': ('http://networkx.readthedocs.io/en/networkx-1.11/', None)}
+                       'networkx': ('http://networkx.readthedocs.io/en/networkx-1.11/', None),
+                       'python': ('https://docs.python.org/3.5', None),
+                       'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None)}
 
 
 # -- Options for HTML output ----------------------------------------------

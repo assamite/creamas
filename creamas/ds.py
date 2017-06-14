@@ -29,17 +29,17 @@ logger = logging.getLogger(__name__)
 async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
     '''Execute a command on a given server using asynchronous SSH-connection.
 
-    The connection to the SSH-server is wrapped in :func:`asyncio.wait_for` and
+    The connection to the server is wrapped in :func:`asyncio.wait_for` and
     given :attr:`timeout` is applied to it. If the server is not reachable
     before timeout expires, :exc:`asyncio.TimeoutError` is raised.
 
     :param str server: Address of the server
     :param str cmd: Command to be executed
-    :param int timeout: Timeout to connect to SSH-server.
+    :param int timeout: Timeout to connect to server.
 
     :param ssh_kwargs:
         Any additional SSH-connection arguments, as specified by
-        :meth:`asyncssh.connect`. See `asyncssh documentation
+        :func:`asyncssh.connect`. See `asyncssh documentation
         <http://asyncssh.readthedocs.io/en/latest/api.html#connect>`_ for
         details.
 
@@ -121,8 +121,6 @@ class DistributedEnvironment(MultiEnvironment):
     The intended order of usage is as follows::
 
         ds = DistributedEnvironment(*args, **kwargs)
-        # 'pool' holds the process pool for SSH-connections to nodes,
-        # 'r' contains the (future) return values of the connections.
         run(ds.spawn_nodes(spawn_cmd))
         timeout = 30
         loop = asyncio.get_event_loop()
