@@ -9,7 +9,7 @@ Holds basic implementations for:
     * :class:`~creamas.vote.VoteAgent`: An agent implementing functions needed
        for voting
     * :class:`~creamas.vote.VoteEnvironment`: An environment holding basic
-      voting functionality
+      voting functionality.
     * :class:`~creamas.vote.VoteManager`: A manager agent for instances of
       :class:`~creamas.vote.VoteEnvironment` when they are slave environments
       in multi- or distributed environments.

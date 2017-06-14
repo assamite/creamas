@@ -1,5 +1,4 @@
 '''
-
 .. py:module:: nx
     :platform: Unix
 
