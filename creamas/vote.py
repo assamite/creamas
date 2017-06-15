@@ -468,6 +468,7 @@ def vote_least_worst(candidates, votes, n_winners):
                 d.append((c, e[1]))
     return d
 
+
 def vote_best(candidates, votes, n_winners):
     '''Select the artifact with the single best evaluation as the winner of
     the vote.
@@ -484,6 +485,32 @@ def vote_best(candidates, votes, n_winners):
             best = [v[0]]
     return best
 
+
+def _remove_zeros(votes, fpl, cl, ranking):
+    '''Remove zeros in IRV voting.'''
+    for v in votes:
+        for r in v:
+            if r not in fpl:
+                v.remove(r)
+    for c in cl:
+        if c not in fpl:
+            if c not in ranking:
+                ranking.append((c, 0))
+
+
+def _remove_last(votes, fpl, cl, ranking):
+    '''Remove last candidate in IRV voting.
+    '''
+    for v in votes:
+        for r in v:
+            if r == fpl[-1]:
+                v.remove(r)
+    for c in cl:
+        if c == fpl[-1]:
+            if c not in ranking:
+                ranking.append((c, len(ranking) + 1))
+
+
 def vote_IRV(candidates, votes, n_winners):
     '''Perform IRV voting based on votes.
 
@@ -493,29 +520,6 @@ def vote_IRV(candidates, votes, n_winners):
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
     '''
-    def _remove_zeros(votes, fpl, cl, ranking):
-        '''Remove zeros in IRV voting.'''
-        for v in votes:
-            for r in v:
-                if r not in fpl:
-                    v.remove(r)
-        for c in cl:
-            if c not in fpl:
-                if c not in ranking:
-                    ranking.append((c, 0))
-
-    def _remove_last(votes, fpl, cl, ranking):
-        '''Remove last candidate in IRV voting.
-        '''
-        for v in votes:
-            for r in v:
-                if r == fpl[-1]:
-                    v.remove(r)
-        for c in cl:
-            if c == fpl[-1]:
-                if c not in ranking:
-                    ranking.append((c, len(ranking) + 1))
-
     # TODO: Check what is wrong in here.
     votes = [[e[0] for e in v] for v in votes]
     f = lambda x: Counter(e[0] for e in x).most_common()
@@ -534,6 +538,7 @@ def vote_IRV(candidates, votes, n_winners):
     ranking.append((fpl[0], len(ranking) + 1))
     ranking = list(reversed(ranking))
     return ranking[:min(n_winners, len(ranking))]
+
 
 def vote_mean(candidates, votes, n_winners):
     '''Perform mean voting based on votes.
