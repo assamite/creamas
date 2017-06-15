@@ -30,7 +30,7 @@ from scipy import ndimage, misc
 
 from creamas import Artifact
 from creamas.math import gaus_pdf
-from creamas.vote import VoteAgent, VoteEnvironment, VoteOrganizer
+from creamas.vote import VoteAgent, VoteEnvironment, VoteOrganizer, vote_mean
 
 from spiro import give_dots, give_dots_yield, spiro_image
 
@@ -469,7 +469,7 @@ class SpiroEnvironment(VoteEnvironment):
         self.save_image_number = 1
         self.img_size = 32
         self.age = 0
-        self.voting_method = 'mean'
+        self.voting_method = vote_mean
         self.valid_cand = []
         self.suggested_cand = []
         logger = logging.getLogger('creamas.spiro.vo')
@@ -484,7 +484,7 @@ class SpiroEnvironment(VoteEnvironment):
         self.vote_organizer.validate_candidates()
         self.valid_cand.append(len(self.vote_organizer.candidates))
         self.vote_organizer.gather_votes()
-        artifacts = self.vote_organizer.compute_results(method=self.voting_method)
+        artifacts = self.vote_organizer.compute_results(voting_method=self.voting_method)
         threshold = 0.0
 
         for a,v in artifacts:

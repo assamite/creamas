@@ -105,7 +105,6 @@ class VoteAgent(CreativeAgent):
 class VoteEnvironment(Environment):
     '''An environment implementing functionality needed for voting.
     '''
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._candidates = []
@@ -211,6 +210,18 @@ class VoteManager(EnvManager):
 
 class VoteOrganizer():
     '''A class which organizes voting behavior in an environment.
+
+    The organizer can :meth:`~creamas.vote.VoteOrganizer.gather_candidates`
+    from the environment, and then
+    :meth:`~creamas.vote.VoteOrganizer.gather_votes` for the candidates.
+    Optionally the organizer may
+    :meth:`~creamas.vote.VoteOrganizer.validate_candidates` before gathering
+    the votes. After the votes have been collected the organizer may
+    :meth:`~creamas.vote.VoteOrganizer.compute_results` of the votes with a
+    given voting method.
+
+    The organizer also has :meth:`~creamas.vote.VoteOrganizer.gather_and_vote`
+    to do all of the above in one go.
     '''
     def __init__(self, environment, logger=None):
         self._env = environment
@@ -346,11 +357,18 @@ class VoteOrganizer():
         self._log(logging.DEBUG, "{} candidates after validation"
                   .format(len(self.candidates)))
 
-    def gather_and_vote(self, validate=False, method='IRV', accepted=1):
+    def gather_and_vote(self, voting_method, validate=False, winners=1,
+                        **kwargs):
         '''Convenience function to gathering candidates and votes and
         performing voting using them.
 
+        Additional ``**kwargs`` are passed down to voting method.
+
+        :param voting_method:
+            The voting method to use, see
+            :meth:`~creamas.vote.VoteOrganizer.compute_results` for details.
         :param bool validate: Validate gathered candidates before voting.
+        :param int winners: The number of vote winners
 
         :returns: Winner(s) of the vote.
         '''
@@ -358,35 +376,38 @@ class VoteOrganizer():
         if validate:
             self.validate_candidates()
         self.gather_votes()
-        r = self.compute_results(self.votes, method=method, accepted=accepted)
+        r = self.compute_results(voting_method, self.votes, winners=winners,
+                                 **kwargs)
         return r
 
-    def compute_results(self, votes=None, method='IRV', accepted=1):
+    def compute_results(self, voting_method, votes=None, winners=1, **kwargs):
         '''Compute voting results to decide the winner(s) from the
         :attr:`votes`.
+
+        The votes should have been made for the current
+        :attr:`~creamas.vote.VoteOrganizer.candidates`.
+
+        :param voting_method:
+            A function which computes the results from the votes. Should
+            accept at least three parameters: candidates, votes and number of
+            vote winners. The function should return at least a list of vote
+            winners. See, e.g. :func:`~creamas.vote.vote_mean` or
+            :func:`~creamas.vote.vote_best`. Additional ``**kwargs`` are passed
+            down to the voting method.
 
         :param list votes:
             A list of votes by which the voting is performed. Each vote should
             have the same set of artifacts in them. If ``None`` the results
-            are computed for :attr:`~creamas.vote.VoteOrganizer.votes`.
+            are computed for the current list of
+            :attr:`~creamas.vote.VoteOrganizer.votes`.
 
-        :param str method:
-            Used voting method. One of the following:
-
-            * IRV: instant run-off voting
-            * mean: best mean vote (requires cardinal ordering for votes),
-            * best: best singular vote (requires cardinal ordering, returns
-              only one candidate)
-            * least_worst: least worst singular vote,
-            * random:  selects random candidates
-
-        :param int accepted:
-            the number of returned candidates
+        :param int winners:
+            The number of vote winners
 
         :returns:
             list of :py:class:`~creamas.core.artifact.Artifact` objects,
-            accepted artifacts. Some voting methods, e.g. mean, also return the
-            associated scores for each accepted artifact.
+            the winning artifacts. Some voting methods may also return a score
+            associated with each winning artifact.
 
         :rtype: list
         '''
@@ -400,82 +421,79 @@ class VoteOrganizer():
 
         self._log(logging.DEBUG, "Computing results from {} votes."
                   .format(len(votes)))
+        return voting_method(self.candidates, votes, winners, **kwargs)
 
-        if method == 'IRV':
-            ordering = self._vote_IRV(votes)
-            best = ordering[:min(accepted, len(ordering))]
-        if method == 'best':
-            best = self._vote_best(votes)
-        if method == 'least_worst':
-            best = self._vote_least_worst(votes)
-        if method == 'random':
-            best = self._vote_random(votes, accepted)
-        if method == 'mean':
-            best = self._vote_mean(votes, accepted)
-        return best
+    def _log(self, level, msg):
+        if self.logger is not None:
+            self.logger.log(level, msg)
 
-    def _vote_random(self, votes, accepted):
-        rcands = list(self.candidates)
-        shuffle(rcands)
-        rcands = rcands[:min(accepted, len(rcands))]
-        best = [(i, 0.0) for i in rcands]
-        return best
 
-    def _vote_least_worst(self, votes):
-        best = [votes[0][-1]]
-        for v in votes[1:]:
-            if v[-1][1] > best[0][1]:
-                best = [v[-1]]
-        return best
+def vote_random(candidates, votes, n_winners):
+    '''Selected random winners from the votes.
 
-    def _vote_best(self, votes):
-        best = [votes[0][0]]
-        for v in votes[1:]:
-            if v[0][1] > best[0][1]:
-                best = [v[0]]
-        return best
+    :param candidates: All candidates in the vote
+    :param votes: Votes from the agents
+    :param int n_winners: The number of vote winners
+    '''
+    rcands = list(candidates)
+    shuffle(rcands)
+    rcands = rcands[:min(n_winners, len(rcands))]
+    best = [(i, 0.0) for i in rcands]
+    return best
 
-    def _vote_IRV(self, votes):
-        '''Perform IRV voting based on votes.
-        '''
-        votes = [[e[0] for e in v] for v in votes]
-        f = lambda x: Counter(e[0] for e in x).most_common()
-        cl = list(self.candidates)
-        ranking = []
-        fp = f(votes)
-        fpl = [e[0] for e in fp]
 
-        while len(fpl) > 1:
-            self._remove_zeros(votes, fpl, cl, ranking)
-            self._remove_last(votes, fpl, cl, ranking)
-            cl = fpl[:-1]
-            fp = f(votes)
-            fpl = [e[0] for e in fp]
+def vote_least_worst(candidates, votes, n_winners):
+    '''Select "least worst" artifact as the winner of the vote.
 
-        ranking.append((fpl[0], len(ranking) + 1))
-        ranking = list(reversed(ranking))
-        return ranking
+    Least worst artifact is the artifact with the best worst evaluation, i.e.
+    its worst evaluation is the best among all of the artifacts.
 
-    def _vote_mean(self, votes, accepted):
-        '''Perform mean voting based on votes.
-        '''
-        sums = {str(candidate): [] for candidate in self.candidates}
-        for vote in votes:
-            for v in vote:
-                sums[str(v[0])].append(v[1])
-        for s in sums:
-            sums[s] = sum(sums[s]) / len(sums[s])
-        ordering = list(sums.items())
-        ordering.sort(key=operator.itemgetter(1), reverse=True)
-        best = ordering[:min(accepted, len(ordering))]
-        d = []
-        for e in best:
-            for c in self.candidates:
-                if str(c) == e[0]:
-                    d.append((c, e[1]))
-        return d
+    Ties are resolved randomly.
 
-    def _remove_zeros(self, votes, fpl, cl, ranking):
+    :param candidates: All candidates in the vote
+    :param votes: Votes from the agents
+    :param int n_winners: The number of vote winners
+    '''
+    worsts = {str(c): 100000000.0 for c in candidates}
+    for v in votes:
+        for e in v:
+            if worsts[str(e[0])] > e[1]:
+                worsts[str(e[0])] = e[1]
+    s = sorted(worsts.items(), key=lambda x: x[1], reverse=True)
+    best = s[:min(n_winners, len(candidates))]
+    d = []
+    for e in best:
+        for c in candidates:
+            if str(c) == e[0]:
+                d.append((c, e[1]))
+    return d
+
+def vote_best(candidates, votes, n_winners):
+    '''Select the artifact with the single best evaluation as the winner of
+    the vote.
+
+    Ties are resolved randomly.
+
+    :param candidates: All candidates in the vote
+    :param votes: Votes from the agents
+    :param int n_winners: The number of vote winners
+    '''
+    best = [votes[0][0]]
+    for v in votes[1:]:
+        if v[0][1] > best[0][1]:
+            best = [v[0]]
+    return best
+
+def vote_IRV(candidates, votes, n_winners):
+    '''Perform IRV voting based on votes.
+
+    Ties are resolved randomly.
+
+    :param candidates: All candidates in the vote
+    :param votes: Votes from the agents
+    :param int n_winners: The number of vote winners
+    '''
+    def _remove_zeros(votes, fpl, cl, ranking):
         '''Remove zeros in IRV voting.'''
         for v in votes:
             for r in v:
@@ -486,7 +504,7 @@ class VoteOrganizer():
                 if c not in ranking:
                     ranking.append((c, 0))
 
-    def _remove_last(self, votes, fpl, cl, ranking):
+    def _remove_last(votes, fpl, cl, ranking):
         '''Remove last candidate in IRV voting.
         '''
         for v in votes:
@@ -498,6 +516,50 @@ class VoteOrganizer():
                 if c not in ranking:
                     ranking.append((c, len(ranking) + 1))
 
-    def _log(self, level, msg):
-        if self.logger is not None:
-            self.logger.log(level, msg)
+    # TODO: Check what is wrong in here.
+    votes = [[e[0] for e in v] for v in votes]
+    f = lambda x: Counter(e[0] for e in x).most_common()
+    cl = list(candidates)
+    ranking = []
+    fp = f(votes)
+    fpl = [e[0] for e in fp]
+
+    while len(fpl) > 1:
+        _remove_zeros(votes, fpl, cl, ranking)
+        _remove_last(votes, fpl, cl, ranking)
+        cl = fpl[:-1]
+        fp = f(votes)
+        fpl = [e[0] for e in fp]
+
+    ranking.append((fpl[0], len(ranking) + 1))
+    ranking = list(reversed(ranking))
+    return ranking[:min(n_winners, len(ranking))]
+
+def vote_mean(candidates, votes, n_winners):
+    '''Perform mean voting based on votes.
+
+    Mean voting computes the mean preference for each of the artifact
+    candidates from the votes and sorts the candidates in the mean preference
+    order.
+
+    Ties are resolved randomly.
+
+    :param candidates: All candidates in the vote
+    :param votes: Votes from the agents
+    :param int n_winners: The number of vote winners
+    '''
+    sums = {str(candidate): [] for candidate in candidates}
+    for vote in votes:
+        for v in vote:
+            sums[str(v[0])].append(v[1])
+    for s in sums:
+        sums[s] = sum(sums[s]) / len(sums[s])
+    ordering = list(sums.items())
+    ordering.sort(key=operator.itemgetter(1), reverse=True)
+    best = ordering[:min(n_winners, len(ordering))]
+    d = []
+    for e in best:
+        for c in candidates:
+            if str(c) == e[0]:
+                d.append((c, e[1]))
+    return d
