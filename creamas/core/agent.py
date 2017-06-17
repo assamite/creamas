@@ -300,6 +300,12 @@ class CreativeAgent(aiomas.Agent):
         return self._connections.pop(addr, None)
 
     @aiomas.expose
+    def clear_connections(self):
+        """Clear all connections from the agent.
+        """
+        self._connections = {}
+
+    @aiomas.expose
     def get_connections(self, data=False):
         """Get agent's current connections.
 

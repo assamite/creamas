@@ -101,6 +101,7 @@ def graph_from_connections(env, directed=False):
     G = DiGraph() if directed else Graph()
     conn_list = env.get_connections(data=True)
     for agent, conns in conn_list:
+        G.add_node(agent)
         ebunch = []
         for nb, data in conns.items():
             ebunch.append((agent, nb, data))

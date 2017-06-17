@@ -241,6 +241,12 @@ class Environment(Container):
             connections.append(c)
         return connections
 
+    def clear_connections(self):
+        """Clear all connections from the agents in the environment.
+        """
+        for a in self.get_agents(addr=False):
+            a.clear_connections()
+
     def get_random_agent(self, agent):
         '''Return random agent that is not the same as agent given as
         parameter.

@@ -135,6 +135,7 @@ class TestEnvironment(unittest.TestCase):
             self.assertEqual(len(conns), len(list(agent.connections.keys())))
             for addr, data in conns:
                 self.assertIn(addr, list(agent.connections.keys()))
+                self.assertEqual(agent.connections[addr], data)
         env2.destroy()
 
         a = agents[0]
