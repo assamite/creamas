@@ -19,7 +19,7 @@ from networkx import Graph, DiGraph
 from creamas.util import sort_addrs
 
 
-def connections_from_graph(env, G, weight_key=None):
+def connections_from_graph(env, G, edge_data=False):
     '''Create connections for agents in the given environment from the given
     NetworkX graph structure.
 
@@ -34,11 +34,9 @@ def connections_from_graph(env, G, weight_key=None):
         :class:`networkx.digraph.DiGraph`. The graph needs to have the same
         number of nodes as the environment has agents (excluding the managers).
 
-    :param weight_key:
-        Optional. If specified, the key is used to extract edge weights
-        from the graph for each agent connection that is created. The
-        connection weights are stored in the agents as :attr:`attitudes`
-        towards other agents.
+    :param bool edge_data:
+        If ``True``, edge data from the given graph is copied to the agents'
+        :attr:`connections`.
 
     .. note::
 
@@ -47,10 +45,7 @@ def connections_from_graph(env, G, weight_key=None):
 
     The created connections are stored in each agent's
     :attr:`~creamas.core.agent.CreativeAgent.connections` and the possible
-    ``weight_key`` is used for priming
-    :attr:`~creamas.core.agent.CreativeAgent.attitudes` towards each remote
-    agent. If ``weight_key`` is not given, then all attitudes are primed to
-    0.0.
+    edge data is stored as key-value pairs in the connection dictionary.
 
     The agents are sorted by their environments' hosts and ports before each
     agent is mapped to a node in **G**. This should cause some network
@@ -75,7 +70,7 @@ def connections_from_graph(env, G, weight_key=None):
     # Sort agent addresses to the order they were added to the environment.
     addrs = sort_addrs(addrs)
     _addrs2nodes(addrs, G)
-    conn_map = _edges2conns(G, weight_key)
+    conn_map = _edges2conns(G, edge_data)
     env.create_connections(conn_map)
 
 
@@ -104,11 +99,11 @@ def graph_from_connections(env, directed=False):
         randomly from the two values.
     '''
     G = DiGraph() if directed else Graph()
-    conn_list = env.get_connections(attitudes=True)
+    conn_list = env.get_connections(data=True)
     for agent, conns in conn_list:
         ebunch = []
-        for nb, att in conns:
-            ebunch.append((agent, nb, {'attitude': att}))
+        for nb, data in conns.items():
+            ebunch.append((agent, nb, data))
         if len(ebunch) > 0:
             G.add_edges_from(ebunch)
     return G
@@ -121,19 +116,15 @@ def _addrs2nodes(addrs, G):
         G.node[n]['addr'] = addrs[i]
 
 
-def _edges2conns(G, weight_key=None):
-    '''Create a mapping from graph edges to agent connections to be created.
+def _edges2conns(G, edge_data=False):
+    """Create a mapping from graph edges to agent connections to be created.
 
     :param G:
         NetworkX's Graph or DiGraph which has :attr:`addr` attribute for each
         node.
 
-    :param str weight_key:
-        Optional. If specified, the returned connection mapping will return
-        a list of (neighbor, weight)- tuples for each address key. The weights
-        are extracted from the graph with given ``weight_key``, i.e.
-        ``G[n][nb][weight_key] = 0.1`` will result in a tuple ``(nb, 0.1)``
-        for a key ``n`` in the returned connection mapping.
+    :param bool edge_data:
+        If ``True``, stores also edge data to the returned dictionary.
 
     :returns:
         A dictionary where keys are agent addresses and values are lists of
@@ -141,12 +132,12 @@ def _edges2conns(G, weight_key=None):
         recreate the graph structure in an agent society.
 
     :rtype: dict
-    '''
+    """
     cm = {}
     for n in G.nodes(data=True):
-        if weight_key is None:
-            cm[n[1]['addr']] = [(G.node[nb]['addr'], 0.0) for nb in G[n[0]]]
-        else:
-            cm[n[1]['addr']] = [(G.node[nb]['addr'], G[n[0]][nb][weight_key])
+        if edge_data:
+            cm[n[1]['addr']] = [(G.node[nb]['addr'], G[n[0]][nb])
                                 for nb in G[n[0]]]
+        else:
+            cm[n[1]['addr']] = [(G.node[nb]['addr'], {}) for nb in G[n[0]]]
     return cm

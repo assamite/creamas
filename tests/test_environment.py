@@ -85,7 +85,7 @@ class TestEnvironment(unittest.TestCase):
         conns = 6
         self.env.create_random_connections(n=conns)
         for a in agents:
-            a_conns = a.connections
+            a_conns = list(a.connections.keys())
             # all get_agents get enough random connections
             self.assertEqual(len(a_conns), conns)
             # all connections are different
@@ -124,7 +124,7 @@ class TestEnvironment(unittest.TestCase):
             while len(conns) < 5:
                 r = choice(env2_addrs)
                 if (r != addr) and (r not in appended):
-                    conns.append((r, random()))
+                    conns.append((r, {'attitude': random()}))
                     appended.append(r)
             con_map[addr] = conns
 
@@ -132,10 +132,9 @@ class TestEnvironment(unittest.TestCase):
         env2.create_connections(con_map)
         for agent in env2.get_agents(addr=False):
             conns = con_map[agent.addr]
-            self.assertEqual(len(conns), len(agent.connections))
-            for addr, att in conns:
-                self.assertIn(addr, agent.connections)
-                self.assertEqual(agent.get_attitude(addr), att)
+            self.assertEqual(len(conns), len(list(agent.connections.keys())))
+            for addr, data in conns:
+                self.assertIn(addr, list(agent.connections.keys()))
         env2.destroy()
 
         a = agents[0]

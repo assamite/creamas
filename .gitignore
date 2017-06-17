@@ -60,12 +60,13 @@ target/
 # Own mods
 !.gitkeep
 
-#Eclipse
+# Eclipse & PyCharm
 .settings
 .project
 .pydevproject
+.idea
 
-#all logs
+# all logs
 logs/
 
 TODO

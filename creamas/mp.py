@@ -122,20 +122,20 @@ class EnvManager(aiomas.subproc.Manager):
         return self.env.create_connections(connection_map)
 
     @aiomas.expose
-    def get_connections(self, attitudes=True):
-        '''Get connections from the agents in the environment.
+    def get_connections(self, data=False):
+        """Get connections from the agents in the environment.
 
         This is a managing function for
         :meth:`~creamas.core.environment.Environment.get_connections`.
-        '''
-        return self.env.get_connections(attitudes=attitudes)
+        """
+        return self.env.get_connections(data=data)
 
     @aiomas.expose
     async def get_artifacts(self):
-        '''Get all artifacts from the host environment.
+        """Get all artifacts from the host environment.
 
         :returns: All the artifacts in the environment.
-        '''
+        """
         host_manager = await self.env.connect(self._host_manager,
                                               timeout=TIMEOUT)
         artifacts = await host_manager.get_artifacts()
@@ -143,19 +143,18 @@ class EnvManager(aiomas.subproc.Manager):
 
     @aiomas.expose
     def close(self, folder=None):
-        '''Implemented for consistency. This basic implementation does nothing.
-        '''
+        """Implemented for consistency. This basic implementation does nothing.
+        """
         pass
 
     @aiomas.expose
     async def trigger_all(self, *args, **kwargs):
-        '''Trigger all agents in the managed environment to act once.
+        """Trigger all agents in the managed environment to act once.
 
         This is a managing function for
         :meth:`~creamas.core.environment.Environment.trigger_all`.
-        '''
-        rets = await self.env.trigger_all(*args, **kwargs)
-        return rets
+        """
+        return await self.env.trigger_all(*args, **kwargs)
 
     @aiomas.expose
     async def is_ready(self):
@@ -276,14 +275,13 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return await self.menv.create_connections(connection_map, as_coro=True)
 
     @aiomas.expose
-    async def get_connections(self, attitudes=True):
+    async def get_connections(self, data=True):
         '''Return connections for all the agents in the slave environments.
 
         This is a managing function for
         :meth:`~creamas.mp.MultiEnvironment.get_connections`.
         '''
-        return await self.menv.get_connections(attitudes=attitudes,
-                                               as_coro=True)
+        return await self.menv.get_connections(data=data, as_coro=True)
 
     @aiomas.expose
     def close(self, folder=None):
@@ -690,13 +688,13 @@ class MultiEnvironment():
         async def slave_task(mgr_addr):
             r_manager = await self.env.connect(mgr_addr, timeout=TIMEOUT)
             ret = await r_manager.get_agents(addr=True)
-            return (mgr_addr, len(ret))
+            return mgr_addr, len(ret)
 
         sizes = await create_tasks(slave_task, self.addrs, flatten=False)
         return sorted(sizes, key=lambda x: x[1])[0][0]
 
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
-        '''Spawn a new agent in a slave environment.
+        """Spawn a new agent in a slave environment.
 
         :param str agent_cls:
             `qualname`` of the agent class.
@@ -716,7 +714,7 @@ class MultiEnvironment():
 
             Use :meth:`~creamas.mp.MultiEnvironment.spawn_n` to spawn large
             number of agents with identical initialization parameters.
-        '''
+        """
         if addr is None:
             addr = await self._get_smallest_env()
         r_manager = await self.env.connect(addr)
@@ -753,7 +751,7 @@ class MultiEnvironment():
 
         :param dict connection_map:
             A map of connections to be created. Dictionary where keys are
-            agent addresses and values are lists of (addr, attitude)-tuples
+            agent addresses and values are lists of (addr, data)-tuples
             suitable for
             :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
 
@@ -771,11 +769,11 @@ class MultiEnvironment():
         tasks = create_tasks(slave_task, self.addrs, connection_map)
         return run_or_coro(tasks, as_coro)
 
-    def get_connections(self, attitudes=True, as_coro=False):
+    def get_connections(self, data=True, as_coro=False):
         '''Return connections from all the agents in the slave environments.
 
-        :param bool attitudes:
-            If ``True``, returns also the attitudes for each connection.
+        :param bool data:
+            If ``True``, returns also the data stored for each connection.
 
         :param bool as_coro:
             If ``True`` returns a coroutine, otherwise runs the asynchronous
@@ -785,11 +783,11 @@ class MultiEnvironment():
 
             :meth:`creamas.core.environment.Environment.get_connections`
         '''
-        async def slave_task(addr, attitudes):
+        async def slave_task(addr, data):
             r_manager = await self.env.connect(addr)
-            return await r_manager.get_connections(attitudes)
+            return await r_manager.get_connections(data)
 
-        tasks = create_tasks(slave_task, self.addrs, attitudes)
+        tasks = create_tasks(slave_task, self.addrs, data)
         return run_or_coro(tasks, as_coro)
 
     def get_slave_managers(self):

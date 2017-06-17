@@ -54,10 +54,8 @@ class AgentTestCase(unittest.TestCase):
             self.assertEqual(type(a.A), list)
             self.assertEqual(type(a.D), dict)
             self.assertEqual(len(a.D.keys()), 0)
-            self.assertEqual(len(a.connections), 0)
-            self.assertEqual(type(a.connections), list)
-            self.assertEqual(len(a.attitudes), 0)
-            self.assertEqual(type(a.attitudes), list)
+            self.assertEqual(len(a.connections.keys()), 0)
+            self.assertEqual(type(a.connections), dict)
             self.assertIsNone(a.logger)
             self.assertEqual(a.qualname(), 'creamas.core.agent:CreativeAgent')
 
@@ -82,48 +80,30 @@ class AgentTestCase(unittest.TestCase):
 
         # adding connections works
         self.assertTrue(a1.add_connection(a_agents[0].addr))
-        self.assertTrue(a1.add_connection(a_agents[1].addr, 0.5))
-        self.assertTrue(a1.add_connection(a_agents[2].addr, -0.5))
-        self.assertEqual(len(a1.connections), 3)
-        self.assertEqual(len(a1.attitudes), 3)
-        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.0)
-        self.assertEqual(a1.get_attitude(a_agents[1].addr), 0.5)
-        self.assertEqual(a1.get_attitude(a_agents[2].addr), -0.5)
+        self.assertTrue(a1.add_connection(a_agents[1].addr))
+        self.assertTrue(a1.add_connection(a_agents[2].addr))
+        self.assertEqual(len(a1.connections.keys()), 3)
 
         # adding existing connection returns False
         self.assertFalse(a1.add_connection(a_agents[0].addr))
 
         # Removing connection removes the right connection and attitude.
         a1.remove_connection(a_agents[1].addr)
-        self.assertEqual(len(a1.connections), 2)
-        self.assertEqual(len(a1.attitudes), 2)
-        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.0)
-        self.assertEqual(a1.get_attitude(a_agents[2].addr), -0.5)
-        self.assertIsNone(a1.get_attitude(a_agents[1].addr))
+        self.assertEqual(len(a1.connections.keys()), 2)
 
         # Adding connections in a bunch works
-        a1.add_connections([(b.addr, 0.1) for b in b_agents])
-        self.assertEqual(len(a1.connections), 5)
-        self.assertEqual(len(a1.attitudes), 5)
-        self.assertEqual(a1.get_attitude(b_agents[0].addr), 0.1)
-
-        # Set attitude works, and attitude cannot be set outside -1,1.
-        a1.set_attitude(a_agents[0].addr, 0.5)
-        self.assertEqual(a1.get_attitude(a_agents[0].addr), 0.5)
+        a1.add_connections([(b.addr, {'foo': 'bar'}) for b in b_agents])
+        self.assertEqual(len(a1.connections.keys()), 5)
 
         # Removing non-existing connection returns false
         self.assertFalse(a1.remove_connection(a_agents[1].addr))
-
-        a1.set_attitude(a_agents[1].addr, -0.5)
-        self.assertIn(a_agents[1].addr, a1.connections)
-        self.assertEqual(a1.get_attitude(a_agents[1].addr), -0.5)
 
         # Connecting to a random agent in connections works and returns a Proxy
         ret = self.loop.run_until_complete(a1.random_connection())
         self.assertTrue(type(ret), aiomas.rpc.Proxy)
 
         # connect shortcut works and returns a Proxy
-        ret = self.loop.run_until_complete(a1.connect(a1.connections[0]))
+        ret = self.loop.run_until_complete(a1.connect(list(a1.connections.keys())[0]))
         self.assertTrue(type(ret), aiomas.rpc.Proxy)
 
         # other agents can get other agents connections
@@ -132,12 +112,12 @@ class AgentTestCase(unittest.TestCase):
         for c in conns:
             self.assertIn(c, a1.connections)
 
-        # Getting attitudes also works for other agents connections
+        # Getting data also works for other agents connections
         r_agent = self.loop.run_until_complete(a2.connect(a1.addr))
         conns = self.loop.run_until_complete(r_agent.get_connections(True))
-        for c in conns:
-            self.assertIn(c[0], a1.connections)
-            self.assertTrue(a1.get_attitude(c[0]), c[1])
+        for c, d in conns.items():
+            self.assertIn(c, list(a1.connections.keys()))
+            self.assertTrue(type(d), dict)
 
         # Default act raises error
         with self.assertRaises(NotImplementedError):

@@ -17,8 +17,10 @@ from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
 from creamas.nx import connections_from_graph, graph_from_connections
 
+
 def edge_sim(e1, e2):
-    return e1['weight'] == e2['attitude']
+    return e1 == e2
+
 
 class NXTestCase(unittest.TestCase):
 
@@ -70,7 +72,7 @@ class NXTestCase(unittest.TestCase):
         for edge in G.edges_iter(data=True):
             edge[2]['weight'] = random.random()
 
-        connections_from_graph(self.env, G, weight_key='weight')
+        connections_from_graph(self.env, G, edge_data=True)
         G2 = graph_from_connections(self.env, directed=False)
         self.assertEqual(len(G2), n_agents)
         self.assertTrue(networkx.is_isomorphic(G, G2, edge_match=edge_sim))
@@ -99,7 +101,7 @@ class NXTestCase(unittest.TestCase):
         for edge in G.edges_iter(data=True):
             edge[2]['weight'] = random.random()
 
-        connections_from_graph(self.env, G, weight_key='weight')
+        connections_from_graph(self.env, G, edge_data=True)
         G2 = graph_from_connections(self.env, directed=True)
         self.assertEqual(len(G2), n_agents)
         self.assertTrue(networkx.is_isomorphic(G, G2, edge_match=edge_sim))

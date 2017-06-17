@@ -64,8 +64,7 @@ class CreativeAgent(aiomas.Agent):
         self._W = []
         self._A = []
         self._D = {}
-        self._connections = []
-        self._attitudes = []
+        self._connections = {}
 
         if type(name) is str and len(name) > 0:
             self.__name = name
@@ -171,48 +170,26 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def connections(self):
-        '''Addresses of known other agents in the society/simulation.'''
-        return self._connections
+        """Known other agents
 
-    @property
-    def attitudes(self):
-        '''Attitudes towards agents in :attr:`connections`.'''
-        return self._attitudes
+        The connections has a dict-in-a-dict data type able to hold arbitrary
+        information about known other agents. The keys in the dictionary are
+        agent addresses and values are dictionaries holding information
+        relating to the key-agent.
+        """
+        return self._connections
 
     def qualname(self):
         '''Get qualified name of this class.
         '''
         return "{}:{}".format(self.__module__, self.__class__.__name__)
 
-    def get_attitude(self, addr):
-        '''Return attitude towards agent with :attr:`addr`.
-
-        Returns ``None`` if agent is not in :attr:`connections`.
-        '''
-        try:
-            ind = self._connections.index(addr)
-            return self._attitudes[ind]
-        except:
-            return None
-
-    def set_attitude(self, addr, attitude):
-        '''Set attitude towards an agent with :attr:`addr`.
-
-        If agent is not in :attr:`connections`, adds it.
-        '''
-        try:
-            ind = self._connections.index(addr)
-            self._attitudes[ind] = attitude
-        except:
-            self.add_connection(addr, attitude)
-
     def set_weight(self, rule, weight):
         '''Set weight for rule in :attr:`R`.
 
         Adds the rule if it is not in :attr:`R`.
         '''
-        if not (issubclass(rule.__class__, Rule) or
-                issubclass(rule.__class__, RuleLeaf)):
+        if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to set weight ({}) is not subclass "
                             "of {} or {}.".format(rule, Rule, RuleLeaf))
         assert (weight >= -1.0 and weight <= 1.0)
@@ -224,8 +201,7 @@ class CreativeAgent(aiomas.Agent):
 
     def get_weight(self, rule):
         '''Get weight for rule. If rule is not in **R**, returns None.'''
-        if not (issubclass(rule.__class__, Rule) or
-                issubclass(rule.__class__, RuleLeaf)):
+        if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to get weight ({}) is not subclass "
                             "of {} or {}.".format(rule, Rule, RuleLeaf))
         try:
@@ -275,8 +251,7 @@ class CreativeAgent(aiomas.Agent):
         :returns: true if rule was successfully removed, otherwise false
         :rtype bool:
         '''
-        if not (issubclass(rule.__class__, Rule) or
-                issubclass(rule.__class__, RuleLeaf)):
+        if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to remove ({}) is not subclass of {} or {}."
                             .format(rule.__class__, Rule, RuleLeaf))
         try:
@@ -288,94 +263,89 @@ class CreativeAgent(aiomas.Agent):
             return False
 
     @aiomas.expose
-    def add_connection(self, addr, attitude=0.0):
-        '''Add an agent with given address to current :attr:`connections` with
-        given initial attitude.
+    def add_connection(self, addr, **kwargs):
+        """Add an agent with given address to current :attr:`connections` with
+        given information.
 
-        Does nothing if address is already in :attr:`connections`.
+        Does nothing if address is already in :attr:`connections`. Given
+        ``**kwargs`` are stored as key-value pairs to ``connections[addr]``
+         dictionary.
 
         :param str addr: Address of the agent to be added
-        :param float attitude: initial attitude towards agent, in [-1, 1]
         :returns: True if the agent was successfully added, False otherwise.
-        '''
+        """
         if addr not in self._connections:
-            self.connections.append(addr)
-            self.attitudes.append(attitude)
+            self.connections[addr] = {}
+            for k, v in kwargs.items():
+                self.connections[addr][k] = v
             return True
         return False
 
     @aiomas.expose
     def add_connections(self, conns):
-        '''Add agents from :attr:`conns` to :attr:`connections`.
+        """Add agents from :attr:`conns` to :attr:`connections`.
 
-        :param list conns: A list of ``(addr, attitude)``-tuples
-        '''
+        :param list conns: A list of ``(addr, kwargs)``-tuples
+        """
         rets = []
-        for addr, att in conns:
-            r = self.add_connection(addr, att)
+        for addr, kwargs in conns:
+            r = self.add_connection(addr, **kwargs)
             rets.append(r)
         return rets
 
     @aiomas.expose
     def remove_connection(self, addr):
-        '''Remove agent with given address from current connections.'''
-        try:
-            ind = self._connections.index(addr)
-            del self._connections[ind]
-            del self._attitudes[ind]
-            return True
-        except:
-            return False
+        """Remove agent with given address from current connections.
+        """
+        return self._connections.pop(addr, None)
 
     @aiomas.expose
-    def get_connections(self, attitudes=False):
-        '''Get agent's current connections.
+    def get_connections(self, data=False):
+        """Get agent's current connections.
 
-        :param bool attitudes:
-            If ``True``, returns also the attitudes towards each connection.
+        :param bool data:
+            Also return the data dictionary for each connection.
 
-        :returns: A list of addresses or ``(address, attitude)``-tuples.
-        '''
-        if attitudes:
-            return list(zip(self._connections, self._attitudes))
-        return self._connections
+        :returns: A list of agent addresses or a dictionary
+        """
+        if data:
+            return self._connections
+        return list(self._connections.keys())
 
     async def connect(self, addr):
-        '''Connect to agent in given address using the agent's environment.
+        """Connect to agent in given address using the agent's environment.
 
         This is a shortcut to
         :meth:`~creamas.core.enviroment.Environment.connect`.
 
         :returns: :class:`aiomas.Proxy` object for the connected agent.
-        '''
-        remote_agent = await self.env.connect(addr)
-        return remote_agent
+        """
+        return await self.env.connect(addr)
 
     async def random_connection(self):
-        '''Connect to random agent from current :attr:`connections`.
+        """Connect to random agent from current :attr:`connections`.
 
         :returns: :class:`aiomas.Proxy` object for the connected agent.
-        '''
-        addr = choice(self._connections)
-        remote_agent = await self.env.connect(addr)
-        return remote_agent
+        """
+        addr = choice(list(self._connections.keys()))
+        return await self.env.connect(addr)
 
     def publish(self, artifact):
-        '''Publish artifact to agent's environment.
+        """Publish artifact to agent's environment.
 
         :param artifact: artifact to be published
         :type artifact: :py:class:`~creamas.core.artifact.Artifact`
-        '''
+        """
         self.env.add_artifact(artifact)
         self._log(logging.DEBUG, "Published {} to domain.".format(artifact))
 
     def refill(self):
-        '''Refill agent's resources to maximum.'''
+        """Refill agent's resources to maximum."""
         self._cur_res = self._max_res
 
     @aiomas.expose
     def evaluate(self, artifact):
-        r'''Evaluate artifact with agent's current rules and weights.
+        r"""Evaluate artifact with agent's current rules and weights.
 
         :param artifact:
             :class:`~creamas.core.artifact.Artifact` to be evaluated
@@ -400,7 +370,7 @@ class CreativeAgent(aiomas.Agent):
         where :math:`r_{i}(A)` is the :math:`i` th rule's evaluation on
         artifact :math:`A`, and :math:`w_i` is the weight for rule
         :math:`r_i`.
-        '''
+        """
         s = 0
         w = 0.0
         if len(self.R) == 0:
@@ -433,8 +403,7 @@ class CreativeAgent(aiomas.Agent):
             The artifact object should be serializable by the environment.
         '''
         remote_agent = await self.env.connect(addr)
-        ret = await remote_agent.evaluate(artifact)
-        return ret
+        return await remote_agent.evaluate(artifact)
 
     @aiomas.expose
     async def act(self, *args, **kwargs):
