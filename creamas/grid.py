@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: grid
     :platform: Unix
 
@@ -27,7 +27,7 @@ implemented are:
       multi-processing environment. Used especially if the environment needs to
       be able to execute commands from external sources, e.g. when used as a
       part of :class:`creamas.ds.DistributedEnvironment`.
-'''
+"""
 import asyncio
 import logging
 import traceback
@@ -48,12 +48,12 @@ def _get_neighbor_xy(card, xy):
 
 
 class GridAgent(CreativeAgent):
-    '''An agent living in a 2D-grid with four neighbors in cardinal directions.
+    """An agent living in a 2D-grid with four neighbors in cardinal directions.
 
     The agent assumes that its environment is derived from
     :class:`~creamas.grid.GridEnvironment`, and places itself into the grid
     when it is initialized.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,19 +63,19 @@ class GridAgent(CreativeAgent):
 
     @property
     def xy(self):
-        '''Agent's place (coordinate) in the grid, (x, y)-tuple.
-        '''
+        """Agent's place (coordinate) in the grid, (x, y)-tuple.
+        """
         return self._xy
 
     @property
     def neighbors(self):
-        '''Map of neighboring agent addresses in cardinal directions:
+        """Map of neighboring agent addresses in cardinal directions:
         N, E, S, W.
-        '''
+        """
         return self._neighbors
 
     async def send(self, card, msg):
-        '''Send message *msg* to the neighboring agent in the *card*
+        """Send message *msg* to the neighboring agent in the *card*
         cardinal direction.
 
         :param str card: 'N', 'E', 'S', or 'W'.
@@ -87,8 +87,7 @@ class GridAgent(CreativeAgent):
 
         This method will fail silently if there is no neighbor agent in the
         given cardinal direction.
-
-        '''
+        """
         addr = self.neighbors[card]
         if addr is None:
             return None
@@ -102,28 +101,28 @@ class GridAgent(CreativeAgent):
 
     @aiomas.expose
     async def rcv(self, msg):
-        '''Receive and handle message coming from another agent.
+        """Receive and handle message coming from another agent.
 
         This method is called from :meth:`send`.
 
         The base implementation does nothing, override in a subclass.
-        '''
+        """
         pass
 
     @aiomas.expose
     async def act(self, *args, **kwargs):
-        '''See :py:class:`creamas.core.agent.CreativeAgent.act`.
-        '''
+        """See :py:class:`creamas.core.agent.CreativeAgent.act`.
+        """
         pass
 
 
 class GridEnvironment(Environment):
-    '''Environment where agents reside in a 2D-grid.
+    """Environment where agents reside in a 2D-grid.
 
     Each agent is connected to neighbors in cardinal directions: N, E, S, W.
     Grid environments can be horizontally stacked with
     :py:class:`GridMultiEnvironment`.
-    '''
+    """
     def __init__(self, base_url, clock, connect_kwargs):
         super().__init__(base_url, clock, connect_kwargs)
         self._gs = (0, 0)
@@ -133,10 +132,10 @@ class GridEnvironment(Environment):
 
     @property
     def gs(self):
-        '''Size of the grid as a 2-tuple. Changing the size of the grid after
+        """Size of the grid as a 2-tuple. Changing the size of the grid after
         spawning any agents in the environment will clear the grid, but does
         not remove the agents from the environment.
-        '''
+        """
         return self._gs
 
     @gs.setter
@@ -147,8 +146,11 @@ class GridEnvironment(Environment):
 
     @property
     def origin(self):
-        '''Upper left corner of the grid, [0,0] by default.
-        '''
+        """Upper left corner of the grid, [0,0] by default.
+
+        You should define the origin before spawning any agents into the
+        environment.
+        """
         return self._origin
 
     @origin.setter
@@ -157,38 +159,38 @@ class GridEnvironment(Environment):
 
     @property
     def grid(self):
-        '''The agents in the grid. 2D-list with the same size as **gs**.
-        '''
+        """The agents in the grid. 2D-list with the same size as **gs**.
+        """
         return self._grid
 
     @property
     def neighbors(self):
-        '''Map of neighboring grid environments in cardinal directions.
+        """Map of neighboring grid environments in cardinal directions.
 
         Acceptable keys: N, E, S, W.
 
         The values are **the addresses of the managers** in the neighboring
         grid environments.
-        '''
+        """
         return self._neighbors
 
     def is_ready(self):
-        '''Grid environment is ready when its grid is full.
+        """Grid environment is ready when its grid is full.
 
         .. seealso::
 
             :meth:`GridEnvironment.is_full`, :meth:`Environment.is_ready`
-        '''
+        """
         return self.is_full()
 
     def is_full(self):
-        ''':class:`GridEnvironment` is full when its **grid** is fully
+        """:class:`GridEnvironment` is full when its **grid** is fully
         populated with agents.
 
         :returns:
             True if the grid is full, False otherwise. Will also return False
             for uninitialized grids with (0,0) grid size.
-        '''
+        """
         if len(self.grid) == 0:
             return False
 
@@ -219,26 +221,16 @@ class GridEnvironment(Environment):
         raise ValueError("Trying to add an agent to a full grid."
                          .format(len(self._grid[0]), len(self._grid[1])))
 
-    def insert_to_grid(self, xy, agent):
-        '''Insert agent into the grid. Replaces an existing agent in the grid,
-        but does no remove it from the environment.
-
-        :param tuple xy:
-            (x,y) of the agent in the grand grid (i.e., taking account the
-            **origin**).
-
-        :param agent: subclass of :class:`~creamas.grid.GridAgent`
-        '''
-        i = xy[0] - self.origin[0]
-        j = xy[1] - self.origin[1]
-        self._grid[i][j] = agent
-
     def get_xy(self, xy, addr=True):
-        '''Get the agent with xy-coordinate in the grid. If *addr* is True,
+        """Get the agent with xy-coordinate in the grid. If *addr* is True,
         returns only the agent's address.
 
         If no such agent in the grid, returns None.
-        '''
+
+        :raises:
+            :exc:`ValueError` if xy-coordinate is outside the environment's
+            grid.
+        """
         x = xy[0]
         y = xy[1]
         if x < self.origin[0] or x >= self.origin[0] + self.gs[0]:
