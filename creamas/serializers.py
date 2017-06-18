@@ -6,8 +6,6 @@ Predefined serializers for routers.
 """
 import pickle
 
-import aiomas
-
 from creamas import Artifact
 
 
