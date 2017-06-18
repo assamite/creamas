@@ -44,7 +44,7 @@ _polars = {'N': 'S', 'E': 'W', 'S': 'N', 'W': 'E'}
 
 def _get_neighbor_xy(card, xy):
     rxy = _rel_xy[card]
-    return (xy[0] + rxy[0], xy[1] + rxy[1])
+    return xy[0] + rxy[0], xy[1] + rxy[1]
 
 
 class GridAgent(CreativeAgent):
@@ -58,7 +58,7 @@ class GridAgent(CreativeAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._xy = self.env.add_to_grid(agent=self)
-        self.name = ("{}-{}({})".format(self._xy[0], self._xy[1], self.addr))
+        self.name = "{}-{}({})".format(self._xy[0], self._xy[1], self.addr)
         self._neighbors = {'N': None, 'E': None, 'S': None, 'W': None}
 
     @property
@@ -69,8 +69,8 @@ class GridAgent(CreativeAgent):
 
     @property
     def neighbors(self):
-        '''Map of neighboring agent addresses in cardinal
-        directions: N, E, S, W.
+        '''Map of neighboring agent addresses in cardinal directions:
+        N, E, S, W.
         '''
         return self._neighbors
 

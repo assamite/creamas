@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(LOG_LEVEL)
 
+
 def create_menv(addr, slave_addrs, env_kwargs):
     '''
     :param addr: Address of the multi-environment
@@ -62,18 +63,19 @@ def populate_menv(menv, agent_cls_name, n_agents):
         run(menv.spawn_n(agent_cls_name, n_agents))
     logger.info("Populating complete.")
 
+
 def get_slave_addrs(mgr_addr, N):
     '''Get ports for the slave environments.
 
     Currently the ports are not checked for availability.
     '''
-    return  [(HOST, p) for p in range(mgr_addr+1, mgr_addr+1+N)]
+    return [(HOST, p) for p in range(mgr_addr+1, mgr_addr+1+N)]
 
 
 def _origin(s):
     try:
         x, y = map(int, s.split(","))
-        return (x,y)
+        return x, y
     except:
         raise TypeError("Origin must be x,y")
 
@@ -81,7 +83,7 @@ def _origin(s):
 def _gs(s):
     try:
         x, y = map(int, s.split(","))
-        return (x,y)
+        return x, y
     except:
         raise TypeError("Grid size must be x,y")
 
@@ -104,9 +106,7 @@ if __name__ == "__main__":
                 .format(addr, args.n_slaves))
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    from creamas.serializers import proxy_serializer
-    env_kwargs = {'codec': aiomas.MsgPack,
-                  'extra_serializers': [proxy_serializer]}
+    env_kwargs = {'codec': aiomas.MsgPack}
     menv = create_menv(addr, addrs, env_kwargs)
     run(menv.wait_slaves(30, check_ready=True), loop=loop)
     run(menv.set_host_managers(), loop=loop)
