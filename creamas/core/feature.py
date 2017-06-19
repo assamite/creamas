@@ -18,7 +18,7 @@ class Feature():
 
     Returned feature values can be of any type, but rules
     (:py:class:`~creamas.core.rule.Rule`) should have appropriate mappers to
-    map possible feature's values to the interval [-1, 1].
+    map possible feature values to the interval [-1, 1].
 
     Usage example:
 
