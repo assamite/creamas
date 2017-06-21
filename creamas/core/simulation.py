@@ -65,13 +65,21 @@ class Simulation():
             folder for possible logging. This overwrites *log_folder* keyword
             argument from **agent_kwargs** and **env_kwargs**.
         """
-        assert issubclass(env_cls, Environment)
-        assert (callback is None or hasattr(callback, '__call__'))
+        if not issubclass(env_cls, Environment):
+            raise TypeError("Environment class must be derived from ({}"
+                            .format(Environment.__class__.__name__))
+        if callback is not None and not hasattr(callback, '__call__'):
+            raise TypeError("Callback must be callable.")
+
         if hasattr(agent_cls, '__iter__'):
             for e in agent_cls:
-                assert issubclass(e, CreativeAgent)
+                if not issubclass(e, CreativeAgent):
+                    raise TypeError("All agent classes must be derived from {}"
+                                    .format(CreativeAgent.__class__.__name__))
         else:
-            assert issubclass(agent_cls, CreativeAgent)
+            if not issubclass(agent_cls, CreativeAgent):
+                raise TypeError("Agent class must be derived from {}"
+                                .format(CreativeAgent.__class__.__name__))
 
         env = env_cls.create(**env_kwargs)
 

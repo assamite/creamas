@@ -1,11 +1,11 @@
-'''
+"""
 .. py:module:: agent
     :platform: Unix
 
-Agent module holds **CreativeAgent** implementation, a subclass of
-``aiomas.Agent``, which holds basic functionality thought to be shared by
+Agent module holds :class:`CreativeAgent` implementation, a subclass of
+:class:`aiomas.Agent`, which holds basic functionality thought to be shared by
 creative agents.
-'''
+"""
 import logging
 from random import choice
 import re
@@ -20,7 +20,7 @@ __all__ = ['CreativeAgent']
 
 
 class CreativeAgent(aiomas.Agent):
-    '''Base class for all creative agents.
+    """Base class for all creative agents.
 
     All agents share certain common attributes:
 
@@ -53,7 +53,7 @@ class CreativeAgent(aiomas.Agent):
 
     :ivar str ~creamas.core.agent.CreativeAgent.name:
         Name of the agent. Defaults to the address of the agent.
-    '''
+    """
     def __init__(self, environment, resources=0, name=None, log_folder=None,
                  log_level=logging.DEBUG):
         super().__init__(environment)
@@ -79,8 +79,10 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def name(self):
-        '''Name of the agent. The agent should not change its
-        name during its lifetime.'''
+        """The name of the agent.
+
+        The agent should not change its name during its lifetime.
+        """
         return self.__name
 
     @name.setter
@@ -89,9 +91,11 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def logger(self):
-        '''Logger of the agent. Should be derived from
+        """A logger for the agent.
+
+        The logger should be derived from
         :class:`~creamas.logging.ObjectLogger`.
-        '''
+        """
         return self._logger
 
     @logger.setter
@@ -99,52 +103,57 @@ class CreativeAgent(aiomas.Agent):
         self._logger = l
 
     def sanitized_name(self):
-        '''Sanitized name of the agent, used for file and directory creation.
-        '''
+        """Sanitized name of the agent, used for file and directory creation.
+        """
         a = re.split("[:/]", self.name)
         return "_".join([i for i in a if len(i) > 0])
 
     @property
     def env(self):
-        '''The environment where the agent lives. Must be a subclass of
-        :py:class:`~creamas.core.environment.Environment`.'''
+        """The environment where the agent lives. Must be a subclass of
+        :py:class:`~creamas.core.environment.Environment`."""
         return self._env
 
     @property
     def R(self):
-        '''Rules agent uses to evaluate artifacts. Each rule in **R** is
+        """Rules agent uses to evaluate artifacts. Each rule in **R** is
         expected to be a callable with a single parameter, the artifact to be
         evaluated. Callable should return a float in [-1,1]; where 1 means that
         rule is very prominent in the artifact; 0 means that there is none of
         that rule in the artifact; -1 means that the artifact shows
         traits opposite to the rule.
-        '''
+        """
         return self._R
 
     @property
     def W(self):
-        '''Weights for the features. Each weight should be in [-1,1].'''
+        """Weights for the rules.
+
+        Each weight should be in [-1,1]."""
         return self._W
 
     @property
     def A(self):
-        '''Artifacts created so far by the agent.'''
+        """Artifacts created so far by the agent.
+        """
         return self._A
 
     @property
     def D(self):
-        '''Domain knowledge accumulated by this agent.
+        """Domain knowledge accumulated by this agent.
 
         Dictionary of agents and their artifacts.
-        '''
+        """
         return self._D
 
     @property
     def max_res(self):
-        '''Maximum resources for the agent per act. If 0, agent has unlimited
-        resources. If maximum resources are set below current resources,
-        current resources are capped to new maximum resources.
-        '''
+        """Maximum resources for the agent per simulation iteration act.
+
+        If ``max_res == 0``, agent has unlimited resources. If maximum
+        resources are set below current resources, current resources are
+        capped to new maximum resources.
+        """
         return self._max_res
 
     @max_res.setter
@@ -157,7 +166,8 @@ class CreativeAgent(aiomas.Agent):
 
     @property
     def cur_res(self):
-        '''Agent's current resources. Capped to maximum resources.'''
+        """Agent's current resources. Capped to maximum resources.
+        """
         return self._cur_res
 
     @cur_res.setter
@@ -180,15 +190,15 @@ class CreativeAgent(aiomas.Agent):
         return self._connections
 
     def qualname(self):
-        '''Get qualified name of this class.
-        '''
+        """Get qualified name of this class.
+        """
         return "{}:{}".format(self.__module__, self.__class__.__name__)
 
     def set_weight(self, rule, weight):
-        '''Set weight for rule in :attr:`R`.
+        """Set weight for rule in :attr:`R`.
 
         Adds the rule if it is not in :attr:`R`.
-        '''
+        """
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to set weight ({}) is not subclass "
                             "of {} or {}.".format(rule, Rule, RuleLeaf))
@@ -200,7 +210,10 @@ class CreativeAgent(aiomas.Agent):
             self.add_rule(rule, weight)
 
     def get_weight(self, rule):
-        '''Get weight for rule. If rule is not in **R**, returns None.'''
+        """Get weight for rule.
+
+        If rule is not in :attr:`R`, returns ``None``.
+        """
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to get weight ({}) is not subclass "
                             "of {} or {}.".format(rule, Rule, RuleLeaf))
@@ -211,19 +224,19 @@ class CreativeAgent(aiomas.Agent):
             return None
 
     def add_artifact(self, artifact):
-        '''Add artifact to :attr:`A`.
+        """Add artifact to :attr:`A`.
 
         :raises TypeError:
             If the artifact is not derived from
             :class:`~creamas.core.artifact.Artifact`.
-        '''
+        """
         if not issubclass(artifact.__class__, Artifact):
             raise TypeError("Artifact to add ({}) is not {}."
                             .format(artifact, Artifact))
         self._A.append(artifact)
 
     def add_rule(self, rule, weight):
-        '''Add rule to :attr:`R` with initial weight.
+        """Add rule to :attr:`R` with initial weight.
 
         :param rule: rule to be added
         :type rule: `~creamas.core.rule.Rule`
@@ -231,7 +244,7 @@ class CreativeAgent(aiomas.Agent):
         :raises TypeError: if rule is not subclass of :py:class:`Rule`
         :returns: ``True`` if rule was successfully added, otherwise ``False``.
         :rtype bool:
-        '''
+        """
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to add ({}) must be derived from {} or {}."
                             .format(rule.__class__, Rule, RuleLeaf))
@@ -242,7 +255,7 @@ class CreativeAgent(aiomas.Agent):
         return False
 
     def remove_rule(self, rule):
-        '''Remove rule from :attr:`R` and its corresponding weight from
+        """Remove rule from :attr:`R` and its corresponding weight from
         :attr:`W`.
 
         :param rule: rule to remove
@@ -250,7 +263,7 @@ class CreativeAgent(aiomas.Agent):
         :raises TypeError: if rule is not subclass of :py:class:`Rule`
         :returns: true if rule was successfully removed, otherwise false
         :rtype bool:
-        '''
+        """
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule to remove ({}) is not subclass of {} or {}."
                             .format(rule.__class__, Rule, RuleLeaf))
@@ -391,7 +404,7 @@ class CreativeAgent(aiomas.Agent):
         return s / w, None
 
     async def ask_opinion(self, addr, artifact):
-        '''Ask an agent's opinion about an artifact.
+        """Ask an agent's opinion about an artifact.
 
         :param str addr: Address of the agent which opinion is asked
         :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
@@ -407,13 +420,15 @@ class CreativeAgent(aiomas.Agent):
         .. note::
 
             The artifact object should be serializable by the environment.
-        '''
+        """
         remote_agent = await self.env.connect(addr)
         return await remote_agent.evaluate(artifact)
 
     @aiomas.expose
     async def act(self, *args, **kwargs):
-        '''Trigger agent to act. **Dummy method, override in subclass.**
+        """Trigger agent to act.
+
+        **This is a dummy method which should be overridden in a subclass.**
 
         This function serves as the main function for the simulations, and
         is called for each agent on each iteration step of the simulation.
@@ -423,7 +438,7 @@ class CreativeAgent(aiomas.Agent):
         .. seealso::
 
             :meth:`~creamas.core.environment.Environment.trigger_all`
-        '''
+        """
         raise NotImplementedError('Override in subclass.')
 
     def _log(self, level, msg):
@@ -432,12 +447,12 @@ class CreativeAgent(aiomas.Agent):
 
     @aiomas.expose
     def close(self, folder=None):
-        '''Perform any bookkeeping needed before closing the agent.
+        """Perform any bookkeeping needed before closing the agent.
 
-        **Dummy implementation, override in subclass if needed.**
+        **This is a dummy method which should be overridden in a subclass.**
 
         :param str folder: Folder where the agent should save its data.
-        '''
+        """
         pass
 
     def __str__(self):
