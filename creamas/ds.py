@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: ds
     :platform: Unix
 
@@ -11,7 +11,7 @@ on computing clusters or other distributed systems.
     The module needs `asyncssh <http://asyncssh.readthedocs.io/en/latest/>`_
     to function. **Asyncssh** is not installed as a dependency by default.
 
-'''
+"""
 import asyncio
 import logging
 import multiprocessing
