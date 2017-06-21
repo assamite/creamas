@@ -1,16 +1,16 @@
-'''
+"""
 .. py:module:: feature
     :platform: Unix
 
-Feature module holds base implementation for features
-(:py:class:`~creamas.core.feature.Feature`) that creative agents have in their
+Feature module holds base implementation for features,
+:py:class:`~creamas.core.feature.Feature`, that creative agents have in their
 rulesets.
-'''
+"""
 _all__ = ['Feature']
 
 
 class Feature():
-    '''Base feature class that is callable after initialization.
+    """Base feature class that is callable after initialization.
 
     Each feature value takes as an input an artifact, and returns feature's
     value for that artifact. If artifact type is not supported, feature's
@@ -27,22 +27,26 @@ class Feature():
         from myfeat import MyFeature
         from myartifact import MyArtifact
         myart = MyArtifact(*myparams)
-        myart.rtype == mytype # True
+        myart.domain = mytype
         f = MyFeature()
+        mytype in f.domains == True # True
         ret = f(myart)
-        type(ret) == mytype # True
-    '''
+        type(ret) == f.rtype # True
+    """
     def __init__(self, name, domains, rtype):
-        '''
+        """
         :param str name:
-            feature's name
+            Feature's name
 
         :param list domains:
-            all artifact domains (:py:attr:`~creamas.core.artifact.type`) that
-            can be evaluated with the feature.
+            A list of all artifact domains
+            (:py:attr:`~creamas.core.artifact.type`) that can be evaluated with
+            the feature.
 
-        :param rtype: value type returned by this feature
-        '''
+        :param rtype:
+            Value type returned by this feature. This can be combined with
+            mappers accepting this type as the input parameter.
+        """
         self.__domains = domains
         self.__rtype = rtype
         self.__name = name
@@ -59,27 +63,36 @@ class Feature():
 
     @property
     def name(self):
-        '''Name of the feature.'''
+        """Human readable name of the feature.
+        """
         return self.__name
 
     @property
     def domains(self):
-        '''Set of acceptable artifact domains for this feature. Other types of
-        artifacts will return *None* when tried to extract with this feature.
-        '''
+        """Set of acceptable artifact domains for this feature.
+
+        When artifacts with other domains are used as parameters for
+        :meth:`extract`, the function should return ``None``.
+        """
         return self.__domains
 
     @property
     def rtype(self):
-        '''Value type returned by this feature.'''
+        """Value type returned by this feature.
+        """
         return self.__rtype
 
     def extract(self, artifact):
-        '''Extract feature from artifact. **Dummy implementation, override in
-        subclass.**
+        """Extract feature's value from an artifact.
 
-        :returns: feature value extracted from the artifact
-        :rtype: rtype
+        If artifact with a domain not in :attr:`domains` is used as a
+        parameter, the function should return ``None``.
+
+        .. note::
+            Dummy implementation, override in a subclass.
+
+        :returns: Value extracted from the artifact.
+        :rtype: :attr:`rtype` or None
         :raises NotImplementedError: if not overridden in subclass
-        '''
+        """
         raise NotImplementedError('Override in subclass')
