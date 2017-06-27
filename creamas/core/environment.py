@@ -293,6 +293,7 @@ class Environment(Container):
         environment in a :class:`~creamas.mp.MultiEnvironment`, then the
         manager's :meth:`~creamas.mp.EnvManager.get_artifacts` is called.
         '''
+        # TODO: Figure better way for this
         if hasattr(self, 'manager') and self.manager is not None:
             artifacts = await self.manager.get_artifacts()
         else:

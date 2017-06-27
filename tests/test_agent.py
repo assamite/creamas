@@ -123,6 +123,21 @@ class AgentTestCase(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.loop.run_until_complete(a1.act())
 
+        # Clearing the connections works.
+        a1.clear_connections()
+        self.assertEqual({}, a1.connections)
+        r_agent = self.loop.run_until_complete(a1.connect(a2.addr))
+        # Clearing is an exposed method.
+        self.loop.run_until_complete(r_agent.clear_connections())
+        self.assertEqual({}, a2.connections)
+
+        # Settings logger, etc.
+        logger = logging.getLogger("test_logger")
+        logger.addHandler(logging.StreamHandler())
+        logger.setLevel(logging.INFO)
+        a1.logger = logger
+        a1._log(logging.DEBUG, "Test MSG")
+
         # FEATURES
         # feature must be subclass of Feature
         with self.assertRaises(TypeError):
