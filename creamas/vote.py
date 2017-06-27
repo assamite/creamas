@@ -104,6 +104,11 @@ class VoteAgent(CreativeAgent):
 
 class VoteEnvironment(Environment):
     '''An environment implementing functionality needed for voting.
+
+    Voting depends largely on a list of :attr:`candidate` artifacts, which are
+    passed down to agents at the time of voting. Candidate artifacts can also
+    be validated by the agents (only returning artifacts that are deemed
+    appropriate, or good enough, by all agents in the environment).
     '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -113,24 +118,23 @@ class VoteEnvironment(Environment):
     def candidates(self):
         '''Current artifact candidates, subject to e.g. agents voting to
         determine which candidate(s) are added to :attr:`~artifacts`.
-        See :doc:`vote` for details of voting behavior.
         '''
         return self._candidates
 
     def clear_candidates(self):
-        '''Remove current candidates from the environment.
+        '''Remove current candidate artifacts from the environment.
         '''
         self._candidates = []
 
     def add_candidate(self, artifact):
-        '''Add candidate artifact to the current candidates.
+        '''Add candidate artifact to the list of current candidates.
         '''
         self.candidates.append(artifact)
         self._log(logging.DEBUG, "CANDIDATES appended:'{}'"
                   .format(artifact))
 
     def validate_candidates(self, candidates):
-        '''Validate the candidates with the agents in the environment.
+        '''Validate the candidate artifacts with the agents in the environment.
 
         In larger societies this method might be costly, as it calls each
         agents' :meth:`validate`.
@@ -150,12 +154,12 @@ class VoteEnvironment(Environment):
         '''Gather votes for the given candidates from the agents in the
         environment.
 
-        Votes should be anonymous, i.e. they cannot be tracked to any
+        Returned votes are anonymous, i.e. they cannot be tracked to any
         individual agent afterwards.
 
         :returns:
             A list of votes. Each vote is a list of ``(artifact, preference)``
-            -tuples sorted by the preference.
+            -tuples sorted in a preference order of a single agent.
         '''
         votes = []
         for a in self.get_agents(addr=False):
@@ -166,6 +170,10 @@ class VoteEnvironment(Environment):
 
 class VoteManager(EnvManager):
     '''Manager agent for voting environments.
+
+    The class is designed be used in conjunction with
+    :class:`~creamas.vote.VoteEnvironment` in multiprocessing and distributed
+    settings.
     '''
     @aiomas.expose
     async def get_candidates(self):

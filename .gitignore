@@ -65,6 +65,9 @@ target/
 .project
 .pydevproject
 
+# PyCharm
+.idea
+
 #all logs
 logs/
 
