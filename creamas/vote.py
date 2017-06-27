@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: vote
     :platform: Unix
 
@@ -22,7 +22,7 @@ derived from :class:`Environment` need to have voting behavior implemented
 communicates with the "true" slave environments directly without the need of
 the middle layer environments (multi-environments) or managers in the case of
 distributed systems.
-'''
+"""
 import logging
 import operator
 from collections import Counter
@@ -37,7 +37,7 @@ TIMEOUT = 5
 
 
 class VoteAgent(CreativeAgent):
-    '''An agent with voting behavior.
+    """An agent with voting behavior.
 
     Implements three functions needed for voting:
 
@@ -49,11 +49,11 @@ class VoteAgent(CreativeAgent):
       :meth:`evaluate` function.
     * :meth:`~creamas.vote.VoteAgent.add_candidate`: Add candidate artifact to
       the agent's environment's list of current candidates.
-    '''
+    """
 
     @aiomas.expose
     def validate(self, candidates):
-        '''Validate a list of candidate artifacts.
+        """Validate a list of candidate artifacts.
 
         Candidate validation should prune unwanted artifacts from the overall
         candidate set. Agent can use its own reasoning to validate the
@@ -68,12 +68,12 @@ class VoteAgent(CreativeAgent):
 
         :param candidates: A list of candidate artifacts
         :returns: The validated artifacts, a subset of given candidates
-        '''
+        """
         return candidates
 
     @aiomas.expose
     def vote(self, candidates):
-        '''Rank artifact candidates.
+        """Rank artifact candidates.
 
         The voting is needed for the agents living in societies using
         social decision making. The function should return a sorted list
@@ -91,50 +91,50 @@ class VoteAgent(CreativeAgent):
 
         :returns:
             Ordered list of (candidate, evaluation)-tuples
-        '''
+        """
         ranks = [(c, self.evaluate(c)[0]) for c in candidates]
         ranks.sort(key=operator.itemgetter(1), reverse=True)
         return ranks
 
     def add_candidate(self, artifact):
-        '''Add artifact to the environment's current list of candidates.
-        '''
+        """Add artifact to the environment's current list of candidates.
+        """
         self.env.add_candidate(artifact)
 
 
 class VoteEnvironment(Environment):
-    '''An environment implementing functionality needed for voting.
+    """An environment implementing functionality needed for voting.
 
     Voting depends largely on a list of :attr:`candidate` artifacts, which are
     passed down to agents at the time of voting. Candidate artifacts can also
     be validated by the agents (only returning artifacts that are deemed
     appropriate, or good enough, by all agents in the environment).
-    '''
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._candidates = []
 
     @property
     def candidates(self):
-        '''Current artifact candidates, subject to e.g. agents voting to
+        """Current artifact candidates, subject to e.g. agents voting to
         determine which candidate(s) are added to :attr:`~artifacts`.
-        '''
+        """
         return self._candidates
 
     def clear_candidates(self):
-        '''Remove current candidate artifacts from the environment.
-        '''
+        """Remove current candidate artifacts from the environment.
+        """
         self._candidates = []
 
     def add_candidate(self, artifact):
-        '''Add candidate artifact to the list of current candidates.
-        '''
+        """Add candidate artifact to the list of current candidates.
+        """
         self.candidates.append(artifact)
         self._log(logging.DEBUG, "CANDIDATES appended:'{}'"
                   .format(artifact))
 
     def validate_candidates(self, candidates):
-        '''Validate the candidate artifacts with the agents in the environment.
+        """Validate the candidate artifacts with the agents in the environment.
 
         In larger societies this method might be costly, as it calls each
         agents' :meth:`validate`.
@@ -142,7 +142,7 @@ class VoteEnvironment(Environment):
         :returns:
             A list of candidates that are validated by all agents in the
             environment.
-        '''
+        """
         valid_candidates = set(candidates)
         for a in self.get_agents(addr=False):
             vc = set(a.validate(candidates))
@@ -151,7 +151,7 @@ class VoteEnvironment(Environment):
         return list(valid_candidates)
 
     def gather_votes(self, candidates):
-        '''Gather votes for the given candidates from the agents in the
+        """Gather votes for the given candidates from the agents in the
         environment.
 
         Returned votes are anonymous, i.e. they cannot be tracked to any
@@ -160,7 +160,7 @@ class VoteEnvironment(Environment):
         :returns:
             A list of votes. Each vote is a list of ``(artifact, preference)``
             -tuples sorted in a preference order of a single agent.
-        '''
+        """
         votes = []
         for a in self.get_agents(addr=False):
             vote = a.vote(candidates)
@@ -169,55 +169,55 @@ class VoteEnvironment(Environment):
 
 
 class VoteManager(EnvManager):
-    '''Manager agent for voting environments.
+    """Manager agent for voting environments.
 
     The class is designed be used in conjunction with
     :class:`~creamas.vote.VoteEnvironment` in multiprocessing and distributed
     settings.
-    '''
+    """
     @aiomas.expose
     async def get_candidates(self):
-        '''Get current candidates from the managed environment.
-        '''
+        """Get current candidates from the managed environment.
+        """
         return self.env.candidates
 
     @aiomas.expose
     async def validate_candidates(self, candidates):
-        '''Validate the candidates with the agents in the managed environment.
+        """Validate the candidates with the agents in the managed environment.
 
         This is a managing function for
         :meth:`~creamas.vote.VoteEnvironment.validate_candidates`.
-        '''
+        """
         return self.env.validate_candidates(candidates)
 
     @aiomas.expose
     def clear_candidates(self):
-        '''Clear candidates in the managed environment.
+        """Clear candidates in the managed environment.
 
         This is a managing function for
         :py:meth:`~creamas.environment.Environment.clear_candidates`.
-        '''
+        """
         self.env.clear_candidates()
 
     @aiomas.expose
     def get_votes(self, candidates):
         self.env._candidates = candidates
-        votes = self.env._gather_votes()
+        votes = self.env.gather_votes()
         return votes
 
     @aiomas.expose
     async def gather_votes(self, candidates):
-        '''Gather votes for the given candidates from the agents in the
+        """Gather votes for the given candidates from the agents in the
         managed environment.
 
         This is a managing function for
         :py:meth:`~creamas.environment.Environment.gather_votes`.
-        '''
+        """
         return self.env.gather_votes(candidates)
 
 
 class VoteOrganizer():
-    '''A class which organizes voting behavior in an environment.
+    """A class which organizes voting behavior in an environment.
 
     The organizer can :meth:`~creamas.vote.VoteOrganizer.gather_candidates`
     from the environment, and then
@@ -230,7 +230,7 @@ class VoteOrganizer():
 
     The organizer also has :meth:`~creamas.vote.VoteOrganizer.gather_and_vote`
     to do all of the above in one go.
-    '''
+    """
     def __init__(self, environment, logger=None):
         self._env = environment
         self._candidates = []
@@ -241,20 +241,20 @@ class VoteOrganizer():
 
     @property
     def env(self):
-        '''The environment associated with this voting organizer.
-        '''
+        """The environment associated with this voting organizer.
+        """
         return self._env
 
     @property
     def candidates(self):
-        '''Current list of candidates gathered from the environment.
-        '''
+        """Current list of candidates gathered from the environment.
+        """
         return self._candidates
 
     @property
     def votes(self):
-        '''Current list of votes gathered from the environment.
-        '''
+        """Current list of votes gathered from the environment.
+        """
         return self._votes
 
     def _determine_single_env(self, env):
@@ -263,8 +263,8 @@ class VoteOrganizer():
         return False
 
     def get_managers(self):
-        '''Get managers for the slave environments.
-        '''
+        """Get managers for the slave environments.
+        """
         if self._single_env:
             return None
         if not hasattr(self, '_managers'):
@@ -272,11 +272,11 @@ class VoteOrganizer():
         return self._managers
 
     def gather_votes(self):
-        '''Gather votes from all the underlying slave environments for the
+        """Gather votes from all the underlying slave environments for the
         current list of candidates.
 
         The votes are stored in :attr:`votes`, overriding any previous votes.
-        '''
+        """
         async def slave_task(addr, candidates):
             r_manager = await self.env.connect(addr)
             return await r_manager.gather_votes(candidates)
@@ -297,11 +297,11 @@ class VoteOrganizer():
             self._votes = run(tasks)
 
     def gather_candidates(self):
-        '''Gather candidates from the slave environments.
+        """Gather candidates from the slave environments.
 
         The candidates are stored in :attr:`candidates`, overriding any
         previous candidates.
-        '''
+        """
         async def slave_task(addr):
             r_manager = await self.env.connect(addr)
             return await r_manager.get_candidates()
@@ -314,12 +314,12 @@ class VoteOrganizer():
             self._candidates = run(tasks)
 
     def clear_candidates(self, clear_env=True):
-        '''Clear the current candidates.
+        """Clear the current candidates.
 
         :param bool clear_env:
             If ``True``, clears also environment's (or its underlying slave
             environments') candidates.
-        '''
+        """
         async def slave_task(addr):
             r_manager = await self.env.connect(addr)
             return await r_manager.clear_candidates()
@@ -333,7 +333,7 @@ class VoteOrganizer():
                 run(create_tasks(slave_task, mgrs))
 
     def validate_candidates(self):
-        '''Validate current candidates.
+        """Validate current candidates.
 
         This method validates the current candidate list in all the agents
         in the environment (or underlying slave environments) and replaces
@@ -342,7 +342,7 @@ class VoteOrganizer():
         The artifact candidates must be hashable and have a :meth:`__eq__`
         implemented for validation to work on multi-environments and
         distributed environments.
-        '''
+        """
         async def slave_task(addr, candidates):
             r_manager = await self.env.connect(addr)
             return await r_manager.validate_candidates(candidates)
@@ -367,7 +367,7 @@ class VoteOrganizer():
 
     def gather_and_vote(self, voting_method, validate=False, winners=1,
                         **kwargs):
-        '''Convenience function to gathering candidates and votes and
+        """Convenience function to gathering candidates and votes and
         performing voting using them.
 
         Additional ``**kwargs`` are passed down to voting method.
@@ -379,7 +379,7 @@ class VoteOrganizer():
         :param int winners: The number of vote winners
 
         :returns: Winner(s) of the vote.
-        '''
+        """
         self.gather_candidates()
         if validate:
             self.validate_candidates()
@@ -389,7 +389,7 @@ class VoteOrganizer():
         return r
 
     def compute_results(self, voting_method, votes=None, winners=1, **kwargs):
-        '''Compute voting results to decide the winner(s) from the
+        """Compute voting results to decide the winner(s) from the
         :attr:`votes`.
 
         The votes should have been made for the current
@@ -418,7 +418,7 @@ class VoteOrganizer():
             associated with each winning artifact.
 
         :rtype: list
-        '''
+        """
         if votes is None:
             votes = self.votes
 
@@ -437,12 +437,14 @@ class VoteOrganizer():
 
 
 def vote_random(candidates, votes, n_winners):
-    '''Selected random winners from the votes.
+    """Select random winners from the candidates.
+
+    This voting method bypasses the given votes completely.
 
     :param candidates: All candidates in the vote
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
-    '''
+    """
     rcands = list(candidates)
     shuffle(rcands)
     rcands = rcands[:min(n_winners, len(rcands))]
@@ -451,7 +453,7 @@ def vote_random(candidates, votes, n_winners):
 
 
 def vote_least_worst(candidates, votes, n_winners):
-    '''Select "least worst" artifact as the winner of the vote.
+    """Select "least worst" artifact as the winner of the vote.
 
     Least worst artifact is the artifact with the best worst evaluation, i.e.
     its worst evaluation is the best among all of the artifacts.
@@ -461,7 +463,7 @@ def vote_least_worst(candidates, votes, n_winners):
     :param candidates: All candidates in the vote
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
-    '''
+    """
     worsts = {str(c): 100000000.0 for c in candidates}
     for v in votes:
         for e in v:
@@ -478,7 +480,7 @@ def vote_least_worst(candidates, votes, n_winners):
 
 
 def vote_best(candidates, votes, n_winners):
-    '''Select the artifact with the single best evaluation as the winner of
+    """Select the artifact with the single best evaluation as the winner of
     the vote.
 
     Ties are resolved randomly.
@@ -486,7 +488,7 @@ def vote_best(candidates, votes, n_winners):
     :param candidates: All candidates in the vote
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
-    '''
+    """
     best = [votes[0][0]]
     for v in votes[1:]:
         if v[0][1] > best[0][1]:
@@ -495,7 +497,8 @@ def vote_best(candidates, votes, n_winners):
 
 
 def _remove_zeros(votes, fpl, cl, ranking):
-    '''Remove zeros in IRV voting.'''
+    """Remove zeros in IRV voting.
+    """
     for v in votes:
         for r in v:
             if r not in fpl:
@@ -507,8 +510,8 @@ def _remove_zeros(votes, fpl, cl, ranking):
 
 
 def _remove_last(votes, fpl, cl, ranking):
-    '''Remove last candidate in IRV voting.
-    '''
+    """Remove last candidate in IRV voting.
+    """
     for v in votes:
         for r in v:
             if r == fpl[-1]:
@@ -520,14 +523,14 @@ def _remove_last(votes, fpl, cl, ranking):
 
 
 def vote_IRV(candidates, votes, n_winners):
-    '''Perform IRV voting based on votes.
+    """Perform IRV voting based on votes.
 
     Ties are resolved randomly.
 
     :param candidates: All candidates in the vote
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
-    '''
+    """
     # TODO: Check what is wrong in here.
     votes = [[e[0] for e in v] for v in votes]
     f = lambda x: Counter(e[0] for e in x).most_common()
@@ -549,7 +552,7 @@ def vote_IRV(candidates, votes, n_winners):
 
 
 def vote_mean(candidates, votes, n_winners):
-    '''Perform mean voting based on votes.
+    """Perform mean voting based on votes.
 
     Mean voting computes the mean preference for each of the artifact
     candidates from the votes and sorts the candidates in the mean preference
@@ -560,7 +563,7 @@ def vote_mean(candidates, votes, n_winners):
     :param candidates: All candidates in the vote
     :param votes: Votes from the agents
     :param int n_winners: The number of vote winners
-    '''
+    """
     sums = {str(candidate): [] for candidate in candidates}
     for vote in votes:
         for v in vote:
