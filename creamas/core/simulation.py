@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: simulation
 
 Basic simulation implementation where agents in the same environment can be
 run in an iterative manner.
-'''
+"""
 import time
 import logging
 from random import shuffle
@@ -18,17 +18,17 @@ __all__ = ['Simulation']
 
 
 class Simulation():
-    '''Base class for iterative simulations.
+    """A base class for iterative simulations.
 
     In each step the simulation calls
     :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in
     simulation environment.
-    '''
+    """
     @classmethod
     def create(self, agent_cls=None, n_agents=10, agent_kwargs={},
                env_cls=Environment, env_kwargs={}, callback=None, conns=0,
                log_folder=None):
-        '''Convenience function to create simple simulations.
+        """A convenience function to create simple simulations.
 
         Method first creates environment, then instantiates agents into it
         with give arguments, and finally creates simulation for the
@@ -64,14 +64,22 @@ class Simulation():
         :param str log_folder:
             folder for possible logging. This overwrites *log_folder* keyword
             argument from **agent_kwargs** and **env_kwargs**.
-        '''
-        assert issubclass(env_cls, Environment)
-        assert (callback is None or hasattr(callback, '__call__'))
+        """
+        if not issubclass(env_cls, Environment):
+            raise TypeError("Environment class must be derived from ({}"
+                            .format(Environment.__class__.__name__))
+        if callback is not None and not hasattr(callback, '__call__'):
+            raise TypeError("Callback must be callable.")
+
         if hasattr(agent_cls, '__iter__'):
             for e in agent_cls:
-                assert issubclass(e, CreativeAgent)
+                if not issubclass(e, CreativeAgent):
+                    raise TypeError("All agent classes must be derived from {}"
+                                    .format(CreativeAgent.__class__.__name__))
         else:
-            assert issubclass(agent_cls, CreativeAgent)
+            if not issubclass(agent_cls, CreativeAgent):
+                raise TypeError("Agent class must be derived from {}"
+                                .format(CreativeAgent.__class__.__name__))
 
         env = env_cls.create(**env_kwargs)
 
@@ -93,15 +101,16 @@ class Simulation():
         return Simulation(env, callback, log_folder)
 
     def __init__(self, env, callback=None, log_folder=None):
-        '''Create simulation for previously set up environment.
+        """Create simulation for previously set up environment.
 
         :param env: fully initialized environment with agents already set
         :type env:
-            :py:class:`~creamas.core.environment.Environment` or
-            :py:class:`~creamas.mp.MultiEnvironment`
+            :class:`~creamas.core.environment.Environment`,
+            :class:`~creamas.mp.MultiEnvironment` or
+            :class:`~creamas.ds.DistributedEnvironment`
         :param callable callback: function to call after each simulation step
         :parat str log_folder: folder to log simulation information
-        '''
+        """
         self._env = env
         self._callback = callback
         self._age = 0
@@ -124,32 +133,33 @@ class Simulation():
 
     @property
     def name(self):
-        '''Name of the simulation.'''
+        """Name of the simulation.
+        """
         return self._name
 
     @property
     def env(self):
-        '''Environment for the simulation. Must be a subclass of
-        :py:class:`~creamas.core.environment.Environment`.
-        '''
+        """Environment for the simulation.
+        """
         return self._env
 
     @property
     def age(self):
-        '''Age of the simulation.'''
+        """Age of the simulation.
+        """
         return self._age
 
     @property
     def callback(self):
-        '''Callable to be called after each simulation step for any extra
+        """Callable to be called after each simulation step for any extra
         bookkeeping, etc.. Should accept one parameter: *age* that is current
         simulation age.
-        '''
+        """
         return self._callback
 
     @property
     def order(self):
-        '''Order in which agents are run.
+        """Order in which agents are run.
 
         Possible values:
 
@@ -158,7 +168,7 @@ class Simulation():
 
         Changing the order while iteration is unfinished will take place in the
         next iteration.
-        '''
+        """
         return self._order
 
     @order.setter
@@ -174,7 +184,8 @@ class Simulation():
         return agents
 
     def _init_step(self):
-        '''Initialize next step of simulation to be run.'''
+        """Initialize next step of simulation to be run.
+        """
         self._age += 1
         self.env.age = self._age
         self._log(logging.INFO, "")
@@ -185,9 +196,9 @@ class Simulation():
         self._step_start_time = time.time()
 
     def _finalize_step(self):
-        '''Finalize simulation step after all agents have acted for the current
+        """Finalize simulation step after all agents have acted for the current
         step.
-        '''
+        """
         t = time.time()
         if self._callback is not None:
             self._callback(self.age)
@@ -200,13 +211,15 @@ class Simulation():
         self._processing_time += self._step_processing_time
 
     def async_steps(self, n):
+        """Progress simulation by running all agents *n* times asynchronously.
+        """
         assert len(self._agents_to_act) == 0
         for _ in range(n):
             self.async_step()
 
     def async_step(self):
-        '''Progress simulation by running all agents once asynchronously.
-        '''
+        """Progress simulation by running all agents once asynchronously.
+        """
         assert len(self._agents_to_act) == 0
         self._init_step()
         t = time.time()
@@ -216,32 +229,32 @@ class Simulation():
         self._finalize_step()
 
     def steps(self, n):
-        '''Progress simulation with given amount of steps.
+        """Progress simulation with given amount of steps.
 
         Can not be called when some of the agents have not acted for the
         current step.
 
         :param int n: amount of steps to run
-        '''
+        """
         assert len(self._agents_to_act) == 0
         for _ in range(n):
             self.step()
 
     def step(self):
-        '''Progress simulation with a single step.
+        """Progress simulation with a single step.
 
         Can not be called when some of the agents have not acted for the
         current step.
-        '''
+        """
         assert len(self._agents_to_act) == 0
         self.next()
         while len(self._agents_to_act) > 0:
             self.next()
 
     def next(self):
-        '''Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in
+        """Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in
         the current step.
-        '''
+        """
         # all agents acted, init next step
         t = time.time()
         if len(self._agents_to_act) == 0:
@@ -257,7 +270,8 @@ class Simulation():
             self._finalize_step()
 
     def finish_step(self):
-        '''Progress simulation to the end of the current step.'''
+        """Progress simulation to the end of the current step.
+        """
         while len(self._agents_to_act) > 0:
             self.next()
 
@@ -266,7 +280,8 @@ class Simulation():
             self.logger.log(level, msg)
 
     def end(self, folder=None):
-        '''End simulation and destroy the current simulation environment.'''
+        """End the simulation and destroy the current simulation environment.
+        """
         ret = self.env.destroy(folder=folder)
         self._end_time = time.time()
         self._log(logging.DEBUG, "Simulation run with {} steps took {:.3f}s to"

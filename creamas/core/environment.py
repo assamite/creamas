@@ -214,17 +214,19 @@ class Environment(Container):
                 rets.append(r)
         return rets
 
-    def get_connections(self, attitudes=True):
-        '''Return connections from all the agents in the environment.
+    def get_connections(self, data=True):
+        """Return connections from all the agents in the environment.
 
-        :param bool attitudes:
-            If ``True`` return also attitudes towards the agents.
+        :param bool data:
+            If ``True`` return also the dictionary associated with each
+            connection
 
         :returns:
             A list of ``(addr, connections)``-tuples, where ``connections`` is
             a list of addresses agent in ``addr`` is connected to. If
-            ``attitudes`` parameter is ``True``, then the ``connections``
-            list contains tuples of ``(nb_addr, attitude)``-pairs .
+            ``data`` parameter is ``True``, then the ``connections``
+            list contains tuples of ``(nb_addr, data)``-pairs , where ``data``
+            is a dictionary.
 
         :rtype: dict
 
@@ -232,12 +234,18 @@ class Environment(Container):
 
             By design, potential manager agent is excluded from the returned
             list.
-        '''
+        """
         connections = []
         for a in self.get_agents(addr=False):
-            c = (a.addr, a.get_connections(attitudes=attitudes))
+            c = (a.addr, a.get_connections(data=data))
             connections.append(c)
         return connections
+
+    def clear_connections(self):
+        """Clear all connections from the agents in the environment.
+        """
+        for a in self.get_agents(addr=False):
+            a.clear_connections()
 
     def get_random_agent(self, agent):
         '''Return random agent that is not the same as agent given as
@@ -285,6 +293,7 @@ class Environment(Container):
         environment in a :class:`~creamas.mp.MultiEnvironment`, then the
         manager's :meth:`~creamas.mp.EnvManager.get_artifacts` is called.
         '''
+        # TODO: Figure better way for this
         if hasattr(self, 'manager') and self.manager is not None:
             artifacts = await self.manager.get_artifacts()
         else:

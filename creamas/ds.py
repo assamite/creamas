@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: ds
     :platform: Unix
 
@@ -9,10 +9,9 @@ on computing clusters or other distributed systems.
 .. note::
 
     The module needs `asyncssh <http://asyncssh.readthedocs.io/en/latest/>`_
-    (>=1.6.2, developed with 1.6.2) to function. **Asyncssh** is not installed
-    by default as a dependency.
+    to function. **Asyncssh** is not installed as a dependency by default.
 
-'''
+"""
 import asyncio
 import logging
 import multiprocessing
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
-    '''Execute a command on a given server using asynchronous SSH-connection.
+    """Execute a command on a given server using asynchronous SSH-connection.
 
     The connection to the server is wrapped in :func:`asyncio.wait_for` and
     given :attr:`timeout` is applied to it. If the server is not reachable
@@ -45,7 +44,7 @@ async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
 
     :returns:
         closed SSH-connection
-    '''
+    """
     conn = await asyncio.wait_for(asyncssh.connect(server, **ssh_kwargs),
                                   timeout=timeout)
     ret = await conn.run(cmd)
@@ -54,9 +53,9 @@ async def ssh_exec(server, cmd, timeout=10, **ssh_kwargs):
 
 
 def ssh_exec_in_new_loop(server, cmd, timeout=10, **ssh_kwargs):
-    '''Same as :func:`ssh_exec` but creates a new event loop and executes
+    """Same as :func:`ssh_exec` but creates a new event loop and executes
     :func:`ssh_exec` in that event loop.
-    '''
+    """
     task = ssh_exec(server, cmd, timeout=timeout, **ssh_kwargs)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -64,7 +63,7 @@ def ssh_exec_in_new_loop(server, cmd, timeout=10, **ssh_kwargs):
 
 
 async def run_node(menv, log_folder):
-    '''Run :class:`~creamas.mp.MultiEnvironment` until its manager's
+    """Run :class:`~creamas.mp.MultiEnvironment` until its manager's
     :meth:`~aiomas.subproc.Manager.stop` is called.
 
     :param menv: :class:`~creamas.mp.MultiEnvironment` to wait for.
@@ -85,7 +84,7 @@ async def run_node(menv, log_folder):
     Calling :meth:`~creamas.ds.DistributedEnvironment.destroy` will
     automatically call each node manager's :meth:`stop` and therefore release
     the script.
-    '''
+    """
     try:
         await menv.manager.stop_received
     except KeyboardInterrupt:
@@ -96,7 +95,7 @@ async def run_node(menv, log_folder):
 
 
 class DistributedEnvironment(MultiEnvironment):
-    '''Distributed environment which manages several nodes containing
+    """Distributed environment which manages several nodes containing
     multi-environments, a subclass of :class:`~creamas.mp.MultiEnvironment`.
 
     This environment spawns its slave multi-environments on the different
@@ -135,10 +134,10 @@ class DistributedEnvironment(MultiEnvironment):
 
         # Destroy the simulation afterwards to free the resources on each node.
         ds.destroy()
-    '''
+    """
     def __init__(self, addr, env_cls, nodes, mgr_cls=None, name=None,
                  logger=None, **env_kwargs):
-        '''
+        """
         :param addr:
             ``(HOST, PORT)`` address for the *env* property (this node). The
             ``host`` should not be present in *nodes*.
@@ -161,7 +160,7 @@ class DistributedEnvironment(MultiEnvironment):
 
         :param logger:
             Optional logger for this simulation.
-        '''
+        """
         super().__init__(addr, env_cls, mgr_cls=mgr_cls, name=name,
                          logger=logger, **env_kwargs)
         self._nodes = nodes
@@ -170,39 +169,39 @@ class DistributedEnvironment(MultiEnvironment):
 
     @property
     def nodes(self):
-        '''Environment nodes (excluding the current host).
+        """Environment nodes (excluding the current host).
 
         Altering the nodes after the initialization most probably causes
         unexpected behavior.
-        '''
+        """
         return self._nodes
 
     @property
     def addrs(self):
-        '''Addresses of the node managers.
+        """Addresses of the node managers.
 
         These addresses are derived from *nodes* and *ports* parameters
         given in :meth:`spawn_slaves`, and are used to communicate tasks
         (trigger agents) to the nodes. Each manager is assumed to be the
         first agent in its own managed environment.
-        '''
+        """
         return self._manager_addrs
 
     async def wait_nodes(self, timeout, check_ready=True):
-        '''Wait until all nodes are online (their managers accept connections)
+        """Wait until all nodes are online (their managers accept connections)
         or timeout expires. Should be called after :meth:`spawn_nodes`.
 
         This is an alias for :meth:`~creamas.mp.MultiEnvironment.wait_slaves`.
-        '''
+        """
         return await self.wait_slaves(timeout, check_ready=check_ready)
 
     async def spawn_nodes(self, spawn_cmd, ports=None, **ssh_kwargs):
-        '''An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.
-        '''
+        """An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.
+        """
         return await self.spawn_slaves(spawn_cmd, ports=ports, **ssh_kwargs)
 
     async def spawn_slaves(self, spawn_cmd, ports=None, **ssh_kwargs):
-        '''Spawn multi-environments on the nodes through SSH-connections.
+        """Spawn multi-environments on the nodes through SSH-connections.
 
         :param spawn_cmd:
             str or list, command(s) used to spawn the environment on each node.
@@ -228,7 +227,7 @@ class DistributedEnvironment(MultiEnvironment):
         to spawn the multi-environments on the nodes. The SSH-connections in
         the pool are kept alive until the nodes are stopped, i.e. this
         distributed environment is destroyed.
-        '''
+        """
         pool = multiprocessing.Pool(len(self.nodes))
         rets = []
         for i, node in enumerate(self.nodes):
@@ -252,16 +251,16 @@ class DistributedEnvironment(MultiEnvironment):
         self._r = rets
 
     async def prepare_nodes(self, *args, **kwargs):
-        '''Prepare nodes (and slave environments and agents) so that they are
+        """Prepare nodes (and slave environments and agents) so that they are
         ready. Should be called after :meth:`wait_nodes`.
 
         .. note::
             Override in the subclass for the intended functionality.
-        '''
+        """
         raise NotImplementedError()
 
     def get_slave_managers(self, as_coro=False):
-        '''Return all slave environment manager addresses.
+        """Return all slave environment manager addresses.
 
         :param bool as_coro:
             If ``True`` returns awaitable coroutine, otherwise runs the calls
@@ -272,7 +271,7 @@ class DistributedEnvironment(MultiEnvironment):
         not multi-environment managers. For example, if this node environment
         has two nodes with four slave environments in each, then this method
         returns 8 addresses.
-        '''
+        """
         async def slave_task(addr):
             r_manager = await self.env.connect(addr)
             return await r_manager.get_slave_managers()

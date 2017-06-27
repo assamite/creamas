@@ -1,13 +1,13 @@
-'''
+"""
 .. py:module:: rule
     :platform: Unix
 
-Rule module holds base implementation of rule
-(:py:class:`~creamas.core.rule.Rule`). Rules combine features and mappers to
-functional body, where each feature also has weight attached to it.
+Rule module holds the base implementation of a rule,
+:py:class:`~creamas.core.rule.Rule`. Rules combine features and mappers to
+a functional body, where each feature also has a weight attached to it.
 
 TODO: write rule to accept other rules in F also.
-'''
+"""
 import copy
 from functools import partial
 
@@ -15,19 +15,19 @@ __all__ = ['Rule']
 
 
 class RuleLeaf():
-    '''Leaf implementation for rules.
+    """Leaf implementation for rules.
 
     Combines feature and mapper into one functional unit. Adding two RuleLeafs
     together will result in a Rule instance. Two RuleLeafs are equal if their
     features are equal, mappers are *not* considered.
-    '''
+    """
     def __init__(self, feat, mapper):
-        '''
+        """
         :param feat: Feature for this leaf rule.
         :type feat: py:class:`~creamas.core.feature.Feature`
         :param mapper: Mapper for this leaf rule
         :type mapper: py:class:`~creamas.core.mapper.Mapper`
-        '''
+        """
         self.__domains = feat.domains
         self.__feat = feat
         self.__mapper = mapper
@@ -69,8 +69,9 @@ class RuleLeaf():
 
 
 class Rule():
-    '''Rule is a treelike data structure consisting of other Rules and RuleLeaf
-    instances. Rules are used by agents to evaluate artifacts.
+    """A :class:`Rule` is a treelike data structure consisting of other
+    :class:`Rule` and :class:`RuleLeaf` instances. Rules are used by agents to
+    evaluate artifacts.
 
     Like features, rules offer a simple interface where
     artifact can be evaluated by calling a rule instance with artifact as the
@@ -81,9 +82,9 @@ class Rule():
         from creamas.core.rule import Rule
         rule = Rule([myleaf, myleaf2, myrule], [1.0, 1.0, 1.0])
         res = rule(myartifact)
-    '''
+    """
     def __init__(self, rules, weights, evaluation='ave'):
-        '''
+        """
         :param list rules:
             Subrules for this rule. Subrule can be either an iterable of length
             2, the (Feature, Mapper)-pair, or another Rule instance.
@@ -101,7 +102,7 @@ class Rule():
             * 'min': :py:func:`~creamas.core.rule.minimum`
             * 'max': :py:func:`~creamas.core.rule.maximum`
 
-        '''
+        """
         assert len(rules) == len(weights)
         self.__domains = set()
         self.__R = []
@@ -125,25 +126,27 @@ class Rule():
 
     @property
     def R(self):
-        '''list - subrules in this rule.'''
+        """A list of subrules in this rule.
+        """
         return self.__R
 
     @property
     def W(self):
-        '''list - weights for subrules in this rule.'''
+        """A list of weights for subrules in this rule.
+        """
         return self.__W
 
     @property
     def domains(self):
-        '''Rule's acceptable artifact domains is the union of all its
+        """Rule's acceptable artifact domains is the union of all its
         subrules acceptable domains. Each artifact is evaluated only with
         subrules that do not return *None* when the feature is evaluated with
         it.
-        '''
+        """
         return self.__domains
 
     def add_subrule(self, subrule, weight):
-        '''Add subrule to the rule.
+        """Add subrule to the rule.
 
         :param subrule:
             Subrule to add to this rule. Subrule can be either an iterable of
@@ -152,9 +155,8 @@ class Rule():
         :param float weight: weight of the subrule
         :returns: false if subrule already in rule, true otherwise
         :rtype: bool
-        '''
-        if not (issubclass(subrule.__class__, Rule) or
-                issubclass(subrule.__class__, RuleLeaf)):
+        """
+        if not issubclass(subrule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule's class must be (subclass of) {} or {}, got "
                             "{}.".format(Rule, RuleLeaf, subrule.__class__))
         self.__domains = set.union(self.__domains, subrule.domains)
@@ -201,9 +203,9 @@ class Rule():
 
 
 def weighted_average(rule, artifact):
-    '''Evaluate artifact's value to be weighted average of values returned by
+    """Evaluate artifact's value to be weighted average of values returned by
     rule's subrules.
-    '''
+    """
     e = 0
     w = 0
     for i in range(len(rule.R)):
@@ -217,11 +219,11 @@ def weighted_average(rule, artifact):
 
 
 def minimum(rule, artifact):
-    '''Evaluate artifact's value to be minimum of values returned by rule's
+    """Evaluate artifact's value to be minimum of values returned by rule's
     subrules.
 
     This evaluation function ignores subrule weights.
-    '''
+    """
     m = 1.0
     for i in range(len(rule.R)):
         e = rule.R[i](artifact)
@@ -232,11 +234,11 @@ def minimum(rule, artifact):
 
 
 def maximum(rule, artifact):
-    '''Evaluate artifact's value to be maximum of values returned by rule's
+    """Evaluate artifact's value to be maximum of values returned by rule's
     subrules.
 
     This evaluation function ignores subrule weights.
-    '''
+    """
     m = -1.0
     for i in range(len(rule.R)):
         e = rule.R[i](artifact)
