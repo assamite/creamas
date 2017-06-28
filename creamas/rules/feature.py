@@ -14,7 +14,7 @@ class Feature():
 
     Each feature value takes as an input an artifact, and returns feature's
     value for that artifact. If artifact type is not supported, feature's
-    evaluation should return None.
+    evaluation should return ``None``.
 
     Returned feature values can be of any type, but rules
     (:py:class:`~creamas.core.rule.Rule`) should have appropriate mappers to

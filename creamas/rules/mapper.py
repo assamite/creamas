@@ -2,11 +2,11 @@
 .. py:module:: mapper
     :platform: Unix
 
-Mapper module hold base implementation for mappers. Mappers are functions, that
-map each feature's possible values to the interval [-1, 1]. While features are
-though to belong to artifacts of certain types, mappers usually belong to
-single agent making it possible for each agent to have their own appreciation
-standards for the feautre.
+Mapper module hold base implementation for mappers. Mappers are functions that
+map feature's possible values to the interval [-1, 1]. While features are
+thought to belong to artifacts of certain types, mappers usually belong to
+a single agent making it possible for each agent to have their own appreciation
+standards for the feature.
 """
 __all__ = ['Mapper']
 

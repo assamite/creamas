@@ -5,8 +5,6 @@
 Rule module holds the base implementation of a rule,
 :py:class:`~creamas.core.rule.Rule`. Rules combine features and mappers to
 a functional body, where each feature also has a weight attached to it.
-
-TODO: write rule to accept other rules in F also.
 """
 import copy
 from functools import partial
@@ -147,7 +145,7 @@ class Rule():
     def domains(self):
         """Rule's acceptable artifact domains is the union of all its
         subrules acceptable domains. Each artifact is evaluated only with
-        subrules that do not return *None* when the feature is evaluated with
+        subrules that do not return ``None`` when the feature is evaluated with
         it.
         """
         return self.__domains

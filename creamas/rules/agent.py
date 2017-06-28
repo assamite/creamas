@@ -2,8 +2,8 @@
 .. py:module:: rules/agent.py
     :platform: Unix
 
-The module holdin :class:`RuleAgent`, an agent which evaluates artifacts using
-its own rules.
+The module holding :class:`RuleAgent`, an agent which evaluates artifacts using
+its rules.
 """
 import aiomas
 
