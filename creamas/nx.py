@@ -20,7 +20,7 @@ from creamas.util import sort_addrs
 
 
 def connections_from_graph(env, G, edge_data=False):
-    '''Create connections for agents in the given environment from the given
+    """Create connections for agents in the given environment from the given
     NetworkX graph structure.
 
     :param env:
@@ -54,7 +54,7 @@ def connections_from_graph(env, G, edge_data=False):
     to create more connections between agents in the same environment and/or
     node when using :class:`~creamas.mp.MultiEnvironment` or
     :class:`~creamas.ds.DistributedEnvironment`.
-    '''
+    """
     if not issubclass(G.__class__, (Graph, DiGraph)):
         raise TypeError("Graph structure must be derived from Networkx's "
                         "Graph or DiGraph.")
@@ -75,7 +75,7 @@ def connections_from_graph(env, G, edge_data=False):
 
 
 def graph_from_connections(env, directed=False):
-    '''Create NetworkX graph from agent connections in a given environment.
+    """Create NetworkX graph from agent connections in a given environment.
 
     :param env:
         Environment where the agents live. The environment must be derived from
@@ -94,10 +94,9 @@ def graph_from_connections(env, directed=False):
     .. note::
 
         If the created graph is undirected and two connected agents have
-        different attitudes towards each other, then the value of
-        ``"attitude"`` key in the resulting graph for the edge is chosen
-        randomly from the two values.
-    '''
+        different data stored for each other, then the data for the given edge
+        is chosen randomly between the two agents.
+    """
     G = DiGraph() if directed else Graph()
     conn_list = env.get_connections(data=True)
     for agent, conns in conn_list:
@@ -111,8 +110,8 @@ def graph_from_connections(env, directed=False):
 
 
 def _addrs2nodes(addrs, G):
-    '''Map agent addresses to nodes in the graph.
-    '''
+    """Map agent addresses to nodes in the graph.
+    """
     for i, n in enumerate(G.nodes()):
         G.node[n]['addr'] = addrs[i]
 
