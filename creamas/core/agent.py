@@ -32,12 +32,6 @@ class CreativeAgent(aiomas.Agent):
     :ivar int cur_res:
         Agent's current resources.
 
-    :ivar list ~creamas.core.agent.CreativeAgent.R:
-        rules agent uses to evaluate artifacts
-
-    :ivar list ~creamas.core.agent.CreativeAgent.W:
-        Weight for each rule in **R**, in [-1,1].
-
     :ivar list A:
         Artifacts the agent has created so far
 
@@ -189,10 +183,12 @@ class CreativeAgent(aiomas.Agent):
 
         Does nothing if address is already in :attr:`connections`. Given
         ``**kwargs`` are stored as key-value pairs to ``connections[addr]``
-         dictionary.
+        dictionary.
 
-        :param str addr: Address of the agent to be added
-        :returns: True if the agent was successfully added, False otherwise.
+        :param str addr:
+            Address of the agent to be added
+        :returns:
+            ``True`` if the agent was successfully added, ``False`` otherwise.
         """
         if addr not in self._connections:
             self.connections[addr] = {}

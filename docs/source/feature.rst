@@ -1,5 +1,5 @@
 Feature
 =======
 
-.. automodule:: creamas.core.feature
+.. automodule:: creamas.rules.feature
 	:members:

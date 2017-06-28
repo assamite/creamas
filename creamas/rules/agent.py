@@ -17,6 +17,8 @@ __all__ = ['RuleAgent']
 class RuleAgent(CreativeAgent):
     """Base class for agents using rules to evaluate artifacts.
 
+    In addition to common attributes inherited from :class:`CreativeAgent`,
+    rule agents have following attributes:
 
     :ivar list ~creamas.core.agent.CreativeAgent.R:
         rules agent uses to evaluate artifacts
@@ -102,9 +104,13 @@ class RuleAgent(CreativeAgent):
         :attr:`W`.
 
         :param rule: rule to remove
-        :type rule: `~creamas.core.rule.Rule`
-        :raises TypeError: if rule is not subclass of :py:class:`Rule`
-        :returns: true if rule was successfully removed, otherwise false
+        :type rule:
+            :class:`~creamas.rules.rule.Rule` or
+            :class:`~creamas.rules.rule.RuleLeaf`
+        :raises TypeError:
+            If rule is not derived from :class:`Rule` or :class:`RuleLeaf`.
+        :returns:
+            ``True`` if the rule was successfully removed, otherwise ``False``.
         :rtype bool:
         """
         if not issubclass(rule.__class__, (Rule, RuleLeaf)):

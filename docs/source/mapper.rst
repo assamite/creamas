@@ -1,5 +1,5 @@
 Mapper
 ======
 
-.. automodule:: creamas.core.mapper
+.. automodule:: creamas.rules.mapper
 	:members:

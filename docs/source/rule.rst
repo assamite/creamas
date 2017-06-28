@@ -1,5 +1,5 @@
 Rule
 ====
 
-.. automodule:: creamas.core.rule
+.. automodule:: creamas.rules.rule
 	:members:
