@@ -7,7 +7,7 @@ value's to the interval [-1, 1]. In Creamas, they are used by individual
 agent's to represent agent's preferences over features values.
 '''
 from creamas.math import gaus_pdf, logistic
-from creamas.core import Mapper
+from creamas.rules.mapper import Mapper
 
 __all__ = ['BooleanMapper', 'LinearMapper', 'DoubleLinearMapper',
            'GaussianMapper', 'LogisticMapper']

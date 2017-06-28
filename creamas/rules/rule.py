@@ -17,9 +17,10 @@ __all__ = ['Rule']
 class RuleLeaf():
     """Leaf implementation for rules.
 
-    Combines feature and mapper into one functional unit. Adding two RuleLeafs
-    together will result in a Rule instance. Two RuleLeafs are equal if their
-    features are equal, mappers are *not* considered.
+    A :class:`RuleLeaf` combines a feature and a mapper into one functional
+    unit. Adding two :class:`RuleLeaf` instances together will result in
+    an instance of :class:`Rule`. Two instances of :class:`RuleLeaf` are equal
+    if their features are equal, mappers are *not* considered.
     """
     def __init__(self, feat, mapper):
         """
@@ -57,21 +58,27 @@ class RuleLeaf():
 
     @property
     def domains(self):
+        """Domains for this rule leaf.
+        """
         return self.__domains
 
     @property
     def feat(self):
+        """The feature for this rule leaf.
+        """
         return self.__feat
 
     @property
     def mapper(self):
+        """The mapper used in this rule leaf.
+        """
         return self.__mapper
 
 
 class Rule():
     """A :class:`Rule` is a treelike data structure consisting of other
-    :class:`Rule` and :class:`RuleLeaf` instances. Rules are used by agents to
-    evaluate artifacts.
+    :class:`Rule` and :class:`RuleLeaf` instances. Rules can be used by agents
+    to evaluate artifacts.
 
     Like features, rules offer a simple interface where
     artifact can be evaluated by calling a rule instance with artifact as the
@@ -149,12 +156,10 @@ class Rule():
         """Add subrule to the rule.
 
         :param subrule:
-            Subrule to add to this rule. Subrule can be either an iterable of
-            length 2, the (Feature, Mapper)-pair, or another Rule instance.
+            Subrule to add to this rule, an instance of :class:`Rule` or
+            :class:`RuleLeaf`.
 
-        :param float weight: weight of the subrule
-        :returns: false if subrule already in rule, true otherwise
-        :rtype: bool
+        :param float weight: Weight of the subrule
         """
         if not issubclass(subrule.__class__, (Rule, RuleLeaf)):
             raise TypeError("Rule's class must be (subclass of) {} or {}, got "
@@ -162,7 +167,6 @@ class Rule():
         self.__domains = set.union(self.__domains, subrule.domains)
         self.R.append(subrule)
         self.W.append(weight)
-        return True
 
     def __call__(self, artifact):
         if artifact.domain not in self.__domains:

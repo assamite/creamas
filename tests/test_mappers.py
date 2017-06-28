@@ -6,9 +6,9 @@ Unit tests for mappers.
 '''
 import unittest
 
-from creamas.core.mapper import Mapper
 from creamas.mappers import BooleanMapper, LinearMapper, LogisticMapper
 from creamas.mappers import DoubleLinearMapper, GaussianMapper
+from creamas.rules.mapper import Mapper
 
 
 class MapperTestCase(unittest.TestCase):

@@ -5,10 +5,11 @@ Tests for rule module.
 '''
 import unittest
 
+from creamas.rules.feature import Feature
+
 from creamas.core.artifact import Artifact
-from creamas.core.rule import Rule, RuleLeaf
-from creamas.core.feature import Feature
 from creamas.mappers import BooleanMapper
+from creamas.rules.rule import Rule, RuleLeaf
 
 
 class DummyFeature(Feature):

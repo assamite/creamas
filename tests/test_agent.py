@@ -5,18 +5,14 @@
 Tests for agent module.
 '''
 import asyncio
-import unittest
 import logging
+import unittest
 
 import aiomas
 
 from creamas.core.agent import CreativeAgent
-from creamas.core.environment import Environment
-from creamas.core.rule import RuleLeaf
-from creamas.core.feature import Feature
 from creamas.core.artifact import Artifact
-from creamas.core.mapper import Mapper
-
+from creamas.core.environment import Environment
 from creamas.logging import ObjectLogger
 
 
@@ -46,10 +42,6 @@ class AgentTestCase(unittest.TestCase):
         for a in test_agents:
             self.assertEqual(a.max_res, 0)
             self.assertEqual(a.cur_res, 0)
-            self.assertEqual(len(a.R), 0)
-            self.assertEqual(type(a.R), list)
-            self.assertEqual(len(a.W), 0)
-            self.assertEqual(type(a.W), list)
             self.assertEqual(len(a.A), 0)
             self.assertEqual(type(a.A), list)
             self.assertEqual(type(a.D), dict)
@@ -137,40 +129,6 @@ class AgentTestCase(unittest.TestCase):
         logger.setLevel(logging.INFO)
         a1.logger = logger
         a1._log(logging.DEBUG, "Test MSG")
-
-        # FEATURES
-        # feature must be subclass of Feature
-        with self.assertRaises(TypeError):
-            a1.add_rule({}, 1.0)
-
-        f = Feature('test_feat', {float}, float)
-        f2 = Feature('test_feat2', {float}, float)
-        rule = RuleLeaf(f, Mapper())
-        rule2 = RuleLeaf(f2, Mapper())
-        self.assertTrue(a1.add_rule(rule, 1.0))
-        self.assertIn(rule, a1.R)
-        a1.set_weight(rule, 0.0)
-        self.assertEqual(a1.get_weight(rule), 0.0)
-        self.assertIsNone(a1.get_weight(rule2))
-        a1.set_weight(rule2, 1.0)
-        self.assertIn(rule2, a1.R)
-        self.assertEqual(a1.get_weight(rule2), 1.0)
-
-        with self.assertRaises(TypeError):
-            a1.get_weight(1)
-
-        with self.assertRaises(TypeError):
-            a1.set_weight(1, 0.0)
-
-        with self.assertRaises(TypeError):
-            a1.remove_rule(1)
-
-        self.assertTrue(a1.remove_rule(rule))
-        self.assertNotIn(rule, a1.R)
-        self.assertEqual(1, len(a1.R))
-        self.assertEqual(1, len(a1.W))
-        self.assertEqual(a1.get_weight(rule2), 1.0)
-        self.assertFalse(a1.remove_rule(rule))
 
         # ARTIFACTS
         art = Artifact(a1, 1)
