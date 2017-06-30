@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Creamas - Creative Multi-Agent Systems
-======================================================
+======================================
 
 .. image:: _static/python-powered-w-70x28.png
 
@@ -15,24 +15,24 @@ implementations are general enough to be used for multi-agent systems with
 other purposes.
 
 Features, etc.
-----------------------------------
+--------------
 
-	* Built on top of `aiomas <https://aiomas.readthedocs.io/en/latest/>`_
-	* Agents with intention to produce creative artifacts
-	* Each agent lives in an environment
-	* Environment acts also as a communication route between the agents
-	* Support for multiple cores
-	* Support for distributed systems running on multiple nodes
-	* Easy made iterative simulations for agents
-	* Social decision making using voting
-	* NetworkX integration to generate agent connections from NetworkX structures and vice versa
+   * Built on top of `aiomas <https://aiomas.readthedocs.io/en/latest/>`_
+   * Agents are designed to produce creative artifacts
+   * Each agent lives in an environment
+   * Environment acts also as a communication route between the agents
+   * Support for multiple cores
+   * Support for distributed systems running on multiple nodes
+   * Easy made iterative simulations for agents
+   * Social decision making using voting
+   * NetworkX integration to generate agent connections from NetworkX structures and vice versa
 
 See :doc:`overview` for a more detailed introduction to the library's main components.
 Project's main repository is in `github <https://github.com/assamite/creamas>`_.
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 3
 
    overview
    install

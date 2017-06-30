@@ -99,7 +99,8 @@ class CreativeAgent(aiomas.Agent):
     @property
     def env(self):
         """The environment where the agent lives. Must be a subclass of
-        :py:class:`~creamas.core.environment.Environment`."""
+        :py:class:`~creamas.core.environment.Environment`.
+        """
         return self._env
 
     @property
@@ -202,6 +203,9 @@ class CreativeAgent(aiomas.Agent):
         """Add agents from :attr:`conns` to :attr:`connections`.
 
         :param list conns: A list of ``(addr, kwargs)``-tuples
+        :returns:
+            A boolean list, as returned by
+            :meth:`~creamas.core.agent.CreativeAgent.add_connections`.
         """
         rets = []
         for addr, kwargs in conns:
@@ -238,7 +242,7 @@ class CreativeAgent(aiomas.Agent):
         """Connect to agent in given address using the agent's environment.
 
         This is a shortcut to
-        :meth:`~creamas.core.enviroment.Environment.connect`.
+        :meth:`~creamas.core.environment.Environment.connect`.
 
         :returns: :class:`aiomas.Proxy` object for the connected agent.
         """
@@ -277,7 +281,7 @@ class CreativeAgent(aiomas.Agent):
         """Ask an agent's opinion about an artifact.
 
         :param str addr: Address of the agent which opinion is asked
-        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`
+        :type addr: :py:class:`~creamas.core.agent.CreativeAgent`
         :param object artifact: artifact to be evaluated
         :returns: agent's evaluation of the artifact
         :rtype: float
