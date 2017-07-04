@@ -35,6 +35,7 @@ class Artifact():
         """
         return self._obj
 
+    @property
     def domain(self):
         """Domain of the artifact. Domain must match feature's possible domains
         at evaluation time, or None is returned.
