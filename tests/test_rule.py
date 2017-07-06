@@ -44,10 +44,10 @@ class RuleTestCase(unittest.TestCase):
         self.assertIn(rl2, r.R)
 
         d = DummyAgent()
-        ar = Artifact(d, True)
+        ar = Artifact(d, True, domain=float)
         ret = r(ar)
         self.assertIsNone(ret)
-        ar.domain = bool
+        ar = Artifact(d, True, domain=bool)
         ret = r(ar)
         self.assertEqual(ret, 1.0)
 
