@@ -8,9 +8,12 @@ an input an artifact, and returns feature's value for that artifact.
 import cv2
 
 from creamas.rules.feature import Feature
-from creamas.math import fractal_dimension
+from creamas.image import fractal_dimension
+from creamas.image import channel_portion, intensity
 
-__all__ = ['ImageComplexityFeature']
+__all__ = ['ImageComplexityFeature', 'ImageRednessFeature',
+           'ImageGreennessFeature', 'ImageBluenessFeature',
+           'ImageIntensityFeature']
 
 
 class ImageComplexityFeature(Feature):
@@ -24,3 +27,47 @@ class ImageComplexityFeature(Feature):
         grayscale = cv2.cvtColor(artifact.obj, cv2.COLOR_RGB2GRAY)
         edges = cv2.Canny(grayscale, 100, 200)
         return float(fractal_dimension(edges))
+
+
+class ImageRednessFeature(Feature):
+    '''Feature that measures the redness of an image.
+    '''
+
+    def __init__(self):
+        super().__init__('image_redness', ['image'], float)
+
+    def extract(self, artifact):
+        return channel_portion(artifact.obj, 0)
+
+
+class ImageGreennessFeature(Feature):
+    '''Feature that measures the greenness of an image.
+    '''
+
+    def __init__(self):
+        super().__init__('image_greenness', ['image'], float)
+
+    def extract(self, artifact):
+        return channel_portion(artifact.obj, 1)
+
+
+class ImageBluenessFeature(Feature):
+    '''Feature that measures the blueness of an image.
+    '''
+
+    def __init__(self):
+        super().__init__('image_blueness', ['image'], float)
+
+    def extract(self, artifact):
+        return channel_portion(artifact.obj, 2)
+
+
+class ImageIntensityFeature(Feature):
+    '''Feature that measures the intensity of an image
+    '''
+
+    def __init__(self):
+        super().__init__('image_intensity', ['image'], float)
+
+    def extract(self, artifact):
+        return intensity(artifact.obj)
