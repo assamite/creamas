@@ -19,6 +19,7 @@ mccabe==0.3.1
 msgpack-python==0.4.6
 networkx==1.11
 numpy==1.10.1
+opencv-python==3.2.0.7
 Pillow==3.0.0
 path.py==8.1.2
 pep8==1.5.7
