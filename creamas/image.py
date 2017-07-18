@@ -58,7 +58,7 @@ def channel_portion(image, channel):
     # Separate color channels
     rgb = []
     for i in range(3):
-        rgb.append(image[:, :, i])
+        rgb.append(image[:, :, i].astype(int))
     ch = rgb.pop(channel)
 
     relative_values = ch - np.sum(rgb, axis=0) / 2
