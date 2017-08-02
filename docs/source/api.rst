@@ -13,5 +13,6 @@ API Documentation
     util
     rules
     mappers
+    features
     math
     logging

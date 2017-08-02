@@ -64,7 +64,7 @@ def channel_portion(image, channel):
     relative_values = ch - np.sum(rgb, axis=0) / 2
     relative_values = np.maximum(np.zeros(ch.shape), relative_values)
 
-    return np.average(relative_values) / 255
+    return float(np.average(relative_values) / 255)
 
 
 def intensity(image):
@@ -80,4 +80,4 @@ def intensity(image):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) / 255
     elif issubclass(image.dtype.type, np.integer):
         image /= 255
-    return np.sum(image) / np.prod(image.shape)
+    return float(np.sum(image) / np.prod(image.shape))
