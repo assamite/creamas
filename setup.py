@@ -16,9 +16,9 @@ setup(
     url='https://creamas.readthedocs.io/',
     license='GNU General Public License v2 (GPLv2)',
     install_requires=[
-        'aiomas>=1.0.3',
+        'aiomas==2.0.1',
         'msgpack-python>=0.4.6',
-        'numpy>=1.10.1',
+        'numpy>=1.17.3',
     ],
     extras_require={
     },
@@ -34,7 +34,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering',
     ],
 )

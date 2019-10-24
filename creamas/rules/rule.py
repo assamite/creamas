@@ -9,7 +9,7 @@ a functional body, where each feature also has a weight attached to it.
 import copy
 from functools import partial
 
-__all__ = ['Rule']
+__all__ = ['Rule', 'RuleLeaf']
 
 
 class RuleLeaf():
@@ -34,7 +34,11 @@ class RuleLeaf():
     def __call__(self, artifact):
         if artifact.domain not in self.__domains:
             return None
-        return self.__mapper(self.__feat.extract(artifact))
+        e = self.__feat.extract(artifact)
+        m = self.__mapper(e)
+        print(e, m)
+        #return self.__mapper(self.__feat.extract(artifact))
+        return m
 
     def __str__(self):
         return "RuleLeaf({}:{}))".format(self.__feat, self.__mapper)

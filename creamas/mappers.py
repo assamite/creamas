@@ -182,10 +182,10 @@ class DoubleLinearMapper(LinearMapper):
     reverse_modes = ['01', '10', '-11', '1-1']
 
     def __init__(self, lo, mid, hi, mode='01'):
-        if lo > mid:
+        if lo >= mid:
             raise ValueError('lo ({}) must be smaller than mid ({}).'
                              .format(lo, mid))
-        if mid > hi:
+        if mid >= hi:
             raise ValueError('mid ({}) must be smaller than hi ({}).'
                              .format(mid, hi))
         self._lo = lo
@@ -205,7 +205,8 @@ class DoubleLinearMapper(LinearMapper):
 
     @property
     def mode(self):
-        '''Mode of the mapper.'''
+        """Mode of the mapper.
+        """
         return self._mode
 
     @mode.setter

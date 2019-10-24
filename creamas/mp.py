@@ -2,19 +2,15 @@
 .. py:module:: mp
     :platform: Unix
 
-This module contains multiprocessing implementation for
-:class:`~creamas.core.environment.Environment`,
+This module contains multiprocessing implementation for :class:`~creamas.core.environment.Environment`,
 :class:`~creamas.mp.MultiEnvironment`.
 
-A :class:`~creamas.mp.MultiEnvironment` holds several
-:class:`~creamas.core.environment.Environment` slaves, which are spawned on
-their own processes, and uses managers to obtain much of the same functionality
-as the single processor environment. See :class:`~creamas.mp.EnvManager` and
-:class:`~creamas.mp.MultiEnvManager` for details.
+A :class:`~creamas.mp.MultiEnvironment` holds several :class:`~creamas.core.environment.Environment` slaves, which are
+spawned on their own processes, and uses managers to obtain much of the same functionality as the single processor
+environment. See :class:`~creamas.mp.EnvManager` and :class:`~creamas.mp.MultiEnvManager` for details.
 
 .. warning::
-    This functionality is currently largely untested. However, it *seems* to
-    work as intended and may be used in
+    This functionality is currently largely untested. However, it *seems* to work as intended and may be used in
     :class:`~creamas.core.simulation.Simulation`.
 """
 import asyncio
@@ -33,21 +29,24 @@ logger = logging.getLogger(__name__)
 TIMEOUT = 5
 
 
+def set_base_timeout(timeout):
+    """Set base timeout (in seconds) for the rpc calls originating from the instances in this module.
+    """
+    TIMEOUT = timeout
+
+
 class EnvManager(aiomas.subproc.Manager):
-    """A manager for :class:`~creamas.core.environment.Environment`, subclass
-    of :class:`aiomas.subproc.Manager`.
+    """A manager for :class:`~creamas.core.environment.Environment`, which is a subclass of
+    :class:`aiomas.subproc.Manager`.
 
-    Managers are used in environments which need to be able to execute
-    commands originating from outside sources, e.g. in slave environments
-    inside a multiprocessing environment.
+    Managers are used in environments which need to be able to execute commands originating from outside sources,
+    e.g. in slave environments inside a multiprocessing environment.
 
-    A manager can spawn other agents into its environment, and can execute
-    other tasks relevant to the environment. The manager should always be the
-    first agent created to the environment.
+    A manager can spawn other agents into its environment, and can execute other tasks relevant to the environment.
+    The manager should always be the first agent created to the environment.
 
     .. note::
-        You should not need to create managers directly, instead pass the
-        desired manager class to an instance of
+        You should not need to create managers directly, instead pass the desired manager class to an instance of
         :class:`~creamas.mp.MultiEnvironment` at its initialization time.
     """
     def __init__(self, environment):
@@ -74,15 +73,13 @@ class EnvManager(aiomas.subproc.Manager):
         return self._host_manager
 
     @aiomas.expose
-    async def report(self, msg, timeout=5):
+    async def report(self, msg, timeout=TIMEOUT):
         """Report message to the host manager.
         """
         try:
-            host_manager = await self.env.connect(self.host_manager,
-                                                  timeout=timeout)
+            host_manager = await self.env.connect(self.host_manager, timeout=timeout)
         except:
-            raise ConnectionError("Could not reach host manager ({})."
-                                  .format(self.host_manager))
+            raise ConnectionError("Could not reach host manager ({}).".format(self.host_manager))
         ret = await host_manager.handle(msg)
         return ret
 
@@ -96,10 +93,8 @@ class EnvManager(aiomas.subproc.Manager):
     def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         """Get agents from the managed environment.
 
-        This is a managing function for the
-        :py:meth:`~creamas.environment.Environment.get_agents`. Returned
-        agent list excludes the environment's manager agent (this agent) by
-        design.
+        This is a managing function for the :py:meth:`~creamas.environment.Environment.get_agents`. The returned
+        agent list excludes the environment's manager agent (i.e. this agent) by design.
         """
         return self.env.get_agents(addr=addr, agent_cls=agent_cls)
 
@@ -117,8 +112,7 @@ class EnvManager(aiomas.subproc.Manager):
     def create_connections(self, connection_map):
         """Create connections for agents in the environment.
 
-        This is a managing function for
-        :meth:`~creamas.core.environment.Environment.create_connections`.
+        This is a managing function for :meth:`~creamas.core.environment.Environment.create_connections`.
         """
         return self.env.create_connections(connection_map)
 
@@ -126,8 +120,7 @@ class EnvManager(aiomas.subproc.Manager):
     def get_connections(self, data=False):
         """Get connections from the agents in the environment.
 
-        This is a managing function for
-        :meth:`~creamas.core.environment.Environment.get_connections`.
+        This is a managing function for :meth:`~creamas.core.environment.Environment.get_connections`.
         """
         return self.env.get_connections(data=data)
 
@@ -137,8 +130,7 @@ class EnvManager(aiomas.subproc.Manager):
 
         :returns: All the artifacts in the environment.
         """
-        host_manager = await self.env.connect(self._host_manager,
-                                              timeout=TIMEOUT)
+        host_manager = await self.env.connect(self._host_manager, timeout=TIMEOUT)
         artifacts = await host_manager.get_artifacts()
         return artifacts
 
@@ -152,8 +144,7 @@ class EnvManager(aiomas.subproc.Manager):
     async def trigger_all(self, *args, **kwargs):
         """Trigger all agents in the managed environment to act once.
 
-        This is a managing function for
-        :meth:`~creamas.core.environment.Environment.trigger_all`.
+        This is a managing function for :meth:`~creamas.core.environment.Environment.trigger_all`.
         """
         return await self.env.trigger_all(*args, **kwargs)
 
@@ -161,8 +152,7 @@ class EnvManager(aiomas.subproc.Manager):
     async def is_ready(self):
         """Check if the managed environment is ready.
 
-        This is a managing function for
-        :py:meth:`~creamas.environment.Environment.is_ready`.
+        This is a managing function for :py:meth:`~creamas.environment.Environment.is_ready`.
         """
         return self.env.is_ready()
 
@@ -170,9 +160,8 @@ class EnvManager(aiomas.subproc.Manager):
     async def spawn_n(self, agent_cls, n, *args, **kwargs):
         """Spawn :attr:`n` agents to the managed environment.
 
-        This is a convenience function so that one does not have to repeatedly
-        make connections to the environment to spawn multiple agents with the
-        same parameters.
+        This is a convenience function so that one does not have to repeatedly make connections to the environment to
+        spawn multiple agents with the same parameters.
 
         See :meth:`aiomas.subproc.Manager.spawn` for details.
         """
@@ -184,8 +173,7 @@ class EnvManager(aiomas.subproc.Manager):
 
 
 class MultiEnvManager(aiomas.subproc.Manager):
-    """A manager for :class:`~creamas.mp.MultiEnvironment`, subclass of
-    :class:`aiomas.subproc.Manager`.
+    """A manager for :class:`~creamas.mp.MultiEnvironment`, which is a subclass of :class:`aiomas.subproc.Manager`.
 
     A Manager can spawn other agents into its slave environments, and can
     execute other tasks relevant to the whole environment. The manager should
@@ -866,9 +854,18 @@ class MultiEnvironment():
                 self._log(logging.WARNING, "Could not stop {}".format(addr))
 
     def destroy(self, folder=None, as_coro=False):
-        """Destroy the multiprocessing environment and its slave environments.
+        """Close the multiprocessing environment and its slave environments.
+
+        .. deprecated:: 0.4.0
+            Use :func:`close` instead
         """
-        async def _destroy(folder):
+        DeprecationWarning("{0}.destroy is deprecated, use {0}.close instead.".format(str(self.__class__.__name__)))
+        self.close(folder=folder, as_coro=as_coro)
+
+    def close(self, folder=None, as_coro=False):
+        """Close the multiprocessing environment and its slave environments.
+        """
+        async def _close(folder):
             ret = self.save_info(folder)
             await self.stop_slaves()
             # Terminate and join the process pool when we are destroyed.
@@ -880,7 +877,7 @@ class MultiEnvironment():
             await self._env.shutdown(as_coro=True)
             return ret
 
-        return run_or_coro(_destroy(folder), as_coro)
+        return run_or_coro(_close(folder), as_coro)
 
 
 def spawn_container(addr, env_cls=Environment,

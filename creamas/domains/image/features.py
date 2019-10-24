@@ -1,15 +1,15 @@
-'''
+"""
 .. py:module:: features
     :platform: Unix
 
 Various feature implementations. Each feature value takes as
 an input an artifact, and returns feature's value for that artifact.
-'''
+"""
 import cv2
 
+from creamas.domains.image.image import channel_portion, intensity
+from creamas.domains.image.image import fractal_dimension
 from creamas.rules.feature import Feature
-from creamas.image import fractal_dimension
-from creamas.image import channel_portion, intensity
 
 __all__ = ['ImageComplexityFeature', 'ImageRednessFeature',
            'ImageGreennessFeature', 'ImageBluenessFeature',
@@ -17,21 +17,23 @@ __all__ = ['ImageComplexityFeature', 'ImageRednessFeature',
 
 
 class ImageComplexityFeature(Feature):
-    '''Feature that estimates the fractal dimension of an image.
+    """Feature that estimates the fractal dimension of an image.
     The color values must be in range [0, 255] and type ``int``.
-    '''
+    """
     def __init__(self):
         super().__init__('image_complexity', ['image'], float)
 
     def extract(self, artifact):
-        grayscale = cv2.cvtColor(artifact.obj, cv2.COLOR_RGB2GRAY)
-        edges = cv2.Canny(grayscale, 100, 200)
+        img = artifact.obj
+        if len(img.shape) > 2:
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        edges = cv2.Canny(img, 100, 200)
         return float(fractal_dimension(edges))
 
 
 class ImageRednessFeature(Feature):
-    '''Feature that measures the redness of an image.
-    '''
+    """Feature that measures the redness of an image.
+    """
 
     def __init__(self):
         super().__init__('image_redness', ['image'], float)
@@ -41,8 +43,8 @@ class ImageRednessFeature(Feature):
 
 
 class ImageGreennessFeature(Feature):
-    '''Feature that measures the greenness of an image.
-    '''
+    """Feature that measures the greenness of an image.
+    """
 
     def __init__(self):
         super().__init__('image_greenness', ['image'], float)
@@ -52,8 +54,8 @@ class ImageGreennessFeature(Feature):
 
 
 class ImageBluenessFeature(Feature):
-    '''Feature that measures the blueness of an image.
-    '''
+    """Feature that measures the blueness of an image.
+    """
 
     def __init__(self):
         super().__init__('image_blueness', ['image'], float)
@@ -63,8 +65,8 @@ class ImageBluenessFeature(Feature):
 
 
 class ImageIntensityFeature(Feature):
-    '''Feature that measures the intensity of an image
-    '''
+    """Feature that measures the intensity of an image
+    """
 
     def __init__(self):
         super().__init__('image_intensity', ['image'], float)

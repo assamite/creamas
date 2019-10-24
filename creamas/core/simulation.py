@@ -279,10 +279,12 @@ class Simulation():
         if self.logger is not None:
             self.logger.log(level, msg)
 
-    def end(self, folder=None):
-        """End the simulation and destroy the current simulation environment.
+
+
+    def close(self, folder=None):
+        """Close the simulation and the current simulation environment.
         """
-        ret = self.env.destroy(folder=folder)
+        ret = self.env.close(folder=folder)
         self._end_time = time.time()
         self._log(logging.DEBUG, "Simulation run with {} steps took {:.3f}s to"
                   " complete, while actual processing time was {:.3f}s."

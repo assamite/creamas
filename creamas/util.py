@@ -1,16 +1,16 @@
-'''
+"""
 .. py:module:: util
     :platform: Unix
 
 Miscellaneous utility functions.
-'''
+"""
 import asyncio
 import itertools
 import re
 
 
 def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
-    '''Create and schedule a set of asynchronous tasks.
+    """Create and schedule a set of asynchronous tasks.
 
     The function creates the tasks using a given list of agent addresses and
     wraps each of them in :func:`asyncio.ensure_future`. The ``*args`` and
@@ -40,7 +40,7 @@ def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
     :returns:
         An awaitable coroutine which returns the results of tasks as a list or
         as a flattened list
-    '''
+    """
     tasks = []
     for agent_addr in addrs:
         task = asyncio.ensure_future(task_coro(agent_addr, *args, **kwargs))
@@ -49,7 +49,7 @@ def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
 
 
 async def wait_tasks(tasks, flatten=True):
-    '''Gather a list of asynchronous tasks and wait their completion.
+    """Gather a list of asynchronous tasks and wait their completion.
 
     :param list tasks:
         A list of *asyncio* tasks wrapped in :func:`asyncio.ensure_future`.
@@ -59,7 +59,7 @@ async def wait_tasks(tasks, flatten=True):
         results are not iterable.
     :returns:
         The results of tasks as a list or as a flattened list
-    '''
+    """
     rets = await asyncio.gather(*tasks)
     if flatten and all(map(lambda x: hasattr(x, '__iter__'), rets)):
         rets = list(itertools.chain(*rets))
@@ -67,7 +67,7 @@ async def wait_tasks(tasks, flatten=True):
 
 
 def run_or_coro(task, as_coro, loop=None):
-    '''A shorthand to run the task/future or return it as is.
+    """A shorthand to run the task/future or return it as is.
 
     :param task:
         Optional. Task or Future which is run until complete. If parameter is
@@ -78,7 +78,7 @@ def run_or_coro(task, as_coro, loop=None):
     :param loop:
         Optional. Event loop to use. If the parameter is ``None`` uses
         asyncio's base event loop.
-    '''
+    """
     if as_coro:
         return task
     else:
@@ -86,7 +86,7 @@ def run_or_coro(task, as_coro, loop=None):
 
 
 def run(task=None, loop=None):
-    '''Run the event loop forever or until the task/future *task* is finished.
+    """Run the event loop forever or until the task/future *task* is finished.
 
     :param task:
         Optional. Task or Future which is run until complete. If parameter is
@@ -97,7 +97,7 @@ def run(task=None, loop=None):
 
     .. note::
         This method has the same intent as :func:`aiomas.util.run`.
-    '''
+    """
     if loop is None:
         loop = asyncio.get_event_loop()
     if task is None:
@@ -107,13 +107,13 @@ def run(task=None, loop=None):
 
 
 def _addr_key(addr):
-    splitted = re.split(r'[:/]', addr)
-    host, port, order = splitted[-3:]
-    return (host, int(port), int(order))
+    split = re.split(r'[:/]', addr)
+    host, port, order = split[-3:]
+    return host, int(port), int(order)
 
 
 def sort_addrs(addrs):
-    '''Return agent addresses in a sorted order.
+    """Return agent addresses in a sorted order.
 
     Agent addresses are sorted with following hierarchical criteria:
         1. by the host of an agent's environment
@@ -141,7 +141,7 @@ def sort_addrs(addrs):
          'tcp://bnode:18000/1',
          'tcp://anode:5555/1']
 
-    Would be sorted into following order::
+    would be sorted into the following order::
 
         ['tcp://anode:50/0',
          'tcp://anode:50/1',
@@ -166,19 +166,19 @@ def sort_addrs(addrs):
 
     :returns:
         List of addresses in a sorted order.
-    '''
+    """
     return sorted(addrs, key=lambda x: _addr_key(x))
 
 
 def split_addrs(addrs):
-    '''Split addresses into dictionaries by hosts and ports.
+    """Split addresses into dictionaries by hosts and ports.
 
     :param list addrs: A list of addresses.
 
     :returns:
         A dictionary of dictionaries, where ``dict[HOST][PORT]`` holds a list
         of all agent addresses in that environment.
-    '''
+    """
     splitted = {}
     for addr in addrs:
         host, port, _ = _addr_key(addr)
@@ -191,18 +191,18 @@ def split_addrs(addrs):
 
 
 def get_manager(addr):
-    '''Get assumed environment manager's address for a given agent address.
-    '''
+    """Get assumed environment manager's address for a given agent address.
+    """
     return addr.rsplit("/", 1)[0] + "/0"
 
 
 def addrs2managers(addrs):
-    '''Map agent addresses to their assumed managers.
+    """Map agent addresses to their assumed managers.
 
     .. seealso::
 
         :func:`creamas.util.get_manager`
-    '''
+    """
     mgrs = {}
     for addr in addrs:
         mgr_addr = get_manager(addr)
