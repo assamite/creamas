@@ -4,6 +4,7 @@
 Basic simulation implementation where agents in the same environment can be
 run in an iterative manner.
 """
+import asyncio
 import time
 import logging
 from random import shuffle
@@ -11,7 +12,7 @@ from random import shuffle
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
 from creamas.logging import ObjectLogger
-from creamas.util import run
+from creamas import util
 
 __all__ = ['Simulation']
 
@@ -201,28 +202,35 @@ class Simulation():
                           t2 - self._step_start_time))
         self._processing_time += self._step_processing_time
 
-    def async_steps(self, n):
-        """Progress simulation by running all agents *n* times asynchronously.
-        """
-        assert len(self._agents_to_act) == 0
-        rets = []
-        for _ in range(n):
-            ret = self.async_step()
-            rets.append(ret)
+    def finish_step(self):
+        """Progress simulation to the end of the current step.
 
+        .. deprecated:: 0.4.0
+            Use :func:`step` instead.
+        """
+        rets = []
+        while len(self._agents_to_act) > 0:
+            ret = self.next()
+            rets.append(ret)
         return rets
 
-    def async_step(self):
-        """Progress simulation by running all agents once asynchronously.
+    def step(self):
+        """Progress simulation by a single step.
         """
         assert len(self._agents_to_act) == 0
+        t = time.monotonic()
+        rets = []
+
         self._init_step()
-        t = time.time()
-        ret = run(until=self.env.trigger_all())
-        self._agents_to_act = []
-        self._step_processing_time = time.monotonic() - t
+
+        while len(self._agents_to_act) > 0:
+            addr = self._agents_to_act.pop(0)
+            ret = util.run(self.env.trigger_act(addr=addr))
+            rets.append(ret)
+
         self._finalize_step()
-        return ret
+        self._step_processing_time = time.monotonic() - t
+        return rets
 
     def steps(self, n):
         """Progress simulation with given amount of steps.
@@ -239,47 +247,27 @@ class Simulation():
 
         return rets
 
-    def step(self):
-        """Progress simulation by a single step.
-
-        If some of the agents have already acted on this step, finishes the step by calling the rest of the agents.
+    def async_step(self):
+        """Progress simulation by running all agents asynchronously once.
         """
-        rets = []
-        while len(self._agents_to_act) > 0:
-            ret = self.next()
-            rets.append(ret)
-
-        return rets
-
-    def next(self):
-        """Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in the current step.
-        """
-        # all agents acted, init next step
+        assert len(self._agents_to_act) == 0
+        self._init_step()
         t = time.time()
-        if len(self._agents_to_act) == 0:
-            self._init_step()
-
-        addr = self._agents_to_act.pop(0)
-        ret = run(until=self.env.trigger_act(addr=addr))
-        t2 = time.monotonic()
-        self._step_processing_time += t2 - t
-
-        # all agents acted, finalize current step
-        if len(self._agents_to_act) == 0:
-            self._finalize_step()
-
+        ret = util.run(self.env.trigger_all())
+        self._agents_to_act = []
+        self._step_processing_time = time.monotonic() - t
+        self._finalize_step()
         return ret
 
-    def finish_step(self):
-        """Progress simulation to the end of the current step.
-
-        .. deprecated:: 0.4.0
-            Use :func:`step` instead.
+    def async_steps(self, n):
+        """Progress simulation by running all agents *n* times asynchronously.
         """
+        assert len(self._agents_to_act) == 0
         rets = []
-        while len(self._agents_to_act) > 0:
-            ret = self.next()
+        for _ in range(n):
+            ret = self.async_step()
             rets.append(ret)
+
         return rets
 
     def _log(self, level, msg):

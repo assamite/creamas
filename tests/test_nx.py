@@ -68,8 +68,8 @@ class NXTestCase(unittest.TestCase):
             for _ in range(n_agents):
                 CreativeAgent(env)
 
-            for edge in G.edges_iter(data=True):
-                edge[2]['weight'] = random.random()
+            for edge in G.edges():
+                G.edges[edge]['weight'] = random.random()
 
             connections_from_graph(env, G, edge_data=True)
             G2 = graph_from_connections(env, directed=False)
@@ -100,8 +100,8 @@ class NXTestCase(unittest.TestCase):
             for _ in range(n_agents):
                 CreativeAgent(env)
 
-            for edge in G.edges_iter(data=True):
-                edge[2]['weight'] = random.random()
+            for edge in G.edges():
+                G.edges[edge]['weight'] = random.random()
 
             connections_from_graph(env, G, edge_data=True)
             G2 = graph_from_connections(env, directed=True)

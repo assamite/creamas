@@ -112,8 +112,8 @@ def graph_from_connections(env, directed=False):
 def _addrs2nodes(addrs, G):
     """Map agent addresses to nodes in the graph.
     """
-    for i, n in enumerate(G.nodes()):
-        G.node[n]['addr'] = addrs[i]
+    for i, n in enumerate(G.nodes(data=True)):
+        n[1]['addr'] = addrs[i]
 
 
 def _edges2conns(G, edge_data=False):
@@ -136,8 +136,8 @@ def _edges2conns(G, edge_data=False):
     cm = {}
     for n in G.nodes(data=True):
         if edge_data:
-            cm[n[1]['addr']] = [(G.node[nb]['addr'], G[n[0]][nb])
+            cm[n[1]['addr']] = [(G.nodes[nb]['addr'], G[n[0]][nb])
                                 for nb in G[n[0]]]
         else:
-            cm[n[1]['addr']] = [(G.node[nb]['addr'], {}) for nb in G[n[0]]]
+            cm[n[1]['addr']] = [(G.nodes[nb]['addr'], {}) for nb in G[n[0]]]
     return cm
