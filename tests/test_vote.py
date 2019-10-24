@@ -56,7 +56,7 @@ class TestVote(unittest.TestCase):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        self.env.destroy()
+        self.env.close()
 
     def test_vote_env(self):
         '''Test VoteEnvironment (and VoteAgent).

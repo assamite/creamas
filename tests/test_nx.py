@@ -29,15 +29,13 @@ class NXTestCase(unittest.TestCase):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        self.env.destroy()
+        self.env.close()
 
     def test_nx_asserts(self):
         n_agents = 40
-        G = networkx.fast_gnp_random_graph(n_agents+1, 0.4)
-        agents = []
+        G = networkx.fast_gnp_random_graph(n_agents + 1 , 0.4)
         for _ in range(n_agents):
             agent = CreativeAgent(self.env)
-            agents.append(agent)
 
         with self.assertRaises(ValueError):
             connections_from_graph(self.env, G)
@@ -60,7 +58,7 @@ class NXTestCase(unittest.TestCase):
             G2 = graph_from_connections(env, directed=False)
             self.assertEqual(len(G2), n_agents)
             self.assertTrue(networkx.is_isomorphic(G, G2))
-            env.destroy()
+            env.close()
 
     def test_nx_env_weighted(self):
         for _ in range(50):
@@ -77,7 +75,7 @@ class NXTestCase(unittest.TestCase):
             G2 = graph_from_connections(env, directed=False)
             self.assertEqual(len(G2), n_agents)
             self.assertTrue(networkx.is_isomorphic(G, G2, edge_match=edge_sim))
-            env.destroy()
+            env.close()
 
     def test_nx_env_directed(self):
         for _ in range(50):
@@ -92,7 +90,7 @@ class NXTestCase(unittest.TestCase):
             self.assertEqual(len(G2), n_agents)
             self.assertTrue(networkx.is_isomorphic(G, G2))
             self.env.clear_connections()
-            env.destroy()
+            env.close()
 
     def test_nx_env_directed_weighted(self):
         for _ in range(50):
@@ -109,4 +107,4 @@ class NXTestCase(unittest.TestCase):
             G2 = graph_from_connections(env, directed=True)
             self.assertEqual(len(G2), n_agents)
             self.assertTrue(networkx.is_isomorphic(G, G2, edge_match=edge_sim))
-            env.destroy()
+            env.close()

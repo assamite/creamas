@@ -36,7 +36,7 @@ class MenvTestCase(unittest.TestCase):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        self.menv.destroy()
+        self.menv.close()
 
     def test_menv(self):
         n_agents = 40

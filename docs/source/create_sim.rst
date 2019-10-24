@@ -2,7 +2,7 @@ Using Simulation
 ==========================
 
 Creamas contains easy to use iterative simulation to perform experiments on 
-single computer set up. Each agent wishing to use simulation has to implement 
+a single computer set up. Each agent wishing to use simulation has to implement
 :meth:`~creamas.core.agent.CreativeAgent.act`:
 
 .. automethod:: creamas.core.agent.CreativeAgent.act
@@ -14,8 +14,8 @@ do in their turn is up to you!
 Simple Simulations
 -----------------------------
 
-Creating simple iterative simulation is made easy with 
-:py:class:`~creamas.core.simulation.Simulation.create`. Observe.
+Good news! Creating a simple simulation is made easy with :py:class:`~creamas.core.simulation.Simulation.create`.
+Observe.
 
 .. code-block:: python
 
@@ -35,8 +35,8 @@ Creating simple iterative simulation is made easy with
 	# Advance simulation by single step
 	sim.step()
 	
-	# End simulation and destroy it's environment.
-	sim.end()
+	# Close the simulation and it's environment.
+	sim.close()
 
 :func:`create` offers few arguments to modify simulation initialization:
 
@@ -60,7 +60,7 @@ Creating simple iterative simulation is made easy with
 	                        n_agents=n_agents,
 	                        agent_kwargs=agent_kwargs)
 
-2. You can create simulation with your own environment, which is automatically
+2. You can create a simulation with your own environment, which is automatically
    passed down to the agents at their initialization time.
 
 .. code-block:: python
@@ -105,18 +105,16 @@ fully initialized the environment, you can then pass it to the
 Advancing Simulation
 --------------------
 
-Simulation holds few different ways to advance it.
+Simulation holds a few different ways to advance it.
 
 .. code-block:: python
 	
-	# Advance simulation by single step (executing all agents once)
+	# Advance simulation by a single step (executing all agents once)
+	# or advance simulation to the end of the current step.
 	sim.step()
 	
-	# Advance simulation by executing single agent.
+	# Advance simulation by executing a single agent.
 	sim.next()
-	
-	# Advance simulation to the end of the current step.
-	sim.finish_step()
 	
 	# Advance simulation by 10 steps
 	sim.steps(10)

@@ -80,8 +80,8 @@ async def run_node(menv, log_folder):
     used in :class:`~creamas.ds.DistributedEnvironment` scripts which spawn
     multi-environments on different nodes. That is, using this function in the
     script will block the script's further execution until the simulation has
-    run its course and the nodes need to be destroyed.
-    Calling :meth:`~creamas.ds.DistributedEnvironment.destroy` will
+    run its course and the nodes need to be closed.
+    Calling :meth:`~creamas.ds.DistributedEnvironment.close` will
     automatically call each node manager's :meth:`stop` and therefore release
     the script.
     """
@@ -90,7 +90,7 @@ async def run_node(menv, log_folder):
     except KeyboardInterrupt:
         pass
     finally:
-        ret = await menv.destroy(log_folder, as_coro=True)
+        ret = await menv.close(log_folder, as_coro=True)
         return ret
 
 
@@ -113,8 +113,8 @@ class DistributedEnvironment(MultiEnvironment):
 
     .. warning::
         To free the resources on each node, it is crucial to call
-        :meth:`creamas.ds.DistributedEnvironment.destroy` after the simulation
-        has been done. Otherwise, some rogue processes are likely to be left
+        :meth:`creamas.ds.DistributedEnvironment.close` after the simulation
+        is finished. Otherwise, some rogue processes are likely to be left
         unattended on the external nodes.
 
     The intended order of usage is as follows::
@@ -133,7 +133,7 @@ class DistributedEnvironment(MultiEnvironment):
                 loop.run_until_complete(ds.trigger_all())
 
         # Destroy the simulation afterwards to free the resources on each node.
-        ds.destroy()
+        ds.close()
     """
     def __init__(self, addr, env_cls, nodes, mgr_cls=None, name=None,
                  logger=None, **env_kwargs):
@@ -264,7 +264,7 @@ class DistributedEnvironment(MultiEnvironment):
 
         :param bool as_coro:
             If ``True`` returns awaitable coroutine, otherwise runs the calls
-            to the slave managers asynchoronously in the event loop.
+            to the slave managers asynchronously in the event loop.
 
         This method returns the addresses of the true slave environment
         managers, i.e. managers derived from :class:`~creamas.mp.EnvManager`,

@@ -23,7 +23,7 @@ class AgentTestCase(unittest.TestCase):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        self.env.destroy()
+        self.env.close()
 
     def test_agent(self):
         env = self.env

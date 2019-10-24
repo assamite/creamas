@@ -123,8 +123,8 @@ class GridEnvironment(Environment):
     Grid environments can be horizontally stacked with
     :py:class:`GridMultiEnvironment`.
     """
-    def __init__(self, base_url, clock, connect_kwargs):
-        super().__init__(base_url, clock, connect_kwargs)
+    def __init__(self, base_url, loop, clock, connect_kwargs):
+        super().__init__(base_url, loop, clock, connect_kwargs)
         self._gs = (0, 0)
         self._grid = []
         self._origin = (0, 0)

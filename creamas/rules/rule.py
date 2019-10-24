@@ -34,10 +34,9 @@ class RuleLeaf():
     def __call__(self, artifact):
         if artifact.domain not in self.__domains:
             return None
+
         e = self.__feat.extract(artifact)
         m = self.__mapper(e)
-        print(e, m)
-        #return self.__mapper(self.__feat.extract(artifact))
         return m
 
     def __str__(self):

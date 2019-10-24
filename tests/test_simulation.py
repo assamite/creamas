@@ -33,13 +33,13 @@ class SimulationTestCase(unittest.TestCase):
         agents = sim.env.get_agents(addr=False)
         a = agents[0]
         self.assertEqual(a.__class__, CreativeAgent,
-                         'Agent class is not expected')
+                         'Agent class is not as expected')
         self.assertEqual(len(agents), 10,
                          'Simulation did not create correct amount of agents')
 
         for a in agents:
             self.assertEqual(len(a.connections), 3,
-                             'Simulation did not correct initial connections')
+                             'Simulation did not create correct initial connections')
 
         sim.end()
         self.assertIsNone(sim.env._tcp_server)
@@ -60,7 +60,7 @@ class SimulationTestCase(unittest.TestCase):
                 n_da += 1
         self.assertEqual(n_ca, 10)
         self.assertEqual(n_da, 5)
-        sim.end()
+        sim.close()
 
         sim = Simulation.create(agent_cls=DummyAgent, conns=3,
                                 env_kwargs={'addr': ('localhost', 5555)})
@@ -72,12 +72,12 @@ class SimulationTestCase(unittest.TestCase):
         sim.next()
         self.assertEqual(sim.age, 2)
         self.assertEqual(len(sim._agents_to_act), 9)
-        sim.finish_step()
+        sim.step()
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.steps(10)
         self.assertEqual(sim.age, 12)
         self.assertEqual(len(sim._agents_to_act), 0)
-        sim.end()
+        sim.close()
 
 
 if __name__ == '__main__':

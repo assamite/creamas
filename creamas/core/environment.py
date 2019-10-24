@@ -296,7 +296,6 @@ class Environment(Container):
         """
         pass
 
-
     def destroy(self, folder=None, as_coro=False):
         """Close the environment.
 

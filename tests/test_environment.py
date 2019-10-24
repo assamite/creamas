@@ -1,9 +1,9 @@
-'''
+"""
 .. :py:module:: test_simulation
     :platform: Unix
 
 Tests for environment module.
-'''
+"""
 import asyncio
 import unittest
 from random import choice, random
@@ -28,7 +28,7 @@ class TestEnvironment(unittest.TestCase):
         self.loop = asyncio.get_event_loop()
 
     def tearDown(self):
-        self.env.destroy()
+        self.env.close()
 
     def test_environment(self):
         self.assertTrue(issubclass(self.env.__class__, aiomas.Container))
@@ -136,7 +136,7 @@ class TestEnvironment(unittest.TestCase):
             for addr, data in conns:
                 self.assertIn(addr, list(agent.connections.keys()))
                 self.assertEqual(agent.connections[addr], data)
-        env2.destroy()
+        env2.close()
 
         a = agents[0]
         arts = []
@@ -150,6 +150,6 @@ class TestEnvironment(unittest.TestCase):
         for a in arts:
             self.assertIn(a, env_arts)
 
-        # destroy should shutdown aiomas.Container -> no _tcp_server anymore
-        self.env.destroy()
+        # Close should shutdown aiomas.Container -> no _tcp_server anymore
+        self.env.close()
         self.assertIsNone(self.env._tcp_server)

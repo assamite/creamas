@@ -214,7 +214,7 @@ function to your node spawning script and call it last in the script::
 	    except KeyboardInterrupt:
 	        logger.info('Execution interrupted by user.')
 	    finally:
-	        ret = await menv.destroy(log_folder, as_coro=True)
+	        ret = await menv.close(log_folder, as_coro=True)
 	        return ret
 
 When :func:`run_node` is called, the script will block its execution until the

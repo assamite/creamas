@@ -32,6 +32,7 @@ TIMEOUT = 5
 def set_base_timeout(timeout):
     """Set base timeout (in seconds) for the rpc calls originating from the instances in this module.
     """
+    global TIMEOUT
     TIMEOUT = timeout
 
 
@@ -860,7 +861,7 @@ class MultiEnvironment():
             Use :func:`close` instead
         """
         DeprecationWarning("{0}.destroy is deprecated, use {0}.close instead.".format(str(self.__class__.__name__)))
-        self.close(folder=folder, as_coro=as_coro)
+        return self.close(folder=folder, as_coro=as_coro)
 
     def close(self, folder=None, as_coro=False):
         """Close the multiprocessing environment and its slave environments.

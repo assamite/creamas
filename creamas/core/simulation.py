@@ -8,11 +8,10 @@ import time
 import logging
 from random import shuffle
 
-import aiomas
-
 from creamas.core.agent import CreativeAgent
 from creamas.core.environment import Environment
 from creamas.logging import ObjectLogger
+from creamas.util import run
 
 __all__ = ['Simulation']
 
@@ -20,30 +19,25 @@ __all__ = ['Simulation']
 class Simulation():
     """A base class for iterative simulations.
 
-    In each step the simulation calls
-    :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in
-    simulation environment.
+    In each step the simulation calls :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in the simulation.
     """
     @classmethod
-    def create(self, agent_cls=None, n_agents=10, agent_kwargs={},
-               env_cls=Environment, env_kwargs={}, callback=None, conns=0,
-               log_folder=None):
+    def create(cls, agent_cls=None, n_agents=10, agent_kwargs={}, env_cls=Environment, env_kwargs={}, callback=None,
+               conns=0, log_folder=None):
         """A convenience function to create simple simulations.
 
-        Method first creates environment, then instantiates agents into it
-        with give arguments, and finally creates simulation for the
-        environment.
+        Method first creates environment, then instantiates agents into it with give arguments, and finally creates
+        simulation for the environment.
 
         :param agent_cls:
-            class for agents, or list of classes. If list, then **n_agents**
-            and **agent_kwargs** are expected to be lists also.
+            class for agents, or list of classes. If list, then **n_agents** and **agent_kwargs** are expected to be
+            lists also.
 
         :param n_agents:
             amount of agents for simulation, or list of amounts
 
         :param agent_kwargs:
-            keyword arguments passed to agents at creation time, or list of
-            keyword arguments.
+            keyword arguments passed to agents at creation time, or list of keyword arguments.
 
         :param env_cls:
             environment class for simulation
@@ -58,12 +52,11 @@ class Simulation():
             optional callable to call after each simulation step
 
         :param conns:
-            Create **conns** amount of initial (random) connections for agents
-            in the simulation environment.
+            Create **conns** amount of initial (random) connections for agents in the simulation environment.
 
         :param str log_folder:
-            folder for possible logging. This overwrites *log_folder* keyword
-            argument from **agent_kwargs** and **env_kwargs**.
+            folder for possible logging. This overwrites *log_folder* keyword argument from **agent_kwargs** and
+            **env_kwargs**.
         """
         if not issubclass(env_cls, Environment):
             raise TypeError("Environment class must be derived from ({}"
@@ -109,14 +102,14 @@ class Simulation():
             :class:`~creamas.mp.MultiEnvironment` or
             :class:`~creamas.ds.DistributedEnvironment`
         :param callable callback: function to call after each simulation step
-        :parat str log_folder: folder to log simulation information
+        :param str log_folder: folder to log simulation information
         """
         self._env = env
         self._callback = callback
         self._age = 0
         self._order = 'alphabetical'
         self._name = 'sim'
-        self._start_time = time.time()
+        self._start_time = time.monotonic()
         self._step_start_time = None
         self._step_processing_time = 0.0
         self._processing_time = 0.0
@@ -151,23 +144,21 @@ class Simulation():
 
     @property
     def callback(self):
-        """Callable to be called after each simulation step for any extra
-        bookkeeping, etc.. Should accept one parameter: *age* that is current
-        simulation age.
+        """Callable to be called after each simulation step for any extra bookkeeping, etc.. Should accept one
+        parameter: *age* that is current simulation age.
         """
         return self._callback
 
     @property
     def order(self):
-        """Order in which agents are run.
+        """Order in which agents are run. Order is not enforced for asynchronous executions.
 
         Possible values:
 
         * alphabetical: agents are sorted by name
         * random: agents are shuffled
 
-        Changing the order while iteration is unfinished will take place in the
-        next iteration.
+        Changing the order while iteration is unfinished will take place in the next iteration.
         """
         return self._order
 
@@ -189,11 +180,11 @@ class Simulation():
         self._age += 1
         self.env.age = self._age
         self._log(logging.INFO, "")
-        self._log(logging.INFO, "\t***** Step {:0>4} *****". format(self.age))
+        self._log(logging.INFO, "\t***** Step {:0>10} *****". format(self.age))
         self._log(logging.INFO, "")
         self._agents_to_act = self._get_order_agents()
         self._step_processing_time = 0.0
-        self._step_start_time = time.time()
+        self._step_start_time = time.monotonic()
 
     def _finalize_step(self):
         """Finalize simulation step after all agents have acted for the current
@@ -202,7 +193,7 @@ class Simulation():
         t = time.time()
         if self._callback is not None:
             self._callback(self.age)
-        t2 = time.time()
+        t2 = time.monotonic()
         self._step_processing_time += t2 - t
         self._log(logging.INFO, "Step {} run in: {:.3f}s ({:.3f}s of "
                   "actual processing time used)"
@@ -214,8 +205,12 @@ class Simulation():
         """Progress simulation by running all agents *n* times asynchronously.
         """
         assert len(self._agents_to_act) == 0
+        rets = []
         for _ in range(n):
-            self.async_step()
+            ret = self.async_step()
+            rets.append(ret)
+
+        return rets
 
     def async_step(self):
         """Progress simulation by running all agents once asynchronously.
@@ -223,37 +218,41 @@ class Simulation():
         assert len(self._agents_to_act) == 0
         self._init_step()
         t = time.time()
-        aiomas.run(until=self.env.trigger_all())
+        ret = run(until=self.env.trigger_all())
         self._agents_to_act = []
-        self._step_processing_time = time.time() - t
+        self._step_processing_time = time.monotonic() - t
         self._finalize_step()
+        return ret
 
     def steps(self, n):
         """Progress simulation with given amount of steps.
 
-        Can not be called when some of the agents have not acted for the
-        current step.
+        Can not be called when some of the agents have not acted for the current step.
 
         :param int n: amount of steps to run
         """
         assert len(self._agents_to_act) == 0
+        rets = []
         for _ in range(n):
-            self.step()
+            ret = self.step()
+            rets.append(ret)
+
+        return rets
 
     def step(self):
-        """Progress simulation with a single step.
+        """Progress simulation by a single step.
 
-        Can not be called when some of the agents have not acted for the
-        current step.
+        If some of the agents have already acted on this step, finishes the step by calling the rest of the agents.
         """
-        assert len(self._agents_to_act) == 0
-        self.next()
+        rets = []
         while len(self._agents_to_act) > 0:
-            self.next()
+            ret = self.next()
+            rets.append(ret)
+
+        return rets
 
     def next(self):
-        """Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in
-        the current step.
+        """Trigger next agent to :py:meth:`~creamas.core.CreativeAgent.act` in the current step.
         """
         # all agents acted, init next step
         t = time.time()
@@ -261,33 +260,45 @@ class Simulation():
             self._init_step()
 
         addr = self._agents_to_act.pop(0)
-        aiomas.run(until=self.env.trigger_act(addr=addr))
-        t2 = time.time()
+        ret = run(until=self.env.trigger_act(addr=addr))
+        t2 = time.monotonic()
         self._step_processing_time += t2 - t
 
         # all agents acted, finalize current step
         if len(self._agents_to_act) == 0:
             self._finalize_step()
 
+        return ret
+
     def finish_step(self):
         """Progress simulation to the end of the current step.
+
+        .. deprecated:: 0.4.0
+            Use :func:`step` instead.
         """
+        rets = []
         while len(self._agents_to_act) > 0:
-            self.next()
+            ret = self.next()
+            rets.append(ret)
+        return rets
 
     def _log(self, level, msg):
         if self.logger is not None:
             self.logger.log(level, msg)
 
+    def end(self, folder=None):
+        """Close the simulation and the current simulation environment.
 
+        .. deprecated:: 0.4.0
+            Use func:`close` instead.
+        """
+        return self.close(folder=folder)
 
     def close(self, folder=None):
         """Close the simulation and the current simulation environment.
         """
         ret = self.env.close(folder=folder)
         self._end_time = time.time()
-        self._log(logging.DEBUG, "Simulation run with {} steps took {:.3f}s to"
-                  " complete, while actual processing time was {:.3f}s."
-                  .format(self.age, self._end_time - self._start_time,
-                          self._processing_time))
+        self._log(logging.DEBUG, "{} step simulation completed in {:.3f}s (actual processing time {:.3f}s)."
+                  .format(self.age, self._end_time - self._start_time, self._processing_time))
         return ret

@@ -34,7 +34,7 @@ class DenvTestCase(unittest.TestCase):
                                            codec=aiomas.MsgPack)
 
     def tearDown(self):
-        self.denv.destroy(as_coro=False)
+        self.denv.close(as_coro=False)
 
     def test_ssh_conn(self):
         self.loop.run_in_executor(None, run_server, 8024)
