@@ -5,7 +5,9 @@ arrow==0.7.0
 asyncssh==1.18.0
 Babel==2.1.1
 backcall==0.1.0
+certifi==2019.9.11
 cffi==1.13.1
+chardet==3.0.4
 coverage==4.0.2
 coveralls==1.1
 cryptography==2.8
@@ -16,12 +18,16 @@ docutils==0.12
 filelock==3.0.12
 flake8==2.5.0
 gnureadline==6.3.3
+idna==2.8
 importlib-metadata==0.23
 ipython==7.8.0
 ipython-genutils==0.1.0
 jedi==0.15.1
-Jinja2==2.8
+Jinja2==2.10.3
+joblib==0.14.0
+kiwisolver==1.1.0
 MarkupSafe==0.23
+matplotlib==3.1.1
 mccabe==0.3.1
 more-itertools==7.2.0
 msgpack-python==0.4.6
@@ -34,7 +40,7 @@ path.py==8.1.2
 pep8==1.5.7
 pexpect==4.7.0
 pickleshare==0.5
-Pillow==3.0.0
+Pillow==6.2.1
 pkginfo==1.2.1
 pluggy==0.13.0
 prompt-toolkit==2.0.10
@@ -48,8 +54,10 @@ pytest==3.1.2
 pytest-cov==2.2.0
 python-dateutil==2.4.2
 pytz==2015.7
-requests==2.8.1
+requests==2.22.0
 requests-toolbelt==0.4.0
+scikit-learn==0.21.3
+scipy==1.3.1
 simplegeneric==0.8.1
 six==1.10.0
 snowballstemmer==1.2.0
@@ -61,6 +69,7 @@ toml==0.10.0
 tox==3.14.0
 traitlets==4.3.3
 twine==1.6.4
+urllib3==1.25.6
 virtualenv==16.7.7
 wcwidth==0.1.7
 zipp==0.6.0
