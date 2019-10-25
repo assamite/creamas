@@ -12,7 +12,7 @@ import aiomas
 
 
 def expose(*args, **kwargs):
-    """Function which returns :py:func:`aiomas.expose` wrapper.
+    """Function which returns :func:`aiomas.expose` wrapper.
 
     Used by agents to indicate which functions should be callable by other agents.
     """
@@ -59,7 +59,7 @@ def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
 
 
 async def wait_tasks(tasks, flatten=True):
-    """Gather a list of asynchronous tasks and wait their completion.
+    """Gather a list of asynchronous tasks and wait for their completion.
 
     :param list tasks:
         A list of *asyncio* tasks wrapped in :func:`asyncio.ensure_future`.

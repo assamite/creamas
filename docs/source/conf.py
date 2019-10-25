@@ -38,7 +38,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.asyncio',
+    # 'sphinxcontrib.asyncio',
     'sphinx.ext.intersphinx'
 ]
 
@@ -115,7 +115,7 @@ pygments_style = 'sphinx'
 todo_include_todos = False
 
 intersphinx_mapping = {'aiomas': ('http://aiomas.readthedocs.io/en/2.0.1/', None),
-                       'networkx': ('http://networkx.readthedocs.io/en/networkx-2.4/', None),
+                       'networkx': ('https://networkx.github.io/documentation/stable/', None),
                        'python': ('https://docs.python.org/3.7', None),
                        'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None)}
 

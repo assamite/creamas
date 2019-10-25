@@ -1,2 +1,3 @@
 # Dummy file so that Readthedocs does not build gnureadline, etc.
 sphinxcontrib-asyncio==0.2.0
+sphinx_rtd_theme>=0.3.1

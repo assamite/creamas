@@ -73,8 +73,7 @@ The communication between the master and the slave environment happens through
 
 	1. Master environment connects to the slave's manager.
 	2. Master environment calls slave manager's exposed method.
-	3. The slave's manager calls the method with the same name in its environment
-	   with the given arguments.
+	3. The slave's manager calls the method with the same name in its environment with the given arguments.
 	4. The slave environment executes the method and returns possible return value.
 	5. The slave manager passes the return value back to the master environment.
 	6. Master environment closes the connection.
@@ -166,18 +165,11 @@ Using a Distributed Environment
 Initialization of a distributed environment is done roughly in the following
 steps:
 
-	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with a list of node
-	   locations
-	2. Create node spawning terminal commands for each node, i.e. commands
-	   which start :class:`~creamas.mp.MultiEnvironment` on each node.
+	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with a list of node locations
+	2. Create node spawning terminal commands for each node, i.e. commands which start :class:`~creamas.mp.MultiEnvironment` on each node.
 	3. Spawn nodes using :meth:`~creamas.ds.DistributedEnvironment.spawn_nodes`
-	4. Wait until all nodes are **ready**
-	   (see, e.g. :meth:`~creamas.mp.MultiEnvironment.is_ready`) using
-	   :meth:`~creamas.ds.DistributedEnvironment.wait_nodes`. A node is ready
-	   when it has finished its own initialization and is ready to execute
-	   orders.
-	5. Make any additional preparation for the nodes using
-	   :meth:`~creamas.ds.DistributedEnvironment.prepare_nodes`.
+	4. Wait until all nodes are **ready** (see, e.g. :meth:`~creamas.mp.MultiEnvironment.is_ready`) using :meth:`~creamas.ds.DistributedEnvironment.wait_nodes`. A node is ready when it has finished its own initialization and is ready to execute orders.
+    5. Make any additional preparation for the nodes using :meth:`~creamas.ds.DistributedEnvironment.prepare_nodes`.
 
 After this sequence, the :class:`~creamas.ds.DistributedEnvironment` should be
 ready to be used. The main usage for iterative simulations is to call
@@ -208,8 +200,8 @@ after the initialization (as in the naive case this would delete the
 environment). To achieve this, you can for example add a following kind of
 function to your node spawning script and call it last in the script::
 
-	async def run_node(menv, log_folder):
-	    try:
+    async def run_node(menv, log_folder):
+        try:
 	        await menv.manager.stop_received
 	    except KeyboardInterrupt:
 	        logger.info('Execution interrupted by user.')

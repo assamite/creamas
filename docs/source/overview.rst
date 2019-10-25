@@ -18,7 +18,7 @@ and evaluating them. Each agent belongs to :class:`~creamas.Environment`, which
 also serves as a communication route between the agents.
 Environment can also hold other information shared by
 all agents, or, e.g. provide means for the agents to communicate with nearby
-agents in a 2D-grid. Agents are created by giving the environment as an
+agents in a 2D-grid. Agents are created by handling the environment as the first
 initialization parameter.
 
 .. code-block:: python
@@ -49,7 +49,7 @@ Communication Between the Agents
 
 Communication between the agents in one of the key interests in multi-agent systems.
 In Creamas, agents can expose their own functions as services to other agents by using
-:func:`expose` decorator from *aiomas* library. An agent wishing to communicate
+:func:`expose` decorator (originating from *aiomas* library). An agent wishing to communicate
 with another agent connects to the remote agent and calls the exposed function
 remotely. To this end they have to know the other agent's (tcp) address.
 
@@ -59,22 +59,28 @@ remotely. To this end they have to know the other agent's (tcp) address.
 	supposed to store addresses of known other agents in their
 	:attr:`~creamas.core.agent.CreativeAgent.connections`.
 
-Consider a following hypothetical :meth:`service`-method an agent **A** has::
+Consider a following hypothetical :meth:`service`-method an agent **AgentA** has::
 
-	@aiomas.expose
-	def service(self, param):
-		# do something with param
-		# ...
-		return value
+	import creamas
 
-Another agent, agent **B**, knowing that the agent **A**'s address is ``addr``
-can then use **A**'s ``service`` method by connecting to agent **A** through
+	class AgentA(creamas.CreativeAgent):
+
+		@creamas.expose
+		async def service(self, param):
+			# do something with param
+			# ...
+			return value
+
+Now, another agent, **AgentB**, knowing that **AgentA**'s address is ``addr``
+can then use **AgentA**'s ``service`` method by connecting to **AgentA** through
 its environment. ::
 
-	async def client(self, my_param):
-		remote_agent_A = await self.env.connect(addr)
-		value = await remote_agent_A.service(my_param)
-		# do something with the value
+	class AgentB(creamas.CreativeAgent):
+
+		async def client(self, my_param):
+			remote_agent_A = await self.env.connect(addr)
+			value = await remote_agent_A.service(my_param)
+			# do something with the value
 
 Importantly, the agents do not have to reside in the same environment or even in
 the same machine, i.e. you can connect to any agent or environment as long as
@@ -175,7 +181,7 @@ agents can validate each others candidates, i.e. exercise *veto* power on them,
 before voting takes place. See :doc:`vote` for details.
 
 Support for Multiple Cores and Distributed Systems
----------------------------------------------------
+--------------------------------------------------
 
 Creamas has inherent support for using multiple cores on a single machine and
 distributing your environments on multiple nodes, e.g., on a computing cluster.
