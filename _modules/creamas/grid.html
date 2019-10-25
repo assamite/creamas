@@ -1,0 +1,822 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>creamas.grid &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>creamas.grid</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for creamas.grid</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. py:module:: grid</span>
+<span class="sd">    :platform: Unix</span>
+
+<span class="sd">The module holds implementations for 2D-grid environments where the agents</span>
+<span class="sd">know their neighbors in each of the four cardinal directions. Currently</span>
+<span class="sd">implemented are:</span>
+
+<span class="sd">    * :class:`~creamas.grid.GridAgent`: The base grid agent implementation,</span>
+<span class="sd">      should be used inside :class:`~creamas.grid.GridEnvironment`. Agent</span>
+<span class="sd">      places itself in the environment&#39;s</span>
+<span class="sd">      :attr:`~creamas.grid.GridEnvironment.grid` and knows its neighbors</span>
+<span class="sd">      in the cardinal directions: N, E, S, W. Subclass the agent for your</span>
+<span class="sd">      specific needs.</span>
+
+<span class="sd">    * :class:`~creamas.grid.GridEnvironment`: A single process grid</span>
+<span class="sd">      environment.</span>
+
+<span class="sd">    * :class:`~creamas.grid.GridEnvManager`: A manager for a single process</span>
+<span class="sd">      grid environment.</span>
+
+<span class="sd">    * :class:`~creamas.grid.GridMultiEnvironment`: Multi-processing environment</span>
+<span class="sd">      holding several :class:`~creamas.grid.GridEnvironment` slaves with</span>
+<span class="sd">      managers.</span>
+
+<span class="sd">    * :class:`~creamas.grid.GridMultiEnvManager`: A manager for a</span>
+<span class="sd">      multi-processing environment. Used especially if the environment needs to</span>
+<span class="sd">      be able to execute commands from external sources, e.g. when used as a</span>
+<span class="sd">      part of :class:`creamas.ds.DistributedEnvironment`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">creamas</span> <span class="k">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">creamas.mp</span> <span class="k">import</span> <span class="n">MultiEnvironment</span><span class="p">,</span> <span class="n">MultiEnvManager</span><span class="p">,</span> <span class="n">EnvManager</span>
+<span class="kn">from</span> <span class="nn">creamas.util</span> <span class="k">import</span> <span class="n">expose</span>
+
+<span class="c"># Relative xy coordinates for the cardinal directions</span>
+<span class="n">_rel_xy</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;N&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s">&#39;E&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s">&#39;W&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+<span class="n">_polars</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;N&#39;</span><span class="p">:</span> <span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">:</span> <span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">:</span> <span class="s">&#39;E&#39;</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_get_neighbor_xy</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+    <span class="n">rxy</span> <span class="o">=</span> <span class="n">_rel_xy</span><span class="p">[</span><span class="n">card</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">rxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rxy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="GridAgent"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridAgent">[docs]</a><span class="k">class</span> <span class="nc">GridAgent</span><span class="p">(</span><span class="n">CreativeAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An agent living in a 2D-grid with four neighbors in cardinal directions.</span>
+
+<span class="sd">    The agent assumes that its environment is derived from</span>
+<span class="sd">    :class:`~creamas.grid.GridEnvironment`, and places itself into the grid</span>
+<span class="sd">    when it is initialized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_to_grid</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;{}-{}({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;N&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Agent&#39;s place (coordinate) in the grid, (x, y)-tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xy</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Map of neighboring agent addresses in cardinal directions:</span>
+<span class="sd">        N, E, S, W.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span>
+
+<div class="viewcode-block" id="GridAgent.send"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridAgent.send">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send message *msg* to the neighboring agent in the *card*</span>
+<span class="sd">        cardinal direction.</span>
+
+<span class="sd">        :param str card: &#39;N&#39;, &#39;E&#39;, &#39;S&#39;, or &#39;W&#39;.</span>
+<span class="sd">        :param msg: Message to the agent.</span>
+<span class="sd">        :returns: Response from the agent</span>
+
+<span class="sd">        The method calls the neighboring agent&#39;s :meth:`rcv` with the message</span>
+<span class="sd">        and returns any value returned by that agent.</span>
+
+<span class="sd">        This method will fail silently if there is no neighbor agent in the</span>
+<span class="sd">        given cardinal direction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">card</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">addr</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">rcv</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="s">&quot;Could not connect to agent in {}:</span><span class="se">\n</span><span class="s">{}&quot;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="k">None</span></div>
+
+<div class="viewcode-block" id="GridAgent.rcv"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridAgent.rcv">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">rcv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive and handle message coming from another agent.</span>
+
+<span class="sd">        This method is called from :meth:`send`.</span>
+
+<span class="sd">        The base implementation does nothing, override in a subclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GridAgent.act"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridAgent.act">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;See :py:class:`creamas.core.agent.CreativeAgent.act`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="GridEnvironment"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment">[docs]</a><span class="k">class</span> <span class="nc">GridEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Environment where agents reside in a 2D-grid.</span>
+
+<span class="sd">    Each agent is connected to neighbors in cardinal directions: N, E, S, W.</span>
+<span class="sd">    Grid environments can be horizontally stacked with</span>
+<span class="sd">    :py:class:`GridMultiEnvironment`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">connect_kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">clock</span><span class="p">,</span> <span class="n">connect_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;N&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Size of the grid as a 2-tuple. Changing the size of the grid after</span>
+<span class="sd">        spawning any agents in the environment will clear the grid, but does</span>
+<span class="sd">        not remove the agents from the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span>
+
+    <span class="nd">@gs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">gs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="o">=</span> <span class="p">[[</span><span class="k">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+                      <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upper left corner of the grid, [0,0] by default.</span>
+
+<span class="sd">        You should define the origin before spawning any agents into the</span>
+<span class="sd">        environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span>
+
+    <span class="nd">@origin</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span> <span class="o">=</span> <span class="n">origin</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The agents in the grid. 2D-list with the same size as **gs**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Map of neighboring grid environments in cardinal directions.</span>
+
+<span class="sd">        Acceptable keys: N, E, S, W.</span>
+
+<span class="sd">        The values are **the addresses of the managers** in the neighboring</span>
+<span class="sd">        grid environments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span>
+
+<div class="viewcode-block" id="GridEnvironment.is_ready"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment.is_ready">[docs]</a>    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Grid environment is ready when its grid is full.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            :meth:`GridEnvironment.is_full`, :meth:`Environment.is_ready`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_full</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GridEnvironment.is_full"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment.is_full">[docs]</a>    <span class="k">def</span> <span class="nf">is_full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;:class:`GridEnvironment` is full when its **grid** is fully</span>
+<span class="sd">        populated with agents.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            True if the grid is full, False otherwise. Will also return False</span>
+<span class="sd">            for uninitialized grids with (0,0) grid size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">False</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">False</span>
+        <span class="k">return</span> <span class="k">True</span></div>
+
+<div class="viewcode-block" id="GridEnvironment.add_to_grid"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment.add_to_grid">[docs]</a>    <span class="k">def</span> <span class="nf">add_to_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add agent to the next available spot in the grid.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            (x,y) of the agent in the grid. This is the agent&#39;s overall</span>
+<span class="sd">            coordinate in the grand grid (i.e. the actual coordinate of the</span>
+<span class="sd">            agent w.t.r **origin**).</span>
+
+<span class="sd">        :raises: `ValueError` if the grid is full.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Trying to add an agent to a full grid.&quot;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span></div>
+
+<div class="viewcode-block" id="GridEnvironment.get_xy"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment.get_xy">[docs]</a>    <span class="k">def</span> <span class="nf">get_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the agent with xy-coordinate in the grid. If *addr* is True,</span>
+<span class="sd">        returns only the agent&#39;s address.</span>
+
+<span class="sd">        If no such agent in the grid, returns None.</span>
+
+<span class="sd">        :raises:</span>
+<span class="sd">            :exc:`ValueError` if xy-coordinate is outside the environment&#39;s</span>
+<span class="sd">            grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;x-coordinate inappropriate ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;y-coordinate inappropriate ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">addr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">addr</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span></div>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">_get_xy_address_from_neighbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">card</span><span class="p">]</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">card</span><span class="p">])</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_xy_address</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">addr</span>
+
+<div class="viewcode-block" id="GridEnvironment.set_agent_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvironment.set_agent_neighbors">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_agent_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbors for each agent in each cardinal direction.</span>
+
+<span class="sd">        This method assumes that the neighboring :class:`GridEnvironment` of</span>
+<span class="sd">        this grid environment have already been set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
+                <span class="n">nxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="n">exy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="n">sxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="n">wxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">naddr</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xy_address_from_neighbor</span><span class="p">(</span><span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="n">nxy</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">naddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">nxy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">waddr</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xy_address_from_neighbor</span><span class="p">(</span><span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="n">wxy</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">waddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">wxy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">saddr</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xy_address_from_neighbor</span><span class="p">(</span><span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="n">sxy</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">saddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">sxy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">eaddr</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_xy_address_from_neighbor</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="n">exy</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">eaddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">exy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;N&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">naddr</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eaddr</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;S&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saddr</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;W&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">waddr</span></div></div>
+
+
+<div class="viewcode-block" id="GridEnvManager"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager">[docs]</a><span class="k">class</span> <span class="nc">GridEnvManager</span><span class="p">(</span><span class="n">EnvManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manager for :py:class:`GridEnvironment`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GridEnvManager.spawn_n"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.spawn_n">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">spawn_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Spawn *n* agents to the managed environment. This is a convenience</span>
+<span class="sd">        function so that one does not have to repeatedly make connections to</span>
+<span class="sd">        the environment to spawn multiple agents with the same parameters.</span>
+
+<span class="sd">        See :py:meth:`~creamas.mp.EnvManager.spawn` for details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div>
+
+<div class="viewcode-block" id="GridEnvManager.get_xy_address"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.get_xy_address">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_xy_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get address of the agent in *xy* coordinate, or None if no such</span>
+<span class="sd">        agent exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_xy</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridEnvManager.set_origin"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.set_origin">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">set_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set originating coordinates for the managed environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span></div>
+
+    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">origin</span>
+
+<div class="viewcode-block" id="GridEnvManager.set_gs"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.set_gs">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">set_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set grid size for the managed environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">gs</span> <span class="o">=</span> <span class="n">gs</span></div>
+
+    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">gs</span>
+
+<div class="viewcode-block" id="GridEnvManager.set_grid_neighbor"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.set_grid_neighbor">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_grid_neighbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the neighbor grid for the grid in *card* cardinal direction.</span>
+<span class="sd">        The *addr* should point to thanager* of the neighboring grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">card</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span></div>
+
+<div class="viewcode-block" id="GridEnvManager.set_agent_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridEnvManager.set_agent_neighbors">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_agent_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighboring agents for all the agents in the grid.</span>
+
+<span class="sd">        If the  managed grid contains neighboring grids, uses those to</span>
+<span class="sd">        correctly set also neighboring agents for agents on the edge of the</span>
+<span class="sd">        grid.</span>
+
+<span class="sd">        This function assumes that:</span>
+
+<span class="sd">            * Grid is full, i.e. it has maximum number of agents.</span>
+<span class="sd">            * All the (possible) neighboring grids have been initialized and</span>
+<span class="sd">              have the maximum number of agents. That is, if managed grid&#39;s</span>
+<span class="sd">              neighbor map still points to ``None``, this grid is assumed to be</span>
+<span class="sd">              in the edge of the super-grid containing multiple</span>
+<span class="sd">              :py:class:`GridEnvironment` instances.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">set_agent_neighbors</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="GridMultiEnvironment"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment">[docs]</a><span class="k">class</span> <span class="nc">GridMultiEnvironment</span><span class="p">(</span><span class="n">MultiEnvironment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multi-environment which stacks its slave :py:class:`GridEnvironment`</span>
+<span class="sd">    instances horizontally.</span>
+
+<span class="sd">    Call :meth:`creamas.grid.GridMultiEnvironment.set_slave_params` immediately</span>
+<span class="sd">    after initializing :class:`GridMultiEnvironment`!</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        The manager agents for the slave environments will not be part of</span>
+<span class="sd">        :attr:`~creamas.grid.GridEnvironment.grid` in the slave environments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;grid_size&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;origin&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;N&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;S&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">:</span> <span class="k">None</span><span class="p">}</span>
+
+<div class="viewcode-block" id="GridMultiEnvironment.spawn_slaves"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.spawn_slaves">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">spawn_slaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">spawn_slaves</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_slaves</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;slave_addrs&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_coord</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_slaves</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvironment.set_slave_params"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.set_slave_params">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_slave_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set origin and grid size for each slave environment.</span>
+
+<span class="sd">        This method needs to be called before slave environments are populated</span>
+<span class="sd">        and agents&#39; and slave environments&#39; neighbors are set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_slave_origins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cur_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">new_origin</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_origin</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">new_origin</span><span class="p">)</span>
+            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_gs</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_slave_origins</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">new_origin</span><span class="p">,</span> <span class="n">addr</span><span class="p">))</span>
+            <span class="n">new_x</span> <span class="o">=</span> <span class="n">cur_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">cur_x</span> <span class="o">=</span> <span class="n">new_x</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Origin of this multi-environment (the *xy* coordinate of the first</span>
+<span class="sd">        agent in the first slave environment).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Grid size for each slave environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">gs</span><span class="p">):</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">set_gs</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">get_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">get_gs</span><span class="p">()</span>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">set_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">get_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">get_origin</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Map of neighboring multi-environments for this multi-environment.</span>
+<span class="sd">        The map&#39;s values are *manager addresses* for the neighbors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span>
+
+<div class="viewcode-block" id="GridMultiEnvironment.get_xy_environment"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.get_xy_environment">[docs]</a>    <span class="k">def</span> <span class="nf">get_xy_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get manager address for the environment which should have the agent</span>
+<span class="sd">        with given *xy* coordinate, or None if no such environment is in this</span>
+<span class="sd">        multi-environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">origin</span><span class="p">,</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slave_origins</span><span class="p">:</span>
+            <span class="n">ox</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">oy</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ox</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">ox</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">oy</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">oy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">addr</span>
+        <span class="k">return</span> <span class="k">None</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvironment.get_xy_address"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.get_xy_address">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">get_xy_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get address of the agent residing in *xy* coordinate, or ``None``</span>
+<span class="sd">        if no such agent is in this multi-environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">manager_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">manager_addr</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">manager_addr</span><span class="p">)</span>
+            <span class="n">xy_addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">get_xy_address</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">xy_addr</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvironment.set_slave_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.set_slave_neighbors">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_slave_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbor environments for all the slave environments. Assumes</span>
+<span class="sd">        that :attr:`neighbors` are set for this multi-environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_slave_origins</span><span class="p">):</span>
+            <span class="n">o</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">elem</span>
+            <span class="n">r_slave</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="n">nxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+            <span class="n">exy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">sxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">o</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">wxy</span> <span class="o">=</span> <span class="n">_get_neighbor_xy</span><span class="p">(</span><span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;W&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
+                <span class="n">m_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;W&#39;</span><span class="p">]</span>
+                <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">m_addr</span><span class="p">)</span>
+                <span class="n">n_addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">wxy</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="n">n_addr</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_slaves</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
+                <span class="n">m_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
+                <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">m_addr</span><span class="p">)</span>
+                <span class="n">n_addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">exy</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="n">n_addr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">w_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">wxy</span><span class="p">)</span>
+                <span class="n">e_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">exy</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="n">w_addr</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="n">e_addr</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;N&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
+                <span class="n">m_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;N&#39;</span><span class="p">]</span>
+                <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">m_addr</span><span class="p">)</span>
+                <span class="n">n_addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">nxy</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="n">n_addr</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;S&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
+                <span class="n">m_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="s">&#39;S&#39;</span><span class="p">]</span>
+                <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">m_addr</span><span class="p">)</span>
+                <span class="n">n_addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">sxy</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">r_slave</span><span class="o">.</span><span class="n">set_grid_neighbor</span><span class="p">(</span><span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="n">n_addr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvironment.set_agent_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.set_agent_neighbors">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_agent_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbors for all the agents in all the slave environments.</span>
+<span class="sd">        Assumes that all the slave environments have their neighbors set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">set_agent_neighbors</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvironment.set_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.set_neighbors">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbors for all slave environments and agents in them.</span>
+
+<span class="sd">        This is a convenience function for calling</span>
+<span class="sd">        :meth:`~creamas.grid.GridMultiEnvironment.set_slave_neighbors` and</span>
+<span class="sd">        :meth:`~creamas.grid.GridMultiEnvironment.set_agent_neighbors`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_slave_neighbors</span><span class="p">()</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_agent_neighbors</span><span class="p">()</span></div>
+
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">_populate_slave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">spawn_n</span><span class="p">(</span><span class="n">agent_cls</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<div class="viewcode-block" id="GridMultiEnvironment.populate"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvironment.populate">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">populate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Populate all the slave grid environments with agents. Assumes that</span>
+<span class="sd">        no agents have been spawned yet to the slave environment grids. This</span>
+<span class="sd">        excludes the slave environment managers as they are not in the grids.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_populate_slave</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">agent_cls</span><span class="p">,</span>
+                                                              <span class="n">n</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                                                              <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="n">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div></div>
+
+
+<div class="viewcode-block" id="GridMultiEnvManager"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager">[docs]</a><span class="k">class</span> <span class="nc">GridMultiEnvManager</span><span class="p">(</span><span class="n">MultiEnvManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manager agent for :py:class:`GridMultiEnvironment`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GridMultiEnvManager.set_origin"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_origin">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mgr_addr</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set originating coordinates for :py:class:`GridEnvironment` which</span>
+<span class="sd">        manager is in given address.</span>
+
+<span class="sd">        :param str mgr_addr: Address of the manager agent</span>
+
+<span class="sd">        :param origin:</span>
+<span class="sd">            New origin of the grid environment, iterable with length 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">mgr_addr</span><span class="p">)</span>
+        <span class="n">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">set_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.set_gs"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_gs">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_gs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mgr_addr</span><span class="p">,</span> <span class="n">gs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set grid size for :py:class:`GridEnvironment` which manager is in</span>
+<span class="sd">        given address.</span>
+
+<span class="sd">        :param str mgr_addr: Address of the manager agent</span>
+
+<span class="sd">        :param gs:</span>
+<span class="sd">            New grid size of the grid environment, iterable with length 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">remote_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">mgr_addr</span><span class="p">)</span>
+        <span class="n">await</span> <span class="n">remote_manager</span><span class="o">.</span><span class="n">set_gs</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.set_grid_neighbor"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_grid_neighbor">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">set_grid_neighbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the neighbor multi-grid for this multi-grid in *card* cardinal</span>
+<span class="sd">        direction. The *addr* should point to the *manager* of the neighboring</span>
+<span class="sd">        multi-grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">neighbors</span><span class="p">[</span><span class="n">card</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.get_xy_address"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.get_xy_address">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">get_xy_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get address of the agent in the environment with given coordinates.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`~creamas.grid.MultiEnvironment.get_xy_address`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">get_xy_address</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.get_xy_environment"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.get_xy_environment">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_xy_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get environment (address of the manager of that environment) which</span>
+<span class="sd">        has agent with given coordinates.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`~creamas.grid.MultiEnvironment.get_xy_environment`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">get_xy_environment</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.set_slave_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_slave_neighbors">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_slave_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbor environments for all the slave environments.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`creamas.grid.GridMultiEnvironment.set_slave_neighbors`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">set_slave_neighbors</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.set_agent_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_agent_neighbors">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_agent_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbor agents for all the agents in the slave environments.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`creamas.grid.GridMultiEnvironment.set_agent_neighbors`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">set_agent_neighbors</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GridMultiEnvManager.set_neighbors"><a class="viewcode-back" href="../../grid.html#creamas.grid.GridMultiEnvManager.set_neighbors">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">set_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set neighbors for all the agents in all the slave environments.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`creamas.grid.GridMultiEnvironment.set_neighbors`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">menv</span><span class="o">.</span><span class="n">set_neighbors</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

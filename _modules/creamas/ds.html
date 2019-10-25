@@ -8,47 +8,44 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.ds &mdash; Creamas 0.2.0 documentation</title>
+  <title>creamas.ds &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -83,7 +80,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
@@ -101,41 +101,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>creamas.ds</li>
+        
+      <li>creamas.ds</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.ds</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. py:module:: ds</span>
 <span class="sd">    :platform: Unix</span>
 
@@ -146,68 +164,96 @@
 <span class="sd">.. note::</span>
 
 <span class="sd">    The module needs `asyncssh &lt;http://asyncssh.readthedocs.io/en/latest/&gt;`_</span>
-<span class="sd">    (&gt;=1.6.2, developed with 1.6.2) to function. **Asyncssh** is not installed</span>
-<span class="sd">    by default as a dependency.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    to function. **Asyncssh** is not installed as a dependency by default.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
 
-<span class="kn">import</span> <span class="nn">aiomas</span>
 <span class="kn">import</span> <span class="nn">asyncssh</span>
-<span class="kn">from</span> <span class="nn">creamas</span> <span class="k">import</span> <span class="n">Environment</span>
+
+<span class="kn">from</span> <span class="nn">creamas.mp</span> <span class="k">import</span> <span class="n">MultiEnvironment</span>
+<span class="kn">from</span> <span class="nn">creamas.util</span> <span class="k">import</span> <span class="n">create_tasks</span><span class="p">,</span> <span class="n">run_or_coro</span>
 
 
-<div class="viewcode-block" id="ssh_exec"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Execute a command on a given server using asynchronous SSH-connection.</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
-<span class="sd">    The method does not propagate exceptions raised during the SSH-connection,</span>
-<span class="sd">    instead, the exceptions are caught and returned. The method will exit after</span>
-<span class="sd">    the first exception is raised.</span>
+
+<div class="viewcode-block" id="ssh_exec"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Execute a command on a given server using asynchronous SSH-connection.</span>
+
+<span class="sd">    The connection to the server is wrapped in :func:`asyncio.wait_for` and</span>
+<span class="sd">    given :attr:`timeout` is applied to it. If the server is not reachable</span>
+<span class="sd">    before timeout expires, :exc:`asyncio.TimeoutError` is raised.</span>
 
 <span class="sd">    :param str server: Address of the server</span>
 <span class="sd">    :param str cmd: Command to be executed</span>
+<span class="sd">    :param int timeout: Timeout to connect to server.</span>
 
 <span class="sd">    :param ssh_kwargs:</span>
 <span class="sd">        Any additional SSH-connection arguments, as specified by</span>
-<span class="sd">        :meth:`asyncssh.connect`. See `asyncssh documentation</span>
+<span class="sd">        :func:`asyncssh.connect`. See `asyncssh documentation</span>
 <span class="sd">        &lt;http://asyncssh.readthedocs.io/en/latest/api.html#connect&gt;`_ for</span>
 <span class="sd">        details.</span>
 
 <span class="sd">    :returns:</span>
-<span class="sd">        (closed SSH-connection, exception)-tuple, if no exceptions are caught,</span>
-<span class="sd">        the second value is *None*.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Setting known_hosts to None is an evil to do, but in this exercise we</span>
-        <span class="c1"># do not care about it.</span>
-        <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ssh_exec_in_new_loop"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec_in_new_loop">[docs]</a><span class="k">def</span> <span class="nf">ssh_exec_in_new_loop</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Same as :func:`ssh_exec` but creates a new event loop and executes</span>
-<span class="sd">    :func:`ssh_exec` in that event loop.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">task</span> <span class="o">=</span> <span class="n">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span>
-    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<span class="sd">        closed SSH-connection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">asyncssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">),</span>
+                                  <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ret</span></div>
 
 
-<div class="viewcode-block" id="DistributedEnvironment"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment">[docs]</a><span class="k">class</span> <span class="nc">DistributedEnvironment</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;Distributed environment which manages several nodes containing</span>
-<span class="sd">    multi-environments.</span>
+<div class="viewcode-block" id="ssh_exec_in_new_loop"><a class="viewcode-back" href="../../ds.html#creamas.ds.ssh_exec_in_new_loop">[docs]</a><span class="k">def</span> <span class="nf">ssh_exec_in_new_loop</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Same as :func:`ssh_exec` but creates a new event loop and executes</span>
+<span class="sd">    :func:`ssh_exec` in that event loop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">ssh_exec</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span>
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div>
 
-<span class="sd">    This environment is used to spawn the multi-environments on the different</span>
+
+<div class="viewcode-block" id="run_node"><a class="viewcode-back" href="../../ds.html#creamas.ds.run_node">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">run_node</span><span class="p">(</span><span class="n">menv</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run :class:`~creamas.mp.MultiEnvironment` until its manager&#39;s</span>
+<span class="sd">    :meth:`~aiomas.subproc.Manager.stop` is called.</span>
+
+<span class="sd">    :param menv: :class:`~creamas.mp.MultiEnvironment` to wait for.</span>
+<span class="sd">    :param str log_folder:</span>
+<span class="sd">        Logging folder to be passed down to</span>
+<span class="sd">        :meth:`~creamas.mp.MultiEnvironment.destroy` after :meth:`stop` is</span>
+<span class="sd">        called.</span>
+
+<span class="sd">    This method will block the current thread until the manager&#39;s</span>
+<span class="sd">    :meth:`~creamas.mp.MultiEnvManager.stop` is called. After the stop-message</span>
+<span class="sd">    is received, multi-environment is destroyed.</span>
+
+<span class="sd">    The method is intended to be</span>
+<span class="sd">    used in :class:`~creamas.ds.DistributedEnvironment` scripts which spawn</span>
+<span class="sd">    multi-environments on different nodes. That is, using this function in the</span>
+<span class="sd">    script will block the script&#39;s further execution until the simulation has</span>
+<span class="sd">    run its course and the nodes need to be closed.</span>
+<span class="sd">    Calling :meth:`~creamas.ds.DistributedEnvironment.close` will</span>
+<span class="sd">    automatically call each node manager&#39;s :meth:`stop` and therefore release</span>
+<span class="sd">    the script.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">await</span> <span class="n">menv</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">stop_received</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">menv</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">log_folder</span><span class="p">,</span> <span class="n">as_coro</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="DistributedEnvironment"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment">[docs]</a><span class="k">class</span> <span class="nc">DistributedEnvironment</span><span class="p">(</span><span class="n">MultiEnvironment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Distributed environment which manages several nodes containing</span>
+<span class="sd">    multi-environments, a subclass of :class:`~creamas.mp.MultiEnvironment`.</span>
+
+<span class="sd">    This environment spawns its slave multi-environments on the different</span>
 <span class="sd">    servers (nodes) using SSH-connections. The spawning process assumes that</span>
 <span class="sd">    the user can make a SSH-connection without login credentials to each</span>
 <span class="sd">    node. The environment can then be used to wait until all the nodes are</span>
@@ -217,24 +263,23 @@
 
 <span class="sd">    After all the nodes are ready and prepared, the environment can be used</span>
 <span class="sd">    to run an iterative (asynchronous) simulation using</span>
-<span class="sd">    :py:meth:`DistributedEnvironment.trigger_all` which calls</span>
-<span class="sd">    :py:meth:`~creamas.mp.MultiEnvManager.trigger_all` for each node&#39;s manager.</span>
+<span class="sd">    :meth:`DistributedEnvironment.trigger_all` which calls</span>
+<span class="sd">    :meth:`~creamas.mp.MultiEnvManager.trigger_all` for each node&#39;s manager.</span>
 
 <span class="sd">    .. warning::</span>
 <span class="sd">        To free the resources on each node, it is crucial to call</span>
-<span class="sd">        :py:meth:`DistributedEnvironment.destroy` after the simulation has been</span>
-<span class="sd">        done. Otherwise, some rogue processes are likely to be left unattended</span>
-<span class="sd">        on the external nodes.</span>
+<span class="sd">        :meth:`creamas.ds.DistributedEnvironment.close` after the simulation</span>
+<span class="sd">        is finished. Otherwise, some rogue processes are likely to be left</span>
+<span class="sd">        unattended on the external nodes.</span>
 
 <span class="sd">    The intended order of usage is as follows::</span>
 
 <span class="sd">        ds = DistributedEnvironment(*args, **kwargs)</span>
-<span class="sd">        # &#39;pool&#39; holds the process pool for SSH-connections to nodes,</span>
-<span class="sd">        # &#39;r&#39; contains the (future) return values of the connections.</span>
-<span class="sd">        pool, r = ds.spawn_nodes(spawn_cmd)</span>
+<span class="sd">        run(ds.spawn_nodes(spawn_cmd))</span>
 <span class="sd">        timeout = 30</span>
 <span class="sd">        loop = asyncio.get_event_loop()</span>
-<span class="sd">        nodes_ready = loop.run_until_complete(ds.wait_nodes(timeout))</span>
+<span class="sd">        task = ds.wait_nodes(timeout, check_ready=True)</span>
+<span class="sd">        nodes_ready = loop.run_until_complete(task)</span>
 <span class="sd">        if nodes_ready:</span>
 <span class="sd">            # All nodes are ready so we can do additional preparation</span>
 <span class="sd">            loop.run_until_complete(ds.prepare_nodes())</span>
@@ -243,127 +288,88 @@
 <span class="sd">                loop.run_until_complete(ds.trigger_all())</span>
 
 <span class="sd">        # Destroy the simulation afterwards to free the resources on each node.</span>
-<span class="sd">        ds.destroy()</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        :param host:</span>
-<span class="sd">            Host of the *env* property (this node). The host should not be</span>
-<span class="sd">            present in *nodes*.</span>
+<span class="sd">        ds.close()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">env_cls</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">mgr_cls</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="k">None</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="o">**</span><span class="n">env_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param addr:</span>
+<span class="sd">            ``(HOST, PORT)`` address for the *env* property (this node). The</span>
+<span class="sd">            ``host`` should not be present in *nodes*.</span>
 
-<span class="sd">        :param port:</span>
-<span class="sd">            Port for the managing environments on each node (incl. this node),</span>
-<span class="sd">            e.g. 5555. This port is not checked for availability before the</span>
-<span class="sd">            node environments are spawned.</span>
+<span class="sd">        :param env_cls:</span>
+<span class="sd">            Class for the master environment, used to make connections to the</span>
+<span class="sd">            slave environments. Must be a subclass of</span>
+<span class="sd">            :py:class:`~creamas.core.environment.Environment`.</span>
+
+<span class="sd">        :param mgr_cls:</span>
+<span class="sd">            Class for the master environment&#39;s manager.</span>
+
+<span class="sd">        :param str name: Name of the environment. Will be shown in logs.</span>
 
 <span class="sd">        :param nodes:</span>
-<span class="sd">            List of nodes (servers) which are used to host the</span>
-<span class="sd">            multi-environments. Each node should allow SSH-connections without</span>
-<span class="sd">            login credentials.</span>
+<span class="sd">            List of (server, port)-tuples which are used to make host the slave</span>
+<span class="sd">            multi-environments. The port is the port for the SSH connection,</span>
+<span class="sd">            default SSH-port is 22. See also</span>
+<span class="sd">            :meth:`~creamas.ds.DistributedEnvironment.spawn_slaves`.</span>
 
 <span class="sd">        :param logger:</span>
 <span class="sd">            Optional logger for this simulation.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">env_cls</span><span class="p">,</span> <span class="n">mgr_cls</span><span class="o">=</span><span class="n">mgr_cls</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                         <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="n">nodes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">Environment</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="n">codec</span><span class="o">=</span><span class="n">aiomas</span><span class="o">.</span><span class="n">MsgPack</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_manager_addrs</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">addr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">addr</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Environment nodes (excluding the current host).</span>
+        <span class="sd">&quot;&quot;&quot;Environment nodes (excluding the current host).</span>
 
 <span class="sd">        Altering the nodes after the initialization most probably causes</span>
 <span class="sd">        unexpected behavior.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Environment used to communicate with node managers.</span>
+    <span class="k">def</span> <span class="nf">addrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Addresses of the node managers.</span>
 
-<span class="sd">        The environment does not hold any agents by default, but it is easy to</span>
-<span class="sd">        create a manager for it on your own, if the node managers need to</span>
-<span class="sd">        be able to communicate back to this environment.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">manager_addrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Addresses of node managers.</span>
-
-<span class="sd">        These addresses are derived from *nodes* and *port* parameters</span>
-<span class="sd">        given at the initialization time, and are used to communicate tasks</span>
+<span class="sd">        These addresses are derived from *nodes* and *ports* parameters</span>
+<span class="sd">        given in :meth:`spawn_slaves`, and are used to communicate tasks</span>
 <span class="sd">        (trigger agents) to the nodes. Each manager is assumed to be the</span>
 <span class="sd">        first agent in its own managed environment.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span>
 
-<div class="viewcode-block" id="DistributedEnvironment.wait_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.wait_nodes">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Wait until all nodes are ready or timeout expires. Should be called</span>
-<span class="sd">        after :meth:`spawn_nodes`.</span>
+<div class="viewcode-block" id="DistributedEnvironment.wait_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.wait_nodes">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">wait_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">check_ready</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Wait until all nodes are online (their managers accept connections)</span>
+<span class="sd">        or timeout expires. Should be called after :meth:`spawn_nodes`.</span>
 
-<span class="sd">        Node is assumed ready when its managers :py:meth:`is_ready`-method</span>
-<span class="sd">        returns True.</span>
+<span class="sd">        This is an alias for :meth:`~creamas.mp.MultiEnvironment.wait_slaves`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_slaves</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">check_ready</span><span class="o">=</span><span class="n">check_ready</span><span class="p">)</span></div>
 
-<span class="sd">        :param int timeout:</span>
-<span class="sd">            Timeout (in seconds) after which the method will return even though</span>
-<span class="sd">            all the nodes are not ready yet.</span>
+<div class="viewcode-block" id="DistributedEnvironment.spawn_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.spawn_nodes">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spawn_cmd</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An alias for :meth:`creamas.ds.DistributedEnvironment.spawn_slaves`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">spawn_slaves</span><span class="p">(</span><span class="n">spawn_cmd</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">)</span></div>
 
-<span class="sd">        .. seealso::</span>
+<div class="viewcode-block" id="DistributedEnvironment.spawn_slaves"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.spawn_slaves">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">spawn_slaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spawn_cmd</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Spawn multi-environments on the nodes through SSH-connections.</span>
 
-<span class="sd">            :meth:`creamas.core.environment.Environment.is_ready`,</span>
-<span class="sd">            :meth:`creamas.mp.MultiEnvironment.is_ready`,</span>
-<span class="sd">            :meth:`creamas.mp.EnvManager.is_ready`,</span>
-<span class="sd">            :meth:`creamas.mp.MultiEnvManager.is_ready`</span>
-
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting for nodes to become ready...&quot;</span><span class="p">)</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">online</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">online</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manager_addrs</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager_addrs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeout while waiting for the nodes to &quot;</span>
-                                     <span class="s2">&quot;become online.&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="kc">False</span>
-                <span class="k">if</span> <span class="n">addr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">online</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                        <span class="n">ready</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">is_ready</span><span class="p">()</span>
-                        <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
-                            <span class="n">online</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Node </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2"> ready: </span><span class="si">{}</span><span class="s2">&quot;</span>
-                                             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">online</span><span class="p">),</span>
-                                                     <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manager_addrs</span><span class="p">),</span>
-                                                     <span class="n">addr</span><span class="p">))</span>
-                    <span class="k">except</span><span class="p">:</span>
-                        <span class="k">pass</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All nodes ready in </span><span class="si">{}</span><span class="s2"> seconds!&quot;</span>
-                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-    <span class="k">def</span> <span class="nf">_make_manager_addrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">manager_addrs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
-            <span class="n">addr</span> <span class="o">=</span> <span class="s2">&quot;tcp://</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">/0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-            <span class="n">manager_addrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">manager_addrs</span>
-
-<div class="viewcode-block" id="DistributedEnvironment.spawn_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spawn_cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">ssh_kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Spawn all multi-environments on the nodes using SSH.</span>
-
-<span class="sd">        :param int spawn_cmd:</span>
+<span class="sd">        :param spawn_cmd:</span>
 <span class="sd">            str or list, command(s) used to spawn the environment on each node.</span>
-<span class="sd">            If list, it must contain one command for each node in</span>
-<span class="sd">            *nodes*, if str the same command is used for each node.</span>
+<span class="sd">            If *list*, it must contain one command for each node in</span>
+<span class="sd">            :attr:`nodes`. If *str*, the same command is used for each node.</span>
+
+<span class="sd">        :param ports:</span>
+<span class="sd">            Optional. If not ``None``, must be a mapping from nodes</span>
+<span class="sd">            (``(server, port)``-tuples) to ports which are used for the spawned</span>
+<span class="sd">            multi-environments&#39; master manager environments. If ``None``, then</span>
+<span class="sd">            the same port is used to derive the master manager addresses as was</span>
+<span class="sd">            used to initialize this distributed environment&#39;s managing</span>
+<span class="sd">            environment (port in :attr:`addr`).</span>
 
 <span class="sd">        :param ssh_kwargs:</span>
 <span class="sd">            Any additional SSH-connection arguments, as specified by</span>
@@ -371,93 +377,66 @@
 <span class="sd">            &lt;http://asyncssh.readthedocs.io/en/latest/api.html#connect&gt;`_ for</span>
 <span class="sd">            details.</span>
 
-<span class="sd">        .. warning::</span>
-<span class="sd">            The spawning process of the nodes assumes that the manager agent of</span>
-<span class="sd">            each multi-environment (on each node) is initialized in the port</span>
-<span class="sd">            given by the parameter *port* at the distributed environment&#39;s</span>
-<span class="sd">            initialization time.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        Nodes are spawned by creating a multiprocessing pool where each node</span>
+<span class="sd">        has its own subprocess. These subprocesses then use SSH-connections</span>
+<span class="sd">        to spawn the multi-environments on the nodes. The SSH-connections in</span>
+<span class="sd">        the pool are kept alive until the nodes are stopped, i.e. this</span>
+<span class="sd">        distributed environment is destroyed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pool</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">))</span>
         <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">server</span><span class="p">,</span> <span class="n">server_port</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">ports</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">if</span> <span class="n">ports</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">mgr_addr</span> <span class="o">=</span> <span class="s">&quot;tcp://{}:{}/0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_manager_addrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mgr_addr</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">spawn_cmd</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">spawn_cmd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">spawn_cmd</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="n">cmd</span><span class="p">]</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">ssh_exec_in_new_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-                                   <span class="n">kwds</span><span class="o">=</span><span class="n">ssh_kwargs</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">server</span><span class="p">,</span> <span class="n">cmd</span><span class="p">]</span>
+            <span class="n">ssh_kwargs_cp</span> <span class="o">=</span> <span class="n">ssh_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">ssh_kwargs_cp</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">server_port</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">ssh_exec_in_new_loop</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                                   <span class="n">kwds</span><span class="o">=</span><span class="n">ssh_kwargs_cp</span><span class="p">,</span>
+                                   <span class="n">error_callback</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">)</span>
             <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">pool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">=</span> <span class="n">rets</span>
-        <span class="k">return</span> <span class="n">pool</span><span class="p">,</span> <span class="n">rets</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_r</span> <span class="o">=</span> <span class="n">rets</span></div>
 
-<div class="viewcode-block" id="DistributedEnvironment.prepare_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.prepare_nodes">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">prepare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Prepare nodes (and slave environments and agents) so that they are</span>
-<span class="sd">        ready for the simulation. Should be called after :meth:`wait_nodes`.</span>
+<div class="viewcode-block" id="DistributedEnvironment.prepare_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.prepare_nodes">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">prepare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare nodes (and slave environments and agents) so that they are</span>
+<span class="sd">        ready. Should be called after :meth:`wait_nodes`.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            Override in the subclass for the intended functionality.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_trigger_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Trigger all agents in a node managed by the agent in</span>
-<span class="sd">        *addr* to act.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">trigger_all</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">ret</span>
+<div class="viewcode-block" id="DistributedEnvironment.get_slave_managers"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.get_slave_managers">[docs]</a>    <span class="k">def</span> <span class="nf">get_slave_managers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_coro</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all slave environment manager addresses.</span>
 
-<div class="viewcode-block" id="DistributedEnvironment.trigger_all"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.trigger_all">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">trigger_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Trigger all agents in all the nodes to act asynchronously.</span>
+<span class="sd">        :param bool as_coro:</span>
+<span class="sd">            If ``True`` returns awaitable coroutine, otherwise runs the calls</span>
+<span class="sd">            to the slave managers asynchronously in the event loop.</span>
 
-<span class="sd">        This method makes a connection to each manager in *manager_addrs*</span>
-<span class="sd">        and asynchronously executes :meth:`trigger_all` in all of them.</span>
+<span class="sd">        This method returns the addresses of the true slave environment</span>
+<span class="sd">        managers, i.e. managers derived from :class:`~creamas.mp.EnvManager`,</span>
+<span class="sd">        not multi-environment managers. For example, if this node environment</span>
+<span class="sd">        has two nodes with four slave environments in each, then this method</span>
+<span class="sd">        returns 8 addresses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">slave_task</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_slave_managers</span><span class="p">()</span>
 
-<span class="sd">        .. seealso::</span>
-
-<span class="sd">            :py:meth:`creamas.core.environment.Environment.trigger_all`,</span>
-<span class="sd">            :py:meth:`creamas.mp.MultiEnvironment.trigger_all`,</span>
-<span class="sd">            :py:meth:`creamas.mp.MultiEnvManager.trigger_all`</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager_addrs</span><span class="p">:</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_node</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span>
-            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span></div>
-
-<div class="viewcode-block" id="DistributedEnvironment.stop_nodes"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.stop_nodes">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Stop all the nodes by sending a stop-message to their managers.</span>
-
-<span class="sd">        :param int timeout:</span>
-<span class="sd">            Timeout for connecting to each manager. If a connection can not</span>
-<span class="sd">            be made before the timeout expires, the resulting error for that</span>
-<span class="sd">            particular manager is logged, but the stopping of other managers</span>
-<span class="sd">            is not halted.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager_addrs</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">r_manager</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-                <span class="k">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Could not stop </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="DistributedEnvironment.destroy"><a class="viewcode-back" href="../../ds.html#creamas.ds.DistributedEnvironment.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Destroy the simulation.</span>
-
-<span class="sd">        Stop the nodes and free other resources associated with the simulation.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-        <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_nodes</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div></div>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">create_tasks</span><span class="p">(</span><span class="n">slave_task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">run_or_coro</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">as_coro</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -466,11 +445,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -483,36 +462,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

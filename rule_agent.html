@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rule Agent &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Feature" href="feature.html" />
+    <link rel="prev" title="Rules" href="rules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="rules.html">Rules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Rule Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="rules.html">Rules</a> &raquo;</li>
+        
+      <li>Rule Agent</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/rule_agent.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.rules.agent">
+<span id="rule-agent"></span><h1>Rule Agent<a class="headerlink" href="#module-creamas.rules.agent" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-rules/agent.py"></span><p>The module holding <code class="xref py py-class docutils literal notranslate"><span class="pre">RuleAgent</span></code>, an agent which evaluates artifacts using
+its rules.</p>
+<dl class="class">
+<dt id="creamas.rules.agent.RuleAgent">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.rules.agent.</code><code class="sig-name descname">RuleAgent</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for agents using rules to evaluate artifacts.</p>
+<p>In addition to common attributes inherited from <code class="xref py py-class docutils literal notranslate"><span class="pre">CreativeAgent</span></code>,
+rule agents have following attributes:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>R</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – rules agent uses to evaluate artifacts</p></li>
+<li><p><strong>W</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – Weight for each rule in <strong>R</strong>, in [-1,1].</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.act">
+<em class="property">async </em><code class="sig-name descname">act</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.act" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger agent to act.</p>
+<p><strong>This is a dummy method which should be overridden in a subclass.</strong></p>
+<p>This function serves as the main function for the simulations, and
+is called for each agent on each iteration step of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#NotImplementedError" title="(in Python v3.7)"><strong>NotImplementedError</strong></a> – If not overridden in subclass.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="environment.html#creamas.core.environment.Environment.trigger_all" title="creamas.core.environment.Environment.trigger_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trigger_all()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.add_rule">
+<code class="sig-name descname">add_rule</code><span class="sig-paren">(</span><em class="sig-param">rule</em>, <em class="sig-param">weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.add_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.add_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add rule to <a class="reference internal" href="#creamas.rules.agent.RuleAgent.R" title="creamas.rules.agent.RuleAgent.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a> with initial weight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rule</strong> (<cite>~creamas.core.rule.Rule</cite>) – rule to be added</p></li>
+<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – initial weight for the rule</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#TypeError" title="(in Python v3.7)"><strong>TypeError</strong></a> – if rule is not subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if rule was successfully added, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Rtype bool</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate artifact with agent’s current rules and weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artifact</strong> (<a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code></a>) – <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code></a> to be evaluated</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Agent’s evaluation of the artifact, in [-1,1], and framing. In this
+basic implementation framing is always <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
+</dd>
+</dl>
+<p>Actual evaluation formula in this basic implementation is:</p>
+<div class="math notranslate nohighlight">
+\[e(A) = \frac{\sum_{i=1}^{n} r_{i}(A)w_i}
+{\sum_{i=1}^{n} \lvert w_i \rvert},\]</div>
+<p>where <span class="math notranslate nohighlight">\(r_{i}(A)\)</span> is the <span class="math notranslate nohighlight">\(i\)</span> th rule’s evaluation on
+artifact <span class="math notranslate nohighlight">\(A\)</span>, and <span class="math notranslate nohighlight">\(w_i\)</span> is the weight for rule
+<span class="math notranslate nohighlight">\(r_i\)</span>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.get_weight">
+<code class="sig-name descname">get_weight</code><span class="sig-paren">(</span><em class="sig-param">rule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.get_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get weight for rule.</p>
+<p>If rule is not in <a class="reference internal" href="#creamas.rules.agent.RuleAgent.R" title="creamas.rules.agent.RuleAgent.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a>, returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.remove_rule">
+<code class="sig-name descname">remove_rule</code><span class="sig-paren">(</span><em class="sig-param">rule</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.remove_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.remove_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove rule from <a class="reference internal" href="#creamas.rules.agent.RuleAgent.R" title="creamas.rules.agent.RuleAgent.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a> and its corresponding weight from
+<a class="reference internal" href="#creamas.rules.agent.RuleAgent.W" title="creamas.rules.agent.RuleAgent.W"><code class="xref py py-attr docutils literal notranslate"><span class="pre">W</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rule</strong> (<a class="reference internal" href="rule.html#creamas.rules.rule.Rule" title="creamas.rules.rule.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a> or
+<a class="reference internal" href="rule.html#creamas.rules.rule.RuleLeaf" title="creamas.rules.rule.RuleLeaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuleLeaf</span></code></a>) – rule to remove</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#TypeError" title="(in Python v3.7)"><strong>TypeError</strong></a> – If rule is not derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">RuleLeaf</span></code>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the rule was successfully removed, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Rtype bool</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.set_weight">
+<code class="sig-name descname">set_weight</code><span class="sig-paren">(</span><em class="sig-param">rule</em>, <em class="sig-param">weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/agent.html#RuleAgent.set_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.agent.RuleAgent.set_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set weight for rule in <a class="reference internal" href="#creamas.rules.agent.RuleAgent.R" title="creamas.rules.agent.RuleAgent.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a>.</p>
+<p>Adds the rule if it is not in <a class="reference internal" href="#creamas.rules.agent.RuleAgent.R" title="creamas.rules.agent.RuleAgent.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.R">
+<em class="property">property </em><code class="sig-name descname">R</code><a class="headerlink" href="#creamas.rules.agent.RuleAgent.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rules agent uses to evaluate artifacts. Each rule in <strong>R</strong> is
+expected to be a callable with a single parameter, the artifact to be
+evaluated. Callable should return a float in [-1,1]; where 1 means that
+rule is very prominent in the artifact; 0 means that there is none of
+that rule in the artifact; -1 means that the artifact shows
+traits opposite to the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.agent.RuleAgent.W">
+<em class="property">property </em><code class="sig-name descname">W</code><a class="headerlink" href="#creamas.rules.agent.RuleAgent.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights for the rules.</p>
+<p>Each weight should be in [-1,1].</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="feature.html" class="btn btn-neutral float-right" title="Feature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rules.html" class="btn btn-neutral float-left" title="Rules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

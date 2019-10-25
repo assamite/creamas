@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>creamas.nx &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>creamas.nx</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for creamas.nx</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">.. py:module:: nx</span>
+<span class="sd">    :platform: Unix</span>
+
+<span class="sd">Functions to create agent connections from</span>
+<span class="sd">`NetworkX &lt;https://networkx.github.io/&gt;`_ graph structures and NetworkX graphs</span>
+<span class="sd">from agent connections.</span>
+
+<span class="sd">.. note::</span>
+
+<span class="sd">    NetworkX has to be installed in order for the functions in this module to</span>
+<span class="sd">    work. It is not installed as a default dependency.</span>
+
+<span class="sd">    Use, e.g. ``pip install networkx``</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="k">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">DiGraph</span>
+
+<span class="kn">from</span> <span class="nn">creamas.util</span> <span class="k">import</span> <span class="n">sort_addrs</span>
+
+
+<div class="viewcode-block" id="connections_from_graph"><a class="viewcode-back" href="../../nx.html#creamas.nx.connections_from_graph">[docs]</a><span class="k">def</span> <span class="nf">connections_from_graph</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">edge_data</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create connections for agents in the given environment from the given</span>
+<span class="sd">    NetworkX graph structure.</span>
+
+<span class="sd">    :param env:</span>
+<span class="sd">        Environment where the agents live. The environment should be derived</span>
+<span class="sd">        from :class:`~creamas.core.environment.Environment`,</span>
+<span class="sd">        :class:`~creamas.mp.MultiEnvironment` or</span>
+<span class="sd">        :class:`~creamas.ds.DistributedEnvironment`.</span>
+
+<span class="sd">    :param G:</span>
+<span class="sd">        NetworkX graph structure, either :class:`networkx.graph.Graph` or</span>
+<span class="sd">        :class:`networkx.digraph.DiGraph`. The graph needs to have the same</span>
+<span class="sd">        number of nodes as the environment has agents (excluding the managers).</span>
+
+<span class="sd">    :param bool edge_data:</span>
+<span class="sd">        If ``True``, edge data from the given graph is copied to the agents&#39;</span>
+<span class="sd">        :attr:`connections`.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        By design, manager agents are excluded from the connections and should</span>
+<span class="sd">        not be counted towards environment&#39;s agent count.</span>
+
+<span class="sd">    The created connections are stored in each agent&#39;s</span>
+<span class="sd">    :attr:`~creamas.core.agent.CreativeAgent.connections` and the possible</span>
+<span class="sd">    edge data is stored as key-value pairs in the connection dictionary.</span>
+
+<span class="sd">    The agents are sorted by their environments&#39; hosts and ports before each</span>
+<span class="sd">    agent is mapped to a node in **G**. This should cause some network</span>
+<span class="sd">    generation methods in NetworkX, e.g.</span>
+<span class="sd">    :func:`~networkx.generators.random_graphs.connected_watts_strogatz_graph`,</span>
+<span class="sd">    to create more connections between agents in the same environment and/or</span>
+<span class="sd">    node when using :class:`~creamas.mp.MultiEnvironment` or</span>
+<span class="sd">    :class:`~creamas.ds.DistributedEnvironment`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="p">(</span><span class="n">Graph</span><span class="p">,</span> <span class="n">DiGraph</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Graph structure must be derived from Networkx&#39;s &quot;</span>
+                        <span class="s">&quot;Graph or DiGraph.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s">&#39;get_agents&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Parameter &#39;env&#39; must have get_agents.&quot;</span><span class="p">)</span>
+
+    <span class="n">addrs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The number of graph nodes and agents in the &quot;</span>
+                         <span class="s">&quot;environment (excluding the manager agent) must &quot;</span>
+                         <span class="s">&quot;match. Now got {} nodes and {} agents.&quot;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">)))</span>
+    <span class="c"># Sort agent addresses to the order they were added to the environment.</span>
+    <span class="n">addrs</span> <span class="o">=</span> <span class="n">sort_addrs</span><span class="p">(</span><span class="n">addrs</span><span class="p">)</span>
+    <span class="n">_addrs2nodes</span><span class="p">(</span><span class="n">addrs</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+    <span class="n">conn_map</span> <span class="o">=</span> <span class="n">_edges2conns</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">create_connections</span><span class="p">(</span><span class="n">conn_map</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_from_connections"><a class="viewcode-back" href="../../nx.html#creamas.nx.graph_from_connections">[docs]</a><span class="k">def</span> <span class="nf">graph_from_connections</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create NetworkX graph from agent connections in a given environment.</span>
+
+<span class="sd">    :param env:</span>
+<span class="sd">        Environment where the agents live. The environment must be derived from</span>
+<span class="sd">        :class:`~creamas.core.environment.Environment`,</span>
+<span class="sd">        :class:`~creamas.mp.MultiEnvironment` or</span>
+<span class="sd">        :class:`~creamas.ds.DistributedEnvironment`.</span>
+
+<span class="sd">    :param bool directed:</span>
+<span class="sd">        If ``True``, creates an instance of :class:`~networkx.digraph.DiGraph`,</span>
+<span class="sd">        otherwise creates an instance of :class:`~networkx.graph.Graph`.</span>
+
+<span class="sd">    :returns: The created NetworkX graph.</span>
+<span class="sd">    :rtype:</span>
+<span class="sd">        :class:`~networkx.digraph.DiGraph` or :class:`~networkx.graph.Graph`</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        If the created graph is undirected and two connected agents have</span>
+<span class="sd">        different data stored for each other, then the data for the given edge</span>
+<span class="sd">        is chosen randomly between the two agents.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">DiGraph</span><span class="p">()</span> <span class="k">if</span> <span class="n">directed</span> <span class="k">else</span> <span class="n">Graph</span><span class="p">()</span>
+    <span class="n">conn_list</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">conns</span> <span class="ow">in</span> <span class="n">conn_list</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="n">ebunch</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nb</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">conns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ebunch</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">agent</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ebunch</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">ebunch</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<span class="k">def</span> <span class="nf">_addrs2nodes</span><span class="p">(</span><span class="n">addrs</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map agent addresses to nodes in the graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="k">True</span><span class="p">)):</span>
+        <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;addr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">addrs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_edges2conns</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_data</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a mapping from graph edges to agent connections to be created.</span>
+
+<span class="sd">    :param G:</span>
+<span class="sd">        NetworkX&#39;s Graph or DiGraph which has :attr:`addr` attribute for each</span>
+<span class="sd">        node.</span>
+
+<span class="sd">    :param bool edge_data:</span>
+<span class="sd">        If ``True``, stores also edge data to the returned dictionary.</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        A dictionary where keys are agent addresses and values are lists of</span>
+<span class="sd">        addresses to which key-agent should create connections in order to</span>
+<span class="sd">        recreate the graph structure in an agent society.</span>
+
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">edge_data</span><span class="p">:</span>
+            <span class="n">cm</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;addr&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s">&#39;addr&#39;</span><span class="p">],</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">nb</span><span class="p">])</span>
+                                <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cm</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;addr&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nb</span><span class="p">][</span><span class="s">&#39;addr&#39;</span><span class="p">],</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
+    <span class="k">return</span> <span class="n">cm</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

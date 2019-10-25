@@ -8,49 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core &mdash; Creamas 0.2.0 documentation</title>
+  <title>Core &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="next" title="Agent" href="agent.html"/>
-        <link rel="prev" title="API Documentation" href="api.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Agent" href="agent.html" />
+    <link rel="prev" title="API Documentation" href="api.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -64,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -85,7 +82,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
@@ -95,18 +95,19 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Core</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
-<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,36 +123,56 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
-    <li>Core</li>
+        
+      <li>Core</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/core.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/core.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -161,30 +182,28 @@
 <h1>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>Core package holds base implementations for agents, environments, simulations,
-features and artifacts.</p>
+<p>Core package holds base implementations for agents, environments, simulations
+and artifacts.</p>
 <ul class="simple">
-<li><a class="reference internal" href="agent.html"><span class="doc">core.agent</span></a> - base agent implementation</li>
-<li><a class="reference internal" href="artifact.html"><span class="doc">core.artifact</span></a> - base artifact implementation</li>
-<li><a class="reference internal" href="feature.html"><span class="doc">core.feature</span></a> - base feature implementation</li>
-<li><a class="reference internal" href="rule.html"><span class="doc">core.rule</span></a> - base feature implementation</li>
-<li><a class="reference internal" href="rule.html"><span class="doc">core.mapper</span></a> - base mapper implementation</li>
-<li><a class="reference internal" href="environment.html"><span class="doc">core.environment</span></a> - base environment, each agent lives in an environment</li>
-<li><a class="reference internal" href="simulation.html"><span class="doc">core.simulation</span></a> - base simulation to run environment&#8217;s agents in iterations</li>
+<li><p><a class="reference internal" href="agent.html"><span class="doc">core.agent</span></a> - base agent implementation</p></li>
+<li><p><a class="reference internal" href="environment.html"><span class="doc">core.environment</span></a> - base environment, each agent lives in an environment</p></li>
+<li><p><a class="reference internal" href="simulation.html"><span class="doc">core.simulation</span></a> - base simulation to run environment’s agents in iterations</p></li>
+<li><p><a class="reference internal" href="artifact.html"><span class="doc">core.artifact</span></a> - base artifact implementation</p></li>
 </ul>
 </div>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agent.html" class="btn btn-neutral float-right" title="Agent" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="agent.html" class="btn btn-neutral float-right" title="Agent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="api.html" class="btn btn-neutral" title="API Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -193,11 +212,11 @@ features and artifacts.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -210,36 +229,15 @@ features and artifacts.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

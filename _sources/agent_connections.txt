@@ -1,0 +1,11 @@
+Agent Connections
+-----------------
+
+Creamas offers a capability to create agent connections from NetworkX
+graph structures and create `NetworkX <http://networkx.readthedocs.io/en/stable/>`_
+graphs from existing agent connections. These functionalities are found from
+:mod:`creamas.nx` module.
+
+The main functions in :mod:`creamas.nx` are
+:func:`~creamas.nx.connections_from_graph` and
+:func:`~creamas.nx.graph_from_connections`.

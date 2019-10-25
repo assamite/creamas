@@ -8,49 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Environment &mdash; Creamas 0.2.0 documentation</title>
+  <title>Environment &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Simulation" href="simulation.html"/>
-        <link rel="prev" title="Mapper" href="mapper.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simulation" href="simulation.html" />
+    <link rel="prev" title="Artifact" href="artifact.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -64,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -85,7 +82,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
@@ -95,18 +95,19 @@
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
-<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,38 +123,58 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
+        
           <li><a href="core.html">Core</a> &raquo;</li>
-      
-    <li>Environment</li>
+        
+      <li>Environment</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/environment.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/environment.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -161,140 +182,182 @@
             
   <div class="section" id="module-creamas.core.environment">
 <span id="environment"></span><h1>Environment<a class="headerlink" href="#module-creamas.core.environment" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-environment"></span><p>This module holds <code class="docutils literal"><span class="pre">Enviroment</span></code>-class, an universe where the agents live.
+<span class="target" id="module-environment"></span><p>This module holds <code class="docutils literal notranslate"><span class="pre">Enviroment</span></code>-class, an universe where the agents live.
 Environment holds methods for inter-agent communication and some utilities that
 are usually needed when implementing creative multi-agent systems.</p>
-<p>All implementations should subclass <code class="docutils literal"><span class="pre">Environment</span></code> in order to provide basic
+<p>All implementations should subclass <code class="docutils literal notranslate"><span class="pre">Environment</span></code> in order to provide basic
 functionality for the system to operate.</p>
 <p>Environments are used by defining their address at the instantation time, and
 adding agents to their container.</p>
 <dl class="class">
 <dt id="creamas.core.environment.Environment">
-<em class="property">class </em><code class="descclassname">creamas.core.environment.</code><code class="descname">Environment</code><span class="sig-paren">(</span><em>base_url</em>, <em>clock</em>, <em>connect_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base environment class inherited from <code class="xref py py-class docutils literal"><span class="pre">aiomas.Container</span></code>.</p>
+<em class="property">class </em><code class="sig-prename descclassname">creamas.core.environment.</code><code class="sig-name descname">Environment</code><span class="sig-paren">(</span><em class="sig-param">base_url</em>, <em class="sig-param">loop</em>, <em class="sig-param">clock</em>, <em class="sig-param">connect_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base environment class inherited from <code class="xref py py-class docutils literal notranslate"><span class="pre">aiomas.Container</span></code>.</p>
 <dl class="method">
 <dt id="creamas.core.environment.Environment.add_artifact">
-<code class="descname">add_artifact</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_artifact</code><span class="sig-paren">(</span><em class="sig-param">artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add artifact with given framing to the environment.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifact</strong> (<em>object</em>) &#8211; Artifact to be added.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artifact</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – Artifact to be added.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.add_artifacts">
-<code class="descname">add_artifacts</code><span class="sig-paren">(</span><em>artifacts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifacts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add artifacts to <strong>artifacts</strong>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artifacts</strong> &#8211; list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a> objects</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">add_artifacts</code><span class="sig-paren">(</span><em class="sig-param">artifacts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add artifacts to <a class="reference internal" href="#creamas.core.environment.Environment.artifacts" title="creamas.core.environment.Environment.artifacts"><code class="xref py py-attr docutils literal notranslate"><span class="pre">artifacts</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>artifacts</strong> – list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code></a> objects</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.environment.Environment.add_candidate">
-<code class="descname">add_candidate</code><span class="sig-paren">(</span><em>artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.add_candidate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add candidate artifact to current candidates.</p>
+<dt id="creamas.core.environment.Environment.clear_connections">
+<code class="sig-name descname">clear_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.clear_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.clear_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all connections from the agents in the environment.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.environment.Environment.clear_candidates">
-<code class="descname">clear_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.clear_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.clear_candidates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove current candidates from the environment.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.core.environment.Environment.create_initial_connections">
-<code class="descname">create_initial_connections</code><span class="sig-paren">(</span><em>n=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.create_initial_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.create_initial_connections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create random initial connections for all agents.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; the number of connections for each agent</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.core.environment.Environment.destroy">
-<code class="descname">destroy</code><span class="sig-paren">(</span><em>folder=None</em>, <em>as_coro=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.destroy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destroy the environment.</p>
+<dt id="creamas.core.environment.Environment.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">folder=None</em>, <em class="sig-param">as_coro=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the environment.</p>
 <p>Does the following:</p>
 <ol class="arabic simple">
-<li>calls <code class="xref py py-meth docutils literal"><span class="pre">save_info()</span></code></li>
-<li>for each agent: calls <code class="xref py py-meth docutils literal"><span class="pre">close()</span></code></li>
-<li>Shuts down its RPC-service.</li>
+<li><p>calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_info()</span></code></p></li>
+<li><p>for each agent: calls <a class="reference internal" href="#creamas.core.environment.Environment.close" title="creamas.core.environment.Environment.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></li>
+<li><p>Shuts down its RPC-service.</p></li>
 </ol>
 </dd></dl>
 
 <dl class="method">
+<dt id="creamas.core.environment.Environment.create_connections">
+<code class="sig-name descname">create_connections</code><span class="sig-paren">(</span><em class="sig-param">connection_map</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.create_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.create_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create agent connections from a given connection map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>connection_map</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A map of connections to be created. Dictionary where keys are agent addresses and values are lists of
+(addr, attitude)-tuples suitable for <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.add_connections" title="creamas.core.agent.CreativeAgent.add_connections"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_connections()</span></code></a>.</p>
+</dd>
+</dl>
+<p>Only connections for agents in this environment are made.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.create_random_connections">
+<code class="sig-name descname">create_random_connections</code><span class="sig-paren">(</span><em class="sig-param">n=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.create_random_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.create_random_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create random connections for all agents in the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the number of connections for each agent</p>
+</dd>
+</dl>
+<p>Existing agent connections that would be created by chance are not
+doubled in the agent’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">connections</span></code>, but count towards
+connections created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.destroy">
+<code class="sig-name descname">destroy</code><span class="sig-paren">(</span><em class="sig-param">folder=None</em>, <em class="sig-param">as_coro=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the environment.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.4.0: </span>Use <a class="reference internal" href="#creamas.core.environment.Environment.close" title="creamas.core.environment.Environment.close"><code class="xref py py-func docutils literal notranslate"><span class="pre">close()</span></code></a> instead</p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="creamas.core.environment.Environment.get_agents">
-<code class="descname">get_agents</code><span class="sig-paren">(</span><em>address=True</em>, <em>agent_cls=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_agents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_agents</code><span class="sig-paren">(</span><em class="sig-param">addr=True</em>, <em class="sig-param">agent_cls=None</em>, <em class="sig-param">include_manager=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_agents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get agents in the environment.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>address</strong> (<em>bool</em>) &#8211; If true, returns only addresses of the agents.</li>
-<li><strong>agent_cls</strong> &#8211; Optional, if specified returns only agents belonging to that
-particular class.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns only addresses of the agents.</p></li>
+<li><p><strong>agent_cls</strong> – Optional, if specified returns only agents belonging to that particular class.</p></li>
+<li><p><strong>include_manager</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> includes the environment’s manager, i.e. the agent in the address
+<code class="docutils literal notranslate"><span class="pre">tcp://environment-host:port/0</span></code>, to the returned list if the environment has attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">manager</span></code>.
+If environment does not have <code class="xref py py-attr docutils literal notranslate"><span class="pre">manager</span></code>, then the parameter does nothing.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of agents in the environment.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Manager agents are excluded from the returned lists of agents by default.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.get_artifacts">
-<em class="property">coroutine </em><code class="descname">get_artifacts</code><span class="sig-paren">(</span><em>agent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_artifacts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get artifacts published by certain agent.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">All artifacts published by the agent.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
+<em class="property">async </em><code class="sig-name descname">get_artifacts</code><span class="sig-paren">(</span><em class="sig-param">agent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_artifacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return artifacts published to the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>agent</strong> – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, then returns only artifacts created by the agent.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>All artifacts published (by the agent).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+</dl>
+<p>If environment has a <code class="xref py py-attr docutils literal notranslate"><span class="pre">manager</span></code> agent, e.g. it is a slave environment in
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiEnvironment</span></code></a>, then the manager’s <a class="reference internal" href="mp.html#creamas.mp.EnvManager.get_artifacts" title="creamas.mp.EnvManager.get_artifacts"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_artifacts()</span></code></a> is called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.environment.Environment.get_connections">
+<code class="sig-name descname">get_connections</code><span class="sig-paren">(</span><em class="sig-param">data=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return connections from all the agents in the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> return also the dictionary associated with each connection</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of <code class="docutils literal notranslate"><span class="pre">(addr,</span> <span class="pre">connections)</span></code>-tuples, where <code class="docutils literal notranslate"><span class="pre">connections</span></code> is a list of addresses agent in <code class="docutils literal notranslate"><span class="pre">addr</span></code> is
+connected to. If <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the <code class="docutils literal notranslate"><span class="pre">connections</span></code> list contains tuples of
+<code class="docutils literal notranslate"><span class="pre">(nb_addr,</span> <span class="pre">data)</span></code>-pairs , where <code class="docutils literal notranslate"><span class="pre">data</span></code> is a dictionary.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Environment’s manager agent is excluded from the returned list.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.get_random_agent">
-<code class="descname">get_random_agent</code><span class="sig-paren">(</span><em>agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_random_agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return random agent that is not the same as agent given as
-parameter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a>) &#8211; Agent that is not wanted to return</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">random, non-connected, agent from the environment</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_random_agent</code><span class="sig-paren">(</span><em class="sig-param">agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.get_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.get_random_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return random agent that is not the same as the agent given as a parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>agent</strong> (<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreativeAgent</span></code></a>) – Agent that is not wanted to return</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>random, non-connected, agent from the environment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreativeAgent</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.is_ready">
-<code class="descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.is_ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.is_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the environment is fully initialized.</p>
 <p>The function is mainly used by the multiprocessing environment managers
 and distributed environments to ensure that the environment has been
@@ -306,133 +369,85 @@ environment is ready be used in a simulation, or when any
 cross-environment initialization routines can be run. That is, the
 environment is inherently in a coherent state, and can execute orders
 from managers or simulations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">This basic implementation returns always True.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.core.environment.Environment.perform_voting">
-<code class="descname">perform_voting</code><span class="sig-paren">(</span><em>method='IRV'</em>, <em>accepted=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.perform_voting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.perform_voting" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform voting to decide the ordering of the current candidates.</p>
-<p>Voting calls each agent&#8217;s <code class="xref py py-func docutils literal"><span class="pre">vote()</span></code>-method, which might be costly in
-larger societies.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>method</strong> (<em>str</em>) &#8211; Used voting method. One of the following:
-IRV = instant run-off voting,
-mean = best mean vote (requires cardinal ordering for votes),
-best = best singular vote (requires cardinal ordering, returns only
-one candidate),
-least_worst = least worst singular vote,
-random = selects random candidates</li>
-<li><strong>accepted</strong> (<em>int</em>) &#8211; the number of returned candidates</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code></a> objects,
-accepted artifacts. Some voting methods, e.g. mean, also return the
-associated scores for each accepted artifact.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Rype:</th><td class="field-body"><p class="first last">list</p>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>This basic implementation returns always True.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.save_info">
-<code class="descname">save_info</code><span class="sig-paren">(</span><em>folder</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.save_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.save_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_info</code><span class="sig-paren">(</span><em class="sig-param">folder</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.save_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.save_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save information accumulated during the environments lifetime.</p>
-<p>Called from <code class="xref py py-meth docutils literal"><span class="pre">destroy()</span></code>. Override in
-subclass.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>folder</strong> (<em>str</em>) &#8211; root folder to save information</td>
-</tr>
-</tbody>
-</table>
+<p>Called from <code class="xref py py-meth docutils literal notranslate"><span class="pre">destroy()</span></code>. Override in subclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>folder</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – root folder to save information</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.trigger_act">
-<em class="property">coroutine </em><code class="descname">trigger_act</code><span class="sig-paren">(</span><em>addr=None</em>, <em>agent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.trigger_act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.trigger_act" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-name descname">trigger_act</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">addr=None</em>, <em class="sig-param">agent=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.trigger_act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.trigger_act" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger agent to act.</p>
 <p>If <em>agent</em> is None, then looks the agent by the address.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; if both <em>agent</em> and <em>addr</em> are None.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#ValueError" title="(in Python v3.7)"><strong>ValueError</strong></a> – if both <em>agent</em> and <em>addr</em> are None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.environment.Environment.trigger_all">
-<em class="property">coroutine </em><code class="descname">trigger_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.trigger_all" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-name descname">trigger_all</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.trigger_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.trigger_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigger all agents in the environment to act asynchronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of agents’ <code class="xref py py-meth docutils literal notranslate"><span class="pre">act()</span></code> return values.</p>
+</dd>
+</dl>
+<p>Given arguments and keyword arguments are passed down to each agent’s
+<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-meth docutils literal notranslate"><span class="pre">creamas.core.agent.CreativeAgent.act()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The environment’s manager agent, i.e. if the environment has <code class="xref py py-attr docutils literal notranslate"><span class="pre">manager</span></code>, is excluded from acting.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
-<dt id="creamas.core.environment.Environment.validate_candidates">
-<code class="descname">validate_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/environment.html#Environment.validate_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.environment.Environment.validate_candidates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate current candidates in the environment by pruning candidates
-that are not validated at least by one agent, i.e. they are vetoed.</p>
-<p>In larger societies this method might be costly, as it calls each
-agents&#8217; <code class="xref py py-meth docutils literal"><span class="pre">validate()</span></code>.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="creamas.core.environment.Environment.age">
-<code class="descname">age</code><a class="headerlink" href="#creamas.core.environment.Environment.age" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">age</code><a class="headerlink" href="#creamas.core.environment.Environment.age" title="Permalink to this definition">¶</a></dt>
 <dd><p>Age of the environment.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.environment.Environment.artifacts">
-<code class="descname">artifacts</code><a class="headerlink" href="#creamas.core.environment.Environment.artifacts" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">artifacts</code><a class="headerlink" href="#creamas.core.environment.Environment.artifacts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Published artifacts for all agents.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.environment.Environment.candidates">
-<code class="descname">candidates</code><a class="headerlink" href="#creamas.core.environment.Environment.candidates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Current artifact candidates, subject to e.g. agents voting to
-determine which candidate(s) are added to <strong>artifacts</strong>.</p>
-</dd></dl>
-
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.environment.Environment.log_folder">
-<code class="descname">log_folder</code><a class="headerlink" href="#creamas.core.environment.Environment.log_folder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logging folder for the environment. If set, will create
-py:class::<cite>creamas.logging.ObjectLogger</cite> for that folder.</p>
+<em class="property">property </em><code class="sig-name descname">log_folder</code><a class="headerlink" href="#creamas.core.environment.Environment.log_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging folder for the environment. If set, will create py:class:<cite>creamas.logging.ObjectLogger</cite> for that
+folder.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.environment.Environment.logger">
-<code class="descname">logger</code><a class="headerlink" href="#creamas.core.environment.Environment.logger" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">logger</code><a class="headerlink" href="#creamas.core.environment.Environment.logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Logger for the environment.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.environment.Environment.name">
-<code class="descname">name</code><a class="headerlink" href="#creamas.core.environment.Environment.name" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#creamas.core.environment.Environment.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the environment.</p>
 </dd></dl>
 
@@ -442,15 +457,16 @@ py:class::<cite>creamas.logging.ObjectLogger</cite> for that folder.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="simulation.html" class="btn btn-neutral float-right" title="Simulation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="simulation.html" class="btn btn-neutral float-right" title="Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mapper.html" class="btn btn-neutral" title="Mapper" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="artifact.html" class="btn btn-neutral float-left" title="Artifact" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -459,11 +475,11 @@ py:class::<cite>creamas.logging.ObjectLogger</cite> for that folder.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -476,36 +492,15 @@ py:class::<cite>creamas.logging.ObjectLogger</cite> for that folder.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

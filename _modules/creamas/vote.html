@@ -1,0 +1,780 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>creamas.vote &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>creamas.vote</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for creamas.vote</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. py:module:: vote</span>
+<span class="sd">    :platform: Unix</span>
+
+<span class="sd">Implementations for voting and other social choice behaviors.</span>
+
+<span class="sd">Holds basic implementations for:</span>
+
+<span class="sd">    * :class:`~creamas.vote.VoteAgent`: An agent implementing functions needed</span>
+<span class="sd">      for voting</span>
+<span class="sd">    * :class:`~creamas.vote.VoteEnvironment`: An environment holding basic</span>
+<span class="sd">      voting functionality.</span>
+<span class="sd">    * :class:`~creamas.vote.VoteManager`: A manager agent for instances of</span>
+<span class="sd">      :class:`~creamas.vote.VoteEnvironment` when they are slave environments</span>
+<span class="sd">      in multi- or distributed environments.</span>
+<span class="sd">    * :class:`~creamas.vote.VoteOrganizer`: A class which can initiate voting</span>
+<span class="sd">      and compute its results.</span>
+
+<span class="sd">It should be noted that only the &quot;true&quot; slave environments, i.e. environments</span>
+<span class="sd">derived from :class:`Environment` need to have voting behavior implemented</span>
+<span class="sd">(and appropriate voting managers). :class:`~creamas.vote.VoteOrganizer`</span>
+<span class="sd">communicates with the &quot;true&quot; slave environments directly without the need of</span>
+<span class="sd">the middle layer environments (multi-environments) or managers in the case of</span>
+<span class="sd">distributed systems.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span>
+
+<span class="kn">from</span> <span class="nn">creamas</span> <span class="k">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">EnvManager</span>
+<span class="kn">from</span> <span class="nn">creamas.util</span> <span class="k">import</span> <span class="n">create_tasks</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">expose</span>
+
+<span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="VoteAgent"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteAgent">[docs]</a><span class="k">class</span> <span class="nc">VoteAgent</span><span class="p">(</span><span class="n">CreativeAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An agent with voting behavior.</span>
+
+<span class="sd">    Implements three functions needed for voting:</span>
+
+<span class="sd">    * :meth:`~creamas.vote.VoteAgent.validate`: Validates a set of candidates</span>
+<span class="sd">      returning only the validated candidates.</span>
+<span class="sd">    * :meth:`~creamas.vote.VoteAgent.vote`: Votes from a set of candidates,</span>
+<span class="sd">      i.e. orders them by preference. Returns the ordered list and preferences.</span>
+<span class="sd">      Basic implementation orders the candidates using the agent&#39;s</span>
+<span class="sd">      :meth:`evaluate` function.</span>
+<span class="sd">    * :meth:`~creamas.vote.VoteAgent.add_candidate`: Add candidate artifact to</span>
+<span class="sd">      the agent&#39;s environment&#39;s list of current candidates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VoteAgent.validate"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteAgent.validate">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate a list of candidate artifacts.</span>
+
+<span class="sd">        Candidate validation should prune unwanted artifacts from the overall</span>
+<span class="sd">        candidate set. Agent can use its own reasoning to validate the</span>
+<span class="sd">        given candidates. The method should return a subset of the given</span>
+<span class="sd">        candidates list containing the validated artifacts (i.e. the</span>
+<span class="sd">        artifacts that are not pruned).</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This basic implementation returns the given candidate list as is.</span>
+<span class="sd">            Override this function in the subclass for the appropriate</span>
+<span class="sd">            validation procedure.</span>
+
+<span class="sd">        :param candidates: A list of candidate artifacts</span>
+<span class="sd">        :returns: The validated artifacts, a subset of given candidates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">candidates</span></div>
+
+<div class="viewcode-block" id="VoteAgent.vote"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteAgent.vote">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rank artifact candidates.</span>
+
+<span class="sd">        The voting is needed for the agents living in societies using</span>
+<span class="sd">        social decision making. The function should return a sorted list</span>
+<span class="sd">        of (candidate, evaluation)-tuples. Depending on the social choice</span>
+<span class="sd">        function used, the evaluation might be omitted from the actual decision</span>
+<span class="sd">        making, or only a number of (the highest ranking) candidates may be</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        This basic implementation ranks candidates based on</span>
+<span class="sd">        :meth:`~creamas.core.agent.CreativeAgent.evaluate`.</span>
+
+<span class="sd">        :param candidates:</span>
+<span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects to be</span>
+<span class="sd">            ranked</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Ordered list of (candidate, evaluation)-tuples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ranks</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">c</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">]</span>
+        <span class="n">ranks</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ranks</span></div>
+
+<div class="viewcode-block" id="VoteAgent.add_candidate"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteAgent.add_candidate">[docs]</a>    <span class="k">def</span> <span class="nf">add_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add artifact to the environment&#39;s current list of candidates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_candidate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VoteAgent.act"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteAgent.act">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Implement in a subclass.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="VoteEnvironment"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteEnvironment">[docs]</a><span class="k">class</span> <span class="nc">VoteEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An environment implementing functionality needed for voting.</span>
+
+<span class="sd">    Voting depends largely on a list of :attr:`candidate` artifacts, which are</span>
+<span class="sd">    passed down to agents at the time of voting. Candidate artifacts can also</span>
+<span class="sd">    be validated by the agents (only returning artifacts that are deemed</span>
+<span class="sd">    appropriate, or good enough, by all agents in the environment).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Current artifact candidates, subject to e.g. agents voting to</span>
+<span class="sd">        determine which candidate(s) are added to :attr:`~artifacts`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span>
+
+<div class="viewcode-block" id="VoteEnvironment.clear_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteEnvironment.clear_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove current candidate artifacts from the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="VoteEnvironment.add_candidate"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteEnvironment.add_candidate">[docs]</a>    <span class="k">def</span> <span class="nf">add_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add candidate artifact to the list of current candidates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;CANDIDATES appended:&#39;{}&#39;&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VoteEnvironment.validate_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteEnvironment.validate_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the candidate artifacts with the agents in the environment.</span>
+
+<span class="sd">        In larger societies this method might be costly, as it calls each</span>
+<span class="sd">        agents&#39; :meth:`validate`.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            A list of candidates that are validated by all agents in the</span>
+<span class="sd">            environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">valid_candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+            <span class="n">vc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">candidates</span><span class="p">))</span>
+            <span class="n">valid_candidates</span> <span class="o">=</span> <span class="n">valid_candidates</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">vc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">valid_candidates</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VoteEnvironment.gather_votes"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteEnvironment.gather_votes">[docs]</a>    <span class="k">def</span> <span class="nf">gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gather votes for the given candidates from the agents in the</span>
+<span class="sd">        environment.</span>
+
+<span class="sd">        Returned votes are anonymous, i.e. they cannot be tracked to any</span>
+<span class="sd">        individual agent afterwards.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            A list of votes. Each vote is a list of ``(artifact, preference)``</span>
+<span class="sd">            -tuples sorted in a preference order of a single agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_agents</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+            <span class="n">vote</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">vote</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+            <span class="n">votes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vote</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">votes</span></div></div>
+
+
+<div class="viewcode-block" id="VoteManager"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteManager">[docs]</a><span class="k">class</span> <span class="nc">VoteManager</span><span class="p">(</span><span class="n">EnvManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manager agent for voting environments.</span>
+
+<span class="sd">    The class is designed be used in conjunction with</span>
+<span class="sd">    :class:`~creamas.vote.VoteEnvironment` in multiprocessing and distributed</span>
+<span class="sd">    settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="VoteManager.get_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteManager.get_candidates">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">get_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get current candidates from the managed environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">candidates</span></div>
+
+<div class="viewcode-block" id="VoteManager.validate_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteManager.validate_candidates">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate the candidates with the agents in the managed environment.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :meth:`~creamas.vote.VoteEnvironment.validate_candidates`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VoteManager.clear_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteManager.clear_candidates">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear candidates in the managed environment.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.clear_candidates`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">()</span></div>
+
+    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="n">candidates</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">gather_votes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">votes</span>
+
+<div class="viewcode-block" id="VoteManager.gather_votes"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteManager.gather_votes">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gather votes for the given candidates from the agents in the</span>
+<span class="sd">        managed environment.</span>
+
+<span class="sd">        This is a managing function for</span>
+<span class="sd">        :py:meth:`~creamas.environment.Environment.gather_votes`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">gather_votes</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="VoteOrganizer"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer">[docs]</a><span class="k">class</span> <span class="nc">VoteOrganizer</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;A class which organizes voting behavior in an environment.</span>
+
+<span class="sd">    The organizer can :meth:`~creamas.vote.VoteOrganizer.gather_candidates`</span>
+<span class="sd">    from the environment, and then</span>
+<span class="sd">    :meth:`~creamas.vote.VoteOrganizer.gather_votes` for the candidates.</span>
+<span class="sd">    Optionally the organizer may</span>
+<span class="sd">    :meth:`~creamas.vote.VoteOrganizer.validate_candidates` before gathering</span>
+<span class="sd">    the votes. After the votes have been collected the organizer may</span>
+<span class="sd">    :meth:`~creamas.vote.VoteOrganizer.compute_results` of the votes with a</span>
+<span class="sd">    given voting method.</span>
+
+<span class="sd">    The organizer also has :meth:`~creamas.vote.VoteOrganizer.gather_and_vote`</span>
+<span class="sd">    to do all of the above in one go.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_votes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_single_env</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The environment associated with this voting organizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Current list of candidates gathered from the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">votes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Current list of votes gathered from the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_votes</span>
+
+    <span class="k">def</span> <span class="nf">_determine_single_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">VoteEnvironment</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">True</span>
+        <span class="k">return</span> <span class="k">False</span>
+
+<div class="viewcode-block" id="VoteOrganizer.get_managers"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.get_managers">[docs]</a>    <span class="k">def</span> <span class="nf">get_managers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get managers for the slave environments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_managers&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_managers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get_slave_managers</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_managers</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.gather_votes"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.gather_votes">[docs]</a>    <span class="k">def</span> <span class="nf">gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gather votes from all the underlying slave environments for the</span>
+<span class="sd">        current list of candidates.</span>
+
+<span class="sd">        The votes are stored in :attr:`votes`, overriding any previous votes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">slave_task</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">gather_votes</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Could not gather votes because there &quot;</span>
+                      <span class="s">&quot;are no candidates!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_votes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Gathering votes for {} candidates.&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">gather_votes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mgrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_managers</span><span class="p">()</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="n">create_tasks</span><span class="p">(</span><span class="n">slave_task</span><span class="p">,</span> <span class="n">mgrs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_votes</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.gather_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.gather_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">gather_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gather candidates from the slave environments.</span>
+
+<span class="sd">        The candidates are stored in :attr:`candidates`, overriding any</span>
+<span class="sd">        previous candidates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">slave_task</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">get_candidates</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">candidates</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mgrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_managers</span><span class="p">()</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="n">create_tasks</span><span class="p">(</span><span class="n">slave_task</span><span class="p">,</span> <span class="n">mgrs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.clear_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.clear_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">clear_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clear_env</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear the current candidates.</span>
+
+<span class="sd">        :param bool clear_env:</span>
+<span class="sd">            If ``True``, clears also environment&#39;s (or its underlying slave</span>
+<span class="sd">            environments&#39;) candidates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">slave_task</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">clear_env</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">clear_candidates</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mgrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_managers</span><span class="p">()</span>
+                <span class="n">run</span><span class="p">(</span><span class="n">create_tasks</span><span class="p">(</span><span class="n">slave_task</span><span class="p">,</span> <span class="n">mgrs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.validate_candidates"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.validate_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">validate_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate current candidates.</span>
+
+<span class="sd">        This method validates the current candidate list in all the agents</span>
+<span class="sd">        in the environment (or underlying slave environments) and replaces</span>
+<span class="sd">        the current :attr:`candidates` with the list of validated candidates.</span>
+
+<span class="sd">        The artifact candidates must be hashable and have a :meth:`__eq__`</span>
+<span class="sd">        implemented for validation to work on multi-environments and</span>
+<span class="sd">        distributed environments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">slave_task</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
+            <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Validating {} candidates&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)))</span>
+
+        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidates</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_env</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mgrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_managers</span><span class="p">()</span>
+            <span class="n">tasks</span> <span class="o">=</span> <span class="n">create_tasks</span><span class="p">(</span><span class="n">slave_task</span><span class="p">,</span> <span class="n">mgrs</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+            <span class="n">rets</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+            <span class="n">valid_candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rets</span><span class="p">:</span>
+                <span class="n">valid_candidates</span> <span class="o">=</span> <span class="n">valid_candidates</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">valid_candidates</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;{} candidates after validation&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.gather_and_vote"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.gather_and_vote">[docs]</a>    <span class="k">def</span> <span class="nf">gather_and_vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voting_method</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="n">winners</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convenience function to gathering candidates and votes and</span>
+<span class="sd">        performing voting using them.</span>
+
+<span class="sd">        Additional ``**kwargs`` are passed down to voting method.</span>
+
+<span class="sd">        :param voting_method:</span>
+<span class="sd">            The voting method to use, see</span>
+<span class="sd">            :meth:`~creamas.vote.VoteOrganizer.compute_results` for details.</span>
+<span class="sd">        :param bool validate: Validate gathered candidates before voting.</span>
+<span class="sd">        :param int winners: The number of vote winners</span>
+
+<span class="sd">        :returns: Winner(s) of the vote.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gather_candidates</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate_candidates</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gather_votes</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_results</span><span class="p">(</span><span class="n">voting_method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">votes</span><span class="p">,</span> <span class="n">winners</span><span class="o">=</span><span class="n">winners</span><span class="p">,</span>
+                                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="VoteOrganizer.compute_results"><a class="viewcode-back" href="../../vote.html#creamas.vote.VoteOrganizer.compute_results">[docs]</a>    <span class="k">def</span> <span class="nf">compute_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voting_method</span><span class="p">,</span> <span class="n">votes</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">winners</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute voting results to decide the winner(s) from the</span>
+<span class="sd">        :attr:`votes`.</span>
+
+<span class="sd">        The votes should have been made for the current</span>
+<span class="sd">        :attr:`~creamas.vote.VoteOrganizer.candidates`.</span>
+
+<span class="sd">        :param voting_method:</span>
+<span class="sd">            A function which computes the results from the votes. Should</span>
+<span class="sd">            accept at least three parameters: candidates, votes and number of</span>
+<span class="sd">            vote winners. The function should return at least a list of vote</span>
+<span class="sd">            winners. See, e.g. :func:`~creamas.vote.vote_mean` or</span>
+<span class="sd">            :func:`~creamas.vote.vote_best`. Additional ``**kwargs`` are passed</span>
+<span class="sd">            down to the voting method.</span>
+
+<span class="sd">        :param list votes:</span>
+<span class="sd">            A list of votes by which the voting is performed. Each vote should</span>
+<span class="sd">            have the same set of artifacts in them. If ``None`` the results</span>
+<span class="sd">            are computed for the current list of</span>
+<span class="sd">            :attr:`~creamas.vote.VoteOrganizer.votes`.</span>
+
+<span class="sd">        :param int winners:</span>
+<span class="sd">            The number of vote winners</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects,</span>
+<span class="sd">            the winning artifacts. Some voting methods may also return a score</span>
+<span class="sd">            associated with each winning artifact.</span>
+
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">votes</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="n">votes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">votes</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Could not compute results as there are &quot;</span>
+                      <span class="s">&quot;no votes!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Computing results from {} votes.&quot;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">votes</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">voting_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">winners</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="vote_random"><a class="viewcode-back" href="../../vote.html#creamas.vote.vote_random">[docs]</a><span class="k">def</span> <span class="nf">vote_random</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">n_winners</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select random winners from the candidates.</span>
+
+<span class="sd">    This voting method bypasses the given votes completely.</span>
+
+<span class="sd">    :param candidates: All candidates in the vote</span>
+<span class="sd">    :param votes: Votes from the agents</span>
+<span class="sd">    :param int n_winners: The number of vote winners</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rcands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+    <span class="n">shuffle</span><span class="p">(</span><span class="n">rcands</span><span class="p">)</span>
+    <span class="n">rcands</span> <span class="o">=</span> <span class="n">rcands</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">n_winners</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rcands</span><span class="p">))]</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rcands</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">best</span></div>
+
+
+<div class="viewcode-block" id="vote_least_worst"><a class="viewcode-back" href="../../vote.html#creamas.vote.vote_least_worst">[docs]</a><span class="k">def</span> <span class="nf">vote_least_worst</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">n_winners</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select &quot;least worst&quot; artifact as the winner of the vote.</span>
+
+<span class="sd">    Least worst artifact is the artifact with the best worst evaluation, i.e.</span>
+<span class="sd">    its worst evaluation is the best among all of the artifacts.</span>
+
+<span class="sd">    Ties are resolved randomly.</span>
+
+<span class="sd">    :param candidates: All candidates in the vote</span>
+<span class="sd">    :param votes: Votes from the agents</span>
+<span class="sd">    :param int n_winners: The number of vote winners</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">worsts</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="mf">100000000.0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">worsts</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">&gt;</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">worsts</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">worsts</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">n_winners</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">))]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">best</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="vote_best"><a class="viewcode-back" href="../../vote.html#creamas.vote.vote_best">[docs]</a><span class="k">def</span> <span class="nf">vote_best</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">n_winners</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select the artifact with the single best evaluation as the winner of</span>
+<span class="sd">    the vote.</span>
+
+<span class="sd">    Ties are resolved randomly.</span>
+
+<span class="sd">    :param candidates: All candidates in the vote</span>
+<span class="sd">    :param votes: Votes from the agents</span>
+<span class="sd">    :param int n_winners: The number of vote winners</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">votes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">best</span></div>
+
+
+<span class="k">def</span> <span class="nf">_remove_zeros</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove zeros in IRV voting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fpl</span><span class="p">:</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cl</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fpl</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ranking</span><span class="p">:</span>
+                <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_remove_last</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove last candidate in IRV voting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="n">fpl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cl</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">fpl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ranking</span><span class="p">:</span>
+                <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranking</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="vote_IRV"><a class="viewcode-back" href="../../vote.html#creamas.vote.vote_IRV">[docs]</a><span class="k">def</span> <span class="nf">vote_IRV</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">n_winners</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform IRV voting based on votes.</span>
+
+<span class="sd">    Ties are resolved randomly.</span>
+
+<span class="sd">    :param candidates: All candidates in the vote</span>
+<span class="sd">    :param votes: Votes from the agents</span>
+<span class="sd">    :param int n_winners: The number of vote winners</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO: Check what is wrong in here.</span>
+    <span class="n">votes</span> <span class="o">=</span> <span class="p">[[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">]</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">Counter</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">()</span>
+    <span class="n">cl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+    <span class="n">ranking</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span>
+    <span class="n">fpl</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">]</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">fpl</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_remove_zeros</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">)</span>
+        <span class="n">_remove_last</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="n">fpl</span><span class="p">,</span> <span class="n">cl</span><span class="p">,</span> <span class="n">ranking</span><span class="p">)</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="n">fpl</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span>
+        <span class="n">fpl</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">]</span>
+
+    <span class="n">ranking</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fpl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranking</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ranking</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">ranking</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ranking</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">n_winners</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranking</span><span class="p">))]</span></div>
+
+
+<div class="viewcode-block" id="vote_mean"><a class="viewcode-back" href="../../vote.html#creamas.vote.vote_mean">[docs]</a><span class="k">def</span> <span class="nf">vote_mean</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">votes</span><span class="p">,</span> <span class="n">n_winners</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform mean voting based on votes.</span>
+
+<span class="sd">    Mean voting computes the mean preference for each of the artifact</span>
+<span class="sd">    candidates from the votes and sorts the candidates in the mean preference</span>
+<span class="sd">    order.</span>
+
+<span class="sd">    Ties are resolved randomly.</span>
+
+<span class="sd">    :param candidates: All candidates in the vote</span>
+<span class="sd">    :param votes: Votes from the agents</span>
+<span class="sd">    :param int n_winners: The number of vote winners</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sums</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">vote</span> <span class="ow">in</span> <span class="n">votes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vote</span><span class="p">:</span>
+            <span class="n">sums</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sums</span><span class="p">:</span>
+        <span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sums</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">ordering</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="k">True</span><span class="p">)</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="n">ordering</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">n_winners</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordering</span><span class="p">))]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">best</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

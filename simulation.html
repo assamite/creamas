@@ -8,49 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simulation &mdash; Creamas 0.2.0 documentation</title>
+  <title>Simulation &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Agents" href="agents.html"/>
-        <link rel="prev" title="Environment" href="environment.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Multiprocessing functionality" href="mp.html" />
+    <link rel="prev" title="Environment" href="environment.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -64,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -85,7 +82,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
@@ -95,18 +95,19 @@
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
-<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,38 +123,58 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
+        
           <li><a href="core.html">Core</a> &raquo;</li>
-      
-    <li>Simulation</li>
+        
+      <li>Simulation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/simulation.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/simulation.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -165,147 +186,134 @@
 run in an iterative manner.</p>
 <dl class="class">
 <dt id="creamas.core.simulation.Simulation">
-<em class="property">class </em><code class="descclassname">creamas.core.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>env</em>, <em>callback=None</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for iterative simulations.</p>
-<p>In each step the simulation calls
-<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-meth docutils literal"><span class="pre">act()</span></code></a> for each agent in
-simulation environment.</p>
+<em class="property">class </em><code class="sig-prename descclassname">creamas.core.simulation.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>A base class for iterative simulations.</p>
+<p>In each step the simulation calls <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-meth docutils literal notranslate"><span class="pre">act()</span></code></a> for each agent in the simulation.</p>
 <p>Create simulation for previously set up environment.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>env</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a> or
-<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal"><span class="pre">MultiEnvironment</span></code></a>) &#8211; fully initialized environment with agents already set</li>
-<li><strong>callback</strong> (<em>callable</em>) &#8211; function to call after each simulation step</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>,
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiEnvironment</span></code></a> or
+<a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistributedEnvironment</span></code></a>) – fully initialized environment with agents already set</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – function to call after each simulation step</p></li>
+<li><p><strong>log_folder</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – folder to log simulation information</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Parat str log_folder:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">folder to log simulation information</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.async_step">
-<code class="descname">async_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.async_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.async_step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Progress simulation by running all agents once asynchronously.</p>
+<code class="sig-name descname">async_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.async_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.async_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress simulation by running all agents asynchronously once.</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
+<dt id="creamas.core.simulation.Simulation.async_steps">
+<code class="sig-name descname">async_steps</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.async_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.async_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress simulation by running all agents <em>n</em> times asynchronously.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.simulation.Simulation.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the simulation and the current simulation environment.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.create">
-<em class="property">classmethod </em><code class="descname">create</code><span class="sig-paren">(</span><em>agent_cls=None</em>, <em>n_agents=10</em>, <em>agent_kwargs={}</em>, <em>env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em>env_kwargs={}</em>, <em>callback=None</em>, <em>conns=0</em>, <em>log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenience function to create simple simulations.</p>
-<p>Method first creates environment, then instantiates agents into it
-with give arguments, and finally creates simulation for the
-environment.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>agent_cls</strong> &#8211; class for agents, or list of classes. If list, then <strong>n_agents</strong>
-and <strong>agent_kwargs</strong> are expected to be lists also.</li>
-<li><strong>n_agents</strong> &#8211; amount of agents for simulation, or list of amounts</li>
-<li><strong>agent_kwargs</strong> &#8211; keyword arguments passed to agents at creation time, or list of
-keyword arguments.</li>
-<li><strong>env_cls</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>) &#8211; environment class for simulation</li>
-<li><strong>env_kwargs</strong> (<em>dict</em>) &#8211; keyword arguments passed to environment at creation time</li>
-<li><strong>callback</strong> (<em>callable</em>) &#8211; optional callable to call after each simulation step</li>
-<li><strong>conns</strong> &#8211; Create <strong>conns</strong> amount of initial (random) connections for agents
-in the simulation environment.</li>
-<li><strong>log_folder</strong> (<em>str</em>) &#8211; folder for possible logging. This overwrites <em>log_folder</em> keyword
-argument from <strong>agent_kwargs</strong> and <strong>env_kwargs</strong>.</li>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">agent_cls=None</em>, <em class="sig-param">n_agents=10</em>, <em class="sig-param">agent_kwargs={}</em>, <em class="sig-param">env_cls=&lt;class 'creamas.core.environment.Environment'&gt;</em>, <em class="sig-param">env_kwargs={}</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">conns=0</em>, <em class="sig-param">log_folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience function to create simple simulations.</p>
+<p>Method first creates environment, then instantiates agents into it with give arguments, and finally creates
+simulation for the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_cls</strong> – class for agents, or list of classes. If list, then <strong>n_agents</strong> and <strong>agent_kwargs</strong> are expected to be
+lists also.</p></li>
+<li><p><strong>n_agents</strong> – amount of agents for simulation, or list of amounts</p></li>
+<li><p><strong>agent_kwargs</strong> – keyword arguments passed to agents at creation time, or list of keyword arguments.</p></li>
+<li><p><strong>env_cls</strong> (<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>) – environment class for simulation</p></li>
+<li><p><strong>env_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – keyword arguments passed to environment at creation time</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – optional callable to call after each simulation step</p></li>
+<li><p><strong>conns</strong> – Create <strong>conns</strong> amount of initial (random) connections for agents in the simulation environment.</p></li>
+<li><p><strong>log_folder</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – folder for possible logging. This overwrites <em>log_folder</em> keyword argument from <strong>agent_kwargs</strong> and
+<strong>env_kwargs</strong>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.end">
-<code class="descname">end</code><span class="sig-paren">(</span><em>folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>End simulation and destroy the current simulation environment.</p>
+<code class="sig-name descname">end</code><span class="sig-paren">(</span><em class="sig-param">folder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the simulation and the current simulation environment.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.4.0: </span>Use func:<cite>close</cite> instead.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.finish_step">
-<code class="descname">finish_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.finish_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.finish_step" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">finish_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.finish_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.finish_step" title="Permalink to this definition">¶</a></dt>
 <dd><p>Progress simulation to the end of the current step.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="creamas.core.simulation.Simulation.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.next" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trigger next agent to <code class="xref py py-meth docutils literal"><span class="pre">act()</span></code> in
-the current step.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.4.0: </span>Use <a class="reference internal" href="#creamas.core.simulation.Simulation.step" title="creamas.core.simulation.Simulation.step"><code class="xref py py-func docutils literal notranslate"><span class="pre">step()</span></code></a> instead.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.step">
-<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.step" title="Permalink to this definition">¶</a></dt>
-<dd><p>Progress simulation with a single step.</p>
-<p>Can not be called when some of the agents have not acted for the
-current step.</p>
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress simulation by a single step.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.simulation.Simulation.steps">
-<code class="descname">steps</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.steps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">steps</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/simulation.html#Simulation.steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.simulation.Simulation.steps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Progress simulation with given amount of steps.</p>
-<p>Can not be called when some of the agents have not acted for the
-current step.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<em>int</em>) &#8211; amount of steps to run</td>
-</tr>
-</tbody>
-</table>
+<p>Can not be called when some of the agents have not acted for the current step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – amount of steps to run</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.age">
-<code class="descname">age</code><a class="headerlink" href="#creamas.core.simulation.Simulation.age" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">age</code><a class="headerlink" href="#creamas.core.simulation.Simulation.age" title="Permalink to this definition">¶</a></dt>
 <dd><p>Age of the simulation.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.callback">
-<code class="descname">callback</code><a class="headerlink" href="#creamas.core.simulation.Simulation.callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callable to be called after each simulation step for any extra
-bookkeeping, etc.. Should accept one parameter: <em>age</em> that is current
-simulation age.</p>
+<em class="property">property </em><code class="sig-name descname">callback</code><a class="headerlink" href="#creamas.core.simulation.Simulation.callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable to be called after each simulation step for any extra bookkeeping, etc.. Should accept one
+parameter: <em>age</em> that is current simulation age.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.env">
-<code class="descname">env</code><a class="headerlink" href="#creamas.core.simulation.Simulation.env" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment for the simulation. Must be a subclass of
-<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal"><span class="pre">Environment</span></code></a>.</p>
+<em class="property">property </em><code class="sig-name descname">env</code><a class="headerlink" href="#creamas.core.simulation.Simulation.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment for the simulation.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.name">
-<code class="descname">name</code><a class="headerlink" href="#creamas.core.simulation.Simulation.name" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#creamas.core.simulation.Simulation.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the simulation.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.simulation.Simulation.order">
-<code class="descname">order</code><a class="headerlink" href="#creamas.core.simulation.Simulation.order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Order in which agents are run.</p>
+<em class="property">property </em><code class="sig-name descname">order</code><a class="headerlink" href="#creamas.core.simulation.Simulation.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order in which agents are run. Order is not enforced for asynchronous executions.</p>
 <p>Possible values:</p>
 <ul class="simple">
-<li>alphabetical: agents are sorted by name</li>
-<li>random: agents are shuffled</li>
+<li><p>alphabetical: agents are sorted by name</p></li>
+<li><p>random: agents are shuffled</p></li>
 </ul>
-<p>Changing the order while iteration is unfinished will take place in the
-next iteration.</p>
+<p>Changing the order while iteration is unfinished will take place in the next iteration.</p>
 </dd></dl>
 
 </dd></dl>
@@ -314,15 +322,16 @@ next iteration.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="agents.html" class="btn btn-neutral float-right" title="Agents" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mp.html" class="btn btn-neutral float-right" title="Multiprocessing functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="environment.html" class="btn btn-neutral" title="Environment" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="environment.html" class="btn btn-neutral float-left" title="Environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -331,11 +340,11 @@ next iteration.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -348,36 +357,15 @@ next iteration.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

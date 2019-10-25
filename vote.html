@@ -1,0 +1,657 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Voting for Agents &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Assorted Utility Functions" href="util.html" />
+    <link rel="prev" title="NetworkX Integration" href="nx.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+        
+      <li>Voting for Agents</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/vote.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.vote">
+<span id="voting-for-agents"></span><h1>Voting for Agents<a class="headerlink" href="#module-creamas.vote" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-vote"></span><p>Implementations for voting and other social choice behaviors.</p>
+<p>Holds basic implementations for:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#creamas.vote.VoteAgent" title="creamas.vote.VoteAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteAgent</span></code></a>: An agent implementing functions needed
+for voting</p></li>
+<li><p><a class="reference internal" href="#creamas.vote.VoteEnvironment" title="creamas.vote.VoteEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteEnvironment</span></code></a>: An environment holding basic
+voting functionality.</p></li>
+<li><p><a class="reference internal" href="#creamas.vote.VoteManager" title="creamas.vote.VoteManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteManager</span></code></a>: A manager agent for instances of
+<a class="reference internal" href="#creamas.vote.VoteEnvironment" title="creamas.vote.VoteEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteEnvironment</span></code></a> when they are slave environments
+in multi- or distributed environments.</p></li>
+<li><p><a class="reference internal" href="#creamas.vote.VoteOrganizer" title="creamas.vote.VoteOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteOrganizer</span></code></a>: A class which can initiate voting
+and compute its results.</p></li>
+</ul>
+</div></blockquote>
+<p>It should be noted that only the “true” slave environments, i.e. environments
+derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> need to have voting behavior implemented
+(and appropriate voting managers). <a class="reference internal" href="#creamas.vote.VoteOrganizer" title="creamas.vote.VoteOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteOrganizer</span></code></a>
+communicates with the “true” slave environments directly without the need of
+the middle layer environments (multi-environments) or managers in the case of
+distributed systems.</p>
+<dl class="class">
+<dt id="creamas.vote.VoteAgent">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">VoteAgent</code><span class="sig-paren">(</span><em class="sig-param">environment</em>, <em class="sig-param">resources=0</em>, <em class="sig-param">name=None</em>, <em class="sig-param">log_folder=None</em>, <em class="sig-param">log_level=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>An agent with voting behavior.</p>
+<p>Implements three functions needed for voting:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#creamas.vote.VoteAgent.validate" title="creamas.vote.VoteAgent.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code></a>: Validates a set of candidates
+returning only the validated candidates.</p></li>
+<li><p><a class="reference internal" href="#creamas.vote.VoteAgent.vote" title="creamas.vote.VoteAgent.vote"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vote()</span></code></a>: Votes from a set of candidates,
+i.e. orders them by preference. Returns the ordered list and preferences.
+Basic implementation orders the candidates using the agent’s
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code> function.</p></li>
+<li><p><a class="reference internal" href="#creamas.vote.VoteAgent.add_candidate" title="creamas.vote.VoteAgent.add_candidate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_candidate()</span></code></a>: Add candidate artifact to
+the agent’s environment’s list of current candidates.</p></li>
+</ul>
+<dl class="method">
+<dt id="creamas.vote.VoteAgent.act">
+<em class="property">async </em><code class="sig-name descname">act</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteAgent.act" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger agent to act.</p>
+<p><strong>This is a dummy method which should be overridden in a subclass.</strong></p>
+<p>This function serves as the main function for the simulations, and
+is called for each agent on each iteration step of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#NotImplementedError" title="(in Python v3.7)"><strong>NotImplementedError</strong></a> – If not overridden in subclass.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="environment.html#creamas.core.environment.Environment.trigger_all" title="creamas.core.environment.Environment.trigger_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trigger_all()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteAgent.add_candidate">
+<code class="sig-name descname">add_candidate</code><span class="sig-paren">(</span><em class="sig-param">artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteAgent.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteAgent.add_candidate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add artifact to the environment’s current list of candidates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteAgent.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteAgent.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteAgent.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate a list of candidate artifacts.</p>
+<p>Candidate validation should prune unwanted artifacts from the overall
+candidate set. Agent can use its own reasoning to validate the
+given candidates. The method should return a subset of the given
+candidates list containing the validated artifacts (i.e. the
+artifacts that are not pruned).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This basic implementation returns the given candidate list as is.
+Override this function in the subclass for the appropriate
+validation procedure.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>candidates</strong> – A list of candidate artifacts</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The validated artifacts, a subset of given candidates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteAgent.vote">
+<code class="sig-name descname">vote</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteAgent.vote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteAgent.vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rank artifact candidates.</p>
+<p>The voting is needed for the agents living in societies using
+social decision making. The function should return a sorted list
+of (candidate, evaluation)-tuples. Depending on the social choice
+function used, the evaluation might be omitted from the actual decision
+making, or only a number of (the highest ranking) candidates may be
+used.</p>
+<p>This basic implementation ranks candidates based on
+<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.evaluate" title="creamas.core.agent.CreativeAgent.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>candidates</strong> – list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code></a> objects to be
+ranked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Ordered list of (candidate, evaluation)-tuples</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.vote.VoteEnvironment">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">VoteEnvironment</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteEnvironment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>An environment implementing functionality needed for voting.</p>
+<p>Voting depends largely on a list of <code class="xref py py-attr docutils literal notranslate"><span class="pre">candidate</span></code> artifacts, which are
+passed down to agents at the time of voting. Candidate artifacts can also
+be validated by the agents (only returning artifacts that are deemed
+appropriate, or good enough, by all agents in the environment).</p>
+<dl class="method">
+<dt id="creamas.vote.VoteEnvironment.add_candidate">
+<code class="sig-name descname">add_candidate</code><span class="sig-paren">(</span><em class="sig-param">artifact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteEnvironment.add_candidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteEnvironment.add_candidate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add candidate artifact to the list of current candidates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteEnvironment.clear_candidates">
+<code class="sig-name descname">clear_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteEnvironment.clear_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteEnvironment.clear_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove current candidate artifacts from the environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteEnvironment.gather_votes">
+<code class="sig-name descname">gather_votes</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteEnvironment.gather_votes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteEnvironment.gather_votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather votes for the given candidates from the agents in the
+environment.</p>
+<p>Returned votes are anonymous, i.e. they cannot be tracked to any
+individual agent afterwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of votes. Each vote is a list of <code class="docutils literal notranslate"><span class="pre">(artifact,</span> <span class="pre">preference)</span></code>
+-tuples sorted in a preference order of a single agent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteEnvironment.validate_candidates">
+<code class="sig-name descname">validate_candidates</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteEnvironment.validate_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteEnvironment.validate_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the candidate artifacts with the agents in the environment.</p>
+<p>In larger societies this method might be costly, as it calls each
+agents’ <code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of candidates that are validated by all agents in the
+environment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteEnvironment.candidates">
+<em class="property">property </em><code class="sig-name descname">candidates</code><a class="headerlink" href="#creamas.vote.VoteEnvironment.candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current artifact candidates, subject to e.g. agents voting to
+determine which candidate(s) are added to <code class="xref py py-attr docutils literal notranslate"><span class="pre">artifacts</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.vote.VoteManager">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">VoteManager</code><span class="sig-paren">(</span><em class="sig-param">environment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manager agent for voting environments.</p>
+<p>The class is designed be used in conjunction with
+<a class="reference internal" href="#creamas.vote.VoteEnvironment" title="creamas.vote.VoteEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">VoteEnvironment</span></code></a> in multiprocessing and distributed
+settings.</p>
+<dl class="method">
+<dt id="creamas.vote.VoteManager.clear_candidates">
+<code class="sig-name descname">clear_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteManager.clear_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteManager.clear_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear candidates in the managed environment.</p>
+<p>This is a managing function for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">clear_candidates()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteManager.gather_votes">
+<em class="property">async </em><code class="sig-name descname">gather_votes</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteManager.gather_votes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteManager.gather_votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather votes for the given candidates from the agents in the
+managed environment.</p>
+<p>This is a managing function for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">gather_votes()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteManager.get_candidates">
+<em class="property">async </em><code class="sig-name descname">get_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteManager.get_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteManager.get_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current candidates from the managed environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteManager.validate_candidates">
+<em class="property">async </em><code class="sig-name descname">validate_candidates</code><span class="sig-paren">(</span><em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteManager.validate_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteManager.validate_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the candidates with the agents in the managed environment.</p>
+<p>This is a managing function for
+<a class="reference internal" href="#creamas.vote.VoteEnvironment.validate_candidates" title="creamas.vote.VoteEnvironment.validate_candidates"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_candidates()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.vote.VoteOrganizer">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">VoteOrganizer</code><span class="sig-paren">(</span><em class="sig-param">environment</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class which organizes voting behavior in an environment.</p>
+<p>The organizer can <a class="reference internal" href="#creamas.vote.VoteOrganizer.gather_candidates" title="creamas.vote.VoteOrganizer.gather_candidates"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gather_candidates()</span></code></a>
+from the environment, and then
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.gather_votes" title="creamas.vote.VoteOrganizer.gather_votes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gather_votes()</span></code></a> for the candidates.
+Optionally the organizer may
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.validate_candidates" title="creamas.vote.VoteOrganizer.validate_candidates"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_candidates()</span></code></a> before gathering
+the votes. After the votes have been collected the organizer may
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.compute_results" title="creamas.vote.VoteOrganizer.compute_results"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_results()</span></code></a> of the votes with a
+given voting method.</p>
+<p>The organizer also has <a class="reference internal" href="#creamas.vote.VoteOrganizer.gather_and_vote" title="creamas.vote.VoteOrganizer.gather_and_vote"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gather_and_vote()</span></code></a>
+to do all of the above in one go.</p>
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.clear_candidates">
+<code class="sig-name descname">clear_candidates</code><span class="sig-paren">(</span><em class="sig-param">clear_env=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.clear_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.clear_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the current candidates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clear_env</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, clears also environment’s (or its underlying slave
+environments’) candidates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.compute_results">
+<code class="sig-name descname">compute_results</code><span class="sig-paren">(</span><em class="sig-param">voting_method</em>, <em class="sig-param">votes=None</em>, <em class="sig-param">winners=1</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.compute_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.compute_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute voting results to decide the winner(s) from the
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.votes" title="creamas.vote.VoteOrganizer.votes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">votes</span></code></a>.</p>
+<p>The votes should have been made for the current
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.candidates" title="creamas.vote.VoteOrganizer.candidates"><code class="xref py py-attr docutils literal notranslate"><span class="pre">candidates</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voting_method</strong> – A function which computes the results from the votes. Should
+accept at least three parameters: candidates, votes and number of
+vote winners. The function should return at least a list of vote
+winners. See, e.g. <a class="reference internal" href="#creamas.vote.vote_mean" title="creamas.vote.vote_mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">vote_mean()</span></code></a> or
+<a class="reference internal" href="#creamas.vote.vote_best" title="creamas.vote.vote_best"><code class="xref py py-func docutils literal notranslate"><span class="pre">vote_best()</span></code></a>. Additional <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are passed
+down to the voting method.</p></li>
+<li><p><strong>votes</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of votes by which the voting is performed. Each vote should
+have the same set of artifacts in them. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the results
+are computed for the current list of
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.votes" title="creamas.vote.VoteOrganizer.votes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">votes</span></code></a>.</p></li>
+<li><p><strong>winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="artifact.html#creamas.core.artifact.Artifact" title="creamas.core.artifact.Artifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code></a> objects,
+the winning artifacts. Some voting methods may also return a score
+associated with each winning artifact.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.gather_and_vote">
+<code class="sig-name descname">gather_and_vote</code><span class="sig-paren">(</span><em class="sig-param">voting_method</em>, <em class="sig-param">validate=False</em>, <em class="sig-param">winners=1</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.gather_and_vote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.gather_and_vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to gathering candidates and votes and
+performing voting using them.</p>
+<p>Additional <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are passed down to voting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>voting_method</strong> – The voting method to use, see
+<a class="reference internal" href="#creamas.vote.VoteOrganizer.compute_results" title="creamas.vote.VoteOrganizer.compute_results"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_results()</span></code></a> for details.</p></li>
+<li><p><strong>validate</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Validate gathered candidates before voting.</p></li>
+<li><p><strong>winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Winner(s) of the vote.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.gather_candidates">
+<code class="sig-name descname">gather_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.gather_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.gather_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather candidates from the slave environments.</p>
+<p>The candidates are stored in <a class="reference internal" href="#creamas.vote.VoteOrganizer.candidates" title="creamas.vote.VoteOrganizer.candidates"><code class="xref py py-attr docutils literal notranslate"><span class="pre">candidates</span></code></a>, overriding any
+previous candidates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.gather_votes">
+<code class="sig-name descname">gather_votes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.gather_votes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.gather_votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather votes from all the underlying slave environments for the
+current list of candidates.</p>
+<p>The votes are stored in <a class="reference internal" href="#creamas.vote.VoteOrganizer.votes" title="creamas.vote.VoteOrganizer.votes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">votes</span></code></a>, overriding any previous votes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.get_managers">
+<code class="sig-name descname">get_managers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.get_managers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.get_managers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get managers for the slave environments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.validate_candidates">
+<code class="sig-name descname">validate_candidates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#VoteOrganizer.validate_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.VoteOrganizer.validate_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate current candidates.</p>
+<p>This method validates the current candidate list in all the agents
+in the environment (or underlying slave environments) and replaces
+the current <a class="reference internal" href="#creamas.vote.VoteOrganizer.candidates" title="creamas.vote.VoteOrganizer.candidates"><code class="xref py py-attr docutils literal notranslate"><span class="pre">candidates</span></code></a> with the list of validated candidates.</p>
+<p>The artifact candidates must be hashable and have a <code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code>
+implemented for validation to work on multi-environments and
+distributed environments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.candidates">
+<em class="property">property </em><code class="sig-name descname">candidates</code><a class="headerlink" href="#creamas.vote.VoteOrganizer.candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current list of candidates gathered from the environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.env">
+<em class="property">property </em><code class="sig-name descname">env</code><a class="headerlink" href="#creamas.vote.VoteOrganizer.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>The environment associated with this voting organizer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.vote.VoteOrganizer.votes">
+<em class="property">property </em><code class="sig-name descname">votes</code><a class="headerlink" href="#creamas.vote.VoteOrganizer.votes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current list of votes gathered from the environment.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.vote.vote_IRV">
+<code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">vote_IRV</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">votes</em>, <em class="sig-param">n_winners</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#vote_IRV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.vote_IRV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform IRV voting based on votes.</p>
+<p>Ties are resolved randomly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – All candidates in the vote</p></li>
+<li><p><strong>votes</strong> – Votes from the agents</p></li>
+<li><p><strong>n_winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.vote.vote_best">
+<code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">vote_best</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">votes</em>, <em class="sig-param">n_winners</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#vote_best"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.vote_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the artifact with the single best evaluation as the winner of
+the vote.</p>
+<p>Ties are resolved randomly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – All candidates in the vote</p></li>
+<li><p><strong>votes</strong> – Votes from the agents</p></li>
+<li><p><strong>n_winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.vote.vote_least_worst">
+<code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">vote_least_worst</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">votes</em>, <em class="sig-param">n_winners</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#vote_least_worst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.vote_least_worst" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select “least worst” artifact as the winner of the vote.</p>
+<p>Least worst artifact is the artifact with the best worst evaluation, i.e.
+its worst evaluation is the best among all of the artifacts.</p>
+<p>Ties are resolved randomly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – All candidates in the vote</p></li>
+<li><p><strong>votes</strong> – Votes from the agents</p></li>
+<li><p><strong>n_winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.vote.vote_mean">
+<code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">vote_mean</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">votes</em>, <em class="sig-param">n_winners</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#vote_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.vote_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform mean voting based on votes.</p>
+<p>Mean voting computes the mean preference for each of the artifact
+candidates from the votes and sorts the candidates in the mean preference
+order.</p>
+<p>Ties are resolved randomly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – All candidates in the vote</p></li>
+<li><p><strong>votes</strong> – Votes from the agents</p></li>
+<li><p><strong>n_winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.vote.vote_random">
+<code class="sig-prename descclassname">creamas.vote.</code><code class="sig-name descname">vote_random</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">votes</em>, <em class="sig-param">n_winners</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/vote.html#vote_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.vote.vote_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select random winners from the candidates.</p>
+<p>This voting method bypasses the given votes completely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – All candidates in the vote</p></li>
+<li><p><strong>votes</strong> – Votes from the agents</p></li>
+<li><p><strong>n_winners</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of vote winners</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="util.html" class="btn btn-neutral float-right" title="Assorted Utility Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="nx.html" class="btn btn-neutral float-left" title="NetworkX Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

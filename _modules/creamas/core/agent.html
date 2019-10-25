@@ -8,47 +8,44 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.core.agent &mdash; Creamas 0.2.0 documentation</title>
+  <title>creamas.core.agent &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../../genindex.html"/>
-        <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -83,7 +80,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../create_agent.html">Implementing Agent Classes</a></li>
@@ -101,64 +101,81 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>creamas.core.agent</li>
+        
+      <li>creamas.core.agent</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.core.agent</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. py:module:: agent</span>
 <span class="sd">    :platform: Unix</span>
 
-<span class="sd">Agent module holds **CreativeAgent** implementation, a subclass of</span>
-<span class="sd">``aiomas.Agent``, which holds basic functionality thought to be shared by</span>
+<span class="sd">Agent module holds :class:`CreativeAgent` implementation, a subclass of</span>
+<span class="sd">:class:`aiomas.Agent`, which holds basic functionality thought to be shared by</span>
 <span class="sd">creative agents.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">choice</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">choice</span>
 
-<span class="kn">import</span> <span class="nn">aiomas</span>
+<span class="kn">from</span> <span class="nn">aiomas</span> <span class="k">import</span> <span class="n">Agent</span>
 
 <span class="kn">from</span> <span class="nn">creamas.core.artifact</span> <span class="k">import</span> <span class="n">Artifact</span>
-<span class="kn">from</span> <span class="nn">creamas.core.rule</span> <span class="k">import</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span>
 <span class="kn">from</span> <span class="nn">creamas.logging</span> <span class="k">import</span> <span class="n">ObjectLogger</span>
+<span class="kn">from</span> <span class="nn">creamas.util</span> <span class="k">import</span> <span class="n">expose</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CreativeAgent&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CreativeAgent&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="CreativeAgent"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent">[docs]</a><span class="k">class</span> <span class="nc">CreativeAgent</span><span class="p">(</span><span class="n">aiomas</span><span class="o">.</span><span class="n">Agent</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Base class for all creative agents.</span>
+<div class="viewcode-block" id="CreativeAgent"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent">[docs]</a><span class="k">class</span> <span class="nc">CreativeAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all creative agents.</span>
 
 <span class="sd">    All agents share certain common attributes:</span>
 
@@ -171,12 +188,6 @@
 <span class="sd">    :ivar int cur_res:</span>
 <span class="sd">        Agent&#39;s current resources.</span>
 
-<span class="sd">    :ivar list ~creamas.core.agent.CreativeAgent.R:</span>
-<span class="sd">        rules agent uses to evaluate artifacts</span>
-
-<span class="sd">    :ivar list ~creamas.core.agent.CreativeAgent.W:</span>
-<span class="sd">        Weight for each rule in **R**, in [-1,1].</span>
-
 <span class="sd">    :ivar list A:</span>
 <span class="sd">        Artifacts the agent has created so far</span>
 
@@ -184,30 +195,20 @@
 <span class="sd">        Domain knowledge, other agents&#39; artifacts seen by this agent</span>
 
 <span class="sd">    :ivar list connections:</span>
-<span class="sd">        Other agents this agent knows</span>
-
-<span class="sd">    :ivar list attitudes:</span>
-<span class="sd">        Attitude towards each agent in **connections**, in [-1,1]</span>
+<span class="sd">        Dictionary of other agents this agent knows</span>
 
 <span class="sd">    :ivar str ~creamas.core.agent.CreativeAgent.name:</span>
-<span class="sd">        Name of the agent. Defaults to address of the agent.</span>
-
-<span class="sd">    :ivar ~creamas.core.agent.CreativeAgent.age:</span>
-<span class="sd">        Age of the agent</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="sd">        Name of the agent. Defaults to the address of the agent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">log_folder</span><span class="o">=</span><span class="k">None</span><span class="p">,</span>
                  <span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">environment</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span> <span class="o">=</span> <span class="n">resources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">=</span> <span class="n">resources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_R</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_W</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_D</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
@@ -215,77 +216,71 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addr</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">log_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                       <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">ObjectLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_folder</span><span class="p">,</span> <span class="n">add_name</span><span class="o">=</span><span class="k">True</span><span class="p">,</span>
+                                        <span class="n">init</span><span class="o">=</span><span class="k">True</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Age of the agent.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_age</span>
-
-    <span class="nd">@age</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">age</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="n">age</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="k">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Human readable name of the agent. The agent should not change its</span>
-<span class="sd">        name during its lifetime.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;The name of the agent.</span>
+
+<span class="sd">        The agent should not change its name during its lifetime.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
 
     <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A logger for the agent.</span>
+
+<span class="sd">        The logger should be derived from</span>
+<span class="sd">        :class:`~creamas.logging.ObjectLogger`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span>
+
+    <span class="nd">@logger</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">l</span>
+
 <div class="viewcode-block" id="CreativeAgent.sanitized_name"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.sanitized_name">[docs]</a>    <span class="k">def</span> <span class="nf">sanitized_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Sanitized name of the agent, used for file and directory creation.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[:/]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span></div>
+        <span class="sd">&quot;&quot;&quot;Sanitized name of the agent, used for file and directory creation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;[:/]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;The environment where the agent lives. Must be a subclass of</span>
-<span class="sd">        :py:class:`~creamas.core.environment.Environment`.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;The environment where the agent lives. Must be a subclass of</span>
+<span class="sd">        :py:class:`~creamas.core.environment.Environment`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">R</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Rules agent uses to evaluate artifacts. Each rule in **R** is</span>
-<span class="sd">        expected to be a callable with single parameter, the artifact to be</span>
-<span class="sd">        evaluated. Callable should return a float in [-1,1]; where 1 means that</span>
-<span class="sd">        rule is very prominent in the artifact; 0 means that there is none of</span>
-<span class="sd">        that rule in the artifact; -1 means that the artifact shows</span>
-<span class="sd">        traits opposite to the rule.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Weights for the features. Each weight should be in [-1,1].&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span>
-
-    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Artifacts created so far by the agent.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Artifacts created so far by the agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">D</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Domain knowledge accumulated by this agent.</span>
+        <span class="sd">&quot;&quot;&quot;Domain knowledge accumulated by this agent.</span>
 
 <span class="sd">        Dictionary of agents and their artifacts.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_D</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">max_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Maximum resources for the agent per act. If 0, agent has unlimited</span>
-<span class="sd">        resources. If maximum resources are set below current resources,</span>
-<span class="sd">        current resources are capped to new maximum resources.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Maximum resources for the agent per simulation iteration act.</span>
+
+<span class="sd">        If ``max_res == 0``, agent has unlimited resources. If maximum</span>
+<span class="sd">        resources are set below current resources, current resources are</span>
+<span class="sd">        capped to new maximum resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span>
 
     <span class="nd">@max_res</span><span class="o">.</span><span class="n">setter</span>
@@ -298,7 +293,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cur_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Agent&#39;s current resources. Capped to maximum resources.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Agent&#39;s current resources. Capped to maximum resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span>
 
     <span class="nd">@cur_res</span><span class="o">.</span><span class="n">setter</span>
@@ -311,315 +307,193 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Addresses of the other agents the agent is aware of.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Known other agents</span>
+
+<span class="sd">        The connections has a dict-in-a-dict data type able to hold arbitrary</span>
+<span class="sd">        information about known other agents. The keys in the dictionary are</span>
+<span class="sd">        agent addresses and values are dictionaries holding information</span>
+<span class="sd">        relating to the key-agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">attitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Attitudes towards agents in **connections**.&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span>
-
 <div class="viewcode-block" id="CreativeAgent.qualname"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.qualname">[docs]</a>    <span class="k">def</span> <span class="nf">qualname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Get qualified name of this class.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.get_attitude"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_attitude">[docs]</a>    <span class="k">def</span> <span class="nf">get_attitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Get attitude towards agent in **connections**. If agent is not in</span>
-<span class="sd">        **connections**, returns None.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.set_attitude"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.set_attitude">[docs]</a>    <span class="k">def</span> <span class="nf">set_attitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">attitude</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Set attitude towards agent. If agent is not in **connections**, adds</span>
-<span class="sd">        it.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">attitude</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">and</span> <span class="n">attitude</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">attitude</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">attitude</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.set_weight"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Set weight for rule in **R**, if rule is not in **R**, adds</span>
-<span class="sd">        it.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
-                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rule to set weight (</span><span class="si">{}</span><span class="s2">) is not subclass &quot;</span>
-                            <span class="s2">&quot;of </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">weight</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">and</span> <span class="n">weight</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.get_weight"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Get weight for rule. If rule is not in **R**, returns None.&#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
-                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rule to get weight (</span><span class="si">{}</span><span class="s2">) is not subclass &quot;</span>
-                            <span class="s2">&quot;of </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="sd">&quot;&quot;&quot;Get qualified name of this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;{}:{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CreativeAgent.add_artifact"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_artifact">[docs]</a>    <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Add artifact to **A**.</span>
+        <span class="sd">&quot;&quot;&quot;Add artifact to :attr:`A`.</span>
 
 <span class="sd">        :raises TypeError:</span>
-<span class="sd">            If the artifact is not a member of</span>
-<span class="sd">            :class:`~creamas.core.artifact.Artifact` or its subclass.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">            If the artifact is not derived from</span>
+<span class="sd">            :class:`~creamas.core.artifact.Artifact`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Artifact to add (</span><span class="si">{}</span><span class="s2">) is not </span><span class="si">{}</span><span class="s2">.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Artifact to add ({}) is not {}.&quot;</span>
                             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CreativeAgent.add_rule"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_rule">[docs]</a>    <span class="k">def</span> <span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Add rule to **R** with initial weight.</span>
+<div class="viewcode-block" id="CreativeAgent.add_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_connection">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add an agent with given address to current :attr:`connections` with</span>
+<span class="sd">        given information.</span>
 
-<span class="sd">        :param rule: rule to be added</span>
-<span class="sd">        :type rule: `~creamas.core.rule.Rule`</span>
-<span class="sd">        :param float weight: initial weight for the rule</span>
-<span class="sd">        :raises TypeError: if rule is not subclass of :py:class:`Rule`</span>
-<span class="sd">        :returns: true if rule was successfully added, otherwise false</span>
-<span class="sd">        :rtype bool:</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
-                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rule to add (</span><span class="si">{}</span><span class="s2">) is not subclass of </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">.&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">rule</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+<span class="sd">        Does nothing if address is already in :attr:`connections`. Given</span>
+<span class="sd">        ``**kwargs`` are stored as key-value pairs to ``connections[addr]``</span>
+<span class="sd">        dictionary.</span>
 
-<div class="viewcode-block" id="CreativeAgent.remove_rule"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_rule">[docs]</a>    <span class="k">def</span> <span class="nf">remove_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Remove rule from **R** and its corresponding weight from **W**.</span>
-
-<span class="sd">        :param rule: rule to remove</span>
-<span class="sd">        :type rule: `~creamas.core.rule.Rule`</span>
-<span class="sd">        :raises TypeError: if rule is not subclass of :py:class:`Rule`</span>
-<span class="sd">        :returns: true if rule was successfully removed, otherwise false</span>
-<span class="sd">        :rtype bool:</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">)</span> <span class="ow">or</span>
-                <span class="nb">issubclass</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rule to remove (</span><span class="si">{}</span><span class="s2">) is not subclass of </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">.&quot;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">RuleLeaf</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_R</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_W</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.add_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">attitude</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Add an agent with given address to current **connections** with</span>
-<span class="sd">        given initial attitude.</span>
-
-<span class="sd">        Does nothing if agent is already in **connections**.</span>
-
-<span class="sd">        :param str addr: Address of the agent to be added</span>
-<span class="sd">        :param float attitude: initial attitude towards agent, in [-1, 1]</span>
-<span class="sd">        :returns: True if the agent was successfully added, False otherwise.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        :param str addr:</span>
+<span class="sd">            Address of the agent to be added</span>
+<span class="sd">        :returns:</span>
+<span class="sd">            ``True`` if the agent was successfully added, ``False`` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">addr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">attitudes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attitude</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">addr</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">return</span> <span class="k">True</span>
+        <span class="k">return</span> <span class="k">False</span></div>
 
-<div class="viewcode-block" id="CreativeAgent.remove_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Remove agent with given address from current connections.&#39;&#39;&#39;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attitudes</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="CreativeAgent.add_connections"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.add_connections">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">add_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add agents from :attr:`conns` to :attr:`connections`.</span>
 
-<div class="viewcode-block" id="CreativeAgent.connect"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.connect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Connect to agent in given address using the agent&#39;s environment.</span>
+<span class="sd">        :param list conns: A list of ``(addr, kwargs)``-tuples</span>
+<span class="sd">        :returns:</span>
+<span class="sd">            A boolean list, as returned by</span>
+<span class="sd">            :meth:`~creamas.core.agent.CreativeAgent.add_connections`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">conns</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rets</span></div>
 
-<span class="sd">        This is a shortcut to ``agent.env.connect(addr)``.</span>
+<div class="viewcode-block" id="CreativeAgent.remove_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.remove_connection">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove agent with given address from current connections.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="k">None</span><span class="p">)</span></div>
 
-<span class="sd">        :returns: :class:`Proxy` object for the connected agent.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">remote_agent</span></div>
+<div class="viewcode-block" id="CreativeAgent.clear_connections"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.clear_connections">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">clear_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear all connections from the agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="CreativeAgent.random_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.random_connection">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">random_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Connect to random agent from current **connections**.</span>
+<div class="viewcode-block" id="CreativeAgent.get_connections"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_connections">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">get_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get agent&#39;s current connections.</span>
 
-<span class="sd">        :returns: :class:`Proxy` object for the connected agent.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">addr</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
-        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">remote_agent</span></div>
+<span class="sd">        :param bool data:</span>
+<span class="sd">            Also return the data dictionary for each connection.</span>
+
+<span class="sd">        :returns: A list of agent addresses or a dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="CreativeAgent.connect"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.connect">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connect to agent in given address using the agent&#39;s environment.</span>
+
+<span class="sd">        This is a shortcut to</span>
+<span class="sd">        :meth:`~creamas.core.environment.Environment.connect`.</span>
+
+<span class="sd">        :returns: :class:`aiomas.Proxy` object for the connected agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CreativeAgent.random_connection"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.random_connection">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">random_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connect to random agent from current :attr:`connections`.</span>
+
+<span class="sd">        :returns: :class:`aiomas.Proxy` object for the connected agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CreativeAgent.publish"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Publish artifact to agent&#39;s environment.</span>
+        <span class="sd">&quot;&quot;&quot;Publish artifact to agent&#39;s environment.</span>
 
 <span class="sd">        :param artifact: artifact to be published</span>
 <span class="sd">        :type artifact: :py:class:`~creamas.core.artifact.Artifact`</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;Published </span><span class="si">{}</span><span class="s2"> to domain.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s">&quot;Published {} to domain.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artifact</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CreativeAgent.refill"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.refill">[docs]</a>    <span class="k">def</span> <span class="nf">refill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Refill agent&#39;s resources to maximum.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Refill agent&#39;s resources to maximum.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cur_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_res</span></div>
 
-<div class="viewcode-block" id="CreativeAgent.evaluate"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">r&#39;&#39;&#39;Evaluate artifact with agent&#39;s current rules and weights.</span>
+<div class="viewcode-block" id="CreativeAgent.evaluate"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.evaluate">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate an artifact.</span>
 
-<span class="sd">        :param artifact:</span>
-<span class="sd">            artifact to be evaluated</span>
+<span class="sd">        ** This is a dummy method which should be overridden in a subclass. **</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="k">None</span></div>
 
-<span class="sd">        :type artifact:</span>
-<span class="sd">            :py:class:`~creamas.core.artifact.Artifact`</span>
-
-<span class="sd">        :returns:</span>
-<span class="sd">            agent&#39;s evaluation of the artifact, in [-1,1], and framing. In this</span>
-<span class="sd">            basic implementation framing is always *None*.</span>
-
-<span class="sd">        :rtype:</span>
-<span class="sd">            tuple</span>
-
-<span class="sd">        Actual evaluation formula is:</span>
-
-<span class="sd">        .. math::</span>
-
-<span class="sd">            e(A) = \frac{\sum_{i=1}^{n} r_{i}(A)w_i}</span>
-<span class="sd">            {\sum_{i=1}^{n} \lvert w_i \rvert},</span>
-
-<span class="sd">        where :math:`r_{i}(A)` is the :math:`i` th rule&#39;s evaluation on</span>
-<span class="sd">        artifact :math:`A`, and :math:`w_i` is the weight for rule</span>
-<span class="sd">        :math:`r_i`.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)):</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">artifact</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">w</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">w</span><span class="p">,</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="CreativeAgent.ask_opinion"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.ask_opinion">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Ask agent&#39;s opinion about an artifact.</span>
-
-<span class="sd">        The artifact object should be serializable by the environment.</span>
+<div class="viewcode-block" id="CreativeAgent.ask_opinion"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.ask_opinion">[docs]</a>    <span class="n">async</span> <span class="k">def</span> <span class="nf">ask_opinion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">artifact</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ask an agent&#39;s opinion about an artifact.</span>
 
 <span class="sd">        :param str addr: Address of the agent which opinion is asked</span>
-<span class="sd">        :type agent: :py:class:`~creamas.core.agent.CreativeAgent`</span>
+<span class="sd">        :type addr: :py:class:`~creamas.core.agent.CreativeAgent`</span>
 <span class="sd">        :param object artifact: artifact to be evaluated</span>
 <span class="sd">        :returns: agent&#39;s evaluation of the artifact</span>
 <span class="sd">        :rtype: float</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">remote_agent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="k">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span></div>
 
-    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
-<div class="viewcode-block" id="CreativeAgent.act"><a class="viewcode-back" href="../../../create_sim.html#creamas.core.agent.CreativeAgent.act">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Trigger agent to act. **Dummy method, override in subclass.**</span>
+<span class="sd">        This is a shortcut to::</span>
+
+<span class="sd">            remote_agent = await self.env.connect(addr)</span>
+<span class="sd">            opinion = await remote_agent.evaluate(artifact)</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The artifact object should be serializable by the environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">remote_agent</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">remote_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CreativeAgent.act"><a class="viewcode-back" href="../../../create_sim.html#creamas.core.agent.CreativeAgent.act">[docs]</a>    <span class="nd">@expose</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trigger agent to act.</span>
+
+<span class="sd">        **This is a dummy method which should be overridden in a subclass.**</span>
 
 <span class="sd">        This function serves as the main function for the simulations, and</span>
 <span class="sd">        is called for each agent on each iteration step of the simulation.</span>
 
 <span class="sd">        :raises NotImplementedError: If not overridden in subclass.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Override in subclass.&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CreativeAgent.validate"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Validate a list of candidate artifacts.</span>
+<span class="sd">        .. seealso::</span>
 
-<span class="sd">        Candidate validation should prune unwanted artifacts from the overall</span>
-<span class="sd">        candidate set. Agent can use its own reasoning to validate the</span>
-<span class="sd">        given candidates. The method should return a subset of the given</span>
-<span class="sd">        candidates list containing the validated artifacts (i.e. the</span>
-<span class="sd">        artifacts that are not pruned).</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            This basic implementation returns the given candidate list as is.</span>
-<span class="sd">            Override this function in the subclass for the appropriate</span>
-<span class="sd">            validation procedure.</span>
-
-<span class="sd">        :param candidates: A list of candidate artifacts</span>
-<span class="sd">        :returns: The validated artifacts, a subset of given candidates</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">candidates</span></div>
-
-    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
-<div class="viewcode-block" id="CreativeAgent.vote"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.vote">[docs]</a>    <span class="k">def</span> <span class="nf">vote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Rank artifact candidates.</span>
-
-<span class="sd">        The voting is needed for the agents living in societies using</span>
-<span class="sd">        social decision making. The function should return a sorted list</span>
-<span class="sd">        of (candidate, evaluation)-tuples. Depending on the social choice</span>
-<span class="sd">        function used, the evaluation might be omitted from the actual decision</span>
-<span class="sd">        making, or only a number of (the highest ranking) candidates may be</span>
-<span class="sd">        used.</span>
-
-<span class="sd">        This basic implementation ranks candidates based on</span>
-<span class="sd">        :meth:`~creamas.core.agent.CreativeAgent.evaluate`.</span>
-
-<span class="sd">        :param candidates:</span>
-<span class="sd">            list of :py:class:`~creamas.core.artifact.Artifact` objects to be</span>
-<span class="sd">            ranked</span>
-
-<span class="sd">        :returns:</span>
-<span class="sd">            Ordered list of (candidate, evaluation)-tuples</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">ranks</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">c</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">]</span>
-        <span class="n">ranks</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ranks</span></div>
-
-    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
-<div class="viewcode-block" id="CreativeAgent.get_older"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.get_older">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_older</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Age agent by one simulation step.&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_age</span> <span class="o">+</span> <span class="mi">1</span></div>
+<span class="sd">            :meth:`~creamas.core.environment.Environment.trigger_all`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;Override in subclass.&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
-    <span class="nd">@aiomas</span><span class="o">.</span><span class="n">expose</span>
-<div class="viewcode-block" id="CreativeAgent.close"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Perform any bookkeeping needed before closing the agent.</span>
+<div class="viewcode-block" id="CreativeAgent.close"><a class="viewcode-back" href="../../../agent.html#creamas.core.agent.CreativeAgent.close">[docs]</a>    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform any bookkeeping needed before closing the agent.</span>
 
-<span class="sd">        **Dummy implementation, override in subclass if needed.**</span>
+<span class="sd">        **This is a dummy method which should be overridden in a subclass.**</span>
 
 <span class="sd">        :param str folder: Folder where the agent should save its data.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__repr__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s">&quot;{}({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -628,11 +502,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -645,36 +519,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

@@ -8,47 +8,44 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.mappers &mdash; Creamas 0.2.0 documentation</title>
+  <title>creamas.mappers &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -62,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -83,7 +80,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
@@ -101,41 +101,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>creamas.mappers</li>
+        
+      <li>creamas.mappers</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.mappers</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">.. py:module:: mappers</span>
 <span class="sd">    :platform: Unix</span>
 
@@ -144,10 +162,10 @@
 <span class="sd">agent&#39;s to represent agent&#39;s preferences over features values.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">from</span> <span class="nn">creamas.math</span> <span class="k">import</span> <span class="n">gaus_pdf</span><span class="p">,</span> <span class="n">logistic</span>
-<span class="kn">from</span> <span class="nn">creamas.core</span> <span class="k">import</span> <span class="n">Mapper</span>
+<span class="kn">from</span> <span class="nn">creamas.rules.mapper</span> <span class="k">import</span> <span class="n">Mapper</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BooleanMapper&#39;</span><span class="p">,</span> <span class="s1">&#39;LinearMapper&#39;</span><span class="p">,</span> <span class="s1">&#39;DoubleLinearMapper&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;GaussianMapper&#39;</span><span class="p">,</span> <span class="s1">&#39;LogisticMapper&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;BooleanMapper&#39;</span><span class="p">,</span> <span class="s">&#39;LinearMapper&#39;</span><span class="p">,</span> <span class="s">&#39;DoubleLinearMapper&#39;</span><span class="p">,</span>
+           <span class="s">&#39;GaussianMapper&#39;</span><span class="p">,</span> <span class="s">&#39;LogisticMapper&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="BooleanMapper"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.BooleanMapper">[docs]</a><span class="k">class</span> <span class="nc">BooleanMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
@@ -164,16 +182,16 @@
 <span class="sd">         &#39;-11&#39;  -1.0     1.0</span>
 <span class="sd">        ======= ======= =======</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">]</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;10&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;10&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">bool</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
-                           <span class="s1">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;{}({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -183,11 +201,11 @@
     <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value (</span><span class="si">{}</span><span class="s1">) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="n">value</span><span class="p">)</span>
+<div class="viewcode-block" id="BooleanMapper.map"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.BooleanMapper.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="n">value</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="mf">0.0</span>
@@ -222,20 +240,20 @@
 
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">}</span>
-    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">]</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">lo</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;lo (</span><span class="si">{}</span><span class="s1">) must be smaller than hi (</span><span class="si">{}</span><span class="s1">).&#39;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;lo ({}) must be smaller than hi ({}).&#39;</span>
                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span> <span class="o">=</span> <span class="n">lo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span> <span class="o">=</span> <span class="n">hi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
-                           <span class="s1">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -246,7 +264,7 @@
     <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value (</span><span class="si">{}</span><span class="s1">) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -255,8 +273,8 @@
 <span class="sd">        that return these types of values.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value_set</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<div class="viewcode-block" id="LinearMapper.map"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.LinearMapper.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">lo</span><span class="p">:</span>
@@ -314,27 +332,27 @@
 <span class="sd">        ======= ===== ====== ======</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="c1"># Reverse modes (modes for second line) for the modes described in the</span>
-    <span class="c1"># LinearMapper.</span>
-    <span class="n">reverse_modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">,</span> <span class="s1">&#39;1-1&#39;</span><span class="p">]</span>
+    <span class="c"># Reverse modes (modes for second line) for the modes described in the</span>
+    <span class="c"># LinearMapper.</span>
+    <span class="n">reverse_modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">mid</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">lo</span> <span class="o">&gt;</span> <span class="n">mid</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;lo (</span><span class="si">{}</span><span class="s1">) must be smaller than mid (</span><span class="si">{}</span><span class="s1">).&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">mid</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lo</span> <span class="o">&gt;=</span> <span class="n">mid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;lo ({}) must be smaller than mid ({}).&#39;</span>
                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">mid</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">mid</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;mid (</span><span class="si">{}</span><span class="s1">) must be smaller than hi (</span><span class="si">{}</span><span class="s1">).&#39;</span>
+        <span class="k">if</span> <span class="n">mid</span> <span class="o">&gt;=</span> <span class="n">hi</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;mid ({}) must be smaller than hi ({}).&#39;</span>
                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="n">hi</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span> <span class="o">=</span> <span class="n">lo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mid</span> <span class="o">=</span> <span class="n">mid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span> <span class="o">=</span> <span class="n">hi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
-                           <span class="s1">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_reverse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">_mid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_reverse_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
@@ -342,20 +360,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Mode of the mapper.&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Mode of the mapper.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
 
     <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value (</span><span class="si">{}</span><span class="s1">) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_reverse_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="DoubleLinearMapper.map"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.DoubleLinearMapper.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_lo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rmode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_mid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rmode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_mid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hi</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="GaussianMapper"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.GaussianMapper">[docs]</a><span class="k">class</span> <span class="nc">GaussianMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
@@ -379,9 +398,9 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">}</span>
-    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">]</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param float mean: mean of the mapping distribution</span>
 <span class="sd">        :param float std: standard deviation of the mapping distribution</span>
@@ -390,11 +409,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span> <span class="o">=</span> <span class="n">mean</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_std</span> <span class="o">=</span> <span class="n">std</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
-                           <span class="s1">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -405,11 +424,11 @@
     <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value (</span><span class="si">{}</span><span class="s1">) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<div class="viewcode-block" id="GaussianMapper.map"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.GaussianMapper.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">lmax</span> <span class="o">=</span> <span class="n">gaus_pdf</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
@@ -440,9 +459,9 @@
 <span class="sd">    shifting), might be applied to the mapped value.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_value_set</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">}</span>
-    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">]</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">,</span> <span class="s">&#39;1-1&#39;</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;01&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param float x0: sigmoid&#39;s midpoint</span>
 <span class="sd">        :param float k: steepness of the curve</span>
@@ -451,8 +470,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span> <span class="o">=</span> <span class="n">x0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">=</span> <span class="n">k</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
-                           <span class="s1">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s1">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map10</span><span class="p">,</span> <span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map01</span><span class="p">,</span>
+                           <span class="s">&#39;1-1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map1_1</span><span class="p">,</span> <span class="s">&#39;-11&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_11</span><span class="p">}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -462,15 +481,15 @@
     <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value (</span><span class="si">{}</span><span class="s1">) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Value ({}) not found from modes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s">&quot;{}({}-{},{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<div class="viewcode-block" id="LogisticMapper.map"><a class="viewcode-back" href="../../mappers.html#creamas.mappers.LogisticMapper.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode_maps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_map10</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">x0</span>
@@ -490,6 +509,7 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -498,11 +518,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -515,36 +535,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

@@ -8,49 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Artifact &mdash; Creamas 0.2.0 documentation</title>
+  <title>Artifact &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Feature" href="feature.html"/>
-        <link rel="prev" title="Agent" href="agent.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Environment" href="environment.html" />
+    <link rel="prev" title="Agent" href="agent.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -64,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -85,7 +82,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
@@ -95,18 +95,19 @@
 <li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Artifact</a></li>
-<li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mapper.html">Mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,38 +123,58 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
+        
           <li><a href="core.html">Core</a> &raquo;</li>
-      
-    <li>Artifact</li>
+        
+      <li>Artifact</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/artifact.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/artifact.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -165,58 +186,60 @@
 creative agents.</p>
 <dl class="class">
 <dt id="creamas.core.artifact.Artifact">
-<em class="property">class </em><code class="descclassname">creamas.core.artifact.</code><code class="descname">Artifact</code><span class="sig-paren">(</span><em>creator</em>, <em>obj</em>, <em>domain=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">creamas.core.artifact.</code><code class="sig-name descname">Artifact</code><span class="sig-paren">(</span><em class="sig-param">creator</em>, <em class="sig-param">obj</em>, <em class="sig-param">domain=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for artifacts.</p>
+<p>A wrapper around the actual artifact object
+(<a class="reference internal" href="#creamas.core.artifact.Artifact.obj" title="creamas.core.artifact.Artifact.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">obj</span></code></a>) which holds information about
+the creator, framings and evaluations of the artifact.</p>
 <dl class="method">
 <dt id="creamas.core.artifact.Artifact.add_eval">
-<code class="descname">add_eval</code><span class="sig-paren">(</span><em>agent</em>, <em>e</em>, <em>fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact.add_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact.add_eval" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add or change agent&#8217;s evaluation of the artifact with given framing
+<code class="sig-name descname">add_eval</code><span class="sig-paren">(</span><em class="sig-param">agent</em>, <em class="sig-param">e</em>, <em class="sig-param">fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact.add_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact.add_eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add or change agent’s evaluation of the artifact with given framing
 information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>agent</strong> &#8211; agent which did the evaluation</li>
-<li><strong>e</strong> (<em>float</em>) &#8211; evaluation for the artifact</li>
-<li><strong>fr</strong> (<em>object</em>) &#8211; framing information for the evaluation</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent</strong> – Name of the agent which did the evaluation.</p></li>
+<li><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Evaluation for the artifact.</p></li>
+<li><p><strong>fr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – Framing information for the evaluation.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.core.artifact.Artifact.creator">
+<em class="property">property </em><code class="sig-name descname">creator</code><a class="headerlink" href="#creamas.core.artifact.Artifact.creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the agent which created the artifact.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="creamas.core.artifact.Artifact.domain">
-<code class="descname">domain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/artifact.html#Artifact.domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.artifact.Artifact.domain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Domain of the artifact. Domain must match feature&#8217;s possible domains
+<em class="property">property </em><code class="sig-name descname">domain</code><a class="headerlink" href="#creamas.core.artifact.Artifact.domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Domain of the artifact. Domain must match feature’s possible domains
 at evaluation time, or None is returned.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="creamas.core.artifact.Artifact.creator">
-<code class="descname">creator</code><a class="headerlink" href="#creamas.core.artifact.Artifact.creator" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code></a> who created the
-artifact.</p>
-</dd></dl>
-
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.artifact.Artifact.evals">
-<code class="descname">evals</code><a class="headerlink" href="#creamas.core.artifact.Artifact.evals" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> - evaluations of the artifact.</p>
+<em class="property">property </em><code class="sig-name descname">evals</code><a class="headerlink" href="#creamas.core.artifact.Artifact.evals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of evaluations for the artifact.</p>
+<p>Keys are the names of the evaluating agents and values are their
+actual evaluations.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.artifact.Artifact.framings">
-<code class="descname">framings</code><a class="headerlink" href="#creamas.core.artifact.Artifact.framings" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> - framings given for the evaluations.</p>
+<em class="property">property </em><code class="sig-name descname">framings</code><a class="headerlink" href="#creamas.core.artifact.Artifact.framings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of framings for the artifacts.</p>
+<p>Keys are the names of the framing agents and values are their
+actual framings.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="creamas.core.artifact.Artifact.obj">
-<code class="descname">obj</code><a class="headerlink" href="#creamas.core.artifact.Artifact.obj" title="Permalink to this definition">¶</a></dt>
-<dd><p>Artifact itself.</p>
+<em class="property">property </em><code class="sig-name descname">obj</code><a class="headerlink" href="#creamas.core.artifact.Artifact.obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artifact object itself.</p>
 </dd></dl>
 
 </dd></dl>
@@ -225,15 +248,16 @@ artifact.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="feature.html" class="btn btn-neutral float-right" title="Feature" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="environment.html" class="btn btn-neutral float-right" title="Environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="agent.html" class="btn btn-neutral" title="Agent" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="agent.html" class="btn btn-neutral float-left" title="Agent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -242,11 +266,11 @@ artifact.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -259,36 +283,15 @@ artifact.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

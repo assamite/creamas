@@ -43,6 +43,9 @@ the external source being in most cases the master environment.
 	:width: 100%
 
 	Figure 1. Basic architecture for :class:`~creamas.mp.MultiEnvironment`.
+	The environment in the main process is used to connect to each slave
+	environment's manager and sends commands to them. The managers then forward
+	the commands to the slave environments which execute them.
 
 .. note::
 
@@ -72,7 +75,7 @@ The communication between the master and the slave environment happens through
 	2. Master environment calls slave manager's exposed method.
 	3. The slave's manager calls the method with the same name in its environment
 	   with the given arguments.
-	4. The slave environment executes the method an returns possible return value.
+	4. The slave environment executes the method and returns possible return value.
 	5. The slave manager passes the return value back to the master environment.
 	6. Master environment closes the connection.
 
@@ -84,8 +87,11 @@ The communication between the master and the slave environment happens through
 	without adding some safe guards to the exposed functions.
 
 	Creamas is mainly developed to be a research tool to be used in closed
-	environments, and therefore does not offer protection for attacks of any
-	kind.
+	environments, and therefore is not particularly designed to offer protection
+	for any kinds of attacks. However, `aiomas <https://aiomas.readthedocs.io/en/latest/guides/tls.html>`_
+	has some built-in encryption support for, e.g., TSL. As Creamas'
+	:class:`~creamas.core.environment.Environment` is just a subclass of aiomas'
+	:class:`Container`, the TSL support from aiomas can be utilised in Creamas.
 
 Developing for Multiple Cores
 .............................
@@ -93,7 +99,7 @@ Developing for Multiple Cores
 To utilize multiprocessing support in your own implementations, you can give
 following initialization parameters to :class:`~creamas.mp.MultiEnvironment`:
 
-	* **Address**: Address for the manager environment.
+	* **Address**: Address for the manager/master environment.
 
 	* **Environment class**: Class for the manager/master environment
 	  which is used to connect to each of the slave managers.
@@ -102,8 +108,12 @@ following initialization parameters to :class:`~creamas.mp.MultiEnvironment`:
 	  should not be needed if you are not using :class:`~creamas.mp.MultiEnvironment`
 	  as a part of :class:`~creamas.ds.DistributedEnvironment`
 
-	* **Slave addresses**: Addresses for the slave environments, the size of this
-	  list will define how many subprocesses are spawned.
+After the master environment has been created, the slave environments can be
+spawned using :meth:`~creamas.mp.MultiEnvironment.spawn_slaves`. It accepts
+at least the following arguments.
+
+	* **Slave addresses**: Addresses for the slave environments, the size of
+	  this list will define how many subprocesses are spawned.
 
 	* **Slave environment class**: Class for each slave environment inside the
 	  multiprocessing environment.
@@ -123,12 +133,12 @@ Support for Distributed Systems
 Support for distributed systems in Creamas is built around
 :class:`~creamas.ds.DistributedEnvironment`. Distributed environment is
 designed to be used with multiple (quite homogeneous) nodes which operate in
-a closed system [#f1]_ where each node can make **tcp** connections to ports in
+a closed system where each node can make **tcp** connections to ports in
 other nodes. Further on, it requires that it is located in a machine that is
 able to make SSH connections to the nodes.
 
 The basic architecture of :class:`~creamas.ds.DistributedEnvironment` can
-be seen in the Figure 2. In short,  :class:`~creamas.ds.DistributedEnvironment acts
+be seen in the Figure 2. In short, :class:`~creamas.ds.DistributedEnvironment` acts
 as a master for the whole environment, i.e. it does not hold "actual" simulation
 agents, but serves only as a manager for the simulation. Other nodes
 in the environment then each contain an instance of
@@ -142,6 +152,9 @@ simulation (and the manager for the slave environment).
 
 	Figure 2. Basic architecture for :class:`~creamas.ds.DistributedEnvironment`.
 	It manages a set of nodes each containing a :class:`~creamas.mp.MultiEnvironment`.
+	The main difference from the single node implementation is, that the main
+	process environment on each node also holds a manager which accepts commands
+	for that node.
 
 Next, we look at how to set up and use :class:`~creamas.ds.DistributedEnvironment`.
 In the following, node and :class:`~creamas.mp.MultiEnvironment` are used
@@ -153,7 +166,7 @@ Using a Distributed Environment
 Initialization of a distributed environment is done roughly in the following
 steps:
 
-	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with list of node
+	1. Initialize :class:`~creamas.ds.DistributedEnvironment` with a list of node
 	   locations
 	2. Create node spawning terminal commands for each node, i.e. commands
 	   which start :class:`~creamas.mp.MultiEnvironment` on each node.
@@ -189,7 +202,25 @@ manager is then used to communicate any commands from
 node. The command line script can also do other preparation for the node, e.g.
 populate its slave environments with agents.
 
+The command line script executed is assumed to wait until the
+:class:`~creamas.mp.MultiEnvironment` is stopped, i.e. it does not exit
+after the initialization (as in the naive case this would delete the
+environment). To achieve this, you can for example add a following kind of
+function to your node spawning script and call it last in the script::
 
-.. rubric:: Footnotes
+	async def run_node(menv, log_folder):
+	    try:
+	        await menv.manager.stop_received
+	    except KeyboardInterrupt:
+	        logger.info('Execution interrupted by user.')
+	    finally:
+	        ret = await menv.close(log_folder, as_coro=True)
+	        return ret
 
-.. [#f1] Closed because the managers do not verify the messages sent to them by default.
+When :func:`run_node` is called, the script will block its execution until the
+manager of :class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop
+sign is sent to each node's manager when :meth:`~creamas.ds.DistributedEnvironment.stop_nodes`
+is called.
+
+See ``creamas/examples/grid/`` for an example implementation of a distributed
+agent environment.

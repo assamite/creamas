@@ -8,48 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &mdash; Creamas 0.2.0 documentation</title>
+  <title>Overview &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="next" title="Installation" href="install.html"/>
-        <link rel="prev" title="Creamas - Creative Multi-Agent Systems" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Creamas - Creative Multi-Agent Systems" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -63,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -84,11 +82,19 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#agents-and-environments">Agents And Environments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features-mappers-and-rules">Features, Mappers And Rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#simulation">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#communication-between-the-agents">Communication Between the Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-and-analyzing-agent-connections">Creating and Analyzing Agent Connections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evaluating-artifacts">Evaluating Artifacts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#iterative-simulation">Iterative Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#voting-and-other-social-choice-functions">Voting and Other Social Choice Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#support-for-multiple-cores-and-distributed-systems">Support for Multiple Cores and Distributed Systems</a></li>
 </ul>
 </li>
@@ -108,34 +114,54 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Overview</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Overview</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/overview.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -147,87 +173,146 @@
 on, multi-agent systems in the field of <a class="reference external" href="https://en.wikipedia.org/wiki/Computational_creativity">computational creativity</a>. Creamas is built
 on top of <a class="reference external" href="http://aiomas.readthedocs.org/en/latest/">aiomas</a>, which provides
 a communication route (RPC) between agents and the basic agent and container
-implementations.</p>
+(dubbed as <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code> in Creamas) implementations. If you
+want to know more about how the low level communication works, see aiomas
+documentation.</p>
 <div class="section" id="agents-and-environments">
 <h2>Agents And Environments<a class="headerlink" href="#agents-and-environments" title="Permalink to this headline">¶</a></h2>
-<p>Agents (<code class="xref py py-class docutils literal"><span class="pre">CreativeAgent</span></code>) in Creamas focus on building artifacts
-and evaluating them. Each agent belongs to <code class="xref py py-class docutils literal"><span class="pre">Environment</span></code>, which
+<p>Agents (<code class="xref py py-class docutils literal notranslate"><span class="pre">CreativeAgent</span></code>) in Creamas focus on building artifacts
+and evaluating them. Each agent belongs to <code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code>, which
 also serves as a communication route between the agents.
 Environment can also hold other information shared by
 all agents, or, e.g. provide means for the agents to communicate with nearby
-agents in a 2D-grid. Agents are created by giving the environment as an
+agents in a 2D-grid. Agents are created by handling the environment as the first
 initialization parameter.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span>
-<span class="c1"># Create environment to tcp://localhost:5555/</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="o">.</span><span class="n">create</span><span class="p">((</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
-<span class="c1"># Create agent with address tcp://localhost:5555/0</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">CreativeAgent</span><span class="p">,</span> <span class="n">Environment</span>
+<span class="c"># Create environment to tcp://localhost:5555/</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="o">.</span><span class="n">create</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">5555</span><span class="p">))</span>
+<span class="c"># Create agent with address tcp://localhost:5555/0</span>
 <span class="n">a1</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-<span class="c1"># Create agent with address tcp://localhost:5555/1</span>
+<span class="c"># Create agent with address tcp://localhost:5555/1</span>
 <span class="n">a2</span> <span class="o">=</span> <span class="n">CreativeAgent</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The fundamental design principle guiding the development of Creamas is that
-each agent creates artifacts (<code class="xref py py-class docutils literal"><span class="pre">Artifact</span></code>) in some domain(s) and
-evaluates them. A lot of the current functionality is geared towards this goal.</p>
+agents create artifacts (<code class="xref py py-class docutils literal notranslate"><span class="pre">Artifact</span></code>) in some domain(s) and
+evaluate them. A lot of the current functionality is geared towards this goal.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Creamas does not take a stand on the design of the multi-agent systems or
+<p class="admonition-title">Note</p>
+<p>Creamas does not take a stand on the design of the multi-agent systems or
 individual agents and is quite agnostic of the agent implementations.
 Therefore, Creamas can be used to develop arbitrary
 agent societies, but you might want to take a look at <a class="reference external" href="http://aiomas.readthedocs.org/en/latest/">aiomas</a> if you do not need any of
 the additional functionality provided by Creamas.</p>
 </div>
-<p>Exchanging artifacts and information about them is one of the main tasks of
-the agents. An agent can ask other agent&#8217;s opinions about its own
+</div>
+<div class="section" id="communication-between-the-agents">
+<h2>Communication Between the Agents<a class="headerlink" href="#communication-between-the-agents" title="Permalink to this headline">¶</a></h2>
+<p>Communication between the agents in one of the key interests in multi-agent systems.
+In Creamas, agents can expose their own functions as services to other agents by using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">expose()</span></code> decorator (originating from <em>aiomas</em> library). An agent wishing to communicate
+with another agent connects to the remote agent and calls the exposed function
+remotely. To this end they have to know the other agent’s (tcp) address.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Agents derived from <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent" title="creamas.core.agent.CreativeAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreativeAgent</span></code></a> are
+supposed to store addresses of known other agents in their
+<a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.connections" title="creamas.core.agent.CreativeAgent.connections"><code class="xref py py-attr docutils literal notranslate"><span class="pre">connections</span></code></a>.</p>
+</div>
+<p>Consider a following hypothetical <code class="xref py py-meth docutils literal notranslate"><span class="pre">service()</span></code>-method an agent <strong>AgentA</strong> has:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">creamas</span>
+
+<span class="k">class</span> <span class="nc">AgentA</span><span class="p">(</span><span class="n">creamas</span><span class="o">.</span><span class="n">CreativeAgent</span><span class="p">):</span>
+
+        <span class="nd">@creamas</span><span class="o">.</span><span class="n">expose</span>
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+                <span class="c"># do something with param</span>
+                <span class="c"># ...</span>
+                <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>Now, another agent, <strong>AgentB</strong>, knowing that <strong>AgentA</strong>’s address is <code class="docutils literal notranslate"><span class="pre">addr</span></code>
+can then use <strong>AgentA</strong>’s <code class="docutils literal notranslate"><span class="pre">service</span></code> method by connecting to <strong>AgentA</strong> through
+its environment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="k">class</span> <span class="nc">AgentB</span><span class="p">(</span><span class="n">creamas</span><span class="o">.</span><span class="n">CreativeAgent</span><span class="p">):</span>
+
+        <span class="n">async</span> <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_param</span><span class="p">):</span>
+                <span class="n">remote_agent_A</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">await</span> <span class="n">remote_agent_A</span><span class="o">.</span><span class="n">service</span><span class="p">(</span><span class="n">my_param</span><span class="p">)</span>
+                <span class="c"># do something with the value</span>
+</pre></div>
+</div>
+<p>Importantly, the agents do not have to reside in the same environment or even in
+the same machine, i.e. you can connect to any agent or environment as long as
+you know the address of the specific agent in the environment. However, the
+remote agent and its environment have to be implemented using classes derived
+from <em>aiomas</em> library, like Creamas agent classes and environments do.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Connecting to an agent and calling an exposed function are done
+asynchronously using <code class="docutils literal notranslate"><span class="pre">await</span></code> keyword before the function call. Any method
+using <code class="docutils literal notranslate"><span class="pre">await</span></code> has to have <code class="docutils literal notranslate"><span class="pre">async</span></code> keyword at the start of its function
+definition.</p>
+</div>
+<div class="section" id="creating-and-analyzing-agent-connections">
+<h3>Creating and Analyzing Agent Connections<a class="headerlink" href="#creating-and-analyzing-agent-connections" title="Permalink to this headline">¶</a></h3>
+<p>Studying varying social network structures in creative agent systems is one of
+the main purposes Creamas exists. To generate agent connections and to analyze
+them, Creamas has some built-in support for integration with
+<a class="reference external" href="http://networkx.readthedocs.io/en/stable/">NetworkX</a> graph library.
+These functionalities are found from <a class="reference internal" href="nx.html#module-creamas.nx" title="creamas.nx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">creamas.nx</span></code></a> module. The main
+functions are <a class="reference internal" href="nx.html#creamas.nx.connections_from_graph" title="creamas.nx.connections_from_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">connections_from_graph()</span></code></a> and
+<a class="reference internal" href="nx.html#creamas.nx.graph_from_connections" title="creamas.nx.graph_from_connections"><code class="xref py py-func docutils literal notranslate"><span class="pre">graph_from_connections()</span></code></a>. They allow priming agent-to-agent
+connections with varying properties and analyzing them easily using NetworkX
+graph structures.</p>
+</div>
+<div class="section" id="evaluating-artifacts">
+<h3>Evaluating Artifacts<a class="headerlink" href="#evaluating-artifacts" title="Permalink to this headline">¶</a></h3>
+<p>Exchanging artifacts, and information about them, is an eminent functionality for
+agents in Creamas. An agent can ask other agent’s opinions about its own
 artifacts or other artifacts it has seen. This allows the agent to accumulate
-knowledge about the preferences of other agents, which may alter the agent&#8217;s
-own behavior. The basic interagent communication requires the agent to know the
-other agent&#8217;s (tcp) address.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># This is a toy example. Code won&#39;t work off the shelf as the agents don&#39;t</span>
-<span class="c1"># have any evaluation methods, which we will see in the next section.</span>
+knowledge about the artifact preferences of other agents, which may alter the agent’s
+own behavior.</p>
+<p>Method <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.ask_opinion" title="creamas.core.agent.CreativeAgent.ask_opinion"><code class="xref py py-func docutils literal notranslate"><span class="pre">ask_opinion()</span></code></a> offers
+a shortcut to ask an opinion about an artifact from a remote agent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="c"># This is a toy example. Code won&#39;t work off the shelf as the agents don&#39;t</span>
+<span class="c"># have any evaluation methods, which we will see in the next section.</span>
 <span class="kn">from</span> <span class="nn">creamas.core</span> <span class="kn">import</span> <span class="n">Artifact</span>
-<span class="c1"># Create some artifact.</span>
+<span class="c"># Create some artifact.</span>
 <span class="n">ar</span> <span class="o">=</span> <span class="n">Artifact</span><span class="p">()</span>
-<span class="c1"># first evaluate it yourself</span>
+<span class="c"># first evaluate it yourself</span>
 <span class="n">ev</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
-<span class="c1"># ask other agent&#39;s opinion (evaluation) of it</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">ask_opinion</span><span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
-<span class="c1"># get a1&#39;s current attitude towards a2</span>
-<span class="n">att</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">get_attitude</span><span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
-<span class="c1"># get difference between evaluations</span>
+<span class="c"># ask other agent&#39;s opinion (evaluation) of it</span>
+<span class="n">remote_addr</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">ask_opinion</span><span class="p">(</span><span class="n">remote_addr</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
+<span class="c"># get a1&#39;s current attitude towards a2</span>
+<span class="n">att</span> <span class="o">=</span> <span class="n">a1</span><span class="o">.</span><span class="n">get_attitude</span><span class="p">(</span><span class="n">remote_addr</span><span class="p">)</span>
+<span class="c"># get difference between evaluations</span>
 <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ev</span> <span class="o">-</span> <span class="n">ret</span><span class="p">)</span>
-<span class="c1"># if evaluations are very similar, become friendlier with the agent</span>
+<span class="c"># if evaluations are very similar, become friendlier with the agent</span>
 <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
         <span class="n">a1</span><span class="o">.</span><span class="n">set_attitude</span><span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="n">att</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="c1"># if evaluations are very different, dislike the agent</span>
+<span class="c"># if evaluations are very different, dislike the agent</span>
 <span class="k">if</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
         <span class="n">a1</span><span class="o">.</span><span class="n">set_attitude</span><span class="p">(</span><span class="n">a2</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="n">att</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="features-mappers-and-rules">
-<h2>Features, Mappers And Rules<a class="headerlink" href="#features-mappers-and-rules" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Functionality in this section is not yet fully developed and tested.</p>
 </div>
-<p>Agents can evaluate artifacts by extracting features from them. As features can
-have all kinds of outputs, they are paired with mappers. A mapper serves as a
-function from feature&#8217;s outputs to the interval <span class="math">\([-1, 1] \in \mathbb{R}\)</span>.
-Where features are though to be artifact domain depended, and shareable between
-agents, mappers represent individual agent&#8217;s preferences over possible feature
-values.</p>
-<p>Rules combine a set of features, and their corresponding mappers, to a
-functional unit. Rules also have weight for each feature, which may inhibit its
-effect on the overall rule&#8217;s evaluation. In its most basic form rule has one
-feature and its mapper, but agents are encouraged to merge existing rules
-together, or add new features to them in order to make them more expressive.</p>
+<div class="section" id="iterative-simulation">
+<h2>Iterative Simulation<a class="headerlink" href="#iterative-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Creamas provides an easy to use <a class="reference internal" href="simulation.html#creamas.core.simulation.Simulation" title="creamas.core.simulation.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a>
+which can be used to run iterative simulations using agents’ <code class="xref py py-meth docutils literal notranslate"><span class="pre">act()</span></code>.
+Simulations can be created directly or they can be given an environment at
+initialization time. See <a class="reference internal" href="create_sim.html"><span class="doc">Using Simulation</span></a> for details.</p>
 </div>
-<div class="section" id="simulation">
-<h2>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h2>
-<p>Creamas provides an easy to use simulation creator which can be used to execute
-agents <code class="xref py py-meth docutils literal"><span class="pre">act()</span></code> to run the environment in an iterative manner. See
-<a class="reference internal" href="create_sim.html"><span class="doc">Using Simulation</span></a> for details.</p>
+<div class="section" id="voting-and-other-social-choice-functions">
+<h2>Voting and Other Social Choice Functions<a class="headerlink" href="#voting-and-other-social-choice-functions" title="Permalink to this headline">¶</a></h2>
+<p>Creamas offers some basic social choice/social decision making behavior for
+agents in the form of voting. Agents can publish their own artifacts as
+<strong>candidates</strong>. These candidates can then be collected and voted upon. Optionally,
+agents can validate each others candidates, i.e. exercise <em>veto</em> power on them,
+before voting takes place. See <a class="reference internal" href="vote.html"><span class="doc">Voting for Agents</span></a> for details.</p>
 </div>
 <div class="section" id="support-for-multiple-cores-and-distributed-systems">
 <h2>Support for Multiple Cores and Distributed Systems<a class="headerlink" href="#support-for-multiple-cores-and-distributed-systems" title="Permalink to this headline">¶</a></h2>
@@ -235,22 +320,25 @@ agents <code class="xref py py-meth docutils literal"><span class="pre">act()</s
 distributing your environments on multiple nodes, e.g., on a computing cluster.
 However, these functionalities are not yet fully tested, but have been used in
 several systems and platforms effectively. Multiprocessing functionality is in
-<code class="docutils literal"><span class="pre">mp</span></code>-module (see <a class="reference internal" href="mp.html"><span class="doc">Multiprocessing functionality</span></a>), and distributing the environments on several
-nodes is in <code class="docutils literal"><span class="pre">ds</span></code>-module (see <a class="reference internal" href="ds.html"><span class="doc">Distributed Systems</span></a>).</p>
+<code class="docutils literal notranslate"><span class="pre">mp</span></code>-module (see <a class="reference internal" href="mp.html"><span class="doc">Multiprocessing functionality</span></a>), and distributing the environments on several
+nodes is in <code class="docutils literal notranslate"><span class="pre">ds</span></code>-module (see <a class="reference internal" href="ds.html"><span class="doc">Distributed Systems</span></a>).</p>
+<p>If you want to learn more about multiprocessing and distributed system support
+in Creamas, read an overview of them: <a class="reference internal" href="using_mp_ds.html"><span class="doc">Multiprocessing and Distributed Systems</span></a>.</p>
 </div>
 </div>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Creamas - Creative Multi-Agent Systems" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Creamas - Creative Multi-Agent Systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -259,11 +347,11 @@ nodes is in <code class="docutils literal"><span class="pre">ds</span></code>-mo
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -276,36 +364,15 @@ nodes is in <code class="docutils literal"><span class="pre">ds</span></code>-mo
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

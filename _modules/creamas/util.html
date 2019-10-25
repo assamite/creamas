@@ -8,44 +8,44 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>creamas.util &mdash; Creamas 0.1.0 documentation</title>
+  <title>creamas.util &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="Creamas 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.4
               </div>
             
           
@@ -80,10 +80,15 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
 
@@ -96,98 +101,284 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>creamas.util</li>
+        
+      <li>creamas.util</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for creamas.util</h1><div class="highlight"><pre>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">.. py:module:: util</span>
 <span class="sd">    :platform: Unix</span>
 
-<span class="sd">Various utility functions for logging, etc.</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="sd">Miscellaneous utility functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">aiomas</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;log_before&#39;</span><span class="p">,</span> <span class="s">&#39;log_after&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="expose"><a class="viewcode-back" href="../../util.html#creamas.util.expose">[docs]</a><span class="k">def</span> <span class="nf">expose</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function which returns :func:`aiomas.expose` wrapper.</span>
+
+<span class="sd">    Used by agents to indicate which functions should be callable by other agents.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">aiomas</span><span class="o">.</span><span class="n">expose</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="log_before"><a class="viewcode-back" href="../../util.html#creamas.util.log_before">[docs]</a><span class="k">def</span> <span class="nf">log_before</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Decorator to log attribute&#39;s value(s) before function call.</span>
+<div class="viewcode-block" id="create_tasks"><a class="viewcode-back" href="../../util.html#creamas.util.create_tasks">[docs]</a><span class="k">def</span> <span class="nf">create_tasks</span><span class="p">(</span><span class="n">task_coro</span><span class="p">,</span> <span class="n">addrs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="k">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create and schedule a set of asynchronous tasks.</span>
 
-<span class="sd">    Implementation allows usage only for methods belonging to class. The class</span>
-<span class="sd">    instance needs to have **logger** attribute that is subclass of</span>
-<span class="sd">    :py:class:`creamas.core.logger.ObjectLogger`.</span>
+<span class="sd">    The function creates the tasks using a given list of agent addresses and</span>
+<span class="sd">    wraps each of them in :func:`asyncio.ensure_future`. The ``*args`` and</span>
+<span class="sd">    ``**kwargs`` are passed down to :func:`task_coro` when creating tasks for</span>
+<span class="sd">    each address in :attr:`addrs`.</span>
 
-<span class="sd">    :param int level: logging level</span>
-<span class="sd">    :param str attr: name of the class instance&#39;s parameter to be logged</span>
-<span class="sd">    :param str sep: if **attr** is iterable, separate its elements with **sep**</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="n">logger</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;logger&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_attr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">wrapper</span>
-    <span class="k">return</span> <span class="n">deco</span>
+<span class="sd">    Usage example for a method in a class derived from</span>
+<span class="sd">    :class:`~creamas.mp.MultiEnvironment`::</span>
 
-</div>
-<div class="viewcode-block" id="log_after"><a class="viewcode-back" href="../../util.html#creamas.util.log_after">[docs]</a><span class="k">def</span> <span class="nf">log_after</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Decorator to log attribute&#39;s value(s) after function call.</span>
+<span class="sd">        async def my_method(self, *args, **kwargs):</span>
+<span class="sd">            async def task(addr, *args, **kwargs):</span>
+<span class="sd">                r_manager = await self.env.connect(addr)</span>
+<span class="sd">                return await r_manager.my_method(*args, **kwargs)</span>
 
-<span class="sd">    Implementation allows usage only for methods belonging to class. The class</span>
-<span class="sd">    instance needs to have **logger** variable set.</span>
+<span class="sd">            return await util.create_tasks(task, self.addrs, *args, **kwargs)</span>
 
-<span class="sd">    :param int level: logging level</span>
-<span class="sd">    :param str attr: name of the class instance&#39;s parameter to be logged</span>
-<span class="sd">    :param str sep: if **attr** is iterable, separate its elements with **sep**</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="n">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="n">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">logger</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;logger&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">log_attr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">ret</span>
-        <span class="k">return</span> <span class="n">wrapper</span>
-    <span class="k">return</span> <span class="n">deco</span></div>
+<span class="sd">    :param task_coro:</span>
+<span class="sd">        Coroutine which is used for each address in :attr:`addrs`. The</span>
+<span class="sd">        coroutine should accept an agent address as the first parameter.</span>
+<span class="sd">    :param list addrs:</span>
+<span class="sd">        A list of agent addresses used as the first parameters of</span>
+<span class="sd">        :func:`task_coro`.</span>
+<span class="sd">    :param bool flatten:</span>
+<span class="sd">        If ``True`` the returned results are flattened into one list if the</span>
+<span class="sd">        tasks return iterable objects. The parameter does nothing if all the</span>
+<span class="sd">        results are not iterable.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        An awaitable coroutine which returns the results of tasks as a list or</span>
+<span class="sd">        as a flattened list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">agent_addr</span> <span class="ow">in</span> <span class="n">addrs</span><span class="p">:</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">task_coro</span><span class="p">(</span><span class="n">agent_addr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wait_tasks</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">flatten</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="wait_tasks"><a class="viewcode-back" href="../../util.html#creamas.util.wait_tasks">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">wait_tasks</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="k">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gather a list of asynchronous tasks and wait for their completion.</span>
+
+<span class="sd">    :param list tasks:</span>
+<span class="sd">        A list of *asyncio* tasks wrapped in :func:`asyncio.ensure_future`.</span>
+<span class="sd">    :param bool flatten:</span>
+<span class="sd">        If ``True`` the returned results are flattened into one list if the</span>
+<span class="sd">        tasks return iterable objects. The parameter does nothing if all the</span>
+<span class="sd">        results are not iterable.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The results of tasks as a list or as a flattened list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rets</span> <span class="o">=</span> <span class="n">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flatten</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">),</span> <span class="n">rets</span><span class="p">)):</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">rets</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">rets</span></div>
+
+
+<div class="viewcode-block" id="run_or_coro"><a class="viewcode-back" href="../../util.html#creamas.util.run_or_coro">[docs]</a><span class="k">def</span> <span class="nf">run_or_coro</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">as_coro</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A shorthand to run the task/future or return it as is.</span>
+
+<span class="sd">    :param task:</span>
+<span class="sd">        Optional. Task or Future which is run until complete. If parameter is</span>
+<span class="sd">        ``None`` runs the event loop forever.</span>
+<span class="sd">    :param bool as_coro:</span>
+<span class="sd">        If ``True`` returns the given task as is, otherwise runs it in the</span>
+<span class="sd">        event loop.</span>
+<span class="sd">    :param loop:</span>
+<span class="sd">        Optional. Event loop to use. If the parameter is ``None`` uses</span>
+<span class="sd">        asyncio&#39;s base event loop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">as_coro</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">task</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">run</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../util.html#creamas.util.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="k">None</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run the event loop forever or until the task/future *task* is finished.</span>
+
+<span class="sd">    :param task:</span>
+<span class="sd">        Optional. Task or Future which is run until complete. If parameter is</span>
+<span class="sd">        ``None`` runs the event loop forever.</span>
+<span class="sd">    :param loop:</span>
+<span class="sd">        Optional. Event loop to use. If the parameter is ``None`` uses</span>
+<span class="sd">        asyncio&#39;s base event loop.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This method has the same intent as :func:`aiomas.util.run`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">loop</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_addr_key</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">r&#39;[:/]&#39;</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+    <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="sort_addrs"><a class="viewcode-back" href="../../util.html#creamas.util.sort_addrs">[docs]</a><span class="k">def</span> <span class="nf">sort_addrs</span><span class="p">(</span><span class="n">addrs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return agent addresses in a sorted order.</span>
+
+<span class="sd">    Agent addresses are sorted with following hierarchical criteria:</span>
+<span class="sd">        1. by the host of an agent&#39;s environment</span>
+<span class="sd">        2. by the port (interpreted as an integer) of an agent&#39;s environment</span>
+<span class="sd">        3. by the order in which the agents were created in their environment</span>
+
+<span class="sd">    For example, the following list of addresses::</span>
+
+<span class="sd">        [&#39;tcp://bnode:5555/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:50/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/2&#39;,</span>
+<span class="sd">         &#39;tcp://anode:50/2&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/1&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:5555/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:5555/1&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/2&#39;,</span>
+<span class="sd">         &#39;tcp://anode:50/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/1&#39;]</span>
+
+<span class="sd">    would be sorted into the following order::</span>
+
+<span class="sd">        [&#39;tcp://anode:50/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:50/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:50/2&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:5555/2&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/0&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/1&#39;,</span>
+<span class="sd">         &#39;tcp://anode:18000/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/1&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:50/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:5555/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:5555/1&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:5555/2&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/0&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/1&#39;,</span>
+<span class="sd">         &#39;tcp://bnode:18000/2&#39;]</span>
+
+<span class="sd">    :param list addrs: List of addresses to be sorted.</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        List of addresses in a sorted order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">addrs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_addr_key</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="split_addrs"><a class="viewcode-back" href="../../util.html#creamas.util.split_addrs">[docs]</a><span class="k">def</span> <span class="nf">split_addrs</span><span class="p">(</span><span class="n">addrs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split addresses into dictionaries by hosts and ports.</span>
+
+<span class="sd">    :param list addrs: A list of addresses.</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        A dictionary of dictionaries, where ``dict[HOST][PORT]`` holds a list</span>
+<span class="sd">        of all agent addresses in that environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">splitted</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">addrs</span><span class="p">:</span>
+        <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_addr_key</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">host</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">splitted</span><span class="p">:</span>
+            <span class="n">splitted</span><span class="p">[</span><span class="n">host</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">port</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">splitted</span><span class="p">[</span><span class="n">host</span><span class="p">]:</span>
+            <span class="n">splitted</span><span class="p">[</span><span class="n">host</span><span class="p">][</span><span class="n">port</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">splitted</span><span class="p">[</span><span class="n">host</span><span class="p">][</span><span class="n">port</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">splitted</span></div>
+
+
+<div class="viewcode-block" id="get_manager"><a class="viewcode-back" href="../../util.html#creamas.util.get_manager">[docs]</a><span class="k">def</span> <span class="nf">get_manager</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get assumed environment manager&#39;s address for a given agent address.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">addr</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;/0&quot;</span></div>
+
+
+<div class="viewcode-block" id="addrs2managers"><a class="viewcode-back" href="../../util.html#creamas.util.addrs2managers">[docs]</a><span class="k">def</span> <span class="nf">addrs2managers</span><span class="p">(</span><span class="n">addrs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map agent addresses to their assumed managers.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        :func:`creamas.util.get_manager`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mgrs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">addrs</span><span class="p">:</span>
+        <span class="n">mgr_addr</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mgr_addr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mgrs</span><span class="p">:</span>
+            <span class="n">mgrs</span><span class="p">[</span><span class="n">mgr_addr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mgrs</span><span class="p">[</span><span class="n">mgr_addr</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mgrs</span></div>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -196,11 +387,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -213,36 +404,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

@@ -1,0 +1,675 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2D Grid Environment &mdash; Creamas 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NetworkX Integration" href="nx.html" />
+    <link rel="prev" title="Distributed Systems" href="ds.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Creamas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="api.html">API Documentation</a> &raquo;</li>
+        
+      <li>2D Grid Environment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/grid.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-creamas.grid">
+<span id="d-grid-environment"></span><h1>2D Grid Environment<a class="headerlink" href="#module-creamas.grid" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-grid"></span><p>The module holds implementations for 2D-grid environments where the agents
+know their neighbors in each of the four cardinal directions. Currently
+implemented are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#creamas.grid.GridAgent" title="creamas.grid.GridAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridAgent</span></code></a>: The base grid agent implementation,
+should be used inside <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a>. Agent
+places itself in the environment’s
+<a class="reference internal" href="#creamas.grid.GridEnvironment.grid" title="creamas.grid.GridEnvironment.grid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grid</span></code></a> and knows its neighbors
+in the cardinal directions: N, E, S, W. Subclass the agent for your
+specific needs.</p></li>
+<li><p><a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a>: A single process grid
+environment.</p></li>
+<li><p><a class="reference internal" href="#creamas.grid.GridEnvManager" title="creamas.grid.GridEnvManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvManager</span></code></a>: A manager for a single process
+grid environment.</p></li>
+<li><p><a class="reference internal" href="#creamas.grid.GridMultiEnvironment" title="creamas.grid.GridMultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridMultiEnvironment</span></code></a>: Multi-processing environment
+holding several <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> slaves with
+managers.</p></li>
+<li><p><a class="reference internal" href="#creamas.grid.GridMultiEnvManager" title="creamas.grid.GridMultiEnvManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridMultiEnvManager</span></code></a>: A manager for a
+multi-processing environment. Used especially if the environment needs to
+be able to execute commands from external sources, e.g. when used as a
+part of <a class="reference internal" href="ds.html#creamas.ds.DistributedEnvironment" title="creamas.ds.DistributedEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">creamas.ds.DistributedEnvironment</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+<dl class="class">
+<dt id="creamas.grid.GridAgent">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.grid.</code><code class="sig-name descname">GridAgent</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>An agent living in a 2D-grid with four neighbors in cardinal directions.</p>
+<p>The agent assumes that its environment is derived from
+<a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a>, and places itself into the grid
+when it is initialized.</p>
+<dl class="method">
+<dt id="creamas.grid.GridAgent.act">
+<em class="property">async </em><code class="sig-name descname">act</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridAgent.act"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridAgent.act" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="agent.html#creamas.core.agent.CreativeAgent.act" title="creamas.core.agent.CreativeAgent.act"><code class="xref py py-class docutils literal notranslate"><span class="pre">creamas.core.agent.CreativeAgent.act</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridAgent.rcv">
+<em class="property">async </em><code class="sig-name descname">rcv</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridAgent.rcv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridAgent.rcv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive and handle message coming from another agent.</p>
+<p>This method is called from <a class="reference internal" href="#creamas.grid.GridAgent.send" title="creamas.grid.GridAgent.send"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code></a>.</p>
+<p>The base implementation does nothing, override in a subclass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridAgent.send">
+<em class="property">async </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">card</em>, <em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridAgent.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridAgent.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message <em>msg</em> to the neighboring agent in the <em>card</em>
+cardinal direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>card</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – ‘N’, ‘E’, ‘S’, or ‘W’.</p></li>
+<li><p><strong>msg</strong> – Message to the agent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Response from the agent</p>
+</dd>
+</dl>
+<p>The method calls the neighboring agent’s <a class="reference internal" href="#creamas.grid.GridAgent.rcv" title="creamas.grid.GridAgent.rcv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rcv()</span></code></a> with the message
+and returns any value returned by that agent.</p>
+<p>This method will fail silently if there is no neighbor agent in the
+given cardinal direction.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridAgent.neighbors">
+<em class="property">property </em><code class="sig-name descname">neighbors</code><a class="headerlink" href="#creamas.grid.GridAgent.neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of neighboring agent addresses in cardinal directions:
+N, E, S, W.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridAgent.xy">
+<em class="property">property </em><code class="sig-name descname">xy</code><a class="headerlink" href="#creamas.grid.GridAgent.xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Agent’s place (coordinate) in the grid, (x, y)-tuple.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.grid.GridEnvManager">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.grid.</code><code class="sig-name descname">GridEnvManager</code><span class="sig-paren">(</span><em class="sig-param">environment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manager for <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a>.</p>
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.get_xy_address">
+<code class="sig-name descname">get_xy_address</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.get_xy_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.get_xy_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get address of the agent in <em>xy</em> coordinate, or None if no such
+agent exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.set_agent_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_agent_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.set_agent_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.set_agent_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighboring agents for all the agents in the grid.</p>
+<p>If the  managed grid contains neighboring grids, uses those to
+correctly set also neighboring agents for agents on the edge of the
+grid.</p>
+<p>This function assumes that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Grid is full, i.e. it has maximum number of agents.</p></li>
+<li><p>All the (possible) neighboring grids have been initialized and
+have the maximum number of agents. That is, if managed grid’s
+neighbor map still points to <code class="docutils literal notranslate"><span class="pre">None</span></code>, this grid is assumed to be
+in the edge of the super-grid containing multiple
+<a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> instances.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.set_grid_neighbor">
+<em class="property">async </em><code class="sig-name descname">set_grid_neighbor</code><span class="sig-paren">(</span><em class="sig-param">card</em>, <em class="sig-param">addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.set_grid_neighbor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.set_grid_neighbor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the neighbor grid for the grid in <em>card</em> cardinal direction.
+The <em>addr</em> should point to thanager* of the neighboring grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.set_gs">
+<code class="sig-name descname">set_gs</code><span class="sig-paren">(</span><em class="sig-param">gs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.set_gs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.set_gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set grid size for the managed environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.set_origin">
+<code class="sig-name descname">set_origin</code><span class="sig-paren">(</span><em class="sig-param">origin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.set_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.set_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set originating coordinates for the managed environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvManager.spawn_n">
+<em class="property">async </em><code class="sig-name descname">spawn_n</code><span class="sig-paren">(</span><em class="sig-param">agent_cls</em>, <em class="sig-param">n</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvManager.spawn_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvManager.spawn_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spawn <em>n</em> agents to the managed environment. This is a convenience
+function so that one does not have to repeatedly make connections to
+the environment to spawn multiple agents with the same parameters.</p>
+<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">spawn()</span></code> for details.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.grid.GridEnvironment">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.grid.</code><code class="sig-name descname">GridEnvironment</code><span class="sig-paren">(</span><em class="sig-param">base_url</em>, <em class="sig-param">loop</em>, <em class="sig-param">clock</em>, <em class="sig-param">connect_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Environment where agents reside in a 2D-grid.</p>
+<p>Each agent is connected to neighbors in cardinal directions: N, E, S, W.
+Grid environments can be horizontally stacked with
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment" title="creamas.grid.GridMultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridMultiEnvironment</span></code></a>.</p>
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.add_to_grid">
+<code class="sig-name descname">add_to_grid</code><span class="sig-paren">(</span><em class="sig-param">agent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment.add_to_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment.add_to_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add agent to the next available spot in the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(x,y) of the agent in the grid. This is the agent’s overall
+coordinate in the grand grid (i.e. the actual coordinate of the
+agent w.t.r <strong>origin</strong>).</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><cite>ValueError</cite> if the grid is full.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.get_xy">
+<code class="sig-name descname">get_xy</code><span class="sig-paren">(</span><em class="sig-param">xy</em>, <em class="sig-param">addr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment.get_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment.get_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the agent with xy-coordinate in the grid. If <em>addr</em> is True,
+returns only the agent’s address.</p>
+<p>If no such agent in the grid, returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if xy-coordinate is outside the environment’s
+grid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.is_full">
+<code class="sig-name descname">is_full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment.is_full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment.is_full" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> is full when its <strong>grid</strong> is fully
+populated with agents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the grid is full, False otherwise. Will also return False
+for uninitialized grids with (0,0) grid size.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.is_ready">
+<code class="sig-name descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment.is_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid environment is ready when its grid is full.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#creamas.grid.GridEnvironment.is_full" title="creamas.grid.GridEnvironment.is_full"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GridEnvironment.is_full()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Environment.is_ready()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.set_agent_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_agent_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridEnvironment.set_agent_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridEnvironment.set_agent_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbors for each agent in each cardinal direction.</p>
+<p>This method assumes that the neighboring <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> of
+this grid environment have already been set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.grid">
+<em class="property">property </em><code class="sig-name descname">grid</code><a class="headerlink" href="#creamas.grid.GridEnvironment.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The agents in the grid. 2D-list with the same size as <strong>gs</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.gs">
+<em class="property">property </em><code class="sig-name descname">gs</code><a class="headerlink" href="#creamas.grid.GridEnvironment.gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of the grid as a 2-tuple. Changing the size of the grid after
+spawning any agents in the environment will clear the grid, but does
+not remove the agents from the environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.neighbors">
+<em class="property">property </em><code class="sig-name descname">neighbors</code><a class="headerlink" href="#creamas.grid.GridEnvironment.neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of neighboring grid environments in cardinal directions.</p>
+<p>Acceptable keys: N, E, S, W.</p>
+<p>The values are <strong>the addresses of the managers</strong> in the neighboring
+grid environments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridEnvironment.origin">
+<em class="property">property </em><code class="sig-name descname">origin</code><a class="headerlink" href="#creamas.grid.GridEnvironment.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upper left corner of the grid, [0,0] by default.</p>
+<p>You should define the origin before spawning any agents into the
+environment.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.grid.GridMultiEnvManager">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.grid.</code><code class="sig-name descname">GridMultiEnvManager</code><span class="sig-paren">(</span><em class="sig-param">environment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manager agent for <a class="reference internal" href="#creamas.grid.GridMultiEnvironment" title="creamas.grid.GridMultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridMultiEnvironment</span></code></a>.</p>
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.get_xy_address">
+<em class="property">async </em><code class="sig-name descname">get_xy_address</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.get_xy_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.get_xy_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get address of the agent in the environment with given coordinates.</p>
+<p>This is a managing function for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">get_xy_address()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.get_xy_environment">
+<code class="sig-name descname">get_xy_environment</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.get_xy_environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.get_xy_environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get environment (address of the manager of that environment) which
+has agent with given coordinates.</p>
+<p>This is a managing function for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">get_xy_environment()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_agent_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_agent_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_agent_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_agent_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbor agents for all the agents in the slave environments.</p>
+<p>This is a managing function for
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_agent_neighbors" title="creamas.grid.GridMultiEnvironment.set_agent_neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">creamas.grid.GridMultiEnvironment.set_agent_neighbors()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_grid_neighbor">
+<code class="sig-name descname">set_grid_neighbor</code><span class="sig-paren">(</span><em class="sig-param">card</em>, <em class="sig-param">addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_grid_neighbor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_grid_neighbor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the neighbor multi-grid for this multi-grid in <em>card</em> cardinal
+direction. The <em>addr</em> should point to the <em>manager</em> of the neighboring
+multi-grid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_gs">
+<em class="property">async </em><code class="sig-name descname">set_gs</code><span class="sig-paren">(</span><em class="sig-param">mgr_addr</em>, <em class="sig-param">gs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_gs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set grid size for <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> which manager is in
+given address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mgr_addr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Address of the manager agent</p></li>
+<li><p><strong>gs</strong> – New grid size of the grid environment, iterable with length 2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbors for all the agents in all the slave environments.</p>
+<p>This is a managing function for
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_neighbors" title="creamas.grid.GridMultiEnvironment.set_neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">creamas.grid.GridMultiEnvironment.set_neighbors()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_origin">
+<em class="property">async </em><code class="sig-name descname">set_origin</code><span class="sig-paren">(</span><em class="sig-param">mgr_addr</em>, <em class="sig-param">origin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set originating coordinates for <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a> which
+manager is in given address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mgr_addr</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Address of the manager agent</p></li>
+<li><p><strong>origin</strong> – New origin of the grid environment, iterable with length 2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvManager.set_slave_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_slave_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvManager.set_slave_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvManager.set_slave_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbor environments for all the slave environments.</p>
+<p>This is a managing function for
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_slave_neighbors" title="creamas.grid.GridMultiEnvironment.set_slave_neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">creamas.grid.GridMultiEnvironment.set_slave_neighbors()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="creamas.grid.GridMultiEnvironment">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.grid.</code><code class="sig-name descname">GridMultiEnvironment</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi-environment which stacks its slave <a class="reference internal" href="#creamas.grid.GridEnvironment" title="creamas.grid.GridEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridEnvironment</span></code></a>
+instances horizontally.</p>
+<p>Call <a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_slave_params" title="creamas.grid.GridMultiEnvironment.set_slave_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">creamas.grid.GridMultiEnvironment.set_slave_params()</span></code></a> immediately
+after initializing <a class="reference internal" href="#creamas.grid.GridMultiEnvironment" title="creamas.grid.GridMultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridMultiEnvironment</span></code></a>!</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The manager agents for the slave environments will not be part of
+<a class="reference internal" href="#creamas.grid.GridEnvironment.grid" title="creamas.grid.GridEnvironment.grid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grid</span></code></a> in the slave environments.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr</strong> – <code class="docutils literal notranslate"><span class="pre">(HOST,</span> <span class="pre">PORT)</span></code> address for the master environment.</p></li>
+<li><p><strong>env_cls</strong> – Class for the master environment, used to make connections to the
+slave environments. Must be a subclass of
+<a class="reference internal" href="environment.html#creamas.core.environment.Environment" title="creamas.core.environment.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>.</p></li>
+<li><p><strong>mgr_cls</strong> – Class for the multi-environment’s manager.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the environment. Will be shown in logs.</p></li>
+<li><p><strong>logger</strong> – Optional. Logger for the master environment.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.get_xy_address">
+<em class="property">async </em><code class="sig-name descname">get_xy_address</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.get_xy_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.get_xy_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get address of the agent residing in <em>xy</em> coordinate, or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if no such agent is in this multi-environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.get_xy_environment">
+<code class="sig-name descname">get_xy_environment</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.get_xy_environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.get_xy_environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get manager address for the environment which should have the agent
+with given <em>xy</em> coordinate, or None if no such environment is in this
+multi-environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.populate">
+<em class="property">async </em><code class="sig-name descname">populate</code><span class="sig-paren">(</span><em class="sig-param">agent_cls</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.populate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate all the slave grid environments with agents. Assumes that
+no agents have been spawned yet to the slave environment grids. This
+excludes the slave environment managers as they are not in the grids.)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.set_agent_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_agent_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.set_agent_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.set_agent_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbors for all the agents in all the slave environments.
+Assumes that all the slave environments have their neighbors set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.set_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.set_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.set_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbors for all slave environments and agents in them.</p>
+<p>This is a convenience function for calling
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_slave_neighbors" title="creamas.grid.GridMultiEnvironment.set_slave_neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_slave_neighbors()</span></code></a> and
+<a class="reference internal" href="#creamas.grid.GridMultiEnvironment.set_agent_neighbors" title="creamas.grid.GridMultiEnvironment.set_agent_neighbors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_agent_neighbors()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.set_slave_neighbors">
+<em class="property">async </em><code class="sig-name descname">set_slave_neighbors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.set_slave_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.set_slave_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set neighbor environments for all the slave environments. Assumes
+that <a class="reference internal" href="#creamas.grid.GridMultiEnvironment.neighbors" title="creamas.grid.GridMultiEnvironment.neighbors"><code class="xref py py-attr docutils literal notranslate"><span class="pre">neighbors</span></code></a> are set for this multi-environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.set_slave_params">
+<em class="property">async </em><code class="sig-name descname">set_slave_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.set_slave_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.set_slave_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set origin and grid size for each slave environment.</p>
+<p>This method needs to be called before slave environments are populated
+and agents’ and slave environments’ neighbors are set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.spawn_slaves">
+<em class="property">async </em><code class="sig-name descname">spawn_slaves</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/grid.html#GridMultiEnvironment.spawn_slaves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.spawn_slaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spawn slave environments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave_addrs</strong> – List of (HOST, PORT) addresses for the slave-environments.</p></li>
+<li><p><strong>slave_env_cls</strong> – Class for the slave environments.</p></li>
+<li><p><strong>slave_kwargs</strong> – If not None, must be a list of the same size as <em>addrs</em>. Each item
+in the list containing parameter values for one slave environment.</p></li>
+<li><p><strong>slave_mgr_cls</strong> – Class of the slave environment managers.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.gs">
+<em class="property">property </em><code class="sig-name descname">gs</code><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.gs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grid size for each slave environment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.neighbors">
+<em class="property">property </em><code class="sig-name descname">neighbors</code><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.neighbors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of neighboring multi-environments for this multi-environment.
+The map’s values are <em>manager addresses</em> for the neighbors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.grid.GridMultiEnvironment.origin">
+<em class="property">property </em><code class="sig-name descname">origin</code><a class="headerlink" href="#creamas.grid.GridMultiEnvironment.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Origin of this multi-environment (the <em>xy</em> coordinate of the first
+agent in the first slave environment).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="nx.html" class="btn btn-neutral float-right" title="NetworkX Integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ds.html" class="btn btn-neutral float-left" title="Distributed Systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015-2019, Simo Linkola
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

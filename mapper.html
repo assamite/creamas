@@ -8,49 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Mapper &mdash; Creamas 0.2.0 documentation</title>
+  <title>Mapper &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Creamas 0.2.0 documentation" href="index.html"/>
-        <link rel="up" title="Core" href="core.html"/>
-        <link rel="next" title="Environment" href="environment.html"/>
-        <link rel="prev" title="Rule" href="rule.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mappers" href="mappers.html" />
+    <link rel="prev" title="Rule" href="rule.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -64,7 +61,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.4
               </div>
             
           
@@ -85,28 +82,32 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="core.html">Core</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="agent.html">Agent</a></li>
-<li class="toctree-l3"><a class="reference internal" href="artifact.html">Artifact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">Assorted Utility Functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="rules.html">Rules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rule_agent.html">Rule Agent</a></li>
 <li class="toctree-l3"><a class="reference internal" href="feature.html">Feature</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rule.html">Rule</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Mapper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment.html">Environment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="simulation.html">Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agents.html">Agents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="features.html">Features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
@@ -122,72 +123,97 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
-          <li><a href="core.html">Core</a> &raquo;</li>
-      
-    <li>Mapper</li>
+        
+          <li><a href="rules.html">Rules</a> &raquo;</li>
+        
+      <li>Mapper</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/mapper.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/mapper.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-creamas.core.mapper">
-<span id="mapper"></span><h1>Mapper<a class="headerlink" href="#module-creamas.core.mapper" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-mapper"></span><p>Mapper module hold base implementation for mappers. Mappers are functions, that
-map each feature&#8217;s possible values to the interval [-1, 1]. While features are
-though to belong to artifacts of certain types, mappers usually belong to
-single agent making it possible for each agent to have their own appreciation
-standards for the feautre.</p>
+  <div class="section" id="module-creamas.rules.mapper">
+<span id="mapper"></span><h1>Mapper<a class="headerlink" href="#module-creamas.rules.mapper" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mapper"></span><p>Mapper module hold base implementation for mappers. Mappers are functions that
+map feature’s possible values to the interval [-1, 1]. While features are
+thought to belong to artifacts of certain types, mappers usually belong to
+a single agent making it possible for each agent to have their own appreciation
+standards for the feature.</p>
 <dl class="class">
-<dt id="creamas.core.mapper.Mapper">
-<em class="property">class </em><code class="descclassname">creamas.core.mapper.</code><code class="descname">Mapper</code><a class="reference internal" href="_modules/creamas/core/mapper.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.mapper.Mapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base implementation of mapper, serves as identity function.</p>
+<dt id="creamas.rules.mapper.Mapper">
+<em class="property">class </em><code class="sig-prename descclassname">creamas.rules.mapper.</code><code class="sig-name descname">Mapper</code><a class="reference internal" href="_modules/creamas/rules/mapper.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.mapper.Mapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base implementation of mapper, serves as identity function for <code class="docutils literal notranslate"><span class="pre">int</span></code>
+and <code class="docutils literal notranslate"><span class="pre">float</span></code> types.</p>
 <p>Mappers, as rules and features, are callable after initialization.</p>
 <dl class="method">
-<dt id="creamas.core.mapper.Mapper.map">
-<code class="descname">map</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/core/mapper.html#Mapper.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.core.mapper.Mapper.map" title="Permalink to this definition">¶</a></dt>
+<dt id="creamas.rules.mapper.Mapper.map">
+<code class="sig-name descname">map</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/rules/mapper.html#Mapper.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.rules.mapper.Mapper.map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map given value to the interval [-1, 1].</p>
 <p>This base implementation maps each value to itself, capping to [-1, 1].</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; value to map</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">value mapped to the interval [-1, 1]</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Rtype float:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> – Value to map</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Value mapped to the interval [-1, 1]</p>
+</dd>
+<dt class="field-odd">Rtype float</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="creamas.rules.mapper.Mapper.value_set">
+<em class="property">property </em><code class="sig-name descname">value_set</code><a class="headerlink" href="#creamas.rules.mapper.Mapper.value_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acceptable input types for the mapper.</p>
 </dd></dl>
 
 </dd></dl>
@@ -196,15 +222,16 @@ standards for the feautre.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="environment.html" class="btn btn-neutral float-right" title="Environment" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mappers.html" class="btn btn-neutral float-right" title="Mappers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="rule.html" class="btn btn-neutral" title="Rule" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="rule.html" class="btn btn-neutral float-left" title="Rule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -213,11 +240,11 @@ standards for the feautre.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015-2017, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -230,36 +257,15 @@ standards for the feautre.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.2.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

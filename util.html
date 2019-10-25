@@ -8,45 +8,46 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Util &mdash; Creamas 0.1.0 documentation</title>
+  <title>Assorted Utility Functions &mdash; Creamas 0.4.0 documentation</title>
   
 
   
   
+  
+  
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="Creamas 0.1.0 documentation" href="index.html"/>
-        <link rel="up" title="API Documentation" href="api.html"/>
-        <link rel="prev" title="Simulation" href="simulation.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Rules" href="rules.html" />
+    <link rel="prev" title="Voting for Agents" href="vote.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.4
               </div>
             
           
@@ -81,13 +82,28 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_agent.html">Implementing Agent Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_sim.html">Using Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_mp_ds.html">Multiprocessing and Distributed Systems</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mp.html">Multiprocessing functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ds.html">Distributed Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grid.html">2D Grid Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nx.html">NetworkX Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Voting for Agents</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Assorted Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappers.html">Mappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 </ul>
 </li>
 </ul>
@@ -101,98 +117,274 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Creamas</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Creamas</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="api.html">API Documentation</a> &raquo;</li>
-      
-    <li>Util</li>
+        
+      <li>Assorted Utility Functions</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/util.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/util.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <div class="section" id="module-creamas.util">
-<span id="util"></span><h1>Util<a class="headerlink" href="#module-creamas.util" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-util"></span><p>Various utility functions for logging, etc.</p>
+<span id="assorted-utility-functions"></span><h1>Assorted Utility Functions<a class="headerlink" href="#module-creamas.util" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-util"></span><p>Miscellaneous utility functions.</p>
 <dl class="function">
-<dt id="creamas.util.log_before">
-<code class="descclassname">creamas.util.</code><code class="descname">log_before</code><span class="sig-paren">(</span><em>attr</em>, <em>level=20</em>, <em>sep='\t'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#log_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.log_before" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator to log attribute&#8217;s value(s) before function call.</p>
-<p>Implementation allows usage only for methods belonging to class. The class
-instance needs to have <strong>logger</strong> attribute that is subclass of
-<code class="xref py py-class docutils literal"><span class="pre">creamas.core.logger.ObjectLogger</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
-<li><strong>attr</strong> (<em>str</em>) &#8211; name of the class instance&#8217;s parameter to be logged</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; if <strong>attr</strong> is iterable, separate its elements with <strong>sep</strong></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dt id="creamas.util.addrs2managers">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">addrs2managers</code><span class="sig-paren">(</span><em class="sig-param">addrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#addrs2managers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.addrs2managers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map agent addresses to their assumed managers.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#creamas.util.get_manager" title="creamas.util.get_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">creamas.util.get_manager()</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="creamas.util.log_after">
-<code class="descclassname">creamas.util.</code><code class="descname">log_after</code><span class="sig-paren">(</span><em>attr</em>, <em>level=20</em>, <em>sep='\t'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#log_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.log_after" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator to log attribute&#8217;s value(s) after function call.</p>
-<p>Implementation allows usage only for methods belonging to class. The class
-instance needs to have <strong>logger</strong> variable set.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>level</strong> (<em>int</em>) &#8211; logging level</li>
-<li><strong>attr</strong> (<em>str</em>) &#8211; name of the class instance&#8217;s parameter to be logged</li>
-<li><strong>sep</strong> (<em>str</em>) &#8211; if <strong>attr</strong> is iterable, separate its elements with <strong>sep</strong></li>
+<dt id="creamas.util.create_tasks">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">create_tasks</code><span class="sig-paren">(</span><em class="sig-param">task_coro</em>, <em class="sig-param">addrs</em>, <em class="sig-param">*args</em>, <em class="sig-param">flatten=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#create_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.create_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and schedule a set of asynchronous tasks.</p>
+<p>The function creates the tasks using a given list of agent addresses and
+wraps each of them in <a class="reference external" href="https://docs.python.org/3.7/library/asyncio-future.html#asyncio.ensure_future" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.ensure_future()</span></code></a>. The <code class="docutils literal notranslate"><span class="pre">*args</span></code> and
+<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are passed down to <code class="xref py py-func docutils literal notranslate"><span class="pre">task_coro()</span></code> when creating tasks for
+each address in <code class="xref py py-attr docutils literal notranslate"><span class="pre">addrs</span></code>.</p>
+<p>Usage example for a method in a class derived from
+<a class="reference internal" href="mp.html#creamas.mp.MultiEnvironment" title="creamas.mp.MultiEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiEnvironment</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">async</span> <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">r_manager</span> <span class="o">=</span> <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">await</span> <span class="n">r_manager</span><span class="o">.</span><span class="n">my_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">await</span> <span class="n">util</span><span class="o">.</span><span class="n">create_tasks</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">addrs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_coro</strong> – Coroutine which is used for each address in <code class="xref py py-attr docutils literal notranslate"><span class="pre">addrs</span></code>. The
+coroutine should accept an agent address as the first parameter.</p></li>
+<li><p><strong>addrs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of agent addresses used as the first parameters of
+<code class="xref py py-func docutils literal notranslate"><span class="pre">task_coro()</span></code>.</p></li>
+<li><p><strong>flatten</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the returned results are flattened into one list if the
+tasks return iterable objects. The parameter does nothing if all the
+results are not iterable.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An awaitable coroutine which returns the results of tasks as a list or
+as a flattened list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.expose">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">expose</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#expose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.expose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function which returns <code class="xref py py-func docutils literal notranslate"><span class="pre">aiomas.expose()</span></code> wrapper.</p>
+<p>Used by agents to indicate which functions should be callable by other agents.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.get_manager">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">get_manager</code><span class="sig-paren">(</span><em class="sig-param">addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#get_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.get_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get assumed environment manager’s address for a given agent address.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.run">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">task=None</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the event loop forever or until the task/future <em>task</em> is finished.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task</strong> – Optional. Task or Future which is run until complete. If parameter is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> runs the event loop forever.</p></li>
+<li><p><strong>loop</strong> – Optional. Event loop to use. If the parameter is <code class="docutils literal notranslate"><span class="pre">None</span></code> uses
+asyncio’s base event loop.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method has the same intent as <a class="reference external" href="https://aiomas.readthedocs.io/en/2.0.1/api_reference/aiomas.util.html#aiomas.util.run" title="(in aiomas v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">aiomas.util.run()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.run_or_coro">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">run_or_coro</code><span class="sig-paren">(</span><em class="sig-param">task</em>, <em class="sig-param">as_coro</em>, <em class="sig-param">loop=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#run_or_coro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.run_or_coro" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shorthand to run the task/future or return it as is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task</strong> – Optional. Task or Future which is run until complete. If parameter is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> runs the event loop forever.</p></li>
+<li><p><strong>as_coro</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> returns the given task as is, otherwise runs it in the
+event loop.</p></li>
+<li><p><strong>loop</strong> – Optional. Event loop to use. If the parameter is <code class="docutils literal notranslate"><span class="pre">None</span></code> uses
+asyncio’s base event loop.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.sort_addrs">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">sort_addrs</code><span class="sig-paren">(</span><em class="sig-param">addrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#sort_addrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.sort_addrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return agent addresses in a sorted order.</p>
+<dl class="simple">
+<dt>Agent addresses are sorted with following hierarchical criteria:</dt><dd><ol class="arabic simple">
+<li><p>by the host of an agent’s environment</p></li>
+<li><p>by the port (interpreted as an integer) of an agent’s environment</p></li>
+<li><p>by the order in which the agents were created in their environment</p></li>
+</ol>
+</dd>
+</dl>
+<p>For example, the following list of addresses:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="p">[</span><span class="s">&#39;tcp://bnode:5555/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:50/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:50/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:5555/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:5555/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:50/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/1&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>would be sorted into the following order:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="p">[</span><span class="s">&#39;tcp://anode:50/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:50/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:50/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:5555/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://anode:18000/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:50/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:5555/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:5555/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:5555/2&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/0&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/1&#39;</span><span class="p">,</span>
+ <span class="s">&#39;tcp://bnode:18000/2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>addrs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of addresses to be sorted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of addresses in a sorted order.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.split_addrs">
+<code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">split_addrs</code><span class="sig-paren">(</span><em class="sig-param">addrs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#split_addrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.split_addrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split addresses into dictionaries by hosts and ports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>addrs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of addresses.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of dictionaries, where <code class="docutils literal notranslate"><span class="pre">dict[HOST][PORT]</span></code> holds a list
+of all agent addresses in that environment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="creamas.util.wait_tasks">
+<em class="property">async </em><code class="sig-prename descclassname">creamas.util.</code><code class="sig-name descname">wait_tasks</code><span class="sig-paren">(</span><em class="sig-param">tasks</em>, <em class="sig-param">flatten=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/creamas/util.html#wait_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#creamas.util.wait_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather a list of asynchronous tasks and wait for their completion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – A list of <em>asyncio</em> tasks wrapped in <a class="reference external" href="https://docs.python.org/3.7/library/asyncio-future.html#asyncio.ensure_future" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.ensure_future()</span></code></a>.</p></li>
+<li><p><strong>flatten</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the returned results are flattened into one list if the
+tasks return iterable objects. The parameter does nothing if all the
+results are not iterable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The results of tasks as a list or as a flattened list</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="rules.html" class="btn btn-neutral float-right" title="Rules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="simulation.html" class="btn btn-neutral" title="Simulation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="vote.html" class="btn btn-neutral float-left" title="Voting for Agents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -201,11 +393,11 @@ instance needs to have <strong>logger</strong> variable set.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Simo Linkola.
+        &copy; Copyright 2015-2019, Simo Linkola
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -218,36 +410,15 @@ instance needs to have <strong>logger</strong> variable set.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
