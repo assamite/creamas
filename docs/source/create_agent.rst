@@ -23,7 +23,7 @@ things in :py:meth:`__init__`, for example:
 
 	env = Environment.create(('localhost', 5555))
 	agent = MyAgent(env, my_arg=5)
-
 	# do stuff
+	env.close()
 
-    env.close()
+
