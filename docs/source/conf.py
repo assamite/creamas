@@ -38,7 +38,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    # 'sphinxcontrib.asyncio',
     'sphinx.ext.intersphinx'
 ]
 
@@ -114,7 +113,7 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
-intersphinx_mapping = {'aiomas': ('http://aiomas.readthedocs.io/en/2.0.1/', None),
+intersphinx_mapping = {'aiomas': ('https://aiomas.readthedocs.io/en/2.0.1/', None),
                        'networkx': ('https://networkx.github.io/documentation/stable/', None),
                        'python': ('https://docs.python.org/3.7', None),
                        'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None)}

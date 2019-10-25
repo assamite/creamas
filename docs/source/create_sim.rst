@@ -87,20 +87,18 @@ fully initialized the environment, you can then pass it to the
 
 .. code-block:: python
 
-	from mymodule import StarSpawnAgent
-	from creamas.core.enviroment import Environment
-	from creamas.core.simulation import Simulation
+    from mymodule import StarSpawnAgent
+    from creamas.core.enviroment import Environment
+    from creamas.core.simulation import Simulation
 
-	env = Environment.create(('localhost', 5555))
-	for i in range(10):
+    env = Environment.create(('localhost', 5555))
 
-		# do some complex calculation
-		# ...
+    for i in range(10):
+        # do some complex calculation
+        # ...
+        StarSpawnAgent(env, cause_havoc=True, non_euclidian_angle=mystery)
 
-		StarSpawnAgent(env, cause_havoc=True, non_euclidian_angle=mystery)
-
-	sim = Simulation(env=env)
-
+    sim = Simulation(env=env)
 
 Advancing Simulation
 --------------------
@@ -108,17 +106,16 @@ Advancing Simulation
 Simulation holds a few different ways to advance it.
 
 .. code-block:: python
-	
-	# Advance simulation by a single step (executing all agents once)
-	# or advance simulation to the end of the current step.
-	sim.step()
-	
-	# Advance simulation by executing a single agent.
-	sim.next()
-	
-	# Advance simulation by 10 steps
-	sim.steps(10)
-	
+
+    # Advance simulation by a single step (executing all agents once)
+    # or advance simulation to the end of the current step.
+    sim.step()
+
+    # Advance simulation by executing a single agent.
+    sim.next()
+
+    # Advance simulation by 10 steps
+    sim.steps(10)
 
 Logging Simulation
 ------------------

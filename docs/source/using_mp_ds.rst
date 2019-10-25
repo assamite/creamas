@@ -137,7 +137,7 @@ other nodes. Further on, it requires that it is located in a machine that is
 able to make SSH connections to the nodes.
 
 The basic architecture of :class:`~creamas.ds.DistributedEnvironment` can
-be seen in the Figure 2. In short, :class:`~creamas.ds.DistributedEnvironment` acts
+be seen in the Figure 2. Shortly, :class:`~creamas.ds.DistributedEnvironment` acts
 as a master for the whole environment, i.e. it does not hold "actual" simulation
 agents, but serves only as a manager for the simulation. Other nodes
 in the environment then each contain an instance of
@@ -150,9 +150,9 @@ simulation (and the manager for the slave environment).
 	:width: 100%
 
 	Figure 2. Basic architecture for :class:`~creamas.ds.DistributedEnvironment`.
-	It manages a set of nodes each containing a :class:`~creamas.mp.MultiEnvironment`.
-	The main difference from the single node implementation is, that the main
-	process environment on each node also holds a manager which accepts commands
+	It manages a set of nodes each containing :class:`~creamas.mp.MultiEnvironment`.
+	The main difference compared to the single node implementation is that the main
+	process environment on each node also holds a manager agent which accepts commands
 	for that node.
 
 Next, we look at how to set up and use :class:`~creamas.ds.DistributedEnvironment`.
@@ -169,7 +169,7 @@ steps:
 	2. Create node spawning terminal commands for each node, i.e. commands which start :class:`~creamas.mp.MultiEnvironment` on each node.
 	3. Spawn nodes using :meth:`~creamas.ds.DistributedEnvironment.spawn_nodes`
 	4. Wait until all nodes are **ready** (see, e.g. :meth:`~creamas.mp.MultiEnvironment.is_ready`) using :meth:`~creamas.ds.DistributedEnvironment.wait_nodes`. A node is ready when it has finished its own initialization and is ready to execute orders.
-    5. Make any additional preparation for the nodes using :meth:`~creamas.ds.DistributedEnvironment.prepare_nodes`.
+	5. Make any additional preparation for the nodes using :meth:`~creamas.ds.DistributedEnvironment.prepare_nodes`.
 
 After this sequence, the :class:`~creamas.ds.DistributedEnvironment` should be
 ready to be used. The main usage for iterative simulations is to call
@@ -202,12 +202,12 @@ function to your node spawning script and call it last in the script::
 
     async def run_node(menv, log_folder):
         try:
-	        await menv.manager.stop_received
-	    except KeyboardInterrupt:
-	        logger.info('Execution interrupted by user.')
-	    finally:
-	        ret = await menv.close(log_folder, as_coro=True)
-	        return ret
+            await menv.manager.stop_receive
+        except KeyboardInterrupt:
+            logger.info('Execution interrupted by user.')
+        finally:
+            ret = await menv.close(log_folder, as_coro=True)
+            return ret
 
 When :func:`run_node` is called, the script will block its execution until the
 manager of :class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop

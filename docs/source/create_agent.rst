@@ -12,18 +12,18 @@ things in :py:meth:`__init__`, for example:
 
 .. code-block:: python
 
-	from creamas import CreativeAgent, Environment
-	
-	class MyAgent(CreativeAgent):
-	
-		def __init__(self, environment, *args, **kwargs):
-			self.my_arg = kwargs.pop('my_arg', None)
-			super().__init__(environment, *args, **kwargs)
-			# Your own initialization code
+    from creamas import CreativeAgent, Environment
 
-	env = Environment.create(('localhost', 5555))
-	agent = MyAgent(env, my_arg=5)
-	# do stuff
-	env.close()
+    class MyAgent(CreativeAgent):
+
+        def __init__(self, environment, *args, **kwargs):
+            self.my_arg = kwargs.pop('my_arg', None)
+            super().__init__(environment, *args, **kwargs)
+            # Your own initialization code
+
+    env = Environment.create(('localhost', 5555))
+    agent = MyAgent(env, my_arg=5)
+    # do stuff
+    env.close()
 
 

@@ -23,13 +23,13 @@ initialization parameter.
 
 .. code-block:: python
 
-	from creamas.core import CreativeAgent, Environment
-	# Create environment to tcp://localhost:5555/
-	env = Environment.create(('localhost', 5555))
-	# Create agent with address tcp://localhost:5555/0
-	a1 = CreativeAgent(env)
-	# Create agent with address tcp://localhost:5555/1
-	a2 = CreativeAgent(env)
+    from creamas.core import CreativeAgent, Environment
+    # Create environment to tcp://localhost:5555/
+    env = Environment.create(('localhost', 5555))
+    # Create agent with address tcp://localhost:5555/0
+    a1 = CreativeAgent(env)
+    # Create agent with address tcp://localhost:5555/1
+    a2 = CreativeAgent(env)
 
 The fundamental design principle guiding the development of Creamas is that
 agents create artifacts (:class:`~creamas.Artifact`) in some domain(s) and
@@ -61,26 +61,26 @@ remotely. To this end they have to know the other agent's (tcp) address.
 
 Consider a following hypothetical :meth:`service`-method an agent **AgentA** has::
 
-	import creamas
+    import creamas
 
-	class AgentA(creamas.CreativeAgent):
+    class AgentA(creamas.CreativeAgent):
 
-		@creamas.expose
-		async def service(self, param):
-			# do something with param
-			# ...
-			return value
+        @creamas.expose
+        async def service(self, param):
+            # do something with param
+            # ...
+            return value
 
 Now, another agent, **AgentB**, knowing that **AgentA**'s address is ``addr``
 can then use **AgentA**'s ``service`` method by connecting to **AgentA** through
 its environment. ::
 
-	class AgentB(creamas.CreativeAgent):
+    class AgentB(creamas.CreativeAgent):
 
-		async def client(self, my_param):
-			remote_agent_A = await self.env.connect(addr)
-			value = await remote_agent_A.service(my_param)
-			# do something with the value
+        async def client(self, my_param):
+            remote_agent_A = await self.env.connect(addr)
+            value = await remote_agent_A.service(my_param)
+            # do something with the value
 
 Importantly, the agents do not have to reside in the same environment or even in
 the same machine, i.e. you can connect to any agent or environment as long as
@@ -138,10 +138,10 @@ a shortcut to ask an opinion about an artifact from a remote agent.
 	diff = abs(ev - ret)
 	# if evaluations are very similar, become friendlier with the agent
 	if diff < 0.2:
-		a1.set_attitude(a2.addr, att + 0.1)
+	    a1.set_attitude(a2.addr, att + 0.1)
 	# if evaluations are very different, dislike the agent
 	if diff > 0.8
-		a1.set_attitude(a2.addr, att - 0.1)
+	    a1.set_attitude(a2.addr, att - 0.1)
 
 ..
 	Features, Mappers And Rules

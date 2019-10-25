@@ -10,7 +10,7 @@ from numpy import exp, sqrt, pi
 def gaus_pdf(x, mean, std):
     """Gaussian distribution's probability density function.
 
-    See, e.g. `Wikipedia <https://en.wikipedia.org/wiki/Normal_distribution>`_.
+    See, e.g. `Wikipedia page for normal distribution <https://en.wikipedia.org/wiki/Normal_distribution>`_.
 
     :param x: point in x-axis
     :type x: float or numpy.ndarray
@@ -25,7 +25,7 @@ def gaus_pdf(x, mean, std):
 def logistic(x, x0, k, L):
     """Logistic function.
 
-    See, e.g `Wikipedia <https://en.wikipedia.org/wiki/Logistic_function>`_.
+    See, e.g `Wikipedia page for logistic function <https://en.wikipedia.org/wiki/Logistic_function>`_.
 
     :param x: point in x-axis
     :type x: float or numpy.ndarray
