@@ -18,11 +18,11 @@ import logging
 import multiprocessing
 import time
 
-import aiomas
+from aiomas.subproc import Manager
 from aiomas.agent import _get_base_url
 
 from creamas.core.environment import Environment
-from creamas.util import run_or_coro, create_tasks
+from creamas.util import run_or_coro, create_tasks, expose
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def set_base_timeout(timeout):
     TIMEOUT = timeout
 
 
-class EnvManager(aiomas.subproc.Manager):
+class EnvManager(Manager):
     """A manager for :class:`~creamas.core.environment.Environment`, which is a subclass of
     :class:`aiomas.subproc.Manager`.
 
@@ -58,7 +58,7 @@ class EnvManager(aiomas.subproc.Manager):
     def env(self):
         return self.container
 
-    @aiomas.expose
+    @expose
     def set_host_manager(self, addr):
         """Set host (or master) manager for this manager.
 
@@ -67,13 +67,13 @@ class EnvManager(aiomas.subproc.Manager):
         """
         self._host_manager = addr
 
-    @aiomas.expose
+    @expose
     def host_manager(self):
         """Get address of the host manager.
         """
         return self._host_manager
 
-    @aiomas.expose
+    @expose
     async def report(self, msg, timeout=TIMEOUT):
         """Report message to the host manager.
         """
@@ -84,13 +84,13 @@ class EnvManager(aiomas.subproc.Manager):
         ret = await host_manager.handle(msg)
         return ret
 
-    @aiomas.expose
+    @expose
     def handle(self, msg):
         """Handle message, override in subclass if needed.
         """
         pass
 
-    @aiomas.expose
+    @expose
     def get_agents(self, addr=True, agent_cls=None, as_coro=False):
         """Get agents from the managed environment.
 
@@ -99,17 +99,17 @@ class EnvManager(aiomas.subproc.Manager):
         """
         return self.env.get_agents(addr=addr, agent_cls=agent_cls)
 
-    @aiomas.expose
+    @expose
     def set_log_folder(self, log_folder):
         self.env.log_folder = log_folder
 
-    @aiomas.expose
+    @expose
     def artifacts(self):
         """Return artifacts from the managed environment.
         """
         return self.env.artifacts
 
-    @aiomas.expose
+    @expose
     def create_connections(self, connection_map):
         """Create connections for agents in the environment.
 
@@ -117,7 +117,7 @@ class EnvManager(aiomas.subproc.Manager):
         """
         return self.env.create_connections(connection_map)
 
-    @aiomas.expose
+    @expose
     def get_connections(self, data=False):
         """Get connections from the agents in the environment.
 
@@ -125,7 +125,7 @@ class EnvManager(aiomas.subproc.Manager):
         """
         return self.env.get_connections(data=data)
 
-    @aiomas.expose
+    @expose
     async def get_artifacts(self):
         """Get all artifacts from the host environment.
 
@@ -135,13 +135,13 @@ class EnvManager(aiomas.subproc.Manager):
         artifacts = await host_manager.get_artifacts()
         return artifacts
 
-    @aiomas.expose
+    @expose
     def close(self, folder=None):
         """Implemented for consistency. This basic implementation does nothing.
         """
         pass
 
-    @aiomas.expose
+    @expose
     async def trigger_all(self, *args, **kwargs):
         """Trigger all agents in the managed environment to act once.
 
@@ -149,7 +149,7 @@ class EnvManager(aiomas.subproc.Manager):
         """
         return await self.env.trigger_all(*args, **kwargs)
 
-    @aiomas.expose
+    @expose
     async def is_ready(self):
         """Check if the managed environment is ready.
 
@@ -157,7 +157,7 @@ class EnvManager(aiomas.subproc.Manager):
         """
         return self.env.is_ready()
 
-    @aiomas.expose
+    @expose
     async def spawn_n(self, agent_cls, n, *args, **kwargs):
         """Spawn :attr:`n` agents to the managed environment.
 
@@ -173,7 +173,7 @@ class EnvManager(aiomas.subproc.Manager):
         return rets
 
 
-class MultiEnvManager(aiomas.subproc.Manager):
+class MultiEnvManager(Manager):
     """A manager for :class:`~creamas.mp.MultiEnvironment`, which is a subclass of :class:`aiomas.subproc.Manager`.
 
     A Manager can spawn other agents into its slave environments, and can
@@ -195,7 +195,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
     def env(self):
         return self.container
 
-    @aiomas.expose
+    @expose
     def handle(self, msg):
         """Handle message from a slave manager.
 
@@ -203,7 +203,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         """
         pass
 
-    @aiomas.expose
+    @expose
     async def spawn(self, agent_cls, *args, addr=None, **kwargs):
         """Spawn an agent to the environment.
 
@@ -219,7 +219,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         _, addr = await self.menv.spawn(agent_cls, *args, addr=addr, **kwargs)
         return addr
 
-    @aiomas.expose
+    @expose
     async def spawn_n(self, agent_cls, n, *args, addr=None, **kwargs):
         """Same as :meth:`~creamas.mp.MultiEnvManager.spawn`, but spawn
         :attr:`n` agents with same initialization parameters.
@@ -236,7 +236,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         ret = await self.menv.spawn_n(agent_cls, n, *args, addr=addr, **kwargs)
         return [r[1] for r in ret]
 
-    @aiomas.expose
+    @expose
     async def get_agents(self, addr=True, agent_cls=None):
         """Get addresses of all agents in all the slave environments.
 
@@ -257,7 +257,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         return await self.menv.get_agents(addr=True, agent_cls=None,
                                           as_coro=True)
 
-    @aiomas.expose
+    @expose
     async def create_connections(self, connection_map):
         """Create connections for agents in the multi-environment.
 
@@ -266,7 +266,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         """
         return await self.menv.create_connections(connection_map, as_coro=True)
 
-    @aiomas.expose
+    @expose
     async def get_connections(self, data=True):
         """Return connections for all the agents in the slave environments.
 
@@ -275,13 +275,13 @@ class MultiEnvManager(aiomas.subproc.Manager):
         """
         return await self.menv.get_connections(data=data, as_coro=True)
 
-    @aiomas.expose
+    @expose
     def close(self, folder=None):
         """Implemented for consistency. This basic implementation does nothing.
         """
         pass
 
-    @aiomas.expose
+    @expose
     async def set_as_host_manager(self, addr, timeout=5):
         """Set the this manager as a host manager for the manager in *addr*.
 
@@ -290,7 +290,7 @@ class MultiEnvManager(aiomas.subproc.Manager):
         """
         return await self.menv.set_host_manager(addr, timeout=timeout)
 
-    @aiomas.expose
+    @expose
     async def trigger_all(self, *args, **kwargs):
         """Trigger all agents in the managed multi-environment to act.
 
@@ -299,20 +299,20 @@ class MultiEnvManager(aiomas.subproc.Manager):
         """
         return await self.menv.trigger_all(*args, **kwargs)
 
-    @aiomas.expose
+    @expose
     async def is_ready(self):
         """A managing function for
         :py:meth:`~creamas.mp.MultiEnvironment.is_ready`.
         """
         return await self.menv.is_ready()
 
-    @aiomas.expose
+    @expose
     async def get_artifacts(self):
         """Get all the artifacts from the multi-environment.
         """
         return self.menv.artifacts
 
-    @aiomas.expose
+    @expose
     async def get_slave_managers(self):
         """Get addresses of the slave environment managers in this
         multi-environment.
@@ -622,6 +622,7 @@ class MultiEnvironment():
             import os
             folders = [os.path.join(log_folder, '_{}'.format(i)) for i in
                        range(len(addrs))]
+            return folders
         else:
             folders = [None for _ in range(len(addrs))]
             return folders

@@ -28,10 +28,8 @@ import operator
 from collections import Counter
 from random import shuffle
 
-import aiomas
-
 from creamas import CreativeAgent, Environment, EnvManager
-from creamas.util import create_tasks, run
+from creamas.util import create_tasks, run, expose
 
 TIMEOUT = 5
 
@@ -51,7 +49,7 @@ class VoteAgent(CreativeAgent):
       the agent's environment's list of current candidates.
     """
 
-    @aiomas.expose
+    @expose
     def validate(self, candidates):
         """Validate a list of candidate artifacts.
 
@@ -71,7 +69,7 @@ class VoteAgent(CreativeAgent):
         """
         return candidates
 
-    @aiomas.expose
+    @expose
     def vote(self, candidates):
         """Rank artifact candidates.
 
@@ -100,6 +98,10 @@ class VoteAgent(CreativeAgent):
         """Add artifact to the environment's current list of candidates.
         """
         self.env.add_candidate(artifact)
+
+    @expose
+    async def act(self, *args, **kwargs):
+        NotImplementedError("Implement in a subclass.")
 
 
 class VoteEnvironment(Environment):
@@ -175,13 +177,13 @@ class VoteManager(EnvManager):
     :class:`~creamas.vote.VoteEnvironment` in multiprocessing and distributed
     settings.
     """
-    @aiomas.expose
+    @expose
     async def get_candidates(self):
         """Get current candidates from the managed environment.
         """
         return self.env.candidates
 
-    @aiomas.expose
+    @expose
     async def validate_candidates(self, candidates):
         """Validate the candidates with the agents in the managed environment.
 
@@ -190,7 +192,7 @@ class VoteManager(EnvManager):
         """
         return self.env.validate_candidates(candidates)
 
-    @aiomas.expose
+    @expose
     def clear_candidates(self):
         """Clear candidates in the managed environment.
 
@@ -199,13 +201,13 @@ class VoteManager(EnvManager):
         """
         self.env.clear_candidates()
 
-    @aiomas.expose
+    @expose
     def get_votes(self, candidates):
         self.env._candidates = candidates
         votes = self.env.gather_votes()
         return votes
 
-    @aiomas.expose
+    @expose
     async def gather_votes(self, candidates):
         """Gather votes for the given candidates from the agents in the
         managed environment.

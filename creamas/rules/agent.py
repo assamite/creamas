@@ -5,10 +5,9 @@
 The module holding :class:`RuleAgent`, an agent which evaluates artifacts using
 its rules.
 """
-import aiomas
-
 from creamas.core.agent import CreativeAgent
 from creamas.rules.rule import Rule, RuleLeaf
+from creamas.util import expose
 
 
 __all__ = ['RuleAgent']
@@ -125,7 +124,7 @@ class RuleAgent(CreativeAgent):
         except:
             return False
 
-    @aiomas.expose
+    @expose
     def evaluate(self, artifact):
         r"""Evaluate artifact with agent's current rules and weights.
 
@@ -165,3 +164,7 @@ class RuleAgent(CreativeAgent):
         if w == 0.0:
             return 0.0, None
         return s / w, None
+
+    @expose
+    async def act(self, *args, **kwargs):
+        NotImplementedError("Implement in a subclass.")

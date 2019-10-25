@@ -10,7 +10,7 @@ setup(
     name='creamas',
     version=__version__,
     author='Simo Linkola',
-    author_email='simo.linkola at gmail.com',
+    author_email='simo.linkola@gmail.com',
     description=('A library for creative MAS build on top of aiomas.'),
     long_description=('See https://creamas.readthedocs.io/'),
     url='https://creamas.readthedocs.io/',

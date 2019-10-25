@@ -8,6 +8,16 @@ import asyncio
 import itertools
 import re
 
+import aiomas
+
+
+def expose(*args, **kwargs):
+    """Function which returns :py:func:`aiomas.expose` wrapper.
+
+    Used by agents to indicate which functions should be callable by other agents.
+    """
+    return aiomas.expose(*args, **kwargs)
+
 
 def create_tasks(task_coro, addrs, *args, flatten=True, **kwargs):
     """Create and schedule a set of asynchronous tasks.

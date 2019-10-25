@@ -10,15 +10,16 @@ import logging
 import re
 from random import choice
 
-import aiomas
+from aiomas import Agent
 
 from creamas.core.artifact import Artifact
 from creamas.logging import ObjectLogger
+from creamas.util import expose
 
 __all__ = ['CreativeAgent']
 
 
-class CreativeAgent(aiomas.Agent):
+class CreativeAgent(Agent):
     """Base class for all creative agents.
 
     All agents share certain common attributes:
@@ -177,7 +178,7 @@ class CreativeAgent(aiomas.Agent):
                             .format(artifact, Artifact))
         self._A.append(artifact)
 
-    @aiomas.expose
+    @expose
     def add_connection(self, addr, **kwargs):
         """Add an agent with given address to current :attr:`connections` with
         given information.
@@ -198,7 +199,7 @@ class CreativeAgent(aiomas.Agent):
             return True
         return False
 
-    @aiomas.expose
+    @expose
     def add_connections(self, conns):
         """Add agents from :attr:`conns` to :attr:`connections`.
 
@@ -213,19 +214,19 @@ class CreativeAgent(aiomas.Agent):
             rets.append(r)
         return rets
 
-    @aiomas.expose
+    @expose
     def remove_connection(self, addr):
         """Remove agent with given address from current connections.
         """
         return self._connections.pop(addr, None)
 
-    @aiomas.expose
+    @expose
     def clear_connections(self):
         """Clear all connections from the agent.
         """
         self._connections = {}
 
-    @aiomas.expose
+    @expose
     def get_connections(self, data=False):
         """Get agent's current connections.
 
@@ -269,7 +270,7 @@ class CreativeAgent(aiomas.Agent):
         """Refill agent's resources to maximum."""
         self._cur_res = self._max_res
 
-    @aiomas.expose
+    @expose
     def evaluate(self, artifact):
         """Evaluate an artifact.
 
@@ -298,7 +299,7 @@ class CreativeAgent(aiomas.Agent):
         remote_agent = await self.env.connect(addr)
         return await remote_agent.evaluate(artifact)
 
-    @aiomas.expose
+    @expose
     async def act(self, *args, **kwargs):
         """Trigger agent to act.
 
@@ -319,7 +320,7 @@ class CreativeAgent(aiomas.Agent):
         if self.logger is not None:
             self.logger.log(level, msg)
 
-    @aiomas.expose
+    @expose
     def close(self, folder=None):
         """Perform any bookkeeping needed before closing the agent.
 

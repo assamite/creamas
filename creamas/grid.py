@@ -32,10 +32,9 @@ import asyncio
 import logging
 import traceback
 
-import aiomas
-
 from creamas import CreativeAgent, Environment
 from creamas.mp import MultiEnvironment, MultiEnvManager, EnvManager
+from creamas.util import expose
 
 # Relative xy coordinates for the cardinal directions
 _rel_xy = {'N': (0, -1), 'E': (1, 0), 'S': (0, 1), 'W': (-1, 0)}
@@ -99,7 +98,7 @@ class GridAgent(CreativeAgent):
                       .format(addr, traceback.format_exc()))
         return None
 
-    @aiomas.expose
+    @expose
     async def rcv(self, msg):
         """Receive and handle message coming from another agent.
 
@@ -109,7 +108,7 @@ class GridAgent(CreativeAgent):
         """
         pass
 
-    @aiomas.expose
+    @expose
     async def act(self, *args, **kwargs):
         """See :py:class:`creamas.core.agent.CreativeAgent.act`.
         """
@@ -290,7 +289,7 @@ class GridEnvironment(Environment):
 class GridEnvManager(EnvManager):
     """Manager for :py:class:`GridEnvironment`.
     """
-    @aiomas.expose
+    @expose
     async def spawn_n(self, agent_cls, n, *args, **kwargs):
         """Spawn *n* agents to the managed environment. This is a convenience
         function so that one does not have to repeatedly make connections to
@@ -304,41 +303,41 @@ class GridEnvManager(EnvManager):
             rets.append(ret)
         return rets
 
-    @aiomas.expose
+    @expose
     def get_xy_address(self, xy):
         """Get address of the agent in *xy* coordinate, or None if no such
         agent exists.
         """
         return self.env.get_xy(xy, addr=True)
 
-    @aiomas.expose
+    @expose
     def set_origin(self, origin):
         """Set originating coordinates for the managed environment.
         """
         self.env.origin = origin
 
-    @aiomas.expose
+    @expose
     def get_origin(self):
         return self.env.origin
 
-    @aiomas.expose
+    @expose
     def set_gs(self, gs):
         """Set grid size for the managed environment.
         """
         self.env.gs = gs
 
-    @aiomas.expose
+    @expose
     def get_gs(self):
         return self.env.gs
 
-    @aiomas.expose
+    @expose
     async def set_grid_neighbor(self, card, addr):
         """Set the neighbor grid for the grid in *card* cardinal direction.
         The *addr* should point to thanager* of the neighboring grid.
         """
         self.env.neighbors[card] = addr
 
-    @aiomas.expose
+    @expose
     async def set_agent_neighbors(self):
         """Set neighboring agents for all the agents in the grid.
 
@@ -543,7 +542,7 @@ class GridMultiEnvironment(MultiEnvironment):
 class GridMultiEnvManager(MultiEnvManager):
     """Manager agent for :py:class:`GridMultiEnvironment`.
     """
-    @aiomas.expose
+    @expose
     async def set_origin(self, mgr_addr, origin):
         """Set originating coordinates for :py:class:`GridEnvironment` which
         manager is in given address.
@@ -556,7 +555,7 @@ class GridMultiEnvManager(MultiEnvManager):
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_origin(origin)
 
-    @aiomas.expose
+    @expose
     async def set_gs(self, mgr_addr, gs):
         """Set grid size for :py:class:`GridEnvironment` which manager is in
         given address.
@@ -569,7 +568,7 @@ class GridMultiEnvManager(MultiEnvManager):
         remote_manager = await self.env.connect(mgr_addr)
         await remote_manager.set_gs(gs)
 
-    @aiomas.expose
+    @expose
     def set_grid_neighbor(self, card, addr):
         """Set the neighbor multi-grid for this multi-grid in *card* cardinal
         direction. The *addr* should point to the *manager* of the neighboring
@@ -577,7 +576,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """
         self.menv.neighbors[card] = addr
 
-    @aiomas.expose
+    @expose
     async def get_xy_address(self, xy):
         """Get address of the agent in the environment with given coordinates.
 
@@ -588,7 +587,7 @@ class GridMultiEnvManager(MultiEnvManager):
         ret = await self.menv.get_xy_address(xy)
         return ret
 
-    @aiomas.expose
+    @expose
     def get_xy_environment(self, xy):
         """Get environment (address of the manager of that environment) which
         has agent with given coordinates.
@@ -598,7 +597,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """
         return self.menv.get_xy_environment(xy)
 
-    @aiomas.expose
+    @expose
     async def set_slave_neighbors(self):
         """Set neighbor environments for all the slave environments.
 
@@ -607,7 +606,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """
         await self.menv.set_slave_neighbors()
 
-    @aiomas.expose
+    @expose
     async def set_agent_neighbors(self):
         """Set neighbor agents for all the agents in the slave environments.
 
@@ -616,7 +615,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """
         await self.menv.set_agent_neighbors()
 
-    @aiomas.expose
+    @expose
     async def set_neighbors(self):
         """Set neighbors for all the agents in all the slave environments.
 
