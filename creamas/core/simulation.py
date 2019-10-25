@@ -4,7 +4,6 @@
 Basic simulation implementation where agents in the same environment can be
 run in an iterative manner.
 """
-import asyncio
 import time
 import logging
 from random import shuffle

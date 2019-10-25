@@ -9,6 +9,7 @@ from testfixtures import TempDirectory
 
 from creamas.core import Environment
 from creamas.logging import log_after, log_before, ObjectLogger
+from creamas import util
 
 
 class DummyAgent():
@@ -43,13 +44,12 @@ class LoggingTestCase(unittest.TestCase):
 
     def test_logging(self):
         dum = DummyAgent(self.td, False, True)
-        '''
-        dum.test_after()
+        util.run(dum.test_after())
         with open(dum.logger.get_file('foo')) as f:
             msg = f.read()
-        self.assertEqual(msg, '0\tb\ta\tz\n')
-        '''
-        dum.test_before()
+        self.assertEqual(msg, 'b\ta\tz\n')
+
+        util.run(dum.test_before())
         with open(dum.logger.get_file('baz')) as f:
             msg = f.read()
         self.assertEqual(msg, 'f\to\to\n')

@@ -612,7 +612,7 @@ class MultiEnvironment():
                                               addr))
                     except:
                         pass
-            asyncio.sleep(0.5)
+            await asyncio.sleep(0.5)
         self._log(logging.DEBUG, "All slaves {} in {} seconds!"
                   .format(status, time.monotonic() - t))
         return True

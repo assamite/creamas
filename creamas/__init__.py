@@ -8,8 +8,6 @@ from creamas.rules.rule import Rule
 from creamas.rules.feature import Feature
 from creamas.rules.mapper import Mapper
 from creamas.rules.agent import RuleAgent
-from aiomas import expose
-
 
 __all__ = [
     'CreativeAgent',
@@ -22,7 +20,6 @@ __all__ = [
     'log_after', 'log_before', 'ObjectLogger',
     'EnvManager', 'MultiEnvManager', 'MultiEnvironment',
     'RuleAgent',
-    'expose',
 ]
 
 __version__ = '0.4.0'

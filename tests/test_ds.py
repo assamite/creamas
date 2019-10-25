@@ -95,6 +95,7 @@ class DenvTestCase(unittest.TestCase):
             self.assertEqual(r[1], kwargs)
 
         n_agents = len(rets)
+
         # Test that creating connections from a graph work for
         # distributed environments
         import networkx
