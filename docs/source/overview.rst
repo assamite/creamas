@@ -4,20 +4,18 @@ Overview
 Creamas is developed as a tool for people to effortlessly build, and do research
 on, multi-agent systems in the field of `computational creativity
 <https://en.wikipedia.org/wiki/Computational_creativity>`_. Creamas is built
-on top of `aiomas <http://aiomas.readthedocs.org/en/latest/>`_, which provides
-a communication route (RPC) between agents and the basic agent and container
-(dubbed as :class:`~creamas.Environment` in Creamas) implementations. If you
-want to know more about how the low level communication works, see aiomas
-documentation.
+on top of `aiomas <http://aiomas.readthedocs.org/en/latest/>`_ , from which the basic agent
+and container (dubbed as :class:`~creamas.Environment` in Creamas) are subclassed.
+The container provides a communication route (RPC) between agents. If you need to know
+more about how the low level communication works, see aiomas documentation.
 
 Agents And Environments
 -----------------------
 
 Agents (:class:`~creamas.CreativeAgent`) in Creamas focus on building artifacts
-and evaluating them. Each agent belongs to :class:`~creamas.Environment`, which
-also serves as a communication route between the agents.
-Environment can also hold other information shared by
-all agents, or, e.g. provide means for the agents to communicate with nearby
+and evaluating them. Each agent belongs to :class:`~creamas.Environment`, which serves
+as a communication route between the agents. Environment can also hold other information
+shared by the agents or, e.g., provide means for the agents to communicate only with nearby
 agents in a 2D-grid. Agents are created by handling the environment as the first
 initialization parameter.
 
@@ -33,22 +31,19 @@ initialization parameter.
 
 The fundamental design principle guiding the development of Creamas is that
 agents create artifacts (:class:`~creamas.Artifact`) in some domain(s) and
-evaluate them. A lot of the current functionality is geared towards this goal.
+evaluate them. Most of the functionality is geared towards this goal.
 
-.. note::
-
-	Creamas does not take a stand on the design of the multi-agent systems or
-	individual agents and is quite agnostic of the agent implementations.
-	Therefore, Creamas can be used to develop arbitrary
-	agent societies, but you might want to take a look at `aiomas
-	<http://aiomas.readthedocs.org/en/latest/>`_ if you do not need any of
-	the additional functionality provided by Creamas.
+However, Creamas does not take a stand on the design of the multi-agent systems or
+individual agents and is quite agnostic considering the agent implementations. Therefore,
+Creamas can be used to develop arbitrary agent societies, but you might want to
+take a look at `aiomas <http://aiomas.readthedocs.org/en/latest/>`_ if you do not
+need any of the additional functionality provided by Creamas.
 
 Communication Between the Agents
 --------------------------------
 
 Communication between the agents in one of the key interests in multi-agent systems.
-In Creamas, agents can expose their own functions as services to other agents by using
+In Creamas, agents can *expose* their own functions as services to other agents by using
 :func:`expose` decorator (originating from *aiomas* library). An agent wishing to communicate
 with another agent connects to the remote agent and calls the exposed function
 remotely. To this end they have to know the other agent's (tcp) address.
@@ -56,33 +51,40 @@ remotely. To this end they have to know the other agent's (tcp) address.
 .. note::
 
 	Agents derived from :class:`~creamas.core.agent.CreativeAgent` are
-	supposed to store addresses of known other agents in their
+	supposed to store addresses of other agents in their
 	:attr:`~creamas.core.agent.CreativeAgent.connections`.
 
-Consider a following hypothetical :meth:`service`-method an agent **AgentA** has::
+Consider a following simple :meth:`multiply` service an agent **AgentA** has::
 
     import creamas
 
     class AgentA(creamas.CreativeAgent):
 
         @creamas.expose
-        async def service(self, param):
-            # do something with param
-            # ...
-            return value
+        async def multiply(self, int1, int2):
+            return int1 * int2
 
 Now, another agent, **AgentB**, knowing that **AgentA**'s address is ``addr``
-can then use **AgentA**'s ``service`` method by connecting to **AgentA** through
+can then use **AgentA**'s ``multiply`` service by connecting to **AgentA** through
 its environment. ::
+
+    import random
+    import creamas
 
     class AgentB(creamas.CreativeAgent):
 
-        async def client(self, my_param):
-            remote_agent_A = await self.env.connect(addr)
-            value = await remote_agent_A.service(my_param)
-            # do something with the value
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.int1 = random.randint(0, 100)
+            self.int2 = random.randint(0, 100)
 
-Importantly, the agents do not have to reside in the same environment or even in
+        async def complex_computation(self, addr):
+            remote_agent_A = await self.env.connect(addr)
+            value = await remote_agent_A.multiply(self.int1, self.int2)
+            # do something with the value
+            return value
+
+Importantly, the agents do not have to reside in the same environment or even on
 the same machine, i.e. you can connect to any agent or environment as long as
 you know the address of the specific agent in the environment. However, the
 remote agent and its environment have to be implemented using classes derived
