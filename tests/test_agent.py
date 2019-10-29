@@ -111,9 +111,10 @@ class AgentTestCase(unittest.TestCase):
             self.assertIn(c, list(a1.connections.keys()))
             self.assertTrue(type(d), dict)
 
-        # Default act raises error
-        with self.assertRaises(NotImplementedError):
-            self.loop.run_until_complete(a1.act())
+        # Default act returns the given arguments
+        args, kwargs = self.loop.run_until_complete(a1.act(1, foo='bar'))
+        self.assertEqual((1,), args)
+        self.assertEqual({'foo':'bar'}, kwargs)
 
         # Clearing the connections works.
         a1.clear_connections()

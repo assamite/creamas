@@ -306,15 +306,13 @@ class CreativeAgent(Agent):
         **This is a dummy method which should be overridden in a subclass.**
 
         This function serves as the main function for the simulations, and
-        is called for each agent on each iteration step of the simulation.
-
-        :raises NotImplementedError: If not overridden in subclass.
+        is called for each agent on each step of the simulation.
 
         .. seealso::
 
             :meth:`~creamas.core.environment.Environment.trigger_all`
         """
-        raise NotImplementedError('Override in subclass.')
+        return args, kwargs
 
     def _log(self, level, msg):
         if self.logger is not None:
