@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: nx
     :platform: Unix
 
@@ -13,7 +13,7 @@ from agent connections.
 
     Use, e.g. ``pip install networkx``
 
-'''
+"""
 from networkx import Graph, DiGraph
 
 from creamas.util import sort_addrs
