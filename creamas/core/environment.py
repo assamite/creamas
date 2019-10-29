@@ -115,11 +115,15 @@ class Environment(Container):
     def get_agent(self, addr):
         """Get agent in given address.
 
-        :raises ValueError: If no such agent in the environment.
+        :raises ValueError: If given address is not part of this environment
+        :raises KeyError: If no such agent in the environment
         """
-        agent = self.agents.dict[addr.rsplit('/', 1)[1]]
-        if agent.addr != addr:
-            raise KeyError("No such agent in the environment.")
+        base_url, agent_number = addr.rsplit('/', 1)
+        base_url += "/"
+        if base_url != self._base_url:
+            raise ValueError("Agent's base URL ({}) does not match with the environment ({})."
+                             .format(base_url, self._base_url))
+        agent = self.agents.dict[agent_number]
         return agent
 
     async def trigger_act(self, *args, addr=None, agent=None, **kwargs):
