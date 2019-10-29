@@ -52,6 +52,20 @@ class TestEnvironment(unittest.TestCase):
             self.assertTrue(type(addr), str)
             self.assertTrue(addr.rsplit("/", 1)[0], 'tcp://localhost:5555')
 
+        # Test get_agent(addr)
+        for i in range(n_agents):
+            addr = 'tcp://localhost:5555/' + str(i)
+            agent = self.env.get_agent(addr=addr)
+            self.assertEqual(agent.addr, addr)
+
+        addr = 'tcp://localhost:5556/0'
+        with self.assertRaises(ValueError):
+            agent = self.env.get_agent(addr=addr)
+
+        addr = 'tcp://localhost:5555/' + str(n_agents + 10)
+        with self.assertRaises(KeyError):
+            agent = self.env.get_agent(addr=addr)
+
         # If environment has manager, it is not returned by default parameters
         # of get_agents
         a0 = agents[0]
