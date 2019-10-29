@@ -121,7 +121,7 @@ class Environment(Container):
         base_url, agent_number = addr.rsplit('/', 1)
         base_url += "/"
         if base_url != self._base_url:
-            raise ValueError("Agent's base URL ({}) does not match with the environment ({})."
+            raise ValueError("Given address' base URL ({}) does not match with the environment ({})."
                              .format(base_url, self._base_url))
         agent = self.agents.dict[agent_number]
         return agent
