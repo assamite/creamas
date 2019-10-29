@@ -327,14 +327,14 @@ class Environment(Container):
         2. for each agent: calls :py:meth:`close`
         3. Shuts down its RPC-service.
         """
-        async def _destroy(folder):
+        async def _close(folder):
             ret = self.save_info(folder)
             for a in self.get_agents(addr=False):
                 a.close(folder=folder)
             await self.shutdown(as_coro=True)
             return ret
 
-        return run_or_coro(_destroy(folder), as_coro)
+        return run_or_coro(_close(folder), as_coro)
 
     def __str__(self):
         return self.__repr__()
