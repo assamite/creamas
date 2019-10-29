@@ -112,6 +112,16 @@ class Environment(Container):
             agents = [agent.addr for agent in agents]
         return agents
 
+    def get_agent(self, addr):
+        """Get agent in given address.
+
+        :raises ValueError: If no such agent in the environment.
+        """
+        agent = self.agents.dict[addr.rsplit('/', 1)[1]]
+        if agent.addr != addr:
+            raise KeyError("No such agent in the environment.")
+        return agent
+
     async def trigger_act(self, *args, addr=None, agent=None, **kwargs):
         """Trigger agent to act.
 
@@ -122,9 +132,7 @@ class Environment(Container):
         if agent is None and addr is None:
             raise TypeError("Either addr or agent has to be defined.")
         if agent is None:
-            for a in self.get_agents(addr=False):
-                if addr == a.addr:
-                    agent = a
+            agent = self.get_agent(addr)
         self._log(logging.DEBUG, "Triggering agent in {}".format(agent.addr))
         ret = await agent.act(*args, **kwargs)
         return ret
