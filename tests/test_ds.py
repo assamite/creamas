@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: test_ds
     :platform: Unix
 
 Tests for creamas.ds-module.
-'''
+"""
 import asyncio
 import unittest
 # import multiprocessing
@@ -16,6 +16,7 @@ from creamas.ds import DistributedEnvironment, ssh_exec
 from creamas.util import run
 
 from ssh_server import run_server
+
 
 class DenvTestAgent(CreativeAgent):
 

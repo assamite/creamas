@@ -1,9 +1,9 @@
-'''
+"""
 .. :py:module:: test_mp
     :platform: Unix
 
 Tests for creamas.mp-module.
-'''
+"""
 import asyncio
 import unittest
 
@@ -14,11 +14,13 @@ from creamas.core.environment import Environment
 from creamas.mp import MultiEnvironment, EnvManager, MultiEnvManager
 from creamas.util import run, split_addrs
 
+
 class MenvTestAgent(CreativeAgent):
 
     @aiomas.expose
     async def act(self, *args, **kwargs):
         return args, kwargs
+
 
 class MenvTestCase(unittest.TestCase):
 
