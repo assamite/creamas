@@ -33,13 +33,12 @@ class Environment(Container):
     def create(cls, *args, **kwargs):
         """Create a new environment, see :py:func:`~aiomas.Container.create` for details.
 
-        This function adds extra serializers returned by :func:`~creamas.serializers.get_serializers` by default.
+        This function adds extra serializers returned by :func:`~creamas.serializers.get_serializers` by default if
+        ``extra_serializers`` keyword argument is None.
         """
         extra_ser = kwargs.pop('extra_serializers', None)
         if extra_ser is None:
             extra_ser = get_serializers()
-        else:
-            extra_ser.extend(get_serializers())
         kwargs.update({'extra_serializers': extra_ser})
         return super().create(*args, **kwargs)
 
