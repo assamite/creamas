@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: spawn_test_node
     :platform: Unix
 
 A script to spawn a new multiprocessing grid environment on an Ukko-node.
-'''
+"""
 import argparse
 import asyncio
 import logging
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 def create_grid_menv(addr, slave_addrs, grid_size, origin, logger=logger,
                      extra_ser=None):
-    '''
+    """
     :param addr: Address of the multi-environment
     :param slave_addrs: Addresses for the slave environments.
     :param tuple grid_size: Grid size for each slave environment, e.g. (4, 4)
@@ -49,7 +49,7 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, logger=logger,
         Python objects between the agents).
 
     :returns: Instance of :py:class:`GridMultiEnvironment`
-    '''
+    """
     env_kwargs = {'codec': aiomas.MsgPack, 'extra_serializers': extra_ser}
     menv = GridMultiEnvironment(addr,
                                 env_cls=Environment,
@@ -68,12 +68,12 @@ def create_grid_menv(addr, slave_addrs, grid_size, origin, logger=logger,
 
 
 def populate_menv(menv, agent_cls_name, log_folder):
-    '''Populate given multiprocessing grid environment with agents.
+    """Populate given multiprocessing grid environment with agents.
 
     :param menv: Instance of :py:class:`GridMultiEnvironment`
     :param str agent_cls_name: Name of the agent class, e.g. 'grip_mp:GridAgent'
     :param str log_folder: Root logging folder for the agents.
-    '''
+    """
     gs = menv.gs
     n_agents = gs[0] * gs[1]
     n_slaves = len(menv.addrs)
@@ -83,10 +83,10 @@ def populate_menv(menv, agent_cls_name, log_folder):
 
 
 def get_slave_addrs(mgr_addr, N):
-    '''Get ports for the slave environments.
+    """Get ports for the slave environments.
 
     Currently the ports are not checked for availability.
-    '''
+    """
     return  [(HOST, p) for p in range(mgr_addr+1, mgr_addr+1+N)]
 
 
@@ -107,7 +107,7 @@ def _gs(s):
 
 
 if __name__ == "__main__":
-    desc = '''Starts a grid multi-environment on a node and populates it if
+    desc = """Starts a grid multi-environment on a node and populates it if
     agent class is given. Multi-environment runs until its manager receives
     'stop'-command.
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     environment's port, i.e. if the manager environment's port is 5555
     (default), then the slave environment ports are 5556, 5557, etc.. The ports
     are not checked for availability before hand.
-    '''
+    """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-p', '--port', type=int, metavar='PORT', dest='port',
                         help="Port number for the multi-environment's manager "

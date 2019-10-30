@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: spiro_agent
     :platform: Unix
 
@@ -16,9 +16,9 @@ make the code substantially faster to run on machines with several cores.
 .. note::
 
     This example is research code and provided as is. Therefore, the quality
-    of the code is not the great and its documentation is insufficient.
+    of the code is adequate and its documentation is insufficient.
 
-'''
+"""
 import os
 import sys
 import time
@@ -45,15 +45,15 @@ TIMEOUT = 5
 
 
 class SpiroAgent(VoteAgent):
-    '''Agent that creates spirographs and evaluates them with short term memory
+    """Agent that creates spirographs and evaluates them with short term memory
     (``STMemory``) learned from previously seen spirographs.
-    '''
+    """
     def __init__(self, environment, desired_novelty, search_width=10,
                  img_size=32, log_folder=None, log_level=logging.INFO,
                  memsize=36, learning_method='closest', learning_amount=3,
                  learn_on_add=True, veto_threshold=0.10,
                  critic_threshold=0.10, jump='none', move_radius=10.0):
-        '''
+        """
         :param environment:
             The environment for the agent.
 
@@ -111,7 +111,7 @@ class SpiroAgent(VoteAgent):
             area new parameters for the spirograph generation are considered
             given the agent's current position in the parameter space. Defaults
             to 10.0.
-        '''
+        """
         # Call first the constructor of the super class
         super().__init__(environment, log_folder=log_folder,
                          log_level=log_level)
@@ -138,9 +138,9 @@ class SpiroAgent(VoteAgent):
         self.age = 0
 
     def create(self, r, r_, R=200):
-        '''Create new spirograph image with given arguments. Returned image is
+        """Create new spirograph image with given arguments. Returned image is
         scaled to agent's preferred image size.
-        '''
+        """
         x, y = give_dots(R, r, r_, spins=20)
         xy = np.array([x, y]).T
         xy = np.array(np.around(xy), dtype=np.int64)
@@ -155,9 +155,9 @@ class SpiroAgent(VoteAgent):
         return fimg
 
     def randomize_args(self):
-        '''Get new parameters for spirograph generation near agent's current
+        """Get new parameters for spirograph generation near agent's current
         location (*spiro_args*).
-        '''
+        """
         args = self.spiro_args + np.random.normal(0, self.move_radius,
                                                   self.spiro_args.shape)
         np.clip(args, -199, 199, args)
@@ -168,39 +168,39 @@ class SpiroAgent(VoteAgent):
         return args
 
     def hedonic_value(self, novelty):
-        '''Given the agent's desired novelty, how good the novelty value is.
+        """Given the agent's desired novelty, how good the novelty value is.
 
         Not used if *desired_novelty*=-1
-        '''
+        """
         lmax = gaus_pdf(self.desired_novelty, self.desired_novelty, 4)
         pdf = gaus_pdf(novelty, self.desired_novelty, 4)
         return pdf / lmax
 
     def novelty(self, img):
-        '''Image's distance to the agent's short-term memory. Usually distance
+        """Image's distance to the agent's short-term memory. Usually distance
         to the closest object/prototypical object model in the memory.
-        '''
+        """
         dist = self.stmem.distance(img.flatten())
         return dist
 
     def evaluate(self, artifact):
-        '''Evaluate the artifact with respect to the agents short term memory.
+        """Evaluate the artifact with respect to the agents short term memory.
 
         Returns value in [0, 1].
-        '''
+        """
         if self.desired_novelty > 0:
             return self.hedonic_value(self.novelty(artifact.obj))
         return self.novelty(artifact.obj) / self.img_size, None
 
     def invent(self, n):
-        '''Invent new spirograph by taking n random steps from current position
+        """Invent new spirograph by taking n random steps from current position
         (spirograph generation parameters) and selecting the best one based
         on the agent's evaluation (hedonic function).
 
         :param int n: how many spirographs are created for evaluation
         :returns: Best created artifact.
         :rtype: :py:class:`~creamas.core.agent.Artifact`
-        '''
+        """
         args = self.randomize_args()
         img = self.create(args[0], args[1])
         best_artifact = SpiroArtifact(self, img, domain='image')
@@ -222,10 +222,10 @@ class SpiroAgent(VoteAgent):
 
     @aiomas.expose
     async def act(self):
-        '''Agent's main method to create new spirographs.
+        """Agent's main method to create new spirographs.
 
         See Simulation and CreativeAgent documentation for details.
-        '''
+        """
         # Learn from domain artifacts.
         self.age += 1
         self.added_last = False
@@ -257,7 +257,7 @@ class SpiroAgent(VoteAgent):
         self.save_images(artifact)
 
     async def learn_from_domain(self, method='random', amount=10):
-        '''Learn SOM from artifacts introduced to the environment.
+        """Learn SOM from artifacts introduced to the environment.
 
         :param str method:
             learning method, should be either 'random' or 'closest', where
@@ -267,7 +267,7 @@ class SpiroAgent(VoteAgent):
             Maximum amount of artifacts sampled
         :param bool last:
             Learn from last domain artifact in any case
-        '''
+        """
         if method == 'none':
             return
         arts = await self.env.get_artifacts()
@@ -290,11 +290,11 @@ class SpiroAgent(VoteAgent):
                 self.learn(a, self.teaching_iterations)
 
     def learn(self, spiro, iterations=1):
-        '''Train short term memory with given spirograph.
+        """Train short term memory with given spirograph.
 
         :param spiro:
             :py:class:`SpiroArtifact` object
-        '''
+        """
         for i in range(iterations):
             self.stmem.train_cycle(spiro.obj.flatten())
 
@@ -364,9 +364,9 @@ class SpiroAgent(VoteAgent):
         return mean_dist, distances, indeces
 
     def plot_distances(self, mean_dist, distances, indeces):
-        '''Plot distances of the generated spirographs w.r.t. the previously
+        """Plot distances of the generated spirographs w.r.t. the previously
         generated spirogaphs.
-        '''
+        """
         from matplotlib import pyplot as plt
         x = np.arange(len(distances))
         y = [mean_dist for i in x]
@@ -396,8 +396,8 @@ class SpiroAgent(VoteAgent):
             plt.show()
 
     def plot_places(self):
-        '''Plot places where the agent has been and generated a spirograph.
-        '''
+        """Plot places where the agent has been and generated a spirograph.
+        """
         from matplotlib import pyplot as plt
         fig, ax = plt.subplots()
         x = []
@@ -456,8 +456,8 @@ class SpiroAgent(VoteAgent):
 
 
 class SpiroArtifact(Artifact):
-    '''Artifact class for Spirographs.
-    '''
+    """Artifact class for Spirographs.
+    """
     def __str__(self):
         return "Spirograph by: {} {}".format(self.creator,
                                             self.framings[self.creator])
@@ -495,8 +495,8 @@ class SpiroMultiEnvManager(MultiEnvManager):
 
 
 class SpiroMultiEnvironment(MultiEnvironment):
-    '''MultiEnvironment for agents creating spirographs.
-    '''
+    """MultiEnvironment for agents creating spirographs.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.save_image_number = 1
@@ -649,9 +649,9 @@ class SpiroMultiEnvironment(MultiEnvironment):
             plt.show()
 
     def plot_places(self):
-        '''Plot places (in the parameter space) of all the generated artifacts
+        """Plot places (in the parameter space) of all the generated artifacts
         and the artifacts accepted to the domain.
-        '''
+        """
         from matplotlib import pyplot as plt
         fig, ax = plt.subplots()
         title = "Agent places, artifacts and env artifacts ({} env artifacts)".format(len(self.artifacts))
@@ -702,8 +702,8 @@ class SpiroMultiEnvironment(MultiEnvironment):
             plt.show()
 
     def destroy(self, folder=None):
-        '''Destroy the environment and the subprocesses.
-        '''
+        """Destroy the environment and the subprocesses.
+        """
         ameans = [(0, 0, 0) for _ in range(3)]
         ret = [self.save_info(folder, ameans)]
         aiomas.run(until=self.stop_slaves(folder))
@@ -716,8 +716,8 @@ class SpiroMultiEnvironment(MultiEnvironment):
 
 
 class STMemory():
-    '''Agent's short-term memory model using a simple list which stores
-    artifacts as is.'''
+    """Agent's short-term memory model using a simple list which stores
+    artifacts as is."""
     def __init__(self, length):
         self.length = length
         self.artifacts = []
@@ -728,14 +728,14 @@ class STMemory():
         self.artifacts.insert(0, artifact)
 
     def learn(self, artifact):
-        '''Learn new artifact. Removes last artifact from the memory if it is
-        full.'''
+        """Learn new artifact. Removes last artifact from the memory if it is
+        full."""
         self._add_artifact(artifact)
 
     def train_cycle(self, artifact):
-        '''Train cycle method to keep the interfaces the same with the SOM
+        """Train cycle method to keep the interfaces the same with the SOM
         implementation of the short term memory.
-        '''
+        """
         self.learn(artifact)
 
     def distance(self, artifact):

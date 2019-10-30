@@ -1,6 +1,6 @@
-'''
+"""
 Testing serializer.
-'''
+"""
 import pickle
 
 from spiro_agent_mp import SpiroArtifact

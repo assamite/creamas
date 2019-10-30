@@ -1,16 +1,16 @@
-'''
+"""
 .. py:module:: utils
     :platform: Unix
 
 Utility functions for the grid simulations.
-'''
+"""
 import logging
 import os
 
 
 def configure_logger(logger, filename, folder, log_level):
-    '''Configure logging behvior for the simulations.
-    '''
+    """Configure logging behvior for the simulations.
+    """
     fmt = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
     if folder is not None:
         log_file = os.path.join(folder, filename)

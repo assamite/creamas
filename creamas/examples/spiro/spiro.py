@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: spiro
     :platform: Unix
 
 Simple Spirograph code, adapted from https://gist.github.com/alvesjnr/1948754
-'''
+"""
 import math
 import numpy as np
 from scipy import misc
@@ -12,8 +12,8 @@ PI = np.pi
 
 
 def give_dots_yield(R, r, r_, resolution=2*PI/1000, spins=50):
-    '''Generate Spirograph dots without numpy using yield.
-    '''
+    """Generate Spirograph dots without numpy using yield.
+    """
     def x(theta):
         return (R-r) * math.cos(theta) + r_*math.cos((R-r) / r * theta)
 
@@ -27,8 +27,8 @@ def give_dots_yield(R, r, r_, resolution=2*PI/1000, spins=50):
 
 
 def give_dots(R, r, r_, resolution=2*PI/1000, spins=50):
-    '''Generate Spirograph dots with numpy.
-    '''
+    """Generate Spirograph dots with numpy.
+    """
     thetas = np.arange(0, 2*PI*spins, resolution)
     Rr = R - r
     x = Rr * np.cos(thetas) + r_*np.cos(Rr / r * thetas)
@@ -37,8 +37,8 @@ def give_dots(R, r, r_, resolution=2*PI/1000, spins=50):
 
 
 def spiro_image(R, r, r_, resolution=2*PI/1000, spins=50, size=[32, 32]):
-    '''Create image with given Spirograph parameters using numpy and scipy.
-    '''
+    """Create image with given Spirograph parameters using numpy and scipy.
+    """
     x, y = give_dots(200, r, r_, spins=20)
     xy = np.array([x, y]).T
     xy = np.array(np.around(xy), dtype=np.int64)

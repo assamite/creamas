@@ -1,4 +1,4 @@
-'''
+"""
 .. py:module:: main
     :platform: Unix
 
@@ -12,7 +12,7 @@ basic grid implementations from :mod:`creamas.grid`.
     :class:`creamas.mp.MultiEnvironment` and
     :class:`creamas.ds.DistributedEnvironment`.
 
-'''
+"""
 import argparse
 import asyncio
 import logging
@@ -50,13 +50,13 @@ MGR_FILE = 'mgr_addrs.txt'
 
 
 class DistributedGridEnvironment(DistributedEnvironment):
-    '''Distributed grid environment.
+    """Distributed grid environment.
 
     For basic usage, refer to :py:class:`DistributedEnvironment`.
-    '''
+    """
     def __init__(self, addr, nodes, ngs, n_slaves, gs, agent_cls, 
                  folder, logger=None, **env_kwargs):
-        '''
+        """
         :param host:
             Host of the grand managing environment (this node).
 
@@ -91,7 +91,7 @@ class DistributedGridEnvironment(DistributedEnvironment):
 
         :param str folder:
             Relative path to the logging folder, where the logs are saved.
-        '''
+        """
         super().__init__(addr, Environment, nodes, mgr_cls=None,
                          logger=logger, **env_kwargs)
         self._n_slaves = n_slaves
@@ -128,9 +128,9 @@ class DistributedGridEnvironment(DistributedEnvironment):
         return cmds
 
     async def prepare_nodes(self):
-        '''Prepare nodes (and slave environments and agents) so that they are
+        """Prepare nodes (and slave environments and agents) so that they are
         ready for the simulation.
-        '''
+        """
         return await self.set_neighbors()
 
     async def _set_neighbors(self, mgr_addr):
@@ -149,9 +149,9 @@ class DistributedGridEnvironment(DistributedEnvironment):
             await r_manager.set_grid_neighbor('W', W)
 
     async def set_neighbors(self):
-        '''Set neighbors for multi-environments, their slave environments,
+        """Set neighbors for multi-environments, their slave environments,
         and agents.
-        '''
+        """
         t = time.time()
         self.logger.debug("Settings grid neighbors for the multi-environments.")
         tasks = []
@@ -211,11 +211,11 @@ def _build_spawn_cmd(prefix, script_name, port, n_slaves, gs, origin,
 
 
 if __name__ == "__main__":
-    desc = '''Run the node simulation in Ukko-cluster.
+    desc = """Run the node simulation in Ukko-cluster.
 
     Assumes that your configuration allows you to make SSH-connections without
     login credentials to the Ukko-cluster.
-    '''
+    """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('--venv', type=str,
                         help="Path to the Python virtual environment's "

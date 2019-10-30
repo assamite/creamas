@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: ukko
     :platform: Unix
 
 Utility functions to parse available Ukko nodes.
-'''
+"""
 import asyncio
 import operator
 import re
@@ -15,12 +15,12 @@ import asyncssh
 URL_UKKO_REPORT = 'http://www.cs.helsinki.fi/ukko/hpc-report.txt'
 
 def _parse_ukko_report(report):
-    '''Parse Ukko's report for available (non-reserved) nodes and their current
+    """Parse Ukko's report for available (non-reserved) nodes and their current
     loads. The nodes that have load marked as '-' in report are not returned.
 
     :returns: List of available ukko-nodes sorted in order of their current
     load (nodes with least load are first).
-    '''
+    """
     lines = report.split("\\n")
     cc = r'ukko[0-9]{3}.hpc.cs.helsinki.fi'
     nodes = []
@@ -39,16 +39,16 @@ def _parse_ukko_report(report):
 
 
 def _get_ukko_report():
-    '''Get Ukko's report from the fixed URL.
-    '''
+    """Get Ukko's report from the fixed URL.
+    """
     with urllib.request.urlopen(URL_UKKO_REPORT) as response:
         ret = str(response.read())
     return ret
 
 
 async def _test_node(node):
-    '''Test node if it is currently loggable with ssh.
-    '''
+    """Test node if it is currently loggable with ssh.
+    """
     try:
         conn = await asyncssh.connect(node, known_hosts=None)
         conn.close()
@@ -58,7 +58,7 @@ async def _test_node(node):
 
 
 def get_nodes(n=8, exclude=[], loop=None):
-    '''Get Ukko nodes with the least amount of load.
+    """Get Ukko nodes with the least amount of load.
 
     May return less than *n* nodes if there are not as many nodes available,
     the nodes are reserved or the nodes are on the exclude list.
@@ -72,7 +72,7 @@ def get_nodes(n=8, exclude=[], loop=None):
 
     :rtype list:
     :returns: Locations of Ukko nodes with the least amount of load
-    '''
+    """
     report = _get_ukko_report()
     nodes = _parse_ukko_report(report)
     ret = []

@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: grid_agent
     :platform: Unix
 
 A test implementation of a grid agent.
-'''
+"""
 import logging
 import random
 
