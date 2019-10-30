@@ -20,6 +20,7 @@ from aiomas import Container
 
 from creamas.logging import ObjectLogger
 from creamas.util import run_or_coro
+from creamas.serializers import get_serializers
 
 
 __all__ = ['Environment']
@@ -28,6 +29,20 @@ __all__ = ['Environment']
 class Environment(Container):
     """Base environment class inherited from :py:class:`aiomas.Container`.
     """
+    @classmethod
+    def create(cls, *args, **kwargs):
+        """Create a new environment, see :py:func:`~aiomas.Container.create` for details.
+
+        This function adds extra serializers returned by :func:`~creamas.serializers.get_serializers` by default.
+        """
+        extra_ser = kwargs.pop('extra_serializers', None)
+        if extra_ser is None:
+            extra_ser = get_serializers()
+        else:
+            extra_ser.extend(get_serializers())
+        kwargs.update({'extra_serializers': extra_ser})
+        return super().create(*args, **kwargs)
+
     def __init__(self, base_url, loop, clock, connect_kwargs):
         super().__init__(base_url, loop, clock, connect_kwargs)
         self._age = 0
