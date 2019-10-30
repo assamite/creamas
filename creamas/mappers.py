@@ -1,11 +1,11 @@
-'''
+"""
 .. py:module:: mappers
     :platform: Unix
 
 Various mapper implementations. Mappers are functions that map possible feature
 value's to the interval [-1, 1]. In Creamas, they are used by individual
 agent's to represent agent's preferences over features values.
-'''
+"""
 from creamas.math import gaus_pdf, logistic
 from creamas.rules.mapper import Mapper
 
@@ -14,7 +14,7 @@ __all__ = ['BooleanMapper', 'LinearMapper', 'DoubleLinearMapper',
 
 
 class BooleanMapper(Mapper):
-    '''Boolean mapper that has four different modes.
+    """Boolean mapper that has four different modes.
 
     Depending on the mode, True and False are mapped either to 1, 0, or -1.
 
@@ -26,7 +26,7 @@ class BooleanMapper(Mapper):
          '1-1'   1.0    -1.0
          '-11'  -1.0     1.0
         ======= ======= =======
-    '''
+    """
     modes = ['10', '01', '1-1', '-11']
 
     def __init__(self, mode='10'):
@@ -40,7 +40,7 @@ class BooleanMapper(Mapper):
 
     @property
     def mode(self):
-        '''Mode of the mapper.'''
+        """Mode of the mapper."""
         return self._mode
 
     @mode.setter
@@ -66,7 +66,7 @@ class BooleanMapper(Mapper):
 
 
 class LinearMapper(Mapper):
-    '''Mapper that maps values in given interval linearly.
+    """Mapper that maps values in given interval linearly.
 
     Can be used for features that return either 'int' or 'float' values.
 
@@ -83,7 +83,7 @@ class LinearMapper(Mapper):
          '-11'  -1.0   1.0
         ======= ===== =====
 
-    '''
+    """
     _value_set = {int, float}
     modes = ['10', '01', '1-1', '-11']
 
@@ -103,7 +103,7 @@ class LinearMapper(Mapper):
 
     @property
     def mode(self):
-        '''Mode of the mapper.'''
+        """Mode of the mapper."""
         return self._mode
 
     @mode.setter
@@ -114,8 +114,8 @@ class LinearMapper(Mapper):
 
     @property
     def value_set(self):
-        '''Accepted value types, i.e. this mapper can be used for the features
-        that return these types of values.'''
+        """Accepted value types, i.e. this mapper can be used for the features
+        that return these types of values."""
         return self._value_set
 
     def map(self, value):
@@ -159,7 +159,7 @@ class LinearMapper(Mapper):
 
 
 class DoubleLinearMapper(LinearMapper):
-    '''Mapper that concatenates two linear mappers.
+    """Mapper that concatenates two linear mappers.
 
     Can be used for features that return either 'int' or 'float' values.
 
@@ -175,7 +175,7 @@ class DoubleLinearMapper(LinearMapper):
          '1-1'   1.0  -1.0    1.0
          '-11'  -1.0   1.0   -1.0
         ======= ===== ====== ======
-    '''
+    """
 
     # Reverse modes (modes for second line) for the modes described in the
     # LinearMapper.
@@ -223,7 +223,7 @@ class DoubleLinearMapper(LinearMapper):
 
 
 class GaussianMapper(Mapper):
-    '''Gaussian distribution mapper.
+    """Gaussian distribution mapper.
 
     The mapped value is relative to given Gaussian distribution's
     maximum point (*pmax*, evaluated at point *loc*) and the probability
@@ -240,17 +240,17 @@ class GaussianMapper(Mapper):
          '-11'   :math:`-1.0 + 2(pval / pmax)`
         ======= =======================
 
-    '''
+    """
 
     _value_set = {int, float}
     modes = ['10', '01', '1-1', '-11']
 
     def __init__(self, mean, std, mode='01'):
-        '''
+        """
         :param float mean: mean of the mapping distribution
         :param float std: standard deviation of the mapping distribution
         :param mode: mode of the mapper: '10', '01', '1-1' or '-11'.
-        '''
+        """
         self._mean = mean
         self._std = std
         self.mode = mode
@@ -263,7 +263,7 @@ class GaussianMapper(Mapper):
 
     @property
     def mode(self):
-        '''Mode of the mapper.'''
+        """Mode of the mapper."""
         return self._mode
 
     @mode.setter
@@ -297,21 +297,21 @@ class GaussianMapper(Mapper):
 
 
 class LogisticMapper(Mapper):
-    '''Logistic function mapper.
+    """Logistic function mapper.
 
     The mapped value is relative to the logistic function's value in the
     mapping point. Depending on the mode, some transformations (mirroring,
     shifting), might be applied to the mapped value.
-    '''
+    """
     _value_set = {int, float}
     modes = ['10', '01', '1-1', '-11']
 
     def __init__(self, x0, k, mode='01'):
-        '''
+        """
         :param float x0: sigmoid's midpoint
         :param float k: steepness of the curve
         :param mode: mode of the mapper: '10', '01', '1-1' or '-11'.
-        '''
+        """
         self._x0 = x0
         self._k = k
         self.mode = mode
@@ -320,7 +320,7 @@ class LogisticMapper(Mapper):
 
     @property
     def mode(self):
-        '''Mode of the mapper.'''
+        """Mode of the mapper."""
         return self._mode
 
     @mode.setter
