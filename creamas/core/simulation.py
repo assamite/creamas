@@ -16,17 +16,21 @@ from creamas import util
 __all__ = ['Simulation']
 
 
-class Simulation():
+class Simulation:
     """A base class for iterative simulations.
 
     In each step the simulation calls :py:meth:`~creamas.core.agent.CreativeAgent.act` for each agent in the simulation.
+
+    Functions :py:meth:`~creamas.core.simulation.Simulation.step`,
+    :py:meth:`~creamas.core.simulation.Simulation.steps`, :py:meth:`~creamas.core.simulation.Simulation.async_step`
+    and :py:meth:`~creamas.core.simulation.Simulation.async_steps` are used to advance the simulation.
     """
     @classmethod
     def create(cls, agent_cls=None, n_agents=10, agent_kwargs={}, env_cls=Environment, env_kwargs={}, callback=None,
                conns=0, log_folder=None):
         """A convenience function to create simple simulations.
 
-        Method first creates environment, then instantiates agents into it with give arguments, and finally creates
+        Method first creates an environment, then instantiates agents into it with given arguments, and finally creates
         simulation for the environment.
 
         :param agent_cls:
@@ -81,12 +85,12 @@ class Simulation():
             for i in range(len(n_agents)):
                 agent_kwargs[i]['environment'] = env
                 agent_kwargs[i]['log_folder'] = log_folder
-                agents = agents + [agent_cls[i](**agent_kwargs[i]) for e in
+                agents = agents + [agent_cls[i](**agent_kwargs[i]) for _ in
                                    range(n_agents[i])]
         else:
             agent_kwargs['environment'] = env
             agent_kwargs['log_folder'] = log_folder
-            agents = [agent_cls(**agent_kwargs) for e in range(n_agents)]
+            agents = [agent_cls(**agent_kwargs) for _ in range(n_agents)]
 
         if conns > 0:
             env.create_random_connections(n=conns)
@@ -94,9 +98,9 @@ class Simulation():
         return Simulation(env, callback, log_folder)
 
     def __init__(self, env, callback=None, log_folder=None):
-        """Create simulation for previously set up environment.
+        """Create a simulation for an existing environment.
 
-        :param env: fully initialized environment with agents already set
+        :param env: An environment.
         :type env:
             :class:`~creamas.core.environment.Environment`,
             :class:`~creamas.mp.MultiEnvironment` or
@@ -106,7 +110,7 @@ class Simulation():
         """
         self._env = env
         self._callback = callback
-        self._age = 0
+        self._cur_step = 0
         self._order = 'alphabetical'
         self._name = 'sim'
         self._start_time = time.monotonic()
@@ -126,7 +130,8 @@ class Simulation():
 
     @property
     def name(self):
-        """Name of the simulation.
+        """Name of the simulation as a string.
+
         """
         return self._name
 
@@ -137,15 +142,15 @@ class Simulation():
         return self._env
 
     @property
-    def age(self):
-        """Age of the simulation.
+    def cur_step(self):
+        """The simulation's current step as an integer.
         """
-        return self._age
+        return self._cur_step
 
     @property
     def callback(self):
-        """Callable to be called after each simulation step for any extra bookkeeping, etc.. Should accept one
-        parameter: *age* that is current simulation age.
+        """Callable to be called after each simulation step for any extra bookkeeping, etc.. Callback should accept one
+        parameter: *cur_step* that is the simulation's current step.
         """
         return self._callback
 
@@ -177,10 +182,10 @@ class Simulation():
     def _init_step(self):
         """Initialize next step of simulation to be run.
         """
-        self._age += 1
-        self.env.age = self._age
+        self._cur_step += 1
+        self.env.age = self.cur_step
         self._log(logging.INFO, "")
-        self._log(logging.INFO, "\t***** Step {:0>10} *****". format(self.age))
+        self._log(logging.INFO, "\t***** Step {:0>10} *****". format(self.cur_step))
         self._log(logging.INFO, "")
         self._agents_to_act = self._get_order_agents()
         self._step_processing_time = 0.0
@@ -192,12 +197,12 @@ class Simulation():
         """
         t = time.time()
         if self._callback is not None:
-            self._callback(self.age)
+            self._callback(self.cur_step)
         t2 = time.monotonic()
         self._step_processing_time += t2 - t
         self._log(logging.INFO, "Step {} run in: {:.3f}s ({:.3f}s of "
                   "actual processing time used)"
-                  .format(self.age, self._step_processing_time,
+                  .format(self.cur_step, self._step_processing_time,
                           t2 - self._step_start_time))
         self._processing_time += self._step_processing_time
 
@@ -287,5 +292,5 @@ class Simulation():
         ret = self.env.close(folder=folder)
         self._end_time = time.time()
         self._log(logging.DEBUG, "{} step simulation completed in {:.3f}s (actual processing time {:.3f}s)."
-                  .format(self.age, self._end_time - self._start_time, self._processing_time))
+                  .format(self.cur_step, self._end_time - self._start_time, self._processing_time))
         return ret
