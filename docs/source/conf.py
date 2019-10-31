@@ -31,6 +31,11 @@ autoclass_content = 'both'
 
 autodoc_member_order = 'groupwise'
 
+autodoc_default_options = {
+    'autoclass_content': 'both',
+    'member-order': 'groupwise',
+}
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
