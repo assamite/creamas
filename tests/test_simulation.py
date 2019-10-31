@@ -1,9 +1,9 @@
-'''
+"""
 .. :py:module:: test_simulation
     :platform: Unix
 
 Tests for simulation module.
-'''
+"""
 import unittest
 
 from creamas.core.agent import CreativeAgent
@@ -20,7 +20,7 @@ class DummyAgent(CreativeAgent):
 class SimulationTestCase(unittest.TestCase):
 
     def test_create(self):
-        '''Test Simulation.create.'''
+        """Test Simulation.create."""
         sim = Simulation.create(env_cls=Environment,
                                 env_kwargs={'addr': ('localhost', 5555)},
                                 agent_cls=CreativeAgent, n_agents=10,
@@ -41,7 +41,7 @@ class SimulationTestCase(unittest.TestCase):
             self.assertEqual(len(a.connections), 3,
                              'Simulation did not create correct initial connections')
 
-        sim.end()
+        sim.close()
         self.assertIsNone(sim.env._tcp_server)
 
         a_classes = [CreativeAgent, DummyAgent]
@@ -64,16 +64,16 @@ class SimulationTestCase(unittest.TestCase):
 
         sim = Simulation.create(agent_cls=DummyAgent, conns=3,
                                 env_kwargs={'addr': ('localhost', 5555)})
-        self.assertEqual(sim.age, 0)
+        self.assertEqual(sim.cur_step, 0)
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.step()
         self.assertEqual(len(sim._agents_to_act), 0)
-        self.assertEqual(sim.age, 1)
+        self.assertEqual(sim.cur_step, 1)
         sim.step()
         self.assertEqual(len(sim._agents_to_act), 0)
-        self.assertEqual(sim.age, 2)
+        self.assertEqual(sim.cur_step, 2)
         sim.steps(10)
-        self.assertEqual(sim.age, 12)
+        self.assertEqual(sim.cur_step, 12)
         self.assertEqual(len(sim._agents_to_act), 0)
         sim.close()
 
