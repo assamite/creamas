@@ -16,6 +16,7 @@ install:
   - pip install scipy
   - pip install noise
   - pip install deap
+  - pip install networkx
 
 script:
   - tox -e $TOXENV
