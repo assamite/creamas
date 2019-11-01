@@ -13,6 +13,9 @@ install:
   - pip install coveralls
   - pip install aiomas
   - pip install tox-travis
+  - pip install scipy
+  - pip install noise
+  - pip install deap
 
 script:
   - tox -e $TOXENV
