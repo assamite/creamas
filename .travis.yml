@@ -21,7 +21,7 @@ script:
   - tox -e $TOXENV
 
 env:
-  - TOXENV=py36
+  - TOXENV=py37
   - TOXENV=docs
   - TOXENV=flake8
 

@@ -4,4 +4,4 @@ languages:
 exclude_paths:
 - "docs/*"
 - "tests/*"
-- "creamas/examples/*"
+- "examples/*"
