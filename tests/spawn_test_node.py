@@ -1,9 +1,9 @@
-'''
+"""
 .. py:module:: spawn_test_node
     :platform: Unix
 
 A script to spawn a new multiprocessing environment on a test node.
-'''
+"""
 import argparse
 import asyncio
 import logging
@@ -30,14 +30,14 @@ logger.setLevel(LOG_LEVEL)
 
 
 def create_menv(addr, slave_addrs, env_kwargs):
-    '''
+    """
     :param addr: Address of the multi-environment
     :param slave_addrs: Addresses for the slave environments.
     :param env_kwargs:
         Extra keyword arguments for environments.
 
     :returns: Instance of :py:class:`GridMultiEnvironment`
-    '''
+    """
     menv = MultiEnvironment(addr, env_cls=Environment,
                                 mgr_cls=MultiEnvManager,
                                 logger=None,
@@ -52,11 +52,11 @@ def create_menv(addr, slave_addrs, env_kwargs):
 
 
 def populate_menv(menv, agent_cls_name, n_agents):
-    '''Populate given multiprocessing environment with agents.
+    """Populate given multiprocessing environment with agents.
 
     :param menv: Instance of :py:class:`MultiEnvironment`
     :param str agent_cls_name: Name of the agent class, e.g. 'test_ds:DenvTestAgent'
-    '''
+    """
     n_slaves = len(menv.addrs)
     logger.info("Populating {} with {} agents".format(HOST, n_agents*n_slaves))
     for _ in range(n_slaves):
@@ -65,10 +65,10 @@ def populate_menv(menv, agent_cls_name, n_agents):
 
 
 def get_slave_addrs(mgr_addr, N):
-    '''Get ports for the slave environments.
+    """Get ports for the slave environments.
 
     Currently the ports are not checked for availability.
-    '''
+    """
     return [(HOST, p) for p in range(mgr_addr+1, mgr_addr+1+N)]
 
 
@@ -89,12 +89,12 @@ def _gs(s):
 
 
 if __name__ == "__main__":
-    desc = '''Simple script to start a multi-environment on a node.'''
+    desc = """Simple script to start a multi-environment on a node."""
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-p', '--port', type=int, metavar='PORT', dest='port',
                         help="Port number for the multi-environment's manager "
                         "environment.", default=5555)
-    parser.add_argument('-s', '--slaves', type=int, default=4,
+    parser.add_argument('-s', '--slaves', type=int, default=2,
                         dest='n_slaves',
                         help="Number of the slave environments.")
     args = parser.parse_args()

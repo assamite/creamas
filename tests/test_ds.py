@@ -67,15 +67,12 @@ class DenvTestCase(unittest.TestCase):
         # That is, the addresses of the "real" slave environment managers, not
         # multi-environment managers.
         managers = self.denv.get_slave_managers()
-        self.assertEqual(len(managers), 8)
+        self.assertEqual(len(managers), 4)
         expected_addrs = ['tcp://localhost:5561/0',
                           'tcp://localhost:5562/0',
-                          'tcp://localhost:5563/0',
-                          'tcp://localhost:5564/0',
                           'tcp://localhost:5571/0',
-                          'tcp://localhost:5572/0',
-                          'tcp://localhost:5573/0',
-                          'tcp://localhost:5574/0']
+                          'tcp://localhost:5572/0'
+                          ]
         for maddr in managers:
             self.assertIn(maddr, expected_addrs)
 

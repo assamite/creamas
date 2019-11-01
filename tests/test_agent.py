@@ -1,9 +1,9 @@
-'''
+"""
 .. :py:module:: test_agent
     :platform: Unix
 
 Tests for agent module.
-'''
+"""
 import asyncio
 import logging
 import unittest
