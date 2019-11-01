@@ -1,6 +1,5 @@
 language: python
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
 sudo: false
@@ -22,7 +21,7 @@ script:
   - tox -e $TOXENV
 
 env:
-  - TOXENV=py35
+  - TOXENV=py36
   - TOXENV=docs
   - TOXENV=flake8
 
