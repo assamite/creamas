@@ -7,14 +7,13 @@ Agent module holds :class:`CreativeAgent` implementation, a subclass of
 creative agents.
 """
 import logging
-import re
 from random import choice
 
 from aiomas import Agent
 
 from creamas.core.artifact import Artifact
 from creamas.logging import ObjectLogger
-from creamas.util import expose
+from creamas.util import expose, sanitize_agent_name
 
 __all__ = ['CreativeAgent']
 
@@ -94,8 +93,7 @@ class CreativeAgent(Agent):
     def sanitized_name(self):
         """Sanitized name of the agent, used for file and directory creation.
         """
-        a = re.split("[:/]", self.name)
-        return "_".join([i for i in a if len(i) > 0])
+        return sanitize_agent_name(self.name)
 
     @property
     def env(self):

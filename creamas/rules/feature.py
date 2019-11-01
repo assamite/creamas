@@ -3,21 +3,21 @@
     :platform: Unix
 
 Feature module holds base implementation for features,
-:py:class:`~creamas.core.feature.Feature`, that creative agents have in their
-rulesets.
+:py:class:`~creamas.rules.feature.Feature`, which creative agents have in their
+rule sets considering artifacts.
 """
 _all__ = ['Feature']
 
 
-class Feature():
+class Feature:
     """Base feature class that is callable after initialization.
 
-    Each feature value takes as an input an artifact, and returns feature's
+    Each feature takes as an input an artifact, and returns feature's
     value for that artifact. If artifact type is not supported, feature's
     evaluation should return ``None``.
 
     Returned feature values can be of any type, but rules
-    (:py:class:`~creamas.core.rule.Rule`) should have appropriate mappers to
+    (:py:class:`~creamas.rules.rule.Rule`) should have appropriate mappers to
     map possible feature values to the interval [-1, 1].
 
     Usage example:
@@ -51,12 +51,12 @@ class Feature():
         self.__rtype = rtype
         self.__name = name
 
-    def __call__(self, artifact, mapper=None):
+    def __call__(self, artifact, mapper=None, **kwargs):
         if artifact.domain not in self.__domains:
             return None
         if mapper is None:
-            return self.extract(artifact)
-        return mapper(self.extract(artifact))
+            return self.extract(artifact, **kwargs)
+        return mapper(self.extract(artifact, **kwargs))
 
     def __str__(self):
         return self.__name
@@ -82,7 +82,7 @@ class Feature():
         """
         return self.__rtype
 
-    def extract(self, artifact):
+    def extract(self, artifact, **kwargs):
         """Extract feature's value from an artifact.
 
         If artifact with a domain not in :attr:`domains` is used as a

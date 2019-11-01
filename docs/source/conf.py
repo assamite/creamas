@@ -121,7 +121,8 @@ todo_include_todos = False
 intersphinx_mapping = {'aiomas': ('https://aiomas.readthedocs.io/en/2.0.1/', None),
                        'networkx': ('https://networkx.github.io/documentation/stable/', None),
                        'python': ('https://docs.python.org/3.7', None),
-                       'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None)}
+                       'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None),
+                       'deap': ('https://deap.readthedocs.io/en/stable/', None)}
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -140,8 +141,7 @@ if on_rtd:
         def __getattr__(cls, name):
                 return MagicMock()
 
-    MOCK_MODULES = ['numpy', 'scipy', 'gnureadline', 'asyncssh', 'networkx',
-                    'cv2']
+    MOCK_MODULES = ['numpy', 'scipy', 'gnureadline', 'asyncssh', 'networkx', 'cv2', 'deap', 'noise']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 if not on_rtd:  # only import and set the theme if we're building docs locally

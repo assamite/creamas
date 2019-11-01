@@ -25,7 +25,6 @@ class RuleAgent(CreativeAgent):
     :ivar list ~creamas.core.agent.CreativeAgent.W:
         Weight for each rule in **R**, in [-1,1].
     """
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._R = []
@@ -46,7 +45,8 @@ class RuleAgent(CreativeAgent):
     def W(self):
         """Weights for the rules.
 
-        Each weight should be in [-1,1]."""
+        Each weight should be in [-1,1].
+        """
         return self._W
 
     def set_weight(self, rule, weight):
@@ -164,7 +164,3 @@ class RuleAgent(CreativeAgent):
         if w == 0.0:
             return 0.0, None
         return s / w, None
-
-    @expose
-    async def act(self, *args, **kwargs):
-        NotImplementedError("Implement in a subclass.")

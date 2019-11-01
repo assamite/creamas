@@ -39,4 +39,5 @@ Project's main repository is in `github <https://github.com/assamite/creamas>`_.
    create_agent
    create_sim
    using_mp_ds
+   using_gp
    api

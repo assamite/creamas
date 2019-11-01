@@ -21,6 +21,8 @@ setup(
         'numpy>=1.17.3',
     ],
     extras_require={
+        'extras': ['deap>=1.3.0', 'opencv-python>=4.1.0', 'noise>=1.2.2', 'scipy>=1.3.1', 'networkx>=2.4'],
+        'docs': ['Sphinx>=2.2.0', 'sphinx-rtd-theme>=0.4.3']
     },
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,

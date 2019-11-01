@@ -11,6 +11,13 @@ import re
 import aiomas
 
 
+def sanitize_agent_name(name):
+    """Get sanitized name of the agent, used for file and directory creation.
+    """
+    a = re.split("[:/]", name)
+    return "_".join([i for i in a if len(i) > 0])
+
+
 def expose(*args, **kwargs):
     """Function which returns :func:`aiomas.expose` wrapper.
 

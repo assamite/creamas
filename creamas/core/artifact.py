@@ -8,7 +8,7 @@ creative agents.
 __all__ = ['Artifact']
 
 
-class Artifact():
+class Artifact:
     """Base class for artifacts.
 
     A wrapper around the actual artifact object
@@ -17,7 +17,10 @@ class Artifact():
     """
 
     def __init__(self, creator, obj, domain=int):
-        self._creator = creator.name
+        if hasattr(creator, 'name'):
+            self._creator = creator.name
+        else:
+            self._creator = creator
         self._obj = obj
         self._domain = domain
         self._evals = {}
