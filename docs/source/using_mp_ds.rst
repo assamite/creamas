@@ -214,5 +214,5 @@ manager of :class:`~creamas.mp.MultiEnvironment` receives a stop sign. The stop
 sign is sent to each node's manager when :meth:`~creamas.ds.DistributedEnvironment.stop_nodes`
 is called.
 
-See ``creamas/examples/grid/`` for an example implementation of a distributed
+See ``examples/grid/`` for an example implementation of a distributed
 agent environment.
