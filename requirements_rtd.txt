@@ -1,2 +1,6 @@
 # Dummy file so that Readthedocs does not build gnureadline, etc.
+aiomas==2.0.1
+msgpack-python>=0.4.6
+numpy>=1.17.3
+Sphinx>=2.2.0
 sphinx_rtd_theme>=0.4.3
