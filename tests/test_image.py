@@ -5,7 +5,10 @@
 Tests for image domain.
 """
 import asyncio
+import os
 import unittest
+
+from testfixtures import TempDirectory
 
 import numpy as np
 
@@ -22,6 +25,8 @@ class ImageTestCase(unittest.TestCase):
     def setUp(self):
         self.env = Environment.create(('localhost', 5555))
         self.loop = asyncio.get_event_loop()
+        self.d = TempDirectory()
+        self.td = self.d.path
 
     def tearDown(self):
         self.env.close()
@@ -141,5 +146,7 @@ class ImageTestCase(unittest.TestCase):
         art = arts[0][0]
         img = art.obj
         self.assertEqual(img.shape, image_shape)
-        #gp.GPImageArtifact.save(art, 'test_image.png', pset, shape=(400, 400), string_file='test_image.txt')
+        image_path = os.path.join(self.td, 'test_image.png')
+        string_path = os.path.join(self.td, 'test_image.txt')
+        gp.GPImageArtifact.save(art, image_path, pset, shape=(400, 400), string_file=string_path)
 

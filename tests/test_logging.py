@@ -1,8 +1,8 @@
-'''
+"""
 .. :py:module:: test_logging
 
 Tests for logging module.
-'''
+"""
 import unittest
 
 from testfixtures import TempDirectory
