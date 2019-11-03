@@ -343,33 +343,3 @@ class GPImageGenerator:
             artifact = GPImageArtifact(self.creator_name, ft.image, ft, str(ft))
             arts.append((artifact, None))
         return arts
-
-
-if __name__ == "__main__":
-    from creamas.domains.image.features import ImageSymmetryFeature, ImageEntropyFeature, ImageBenfordsLawFeature
-    from creamas.domains.image.gp import tools
-    from creamas.domains.image import gp
-    pset = tools.create_super_pset()
-    toolbox = tools.create_toolbox(pset)
-
-    feat = ImageSymmetryFeature(ImageSymmetryFeature.ALL_AXES)
-    feat2 = ImageEntropyFeature(normalize=True)
-    feat3 = ImageBenfordsLawFeature()
-
-    def evaluate_func(artifact):
-        if gp.GPImageArtifact.png_compression_ratio(artifact) <= 0.08:
-            return 0.0, None
-        return feat(artifact) * 2 + feat2(artifact), None
-
-    gpgen = gp.GPImageGenerator('name', toolbox, pset, 4, 3, evaluate_func, (32, 32))
-    arts = gpgen.generate()
-    art = arts[0][0]
-    img = art.obj
-    print(art.framings)
-    #gp.GPImageArtifact.save(art, 'test_image.png', pset, shape=(100, 100), string_file='test_image.txt')
-
-    #art2 = gp.GPImageArtifact.artifact_from_file('creator_name', 'test_image.txt', pset, (32, 32), bw=True)
-    #print(art2.framings['string_repr'])
-    #img2 = art2.obj
-    #print(art2.framings)
-    #print(art2.framings['string_repr'] == art.framings['string_repr'])
