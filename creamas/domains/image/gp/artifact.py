@@ -34,18 +34,24 @@ class GPImageArtifact(Artifact):
         # Artifact ID #
         self.aid = None
         self.rank = None
-        self._feat_vals = {}    # Objective feature values for each feature.
+        self._feature_values = {}    # Objective feature values for each feature.
+
+    @property
+    def feature_values(self):
+        """Values for all features extracted from the image.
+        """
+        return self._feature_values
 
     def add_feature_value(self, feat, val):
         """Add objective feature value for given feature.
         """
-        self._feat_vals[feat] = val
+        self._feature_values[feat] = val
 
     def get_feature_value(self, feat):
         """Return objective feature value for given feature, or ``None`` if it is not found.
         """
-        if feat in self._feat_vals:
-            return self._feat_vals[feat]
+        if feat in self._feature_values:
+            return self._feature_values[feat]
         return None
 
     @staticmethod
@@ -89,6 +95,21 @@ class GPImageArtifact(Artifact):
         cv2.imwrite(image_file, color_img)
 
     @staticmethod
+    def artifact_from_file(creator_name, individual_file, pset, shape=(32, 32), bw=True):
+        """Create an artifact object from given function file.
+
+        :param str creator_name: Name of the creator
+        :param individual_file: Path to the function
+        :param pset: Primitive set to recreate the image
+        :param shape: Dimensions of the image
+        :param bool bw: If ``True``, creates a grayscale image (2D numpy.array), otherwise creates 3D numpy.array.
+        """
+        individual = GPImageArtifact._individual_from_file(individual_file, pset)
+        func = deap.gp.compile(individual, pset)
+        img = GPImageArtifact.image_from_function(func, shape, bw)
+        return GPImageArtifact(creator_name, img, individual, str(individual))
+
+    @staticmethod
     def save(artifact, image_file, pset, color_map=None, shape=(400, 400), string_file=None):
         """
         Saves an artifact as an image.
@@ -112,7 +133,6 @@ class GPImageArtifact(Artifact):
         individual = deap.gp.PrimitiveTree.from_string(s, pset)
         func = deap.gp.compile(individual, pset)
         img = GPImageArtifact.image_from_function(func, shape)
-        print(img.shape)
         if color_map is not None and len(img.shape) == 2:
             img = color_map[img]
 

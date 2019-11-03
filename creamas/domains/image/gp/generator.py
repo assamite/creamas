@@ -339,7 +339,8 @@ class GPImageGenerator:
         GPImageGenerator.evolve_population(population, generations, self.toolbox, pset, hall_of_fame)
         arts = []
         for ft in hall_of_fame:
-            artifact = GPImageArtifact(self.creator_name, ft.image, list(ft), str(ft))
+            print(type(ft))
+            artifact = GPImageArtifact(self.creator_name, ft.image, ft, str(ft))
             arts.append((artifact, None))
         return arts
 
@@ -360,8 +361,15 @@ if __name__ == "__main__":
             return 0.0, None
         return feat(artifact) * 2 + feat2(artifact), None
 
-    gpgen = gp.GPImageGenerator('name', toolbox, pset, 100, 50, evaluate_func, (32, 32))
+    gpgen = gp.GPImageGenerator('name', toolbox, pset, 4, 3, evaluate_func, (32, 32))
     arts = gpgen.generate()
     art = arts[0][0]
     img = art.obj
-    gp.GPImageArtifact.save(art, 'test_image.png', pset, shape=(400, 400), string_file='test_image.txt')
+    print(art.framings)
+    #gp.GPImageArtifact.save(art, 'test_image.png', pset, shape=(100, 100), string_file='test_image.txt')
+
+    #art2 = gp.GPImageArtifact.artifact_from_file('creator_name', 'test_image.txt', pset, (32, 32), bw=True)
+    #print(art2.framings['string_repr'])
+    #img2 = art2.obj
+    #print(art2.framings)
+    #print(art2.framings['string_repr'] == art.framings['string_repr'])
