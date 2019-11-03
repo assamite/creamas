@@ -343,3 +343,37 @@ class GPImageGenerator:
             artifact = GPImageArtifact(self.creator_name, ft.image, ft, str(ft))
             arts.append((artifact, None))
         return arts
+
+
+if __name__ == "__main__":
+    from creamas import CreativeAgent, Environment, expose, Simulation
+    from creamas.domains.image.gp import tools
+    from creamas.domains.image import features
+
+    class GPAgent(CreativeAgent):
+        def __init__(self, *args, **kwargs):
+            self.feature = kwargs.pop('image_feature')
+            super().__init__(*args, **kwargs)
+            self.pset, self.sample_keys = tools.create_sample_pset()
+            self.super_pset = tools.create_super_pset()
+            self.toolbox = tools.create_toolbox(self.pset)
+            self.artifacts = []
+            print(type(self.pset), type(self.super_pset))
+            self.generator = GPImageGenerator(self.sanitized_name(), self.toolbox, self.super_pset, 20, 10,
+                                              self.evaluate, shape=(32, 32), super_pset=self.super_pset)
+
+        def evaluate(self, artifact):
+            return self.feature(artifact), None
+
+        @expose
+        async def act(self, *args, **kwargs):
+            artifact = self.generator.generate()
+            self.artifacts.append(artifact)
+            return artifact
+
+    entropy_feat = features.ImageEntropyFeature()
+
+    env = Environment.create(('localhost', 5555))
+    a1 = GPAgent(env, image_feature=entropy_feat)
+    sim = Simulation(env)
+    print(sim.async_step())

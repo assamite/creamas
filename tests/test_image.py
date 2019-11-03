@@ -13,12 +13,33 @@ from testfixtures import TempDirectory
 import cv2
 import numpy as np
 
-from creamas.core.artifact import Artifact
-from creamas.core.environment import Environment
+from creamas import CreativeAgent, Artifact, Environment, Simulation
 
 from creamas.domains.image import features
 from creamas.domains.image.gp import tools
 from creamas.domains.image import gp
+from creamas.util import expose
+
+
+class GPAgent(CreativeAgent):
+    def __init__(self, *args, **kwargs):
+        self.feature = kwargs.pop('image_feature')
+        super().__init__(*args, **kwargs)
+        self.pset, self.sample_keys = tools.create_sample_pset()
+        self.super_pset = tools.create_super_pset()
+        self.toolbox = tools.create_toolbox(self.pset)
+        self.artifacts = []
+        self.generator = gp.GPImageGenerator(self.sanitized_name(), self.toolbox, self.pset, 20, 10,
+                                             self.evaluate, shape=(32, 32), super_pset=self.super_pset)
+
+    def evaluate(self, artifact):
+        return self.feature(artifact), None
+
+    @expose
+    async def act(self, *args, **kwargs):
+        artifact = self.generator.generate()
+        self.artifacts.append(artifact)
+        return artifact
 
 
 class ImageTestCase(unittest.TestCase):
@@ -33,6 +54,7 @@ class ImageTestCase(unittest.TestCase):
         self.env.close()
 
     def test_features(self):
+        image = np.random.randint(0, 256, (32, 32), dtype=np.uint8)
         for _ in range(10):
             image = np.random.randint(0, 256, (32, 32), dtype=np.uint8)
             artifact = Artifact('creator_name', image, domain='image')
@@ -187,3 +209,13 @@ class ImageTestCase(unittest.TestCase):
 
         dist = gp.GPImageArtifact.distance(art, art3)
         self.assertLess(dist, max_distance)
+
+        # Test that generators work with agents
+        a1 = GPAgent(self.env, image_feature=entropy_feat)
+        a2 = GPAgent(self.env, image_feature=benfords_feat)
+        sim = Simulation(self.env)
+        sim.async_step()
+
+
+
+
