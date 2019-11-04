@@ -99,10 +99,6 @@ class VoteAgent(CreativeAgent):
         """
         self.env.add_candidate(artifact)
 
-    @expose
-    async def act(self, *args, **kwargs):
-        NotImplementedError("Implement in a subclass.")
-
 
 class VoteEnvironment(Environment):
     """An environment implementing functionality needed for voting.
@@ -218,7 +214,7 @@ class VoteManager(EnvManager):
         return self.env.gather_votes(candidates)
 
 
-class VoteOrganizer():
+class VoteOrganizer:
     """A class which organizes voting behavior in an environment.
 
     The organizer can :meth:`~creamas.vote.VoteOrganizer.gather_candidates`
@@ -238,8 +234,8 @@ class VoteOrganizer():
         self._candidates = []
         self._votes = []
         self.logger = logger
-
         self._single_env = self._determine_single_env(environment)
+        self._managers = None if self._single_env else []
 
     @property
     def env(self):
@@ -284,18 +280,16 @@ class VoteOrganizer():
             return await r_manager.gather_votes(candidates)
 
         if len(self.candidates) == 0:
-            self._log(logging.DEBUG, "Could not gather votes because there "
-                      "are no candidates!")
+            self._log(logging.DEBUG, "Could not gather votes because there are no candidates!")
             self._votes = []
             return
-        self._log(logging.DEBUG, "Gathering votes for {} candidates."
-                  .format(len(self.candidates)))
+        self._log(logging.DEBUG, "Gathering votes for {} candidates.".format(len(self.candidates)))
 
         if self._single_env:
             self._votes = self.env.gather_votes(self.candidates)
         else:
-            mgrs = self.get_managers()
-            tasks = create_tasks(slave_task, mgrs, self.candidates)
+            managers = self.get_managers()
+            tasks = create_tasks(slave_task, managers, self.candidates)
             self._votes = run(tasks)
 
     def gather_candidates(self):
@@ -311,8 +305,8 @@ class VoteOrganizer():
         if self._single_env:
             self._candidates = self.env.candidates
         else:
-            mgrs = self.get_managers()
-            tasks = create_tasks(slave_task, mgrs)
+            managers = self.get_managers()
+            tasks = create_tasks(slave_task, managers)
             self._candidates = run(tasks)
 
     def clear_candidates(self, clear_env=True):
@@ -331,8 +325,8 @@ class VoteOrganizer():
             if self._single_env:
                 self.env.clear_candidates()
             else:
-                mgrs = self.get_managers()
-                run(create_tasks(slave_task, mgrs))
+                managers = self.get_managers()
+                run(create_tasks(slave_task, managers))
 
     def validate_candidates(self):
         """Validate current candidates.
@@ -386,8 +380,7 @@ class VoteOrganizer():
         if validate:
             self.validate_candidates()
         self.gather_votes()
-        r = self.compute_results(voting_method, self.votes, winners=winners,
-                                 **kwargs)
+        r = self.compute_results(voting_method, self.votes, winners=winners, **kwargs)
         return r
 
     def compute_results(self, voting_method, votes=None, winners=1, **kwargs):
@@ -444,13 +437,13 @@ def vote_random(candidates, votes, n_winners):
     This voting method bypasses the given votes completely.
 
     :param candidates: All candidates in the vote
-    :param votes: Votes from the agents
+    :param votes: Votes from the agents, which are omitted by randomized voting
     :param int n_winners: The number of vote winners
     """
-    rcands = list(candidates)
-    shuffle(rcands)
-    rcands = rcands[:min(n_winners, len(rcands))]
-    best = [(i, 0.0) for i in rcands]
+    random_candidates = list(candidates)
+    shuffle(random_candidates)
+    random_candidates = random_candidates[:min(n_winners, len(random_candidates))]
+    best = [(i, 0.0) for i in random_candidates]
     return best
 
 

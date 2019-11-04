@@ -28,10 +28,7 @@ class MenvTestCase(unittest.TestCase):
         self.menv = MultiEnvironment(('localhost', 5555),
                                      env_cls=Environment,
                                      mgr_cls=MultiEnvManager)
-        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5556),
-                                                ('localhost', 5557),
-                                                ('localhost', 5558),
-                                                ('localhost', 5559)],
+        run(self.menv.spawn_slaves(slave_addrs=[('localhost', 5556), ('localhost', 5557)],
                                    slave_env_cls=Environment,
                                    slave_mgr_cls=EnvManager))
         run(self.menv.wait_slaves(5, check_ready=True))
@@ -62,11 +59,8 @@ class MenvTestCase(unittest.TestCase):
         self.assertEqual(len(agents), 0)
 
         managers = self.menv.get_slave_managers()
-        self.assertEqual(len(managers), 4)
-        expected_addrs = ['tcp://localhost:5556/0',
-                          'tcp://localhost:5557/0',
-                          'tcp://localhost:5558/0',
-                          'tcp://localhost:5559/0']
+        self.assertEqual(len(managers), 2)
+        expected_addrs = ['tcp://localhost:5556/0', 'tcp://localhost:5557/0',]
         for maddr in managers:
             self.assertIn(maddr, expected_addrs)
 
@@ -81,7 +75,7 @@ class MenvTestCase(unittest.TestCase):
         split_agents = split_addrs(agents)
         for host, values in split_agents.items():
             for port, addrs in values.items():
-                self.assertEqual(len(addrs), 10)
+                self.assertEqual(len(addrs), 20)
 
         # Test spawn_n
         n_agents2 = 10
@@ -104,7 +98,7 @@ class MenvTestCase(unittest.TestCase):
         # multi-environments
         import networkx
         from creamas.nx import connections_from_graph, graph_from_connections
-        G = networkx.fast_gnp_random_graph(n_agents+n_agents2, 0.4)
+        G = networkx.fast_gnp_random_graph(n_agents + n_agents2, 0.4)
         connections_from_graph(self.menv, G)
         G2 = graph_from_connections(self.menv, False)
         self.assertEqual(len(G2), n_agents+n_agents2)

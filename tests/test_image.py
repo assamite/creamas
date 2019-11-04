@@ -202,7 +202,7 @@ class ImageTestCase(unittest.TestCase):
 
         max_distance = gp.GPImageArtifact.max_distance((32, 32), bw=True)
 
-        gpgen = gp.GPImageGenerator('name', toolbox, pset, 10, 5, evaluate_func, image_shape)
+        gpgen = gp.GPImageGenerator('another_name', toolbox, pset, 10, 5, evaluate_func, image_shape)
         arts = gpgen.generate()
         art3 = arts[0][0]
         img3 = art.obj
