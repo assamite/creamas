@@ -88,11 +88,7 @@ class Feature:
         If artifact with a domain not in :attr:`domains` is used as a
         parameter, the function should return ``None``.
 
-        .. note::
-            Dummy implementation, override in a subclass.
-
         :returns: Value extracted from the artifact.
         :rtype: :attr:`rtype` or None
-        :raises NotImplementedError: if not overridden in subclass
         """
-        raise NotImplementedError('Override in subclass')
+        return None
