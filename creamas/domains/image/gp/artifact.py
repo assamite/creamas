@@ -1,7 +1,3 @@
-"""An artifact implementation for the images created using genetic programming, :class:`GPImageArtifact` requiring
-``pip install creamas[extras]``. The artifact implementation is coupled with :class:`GPImageGenerator`, the generator
-producing evolutionary art using genetic programming.
-"""
 import numpy as np
 import deap.gp
 import cv2
@@ -10,10 +6,11 @@ from creamas.core.artifact import Artifact
 
 
 class GPImageArtifact(Artifact):
-    """A class for artifacts generated using :class:`GPImageGenerator`.
+    """An artifact implementation for the images created using genetic programming, :class:`GPImageArtifact` requiring
+    ``pip install creamas[extras]``. The artifact implementation is coupled with :class:`GPImageGenerator`, the
+    generator producing evolutionary art using genetic programming.
 
-    Each :attr:`GPImageArtifact.obj` is a numpy array with a data type ``np.uint8``.
-
+    Each :attr:`GPImageArtifact.obj` should be a numpy array with a data type ``np.uint8``.
     """
     def __init__(self, creator, obj, function_tree, string_repr=None):
         """

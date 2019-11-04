@@ -16,7 +16,7 @@ GP_TREE_MAX_DEPTH = 8
 
 
 class Rand(deap.gp.Ephemeral):
-    """A helper class to make ephemeral constants in the range [-1, 1].
+    """A helper class to make ephemeral float constants in the range [-1, 1].
     """
     ret = float
 

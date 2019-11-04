@@ -1,7 +1,3 @@
-"""Generator creating evolutionary art using genetic programming requiring ``pip install creamas[extras]``.
-
-The generated artifacts are instances of :class:`GPImageArtifact`.
-"""
 import random
 
 import deap
@@ -19,7 +15,8 @@ from creamas.domains.image.gp.artifact import GPImageArtifact
 class GPImageGenerator:
     """A generator class producing instances of :class:`GPImageArtifact` using genetic programming.
 
-    The generator uses `DEAP <https://deap.readthedocs.io/en/master/>`_ in its internal operation.
+    The generator uses `DEAP <https://deap.readthedocs.io/en/master/>`_ in its internal operation, and requires extras
+    to be installed: ``pip install creamas[extras]``.
 
     Generator class can be used in two different manners:
 
