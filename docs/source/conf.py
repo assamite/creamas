@@ -141,7 +141,8 @@ if on_rtd:
         def __getattr__(cls, name):
                 return MagicMock()
 
-    MOCK_MODULES = ['numpy', 'scipy', 'gnureadline', 'asyncssh', 'networkx', 'cv2', 'deap', 'noise']
+    MOCK_MODULES = ['numpy', 'scipy', 'gnureadline', 'asyncssh', 'networkx', 'cv2', 'deap', 'noise', 'deap.gp',
+                    'deap.tools', 'deap.base', 'deap.creator']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 if not on_rtd:  # only import and set the theme if we're building docs locally
