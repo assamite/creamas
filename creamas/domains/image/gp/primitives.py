@@ -1,5 +1,4 @@
-"""Basic primitives for the :class:`GPImageGenerator`.
-
+"""Primitives for the :class:`GPImageGenerator` requiring ``pip install creamas[extras]``.
 """
 import math
 import random

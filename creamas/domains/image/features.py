@@ -2,7 +2,7 @@
 .. py:module:: features
     :platform: Unix
 
-Various feature implementations for images.
+Various feature implementations for images requiring ``pip install creamas[extras]``.
 """
 
 import numpy as np

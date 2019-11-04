@@ -1,4 +1,4 @@
-"""Utilities for the :class:`GPImageGenerator` and agents utilizing it.
+"""Utilities for the :class:`GPImageGenerator` and agents utilizing it requiring ``pip install creamas[extras]``.
 """
 import copy
 import math

@@ -1,6 +1,6 @@
-"""A module holding an artifact implementation for the images created using genetic programming,
-:class:`GPImageArtifact`. The artifact implementation is coupled with :class:`GPImageGenerator`, the generator producing
-evolutionary art using genetic programming.
+"""An artifact implementation for the images created using genetic programming, :class:`GPImageArtifact` requiring
+``pip install creamas[extras]``. The artifact implementation is coupled with :class:`GPImageGenerator`, the generator
+producing evolutionary art using genetic programming.
 """
 import numpy as np
 import deap.gp

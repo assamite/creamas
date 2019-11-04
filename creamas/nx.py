@@ -11,7 +11,7 @@ from agent connections.
     NetworkX has to be installed in order for the functions in this module to
     work. It is not installed as a default dependency.
 
-    Use, e.g. ``pip install networkx``
+    Use ``pip install creamas[extras]`` to install extra requirements, including NetworkX.
 
 """
 from networkx import Graph, DiGraph

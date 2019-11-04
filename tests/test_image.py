@@ -215,7 +215,4 @@ class ImageTestCase(unittest.TestCase):
         a2 = GPAgent(self.env, image_feature=benfords_feat)
         sim = Simulation(self.env)
         sim.async_step()
-
-
-
-
+        sim.close()

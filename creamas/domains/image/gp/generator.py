@@ -1,4 +1,4 @@
-"""Generator creating evolutionary art using genetic programming.
+"""Generator creating evolutionary art using genetic programming requiring ``pip install creamas[extras]``.
 
 The generated artifacts are instances of :class:`GPImageArtifact`.
 """

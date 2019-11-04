@@ -5,7 +5,7 @@ Creamas includes some utility functions for different artifact domains, i.e. ima
 
 .. note::
 
-    Generally, these modules need extra requirements to be installed, some of which can be acquired using::
+    Generally, these modules need extra requirements to be installed::
 
         pip install creamas[extras]
 
