@@ -1,7 +1,7 @@
 Domains
 =======
 
-Creamas includes some utility functions for different artifact domains, i.e. images or language.
+Creamas includes some functionality for different artifact domains, e.g. images.
 
 .. note::
 
@@ -25,6 +25,9 @@ Genetic Programming
 
 .. automodule:: creamas.domains.image.gp.artifact
     :members:
+
+Tools
+#####
 
 .. automodule:: creamas.domains.image.gp.tools
     :members:
