@@ -2,7 +2,7 @@
 .. py:module:: features
     :platform: Unix
 
-Various feature implementations for images requiring ``pip install creamas[extras]``.
+Various feature implementations for images. See :class:`~creamas.rules.feature.Feature` for general usage of features.
 """
 
 import numpy as np
@@ -17,15 +17,14 @@ __all__ = ['ImageComplexityFeature', 'ImageRednessFeature',
 
 
 def fractal_dimension(image):
-    """Estimates the fractal dimension of an image with box counting.
+    """Computes the fractal dimension of an image with box counting.
     Counts pixels with value 0 as empty and everything else as non-empty.
     Input image has to be grayscale.
 
     See, e.g `fractal dimension on Wikipedia <https://en.wikipedia.org/wiki/Fractal_dimension>`_.
 
-    :param numpy.ndarray image: Grayscale image as numpy array.
-    :returns: estimation of the fractal dimension
-    :rtype: float
+    :param numpy.ndarray image: Grayscale image.
+    :returns: The computed fractal dimension as *float*.
     """
     pixels = np.asarray(np.nonzero(image > 0)).transpose()
 
@@ -49,12 +48,11 @@ def fractal_dimension(image):
 
 
 def channel_portion(image, channel):
-    """Estimates the amount of color channel relative to other colors.
+    """Computes the amount of color channel relative to other colors.
 
-    :param image: numpy.ndarray
-    :param channel: int
-    :returns: portion of a channel in an image
-    :rtype: float
+    :param numpy.ndarray image: RGB image.
+    :param int channel: Channel which portion is to be computed
+    :returns: Portion of the channel in the image as *float*.
     """
     # Separate color channels
     rgb = []
@@ -69,12 +67,11 @@ def channel_portion(image, channel):
 
 
 def intensity(image):
-    """Calculates the average intensity of the pixels in an image.
+    """Compute the average intensity of the pixels in an image.
     Accepts both RGB and grayscale images.
 
-    :param image: numpy.ndarray
-    :returns: image intensity
-    :rtype: float
+    :param numpy.ndarray image: Image
+    :returns: Average image intensity as *float*.
     """
     if len(image.shape) > 2:
         # Convert to grayscale
@@ -86,16 +83,17 @@ def intensity(image):
 
 class ImageComplexityFeature(Feature):
     def __init__(self):
-        """Feature that estimates the fractal dimension of an image. The color values must be in range [0, 255] and
-        type ``int``. Returns a ``float``.
+        """Feature that computes the fractal dimension of an image. The color values must be in range [0, 255] and
+        type *int*. Returns a *float*.
         """
         super().__init__('image_complexity', ['image'], float)
 
     def extract(self, artifact, canny_threshold1=100, canny_threshold2=200):
         """Extract fractal dimension estimate from the given image artifact.
 
-        The method first extracts edges using :class:`cv2.Canny` and the resulting edge image is passed down to the
-        fractal dimension estimator.
+        The method first extracts edges using `Canny edge detection
+        <https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html>`_
+        and the resulting edge image is passed down to the fractal dimension estimator.
         """
         img = artifact.obj
         if len(img.shape) > 2:
@@ -117,6 +115,8 @@ class ImageBenfordsLawFeature(Feature):
         self.b_max = (1.0 - self.b[0]) + np.sum(self.b[1:])
 
     def extract(self, artifact):
+        """Extract Benford's law from the image.
+        """
         img = artifact.obj
         # Convert color image to black and white
         if len(img.shape) == 3:
@@ -136,17 +136,19 @@ class ImageEntropyFeature(Feature):
     MAX = 5.5451774444795623
 
     def __init__(self, normalize=False):
-        """Compute entropy of an image and normalize it to interval [0, 1].
+        """Compute entropy of an image.
 
-        Entropy computation uses 256 bins and a grey scale image.
+        Entropy computation uses 256 bins and a grayscale image.
 
         :param bool normalize:
-            Should the returned entropy value be normalized.
+            Optional, normalize the returned entropy value.
         """
         super().__init__('image_entropy', ['image'], float)
         self._normalize = normalize
 
     def extract(self, artifact):
+        """Extract entropy from the image.
+        """
         img = artifact.obj
         # Convert color image to black and white
         if len(img.shape) == 3:
@@ -171,11 +173,11 @@ class ImageSymmetryFeature(Feature):
     ALL_AXES = 7
 
     def __init__(self, axis, use_entropy=True):
-        """Compute symmetry of the image in given ax or combination of axis.
+        """Compute symmetry of the image for given ax or combination of axis.
 
-        Feature also allows adding the computed symmetry with "liveliness" of the
+        Feature allows adding the computed symmetry with "liveliness" of the
         image using ``use_entropy=True``. If entropy is not used, simple images
-        (e.g. plain color images) will give high symmetry values.
+        (e.g. single color images) will give high symmetry values.
 
         :param axis:
             :attr:`ImageSymmetryFeature.HORIZONTAL`,
@@ -183,11 +185,10 @@ class ImageSymmetryFeature(Feature):
             :attr:`ImageSymmetryFeature.DIAGONAL`,
             :attr:`ImageSymmetryFeature.ALL_AXES`
 
-            These can be combined, e.g. ``axis=ImageSymmetryFeature.HORIZONTAL+
-            ImageSymmetryFeature.VERTICAL``.
+            These can be combined, e.g. ``axis=ImageSymmetryFeature.HORIZONTAL + ImageSymmetryFeature.VERTICAL``.
 
         :param bool use_entropy:
-            If ``True`` multiples the computed symmetry value with image's entropy
+            If **True** multiples the computed symmetry value with image's entropy
             ("liveliness").
         """
         super().__init__('image_symmetry', ['image'], float)
@@ -198,20 +199,21 @@ class ImageSymmetryFeature(Feature):
         self.vertical = int(b[1])
         self.diagonal = int(b[0])
         self.liveliness = use_entropy
+        self.ief = ImageEntropyFeature(normalize=True)
 
     def _hsymm(self, left, right):
         fright = np.fliplr(right)
         delta = np.abs(left - fright)
         t = delta <= self.threshold
-        sim = np.sum(t) / (left.shape[0] * left.shape[1])
-        return sim
+        sym = np.sum(t) / (left.shape[0] * left.shape[1])
+        return sym
 
     def _vsymm(self, up, down):
         fdown = np.flipud(down)
         delta = np.abs(up - fdown)
         t = delta <= self.threshold
-        sim = np.sum(t) / (up.shape[0] * up.shape[1])
-        return sim
+        sym = np.sum(t) / (up.shape[0] * up.shape[1])
+        return sym
 
     def _dsymm(self, ul, ur, dl, dr):
         fdr = np.fliplr(np.flipud(dr))
@@ -225,7 +227,7 @@ class ImageSymmetryFeature(Feature):
         return (s1 + s2) / 2
 
     def extract(self, artifact):
-        """Return symmetry of the image.
+        """Extract symmetry of the image.
         """
         img = artifact.obj
         if len(img.shape) == 3:
@@ -244,59 +246,57 @@ class ImageSymmetryFeature(Feature):
             symms += self._vsymm(img[:cx, :], img[cx:, :])
             n += 1
         if self.diagonal:
-            symms += self._dsymm(img[:cx, :cy], img[:cx, cy:],
-                                 img[cx:, :cy], img[cx:, cy:])
+            symms += self._dsymm(img[:cx, :cy], img[:cx, cy:], img[cx:, :cy], img[cx:, cy:])
             n += 1
         if self.liveliness:
-            ie = ImageEntropyFeature(normalize=True)
-            liv = ie(artifact)
+            liv = self.ief(artifact)
 
         return float(liv * (symms / n))
 
 
 class ImageRednessFeature(Feature):
     def __init__(self):
-        """Feature that measures the redness of an RGB image. Returns a ``float`` in range [0, 1].
+        """Feature that measures the redness of an RGB image. Returns *float* in range [0, 1].
         """
         super().__init__('image_redness', ['image'], float)
 
     def extract(self, artifact):
-        """Get redness of the image.
+        """Extract redness of the image.
         """
         return channel_portion(artifact.obj, 0)
 
 
 class ImageGreennessFeature(Feature):
     def __init__(self):
-        """Feature that measures the greenness of an RGB image. Returns a ``float`` in range [0, 1].
+        """Feature that measures the greenness of an RGB image. Returns *float* in range [0, 1].
         """
         super().__init__('image_greenness', ['image'], float)
 
     def extract(self, artifact):
-        """Get greenness of the image.
+        """Extract greenness of the image.
         """
         return channel_portion(artifact.obj, 1)
 
 
 class ImageBluenessFeature(Feature):
     def __init__(self):
-        """Feature that measures the blueness of an  RGB image. Returns a ``float`` in range [0, 1].
+        """Feature that measures the blueness of an  RGB image. Returns *float* in range [0, 1].
         """
         super().__init__('image_blueness', ['image'], float)
 
     def extract(self, artifact):
-        """Get blueness of the image.
+        """Extract blueness of the image.
         """
         return channel_portion(artifact.obj, 2)
 
 
 class ImageIntensityFeature(Feature):
     def __init__(self):
-        """Feature that measures the intensity of an image. Returns a ``float`` in range [0, 1].
+        """Feature that measures the intensity of an image. Returns *float* in range [0, 1].
         """
         super().__init__('image_intensity', ['image'], float)
 
     def extract(self, artifact):
-        """Get average intensity of the image.
+        """Extract average intensity of the image.
         """
         return intensity(artifact.obj)

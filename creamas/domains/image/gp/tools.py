@@ -1,4 +1,4 @@
-"""Utilities for the :class:`GPImageGenerator` and agents utilizing it requiring ``pip install creamas[extras]``.
+"""Utilities for the :class:`GPImageGenerator` and agents utilizing it. The module requires extras to be installed.
 """
 import copy
 import math
@@ -11,7 +11,7 @@ import deap.gp
 
 import creamas.domains.image.gp.primitives as prim
 
-# Maximum depth of GP trees
+#: Maximum depth for GP trees created by functions in this module.
 GP_TREE_MAX_DEPTH = 8
 
 
@@ -156,7 +156,7 @@ def _valid_ind(ind, max_val):
 
 
 def subtree_mutate(individual, pset, expr):
-    """Choose a random node and generate a subtree to that node using ``expr`` and ``pset``.
+    """Choose a random node and generate a subtree to that node using *pset* and *expr*.
     """
     mut_ind = copy.deepcopy(individual)
     while True:

@@ -122,7 +122,8 @@ intersphinx_mapping = {'aiomas': ('https://aiomas.readthedocs.io/en/2.0.1/', Non
                        'networkx': ('https://networkx.github.io/documentation/stable/', None),
                        'python': ('https://docs.python.org/3.7', None),
                        'asyncssh': ('https://asyncssh.readthedocs.io/en/latest/', None),
-                       'deap': ('https://deap.readthedocs.io/en/stable/', None)}
+                       'deap': ('https://deap.readthedocs.io/en/stable/', None),
+                       }
 
 
 # -- Options for HTML output ----------------------------------------------

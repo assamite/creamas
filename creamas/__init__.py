@@ -10,6 +10,7 @@ from creamas.rules.mapper import Mapper
 from creamas.rules.agent import RuleAgent
 from creamas.util import expose
 
+
 __all__ = [
     'CreativeAgent',
     'Environment',
