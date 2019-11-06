@@ -21,7 +21,7 @@ class GPImageArtifact(Artifact):
         :param function_tree:
             Function from which the image was generated. This is stored to
             `framings['function_tree']`.
-        :param string_repr:
+        :param str string_repr:
             String representation of the function. This is stored to `framings['string_repr']`.
         """
         super().__init__(creator, obj, domain='image')
@@ -67,13 +67,11 @@ class GPImageArtifact(Artifact):
         """Save an individual saved as a string into a file as a new image with given
         color mapping and resolution.
 
-        The function uses :func:`scipy.misc.imsave`.
-
         :param str individual_file:
             Path to the file with the string representation of the individual.
         :param str image_file:
             Path to the file where image is saved. The image type is defined by the file type.
-        :param pset:
+        :param deap.gp.PrimitiveSet pset:
             DEAP's primitive set required to compile string representation of the individual into an
             individual.
         :param color_map:
@@ -96,9 +94,9 @@ class GPImageArtifact(Artifact):
         """Create an artifact object from given function file.
 
         :param str creator_name: Name of the creator
-        :param individual_file: Path to the function
-        :param pset: Primitive set to recreate the image
-        :param shape: Dimensions of the image
+        :param str individual_file: Path to the function
+        :param deap.gp.PrimitiveSet pset: Primitive set to recreate the image
+        :param tuple shape: Dimensions of the image
         :param bool bw: If ``True``, creates a grayscale image (2D numpy.array), otherwise creates 3D numpy.array.
         """
         individual = GPImageArtifact._individual_from_file(individual_file, pset)
@@ -115,7 +113,7 @@ class GPImageArtifact(Artifact):
             The artifact to be saved.
         :param str image_file:
             Path to the file where image is saved. The image type is defined by the file type.
-        :param pset:
+        :param deap.gp.PrimitiveSet pset:
             DEAP's primitive set required to compile string representation of the individual into an
             individual.
         :param color_map:
@@ -145,7 +143,7 @@ class GPImageArtifact(Artifact):
 
         :param func:
             A function returned by :func:`deap.gp.compile` used to compute the color values.
-        :param shape:
+        :param tuple shape:
             Shape of the returned image.
         :param bool bw:
             If ``True``, ``func`` is assumed to represent a grayscale image, otherwise it is assumed to
