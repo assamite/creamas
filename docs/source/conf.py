@@ -16,6 +16,7 @@
 import os
 import shlex
 import sys
+import sphinx_rtd_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -147,11 +148,8 @@ if on_rtd:
                     'deap.tools', 'deap.base', 'deap.creator']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    # html_theme = 'alabaster'
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 #html_theme = 'alabaster'
 
