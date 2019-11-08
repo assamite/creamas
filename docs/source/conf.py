@@ -163,6 +163,8 @@ html_theme_options = {
     'logo_only': True,
 }
 
+logo_only = True
+
 github_url = 'https://github.com/assamite/creamas'
 
 # Alabaster options

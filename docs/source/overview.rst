@@ -93,8 +93,8 @@ from *aiomas* library, like Creamas agent classes and environments do.
 .. note::
 
 	Connecting to an agent and calling an exposed function are done
-	asynchronously using ``await`` keyword before the function call. Any method
-	using ``await`` has to have ``async`` keyword at the start of its function
+	asynchronously using *await* keyword before the function call. Any method
+	using *await* has to have *async* keyword at the start of its function
 	definition.
 
 Creating and Analyzing Agent Connections
