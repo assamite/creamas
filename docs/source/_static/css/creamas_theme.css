@@ -1,0 +1,23 @@
+/** css/creamas_theme.css **/
+
+/* This line is theme specific - it includes the base theme CSS */
+/*@import '../alabaster.css';  /* for Alabaster */
+@import 'theme.css';       /* for the Read the Docs theme */
+
+body {
+    /* ... */
+
+}
+
+.wy-side-nav-search {
+    /* background-color: #2980B9; */
+    background-color: #222222;
+}
+
+.wy-side-nav-search>div.version{
+    color: rgba(255,255,255,0.7);
+}
+
+.wy-nav-side {
+    background: #434343;
+}

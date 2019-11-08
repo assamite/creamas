@@ -1,11 +1,18 @@
-Creamas - Creative Multi-Agent Systems
-======================================
 
-.. image:: _static/python-powered-w-70x28.png
+.. image:: _static/creamas-logo-triangle-rainbow.png
+    :align: center
+    :width: 80%
+    :alt: Creamas logo
 
-Creamas is Python (3.5+) library for (creative) multi-agent systems. It is a tool to research and implement multi-agent
-systems that exhibit emergent and/or creative behavior in some ways. However, its main implementations are general
-enough to be used for multi-agent systems with other purposes.
+|
+
+Introduction
+============
+
+Creamas is a library to develop, research and teach agent-based systems that exhibit emergent and/or creative behavior
+in some ways. Its main implementations are quite general so that it could be used for diverse needs. See :doc:`overview`
+for an introduction to the library's main components. Creamas is developed for Python 3.5+ and its main repository is in
+`github <https://github.com/assamite/creamas>`_.
 
 Features, etc.
 --------------
@@ -20,8 +27,7 @@ Features, etc.
    * Social decision making using voting
    * NetworkX integration to generate agent connections from NetworkX structures and vice versa
 
-See :doc:`overview` for a more detailed introduction to the library's main components.
-Project's main repository is in `github <https://github.com/assamite/creamas>`_.
+
 
 .. toctree::
    :hidden:

@@ -31,25 +31,6 @@ class GPImageArtifact(Artifact):
         # Artifact ID #
         self.aid = None
         self.rank = None
-        self._feature_values = {}    # Objective feature values for each feature.
-
-    @property
-    def feature_values(self):
-        """Values for all features extracted from the image.
-        """
-        return self._feature_values
-
-    def add_feature_value(self, feat, val):
-        """Add objective feature value for given feature.
-        """
-        self._feature_values[feat] = val
-
-    def get_feature_value(self, feat):
-        """Return objective feature value for given feature, or ``None`` if it is not found.
-        """
-        if feat in self._feature_values:
-            return self._feature_values[feat]
-        return None
 
     @staticmethod
     def _individual_from_file(fname, pset):

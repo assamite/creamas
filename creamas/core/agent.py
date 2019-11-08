@@ -272,7 +272,7 @@ class CreativeAgent(Agent):
     def evaluate(self, artifact):
         """Evaluate an artifact.
 
-        ** This is a dummy method which should be overridden in a subclass. **
+        **This is a dummy method which should be overridden in a subclass.**
         """
         return 0.0, None
 

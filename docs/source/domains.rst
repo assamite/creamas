@@ -38,6 +38,24 @@ Features
 .. automodule:: creamas.domains.image.features
     :members:
 
+Text
+----
+
+Tools
+.....
+
+.. automodule:: creamas.domains.text.tools
+    :members:
+
+Markov Chains
+.............
+
+.. automodule:: creamas.domains.text.mc.generator
+    :members:
+
+
+
+
 Other domains
 -------------
 

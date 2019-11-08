@@ -25,6 +25,7 @@ class Artifact:
         self._domain = domain
         self._evals = {}
         self._framings = {}
+        self._feature_values = {}  # Objective feature values for each feature.
 
     @property
     def creator(self):
@@ -62,6 +63,26 @@ class Artifact:
         actual framings.
         """
         return self._framings
+
+        self._feature_values = {}    # Objective feature values for each feature.
+
+    @property
+    def feature_values(self):
+        """Values for all features extracted from the artifact.
+        """
+        return self._feature_values
+
+    def add_feature_value(self, feat, val):
+        """Add extracted value for the given feature string.
+        """
+        self._feature_values[feat] = val
+
+    def get_feature_value(self, feat):
+        """Return value for the given feature string, or ``None`` if it is not found.
+        """
+        if feat in self._feature_values:
+            return self._feature_values[feat]
+        return None
 
     def add_eval(self, agent, e, fr=None):
         """Add or change agent's evaluation of the artifact with given framing
