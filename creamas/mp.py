@@ -164,7 +164,7 @@ class EnvManager(Manager):
         This is a convenience function so that one does not have to repeatedly make connections to the environment to
         spawn multiple agents with the same parameters.
 
-        See :meth:`aiomas.subproc.Manager.spawn` for details.
+        See :meth:`~aiomas.subproc.Manager.spawn` for details.
         """
         rets = []
         for _ in range(n):
@@ -241,7 +241,7 @@ class MultiEnvManager(Manager):
         """Get addresses of all agents in all the slave environments.
 
         This is a managing function for
-        :meth:`creamas.mp.MultiEnvironment.get_agents`.
+        :meth:`~creamas.mp.MultiEnvironment.get_agents`.
 
         .. note::
 
@@ -453,7 +453,7 @@ class MultiEnvironment():
 
         Slave environment managers are excluded from the returned list by
         default. Essentially, this method calls each slave environment
-        manager's :meth:`creamas.mp.EnvManager.get_agents` asynchronously.
+        manager's :meth:`~creamas.mp.EnvManager.get_agents` asynchronously.
 
         .. note::
 
@@ -497,7 +497,7 @@ class MultiEnvironment():
         return self._artifacts
 
     async def connect(self, *args, **kwargs):
-        """A shortcut to :meth:`env.connect`.
+        """A shortcut to environment's :meth:`connect`.
         """
         return await self.env.connect(*args, **kwargs)
 
@@ -521,7 +521,7 @@ class MultiEnvironment():
 
         .. seealso::
 
-            :py:meth:`creamas.core.environment.Environment.is_ready`
+            :py:meth:`~creamas.core.environment.Environment.is_ready`
         """
         async def slave_task(addr, timeout):
             try:
@@ -666,7 +666,7 @@ class MultiEnvironment():
         asynchronously.
 
         Given arguments and keyword arguments are passed down to each agent's
-        :meth:`creamas.core.agent.CreativeAgent.act`.
+        :meth:`~creamas.core.agent.CreativeAgent.act`.
 
         .. note::
 
@@ -695,20 +695,20 @@ class MultiEnvironment():
         """Spawn a new agent in a slave environment.
 
         :param str agent_cls:
-            `qualname`` of the agent class.
+            ``qualname`` of the agent class.
             That is, the name should be in the form ``pkg.mod:cls``, e.g.
             ``creamas.core.agent:CreativeAgent``.
         :param str addr:
             Optional. Address for the slave enviroment's manager.
-            If :attr:`addr` is None, spawns the agent in the slave environment
+            If ``None``, spawns the agent in the slave environment
             with currently smallest number of agents.
 
         :returns: :class:`aiomas.rpc.Proxy` and address for the created agent.
 
         The ``*args`` and ``**kwargs`` are passed down to the agent's
-        :meth:`__init__`.
+        ``__init__``.
 
-        .. note::
+        .. tip::
 
             Use :meth:`~creamas.mp.MultiEnvironment.spawn_n` to spawn large
             number of agents with identical initialization parameters.
@@ -729,7 +729,7 @@ class MultiEnvironment():
         :param int n: Number of agents to spawn
         :param str addr:
             Optional. Address for the slave enviroment's manager.
-            If :attr:`addr` is None, spawns the agents in the slave environment
+            If ``None``, spawns the agents in the slave environment
             with currently smallest number of agents.
 
         :returns:
@@ -737,7 +737,7 @@ class MultiEnvironment():
             spawned agents.
 
         The ``*args`` and ``**kwargs`` are passed down to each agent's
-        :meth:`__init__`.
+        ``__init__``.
         """
         if addr is None:
             addr = await self._get_smallest_env()
@@ -972,11 +972,11 @@ async def start(addr, env_cls, mgr_cls, *env_args, **env_kwargs):
     The agent will connect to *addr* ``('host', port)`` and wait for commands
     to spawn new agents within its environment.
 
-    The *env_args* and *env_kwargs* will be passed to :meth:`env_cls.create()`
+    The *env_args* and *env_kwargs* will be passed to ``env_cls.create()``
     factory function.
 
-    This coroutine finishes after manager's :meth:`stop` was called or when
-    a :exc:`KeyboardInterrupt` is raised and calls :meth:`env_cls.destroy`
+    This coroutine finishes after manager's ``stop`` was called or when
+    a :exc:`KeyboardInterrupt` is raised and calls ``env_cls.close()``
     before it finishes.
 
     :param addr:
@@ -1000,7 +1000,7 @@ async def start(addr, env_cls, mgr_cls, *env_args, **env_kwargs):
     except KeyboardInterrupt:
         logger.info('Execution interrupted by user')
     finally:
-        await env.destroy(folder=log_folder, as_coro=True)
+        await env.close(folder=log_folder, as_coro=True)
 
 
 def _set_random_seeds():

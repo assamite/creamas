@@ -26,7 +26,7 @@ implemented are:
     * :class:`~creamas.grid.GridMultiEnvManager`: A manager for a
       multi-processing environment. Used especially if the environment needs to
       be able to execute commands from external sources, e.g. when used as a
-      part of :class:`creamas.ds.DistributedEnvironment`.
+      part of :class:`~creamas.ds.DistributedEnvironment`.
 """
 import asyncio
 import logging
@@ -110,7 +110,7 @@ class GridAgent(CreativeAgent):
 
     @expose
     async def act(self, *args, **kwargs):
-        """See :py:class:`creamas.core.agent.CreativeAgent.act`.
+        """See :py:class:`~creamas.core.agent.CreativeAgent.act`.
         """
         pass
 
@@ -362,7 +362,7 @@ class GridMultiEnvironment(MultiEnvironment):
     """Multi-environment which stacks its slave :py:class:`GridEnvironment`
     instances horizontally.
 
-    Call :meth:`creamas.grid.GridMultiEnvironment.set_slave_params` immediately
+    Call :meth:`~creamas.grid.GridMultiEnvironment.set_slave_params` immediately
     after initializing :class:`GridMultiEnvironment`!
 
     .. note::
@@ -602,7 +602,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """Set neighbor environments for all the slave environments.
 
         This is a managing function for
-        :meth:`creamas.grid.GridMultiEnvironment.set_slave_neighbors`.
+        :meth:`~creamas.grid.GridMultiEnvironment.set_slave_neighbors`.
         """
         await self.menv.set_slave_neighbors()
 
@@ -611,7 +611,7 @@ class GridMultiEnvManager(MultiEnvManager):
         """Set neighbor agents for all the agents in the slave environments.
 
         This is a managing function for
-        :meth:`creamas.grid.GridMultiEnvironment.set_agent_neighbors`.
+        :meth:`~creamas.grid.GridMultiEnvironment.set_agent_neighbors`.
         """
         await self.menv.set_agent_neighbors()
 
@@ -620,6 +620,6 @@ class GridMultiEnvManager(MultiEnvManager):
         """Set neighbors for all the agents in all the slave environments.
 
         This is a managing function for
-        :meth:`creamas.grid.GridMultiEnvironment.set_neighbors`.
+        :meth:`~creamas.grid.GridMultiEnvironment.set_neighbors`.
         """
         await self.menv.set_neighbors()

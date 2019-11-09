@@ -1,9 +1,6 @@
 """
 .. :py:module:: artifact
     :platform: Unix
-
-Artifact module holds **Artifact**, a base class for artifacts created by
-creative agents.
 """
 __all__ = ['Artifact']
 

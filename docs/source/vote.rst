@@ -1,5 +1,5 @@
-Voting for Agents
------------------
+Voting
+======
 
 .. automodule:: creamas.vote
 	:members:

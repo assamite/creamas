@@ -1,5 +1,5 @@
-Assorted Utility Functions
---------------------------
+Utilities
+=========
 
 .. automodule:: creamas.util
 	:members:
