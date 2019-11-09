@@ -3,7 +3,7 @@ Overview
 
 The goal of Creamas is to aid in development, research and teaching of agent-based systems which exhibit
 `creative behaviour <https://en.wikipedia.org/wiki/Computational_creativity>`_. Creamas is built on top of
-`aiomas <http://aiomas.readthedocs.org/en/latest/>`_ , from which the basic agent and container
+`aiomas <http://aiomas.readthedocs.org/en/latest/>`_, from which the basic agent and container
 (:class:`~creamas.Environment` in Creamas) are subclassed. The container provides a communication route (RPC) between
 agents. If you need to know more about how the low level communication works, see aiomas documentation.
 

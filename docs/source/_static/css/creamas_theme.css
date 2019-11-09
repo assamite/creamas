@@ -1,7 +1,5 @@
 /** css/creamas_theme.css **/
 
-/* This line is theme specific - it includes the base theme CSS */
-/*@import '../alabaster.css';  /* for Alabaster */
 @import 'theme.css';       /* for the Read the Docs theme */
 
 p {
@@ -131,5 +129,18 @@ code, .rst-content tt, .rst-content code {
 .rst-content code.py {
     color: #cc0000ff;
     font-family: Menlo,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.wy-nav-top {
+    background-color: #111111;
+}
+
+.wy-nav-top img {
+    margin-right: 12px;
+    height: 45px;
+    width: auto;
+    background-color: #111111;
+    padding: 5px;
+    border-radius: 0%;
 }

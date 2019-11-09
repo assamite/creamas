@@ -455,7 +455,7 @@ class MultiEnvironment():
         default. Essentially, this method calls each slave environment
         manager's :meth:`~creamas.mp.EnvManager.get_agents` asynchronously.
 
-        .. note::
+        .. tip::
 
             Calling each slave environment's manager might be costly in some
             situations. Therefore, it is advisable to store the returned agent

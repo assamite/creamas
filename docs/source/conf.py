@@ -149,37 +149,17 @@ if on_rtd:
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-#html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-
 html_theme_options = {
     'logo_only': True,
 }
 
-logo_only = True
-
-github_url = 'https://github.com/assamite/creamas'
-
-# Alabaster options
-#html_theme_options = {
-#    'github_user': 'assamite',
-#    'github_repo': 'mas',
-#    #'github_button': True,
-#    'logo': 'creamas-logo-triangle-rainbow.png',
-#    'sidebar_width': '30%',
-#    'page_width': '70%',
-#    'code_font_size': '14px',
-#    'code_font_family': ['Menlo', 'Consolas', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'monospace'],
-#    #'github_banner': True
-#}
-
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -226,7 +206,6 @@ html_sidebars = {
         'navigation.html',
         'relations.html',
         'searchbox.html',
-        'donate.html',
     ]
 }
 
@@ -244,7 +223,7 @@ html_sidebars = {
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True

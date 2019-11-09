@@ -8,8 +8,7 @@ on computing clusters or other distributed systems.
 
 .. note::
 
-    The module needs `asyncssh <http://asyncssh.readthedocs.io/en/latest/>`_
-    to function. **Asyncssh** is not installed as a dependency by default.
+    The module needs extras to be installed using ``pip install creamas[extras]``.
 
 """
 import asyncio
@@ -113,7 +112,7 @@ class DistributedEnvironment(MultiEnvironment):
 
     .. warning::
         To free the resources on each node, it is crucial to call
-        :meth:`creamas.ds.DistributedEnvironment.close` after the simulation
+        :meth:`~creamas.ds.DistributedEnvironment.close` after the simulation
         is finished. Otherwise, some rogue processes are likely to be left
         unattended on the external nodes.
 

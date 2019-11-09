@@ -1,0 +1,12 @@
+{% extends "!layout.html" %}
+
+{% block mobile_nav %}
+  <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+  <a href="{{ pathto(master_doc) }}">
+      {% if logo %}
+        <img src="{{ pathto('_static/' + logo, 1) }}" class="logo" alt="Logo"/>
+      {% else %}
+        {{ project }}
+      {% endif %}
+  </a>
+{% endblock %}
