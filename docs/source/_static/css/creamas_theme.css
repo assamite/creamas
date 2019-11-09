@@ -19,6 +19,10 @@ a:visited {
     color: #674ea7;
 }
 
+.wy-nav-side {
+    background-color: #f3f6f6;
+}
+
 .wy-side-nav-search {
     background-color: #111111;
 }
@@ -143,4 +147,16 @@ code, .rst-content tt, .rst-content code {
     background-color: #111111;
     padding: 5px;
     border-radius: 0%;
+}
+
+.wy-menu li.toctree-l2, .wy-menu li.toctree-l3, .wy-menu li.toctree-l4, .wy-menu-vertical li.toctree-l2.current>a, .wy-menu-vertical li.toctree-l3.current>a, .wy-menu-vertical li.toctree-l2.current li.toctree-l3>a {
+    background-color: #f3f6f6;
+}
+
+.wy-menu-vertical li.current a {
+    border-right: 0px;
+}
+
+.wy-menu-vertical li.toctree-l1.current>a {
+    border-bottom: solid 1px #434343;
 }
