@@ -6,6 +6,7 @@
 
 p {
     font-size: 16px;
+    text-align: justify;
 }
 
 body {
@@ -42,7 +43,7 @@ h1, h2, .rst-content .toctree-wrapper p.caption, h3, h4, h5, h6, legend {
     font-family: monospace,Menlo,SFMono-Regular,Monaco,Consolas,"Liberation Mono","Courier New",Courier,monospace;
     font-size: 12px;
     line-height: 1.2;
-    background-color: #6aa84f11;
+    background-color: #e7ece8;
 }
 
 code, .rst-content tt, .rst-content code {
@@ -113,4 +114,8 @@ code, .rst-content tt, .rst-content code {
 
 .rst-content .tip {
     background: #6aa84f22;
+}
+
+.rst-content .highlight-default {
+    background: #f3f6f6;
 }

@@ -2,11 +2,11 @@ Generating Images using Genetic Programming
 ===========================================
 
 Creamas offers some ready made objects to start producing images using genetic programming (GP), which can be found from
-:py:mod:`creamas.domains.image.gp` package. They are coupled with image evaluation features from
-:py:mod:`creamas.domains.image.features` module. The existing GP functionality is based on
+:py:mod:`~creamas.domains.image.gp` package. They are coupled with image evaluation features from
+:py:mod:`~creamas.domains.image.features` module. The functionality is based on
 `DEAP library <https://deap.readthedocs.io/en/master/>`_.
 
-Below is a simple example of creating images using :class:`creamas.domains.image.gp.generator.GPImageGenerator`.
+Below is a simple example of creating images using :class:`~creamas.domains.image.gp.generator.GPImageGenerator`.
 
 .. code-block:: python
 
