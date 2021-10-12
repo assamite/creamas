@@ -37,7 +37,7 @@ msgpack-python==0.4.6
 networkx==2.4
 noise==1.2.2
 numpy==1.17.3
-opencv-python==4.1.1.26
+opencv-python==4.2.0.32
 packaging==19.2
 parso==0.5.1
 path.py==8.1.2
